@@ -1,0 +1,148 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+enum AppButtonType { primary, secondary, text }
+
+class AppButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final AppButtonType type;
+  final bool isLoading;
+  final bool isFullWidth;
+  final double height;
+  final double? width;
+  final EdgeInsetsGeometry? padding;
+  final BorderRadius? borderRadius;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final TextStyle? textStyle;
+
+  const AppButton({
+    super.key,
+    required this.text,
+    this.onPressed,
+    this.type = AppButtonType.primary,
+    this.isLoading = false,
+    this.isFullWidth = true,
+    this.height = 50,
+    this.width,
+    this.padding,
+    this.borderRadius,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.textStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDisabled = onPressed == null || isLoading;
+
+    switch (type) {
+      case AppButtonType.primary:
+        return _buildPrimaryButton(context, isDisabled);
+      case AppButtonType.secondary:
+        return _buildSecondaryButton(context, isDisabled);
+      case AppButtonType.text:
+        return _buildTextButton(context, isDisabled);
+    }
+  }
+
+  Widget _buildPrimaryButton(BuildContext context, bool isDisabled) {
+    return SizedBox(
+      width: isFullWidth ? double.infinity : width?.w,
+      height: height.h,
+      child: ElevatedButton(
+        onPressed: isDisabled ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF1565C0), // الأزرق الأساسي
+          disabledBackgroundColor: const Color(0xFF1565C0).withOpacity(0.5),
+          foregroundColor: Colors.white,
+          padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w),
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius ?? BorderRadius.circular(18.r),
+          ),
+          elevation: 0, // إزالة الظل
+        ),
+        child: _buildButtonContent(context, Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildSecondaryButton(BuildContext context, bool isDisabled) {
+    return SizedBox(
+      width: isFullWidth ? double.infinity : width?.w,
+      height: height.h,
+      child: OutlinedButton(
+        onPressed: isDisabled ? null : onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: const Color(0xFF1565C0),
+          side: BorderSide(
+            color: isDisabled ? Colors.grey : const Color(0xFF1565C0),
+            width: 1.0,
+          ),
+          padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w),
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius ?? BorderRadius.circular(18.r),
+          ),
+          backgroundColor: Colors.white,
+        ),
+        child: _buildButtonContent(context, const Color(0xFF1565C0)),
+      ),
+    );
+  }
+
+  Widget _buildTextButton(BuildContext context, bool isDisabled) {
+    return SizedBox(
+      width: isFullWidth ? double.infinity : width?.w,
+      height: height.h,
+      child: TextButton(
+        onPressed: isDisabled ? null : onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: const Color(0xFF1565C0),
+          padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w),
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius ?? BorderRadius.circular(20.r),
+          ),
+        ),
+        child: _buildButtonContent(context, const Color(0xFF1565C0)),
+      ),
+    );
+  }
+
+  Widget _buildButtonContent(BuildContext context, Color textColor) {
+    if (isLoading) {
+      return SizedBox(
+        height: 24.h,
+        width: 24.w,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(textColor),
+        ),
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (prefixIcon != null) ...[
+          prefixIcon!,
+          SizedBox(width: 8.w),
+        ],
+        Text(
+          text,
+          style: textStyle ??
+              TextStyle(
+                color: textColor,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        if (suffixIcon != null) ...[
+          SizedBox(width: 8.w),
+          suffixIcon!,
+        ],
+      ],
+    );
+  }
+}
