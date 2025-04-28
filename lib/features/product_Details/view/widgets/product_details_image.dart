@@ -9,20 +9,16 @@ class ProductImageSection extends StatelessWidget {
     return Column(
       children: [
         // Product image
-        Container(
-          height: 300.h,
-          color: const Color(0xFF333333),
-          child: Stack(
-            children: [
-              Center(
-                child: Image.asset(
-                  'assets/images/shoes1.png',
-                  fit: BoxFit.contain,
-                  height: 250.h,
-                ),
+        Stack(
+          children: [
+            Center(
+              child: Image.asset(
+                'assets/images/test-product.png',
+                fit: BoxFit.contain,
+                height: 250.h,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
 
         // Image navigation dots

@@ -1,7 +1,8 @@
+import 'package:embone/core/component/widgets/app_header.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/product_Details/view/widgets/product_details_addtocart.dart';
 import 'package:embone/features/product_Details/view/widgets/product_details_color_option.dart';
 import 'package:embone/features/product_Details/view/widgets/product_details_description.dart';
-import 'package:embone/features/product_Details/view/widgets/product_details_header.dart';
 import 'package:embone/features/product_Details/view/widgets/product_details_image.dart';
 import 'package:embone/features/product_Details/view/widgets/product_details_info.dart';
 import 'package:embone/features/product_Details/view/widgets/product_details_quantity.dart';
@@ -50,10 +51,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Column(
           children: [
             // Header
-            ProductDetailHeader(
-              title: 'تفاصيل المنتج',
+            AppHeader(
+              title: 'product_details'.tr(context),
               onBackPressed: () => Navigator.pop(context),
-              onSharePressed: () {},
             ),
 
             // Scrollable content
@@ -73,10 +73,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
 
                     // Product info
-                    const ProductInfoSection(
+                    ProductInfoSection(
                       name: 'حذاء رياضي',
                       price: 599.00,
-                      currency: 'ج.م',
+                      currency: 'currency'.tr(context),
                       selectedSize: '42',
                     ),
 
@@ -124,7 +124,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           'image': 'assets/images/shoes1.png',
                           'name': 'حذاء رياضي',
                           'price': 599.00,
-                          'currency': 'ج.م',
+                          'currency': 'currency'.tr(context),
                         },
                       ),
                     ),

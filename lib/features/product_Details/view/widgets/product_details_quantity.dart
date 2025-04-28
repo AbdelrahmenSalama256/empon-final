@@ -1,3 +1,4 @@
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -57,13 +58,12 @@ class QuantitySelectorSection extends StatelessWidget {
 
           // Quantity label (end side)
           Text(
-            'الكمية',
+            'quantity'.tr(context),
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
               color: Colors.black,
             ),
-            textAlign: TextAlign.end,
           ),
         ],
       ),
@@ -76,10 +76,10 @@ class _QuantityButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _QuantityButton({
-    Key? key,
+    super.key,
     required this.icon,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -9,12 +10,12 @@ class ProductInfoSection extends StatelessWidget {
   final String selectedSize;
 
   const ProductInfoSection({
-    Key? key,
+    super.key,
     required this.name,
     required this.price,
     required this.currency,
     required this.selectedSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +105,7 @@ class ProductInfoSection extends StatelessWidget {
 
               // Size label (end side)
               Text(
-                'المقاس',
+                'size'.tr(context),
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,

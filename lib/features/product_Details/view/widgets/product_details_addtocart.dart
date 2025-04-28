@@ -1,4 +1,5 @@
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -20,7 +21,7 @@ class AddToCartButton extends StatelessWidget {
           ),
         ),
         child: Text(
-          'إضافة إلى السلة',
+          'add_to_cart'.tr(context),
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,

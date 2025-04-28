@@ -74,11 +74,11 @@ class HomeScreen extends StatelessWidget {
                                     // TODO: Handle favorite toggle
                                   },
                                   onActionTap: () {
-                                    navigateTo(
-                                        context, const ProductDetailPage());
+                                    // TODO: Handle action tap
                                   },
                                   onCardTap: () {
-                                    // TODO: Handle card tap
+                                    navigateTo(
+                                        context, const ProductDetailPage());
                                   },
                                 );
                               },
@@ -124,7 +124,8 @@ class HomeScreen extends StatelessWidget {
                                     // TODO: Handle action tap
                                   },
                                   onCardTap: () {
-                                    // TODO: Handle card tap
+                                    navigateTo(
+                                        context, const ProductDetailPage());
                                   },
                                 );
                               },
