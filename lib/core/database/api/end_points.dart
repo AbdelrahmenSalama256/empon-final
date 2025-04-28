@@ -1,10 +1,11 @@
 // ignore_for_file: constant_identifier_names
 
 class EndPoints {
-  static const String baseUrl = "https://maxliss.evyx.lol/api/v2/";
-  static const String baseUrlWithoutApi = "https://maxliss.evyx.lol/";
+  static const String baseUrl = "https://empon.evyx.lol/api/";
+  static const String baseUrlWithoutApi = "https://empon.evyx.lol/";
   //! Login
-  static const String userLogin = "${baseUrl}auth/login";
+  static const String userLogin = "${baseUrl}login";
+  static const String userProfile = "${baseUrl}profile";
   //! Register
   static const String userRegister = "${baseUrl}auth/signup";
   //! Verification
@@ -25,99 +26,7 @@ class EndPoints {
   //! Reset Password Check Otp
   static const String resetPasswordCheckOtp =
       "${baseUrl}auth/password/validate_otp";
-  //! Add To Cart
-  static const String addToCart = "${baseUrl}carts/add";
-  static const String removeFromCart = "${baseUrl}carts";
-  static const String removeExpertFromCart = "${baseUrl}delete-expert";
-  static const String expertReview = "${baseUrl}expert/expert-review";
-  static const String checkQr = "${baseUrl}check-qr";
-//! Feedback
-  static const String expertSessionFeedback =
-      "${baseUrl}expert/expert-user-review";
-  static const String changeStatus = "${baseUrl}add-booking-status";
-//! Get Reviews
-  static const String getReviews = "${baseUrl}get-review";
-  static const String bookingActivities = "${baseUrl}add-booking-activities";
-  //! Get Cart
-  static String getCart(int id) {
-    return "${baseUrl}carts/get-list/$id";
-  }
-
-  //! Change Cart Product Quantity
-  static const String changeCartProductQuantity = "${baseUrl}change-quantity";
-
-  //! Home
-  static const String bestSeller = "${baseUrl}products/best-selling";
-  static const String featuredProduct = "${baseUrl}products/featured";
-  static const String afterCareProduct =
-      "${baseUrl}products/category/after-care";
-  static const String sliders = "${baseUrl}sliders";
-  static const String productDetails = "${baseUrl}products";
-  static const String afterCare = "${baseUrl}products/category/after-care";
-  static const String proteinCat = "${baseUrl}products/category/protein";
-
-  //! bot Ask
-  static const String questions = "${baseUrl}answers-questions";
-  static const String history = "${baseUrl}messages-user";
-  static const String sendAnswer = "${baseUrl}products-by-attribute";
-  static const String expertbyCity = "${baseUrl}experts-city-expert";
-  static const String salonbyCity = "${baseUrl}experts-city-salon";
-  static const String bookSalon = "${baseUrl}expert/booking-salon";
-
-  //! all Checkout
-  static const String states = "${baseUrl}states";
-  static const String checkAdress = "${baseUrl}check-user-address";
-  static const String createOrder = "${baseUrl}order/store";
-  static const String couponApply = "${baseUrl}coupon-apply";
-  static const String payment = "${baseUrl}payment-types";
-//! Session Last Step
-  static const String sessionLastStep = "${baseUrl}last-step";
-//! profile
-  static const String purchaseHistory = "${baseUrl}purchase-history";
-  static const String notifications = "${baseUrl}all-notification";
-  static const String customerPhone = "${baseUrl}customer-service";
-  static const String policy = "${baseUrl}privacy_policy";
-  static const String washing = "${baseUrl}washing-instructions";
-  static const String community = "${baseUrl}community/get";
-  static const String expertProfile = "${baseUrl}expert/show";
-  static const String purchaseHistoryDetails =
-      "${baseUrl}purchase-history-details";
-  static const String bookingHistoryDetails =
-      "${baseUrl}expert/booking-expert/details";
-  static const String purchaseHistoryitems = "${baseUrl}purchase-history-items";
-
-  static const String cancelOrder = "${baseUrl}order/cancel";
-  static const String cancelBooking =
-      "${baseUrl}expert/booking-expert/change-status";
-  static const String updateProfile = "${baseUrl}profile/update";
-  static const String userAdresses = "${baseUrl}user/shipping/address";
-  static const String userAdressesNew = "${baseUrl}user/shipping/create";
-  static const String userAdressesupdate = "${baseUrl}user/shipping/update";
-  static const String userAdressesDelete = "${baseUrl}user/shipping/delete";
-  static const String slots = "${baseUrl}slots";
-  static const String likeButton = "${baseUrl}expert/community/likes/user";
-  static const String bookingHistory = "${baseUrl}expert/booking-expert";
-  static const String chatBotHistory = "${baseUrl}messages-boot";
-  static const String verifyEmailOrPhone =
-      "${baseUrl}profile/update_email_or_phone";
-  static const String verifyOTP =
-      "${baseUrl}profile/update_email_or_phone/verify_otp";
-  static const String updateProfilePic = "${baseUrl}profile/update-image";
-  static const String expertToCart = "${baseUrl}cart-info";
-  static const String getUserByAccessToken =
-      "${baseUrl}get-user-by-access_token";
-
-  //! Get Wichlist
-  static const String getWichlist = "${baseUrl}wishlists";
-
-  //! Add Wichlist
-  static String addWishlist(String slug) {
-    return "${baseUrl}wishlists-add-product/$slug";
-  }
-
-  static String removeFromWishlist(String slug) {
-    return "${baseUrl}wishlists-remove-product/$slug";
-  }
+  //! Reset Password
 }
 
 class ApiKey {

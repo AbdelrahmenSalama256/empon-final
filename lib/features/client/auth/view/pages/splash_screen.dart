@@ -1,4 +1,9 @@
+import 'package:embone/core/common/logs.dart';
+import 'package:embone/core/constants/app_constant.dart';
+import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/base_screen.dart';
+import 'package:embone/features/client/auth/view/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -52,12 +57,21 @@ class _SplashPageState extends State<SplashPage>
 
     _controller.forward();
 
-    // Navigate to LoginPage after the animation completes
+    // Check token and navigate after the animation completes
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        Navigator.of(
-          context,
-        ).pushReplacement(_createLogoAnimationRoute(const BaseScreen()));
+        Print.info("${sl<CacheHelper>().getData(key: AppConstants.token)}");
+        String? isLoggedIn = sl<CacheHelper>().getData(key: AppConstants.token);
+
+        Widget destination;
+        if (isLoggedIn != null) {
+          destination = const BaseScreen();
+        } else {
+          destination = const LoginPage();
+        }
+
+        Navigator.of(context)
+            .pushReplacement(_createLogoAnimationRoute(destination));
       }
     });
   }
@@ -73,7 +87,7 @@ class _SplashPageState extends State<SplashPage>
 
         return Stack(
           children: [
-            // Fade in the login page
+            // Fade in the destination page
             Opacity(opacity: value, child: child),
 
             // Animate the logo moving upward
@@ -85,7 +99,6 @@ class _SplashPageState extends State<SplashPage>
                   opacity: 1.0 - value,
                   child: Image.asset(
                     'assets/images/logo.png',
-                    // Removed the key here to avoid duplication
                     height: _logoSize?.height,
                     width: _logoSize?.width,
                   ),
