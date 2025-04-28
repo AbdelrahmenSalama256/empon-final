@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/widgets/text-style.dart';
+import 'package:embone/core/constants/widgets/text_style.dart';
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField({

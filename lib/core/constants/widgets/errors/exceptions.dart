@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:embone/core/constants/AppConstants.dart';
+import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 
@@ -94,7 +94,7 @@ handleDioException(DioException e) {
 
         case 401: //unauthorized
           sl<CacheHelper>().removeData(key: AppConstants.token);
-          sl<CacheHelper>().removeData(key: AppConstants.user);
+          sl<CacheHelper>().removeData(key: AppConstants.userType);
           sl<CacheHelper>().removeData(key: AppConstants.wssToken);
           sl<CacheHelper>().removeData(key: AppConstants.cookie);
           // navigatorKey.currentState?.pushAndRemoveUntil(

@@ -1,5 +1,5 @@
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/features/auth/view/widgets/auth_fields.dart';
+import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -16,7 +16,7 @@ class AppDatePicker extends StatelessWidget {
   final String dateFormat;
 
   const AppDatePicker({
-    Key? key,
+    super.key,
     required this.controller,
     this.labelText,
     this.hintText,
@@ -27,7 +27,7 @@ class AppDatePicker extends StatelessWidget {
     this.onDateSelected,
     this.validator,
     this.dateFormat = 'yyyy-MM-dd',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class AppDatePicker extends StatelessWidget {
               surface: Colors.white,
               onSurface: AppColors.textPrimary,
             ),
-            dialogBackgroundColor: Colors.white,
+            dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
           ),
           child: child!,
         );

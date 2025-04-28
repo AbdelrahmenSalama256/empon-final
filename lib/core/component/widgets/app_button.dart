@@ -16,6 +16,8 @@ class AppButton extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final TextStyle? textStyle;
+  final Color? backgroundColor; // New parameter for background color
+  final Color? borderColor; // New parameter for border color
 
   const AppButton({
     super.key,
@@ -31,6 +33,8 @@ class AppButton extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.textStyle,
+    this.backgroundColor, // Add to constructor
+    this.borderColor, // Add to constructor
   });
 
   @override
@@ -54,14 +58,17 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF1565C0), // الأزرق الأساسي
-          disabledBackgroundColor: const Color(0xFF1565C0).withOpacity(0.5),
+          backgroundColor: backgroundColor ??
+              const Color(0xFF1565C0), // Use provided color or default
+          disabledBackgroundColor: (backgroundColor ?? const Color(0xFF1565C0))
+              // ignore: deprecated_member_use
+              .withOpacity(0.5),
           foregroundColor: Colors.white,
           padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w),
           shape: RoundedRectangleBorder(
             borderRadius: borderRadius ?? BorderRadius.circular(18.r),
           ),
-          elevation: 0, // إزالة الظل
+          elevation: 0, // Remove shadow
         ),
         child: _buildButtonContent(context, Colors.white),
       ),
@@ -77,14 +84,20 @@ class AppButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           foregroundColor: const Color(0xFF1565C0),
           side: BorderSide(
-            color: isDisabled ? Colors.grey : const Color(0xFF1565C0),
+            color: isDisabled
+                ? Colors.grey
+                : borderColor ??
+                    const Color(
+                      0xFF1565C0,
+                    ), // Use provided border color or default
             width: 1.0,
           ),
           padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w),
           shape: RoundedRectangleBorder(
             borderRadius: borderRadius ?? BorderRadius.circular(18.r),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor:
+              backgroundColor ?? Colors.white, // Use provided color or default
         ),
         child: _buildButtonContent(context, const Color(0xFF1565C0)),
       ),
@@ -103,6 +116,8 @@ class AppButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: borderRadius ?? BorderRadius.circular(20.r),
           ),
+          backgroundColor:
+              backgroundColor, // Use provided color or none (TextButton default)
         ),
         child: _buildButtonContent(context, const Color(0xFF1565C0)),
       ),
@@ -125,10 +140,7 @@ class AppButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (prefixIcon != null) ...[
-          prefixIcon!,
-          SizedBox(width: 8.w),
-        ],
+        if (prefixIcon != null) ...[prefixIcon!, SizedBox(width: 8.w)],
         Text(
           text,
           style: textStyle ??
@@ -138,10 +150,7 @@ class AppButton extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
         ),
-        if (suffixIcon != null) ...[
-          SizedBox(width: 8.w),
-          suffixIcon!,
-        ],
+        if (suffixIcon != null) ...[SizedBox(width: 8.w), suffixIcon!],
       ],
     );
   }

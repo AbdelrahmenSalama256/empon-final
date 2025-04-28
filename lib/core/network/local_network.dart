@@ -1,10 +1,9 @@
-import 'package:embone/core/constants/AppConstants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheHelper {
   late SharedPreferences sharedPreferences;
 
-//! Here The Initialize of cache .
+  //! Here The Initialize of cache .
   init() async {
     sharedPreferences = await SharedPreferences.getInstance();
   }
@@ -13,15 +12,15 @@ class CacheHelper {
     return sharedPreferences.getString(key);
   }
 
-  String? getUserOrVendor() {
-    return sharedPreferences.getString(AppConstants.salonOrExpert);
-  }
+  // String? getUserOrVendor() {
+  //   return sharedPreferences.getString(AppConstants.salonOrExpert);
+  // }
 
   Future<bool> setData(String key, String value) async {
     return await sharedPreferences.setString(key, value);
   }
 
-//! this method to put data in local database using key
+  //! this method to put data in local database using key
 
   Future<bool> saveData({required String key, required dynamic value}) async {
     if (value is bool) {
@@ -42,7 +41,7 @@ class CacheHelper {
     }
   }
 
-//! this method to get data already saved in local database
+  //! this method to get data already saved in local database
 
   dynamic getData({required String key}) {
     return sharedPreferences.get(key);
@@ -52,13 +51,13 @@ class CacheHelper {
     return sharedPreferences.getStringList(key);
   }
 
-//! remove data using specific key
+  //! remove data using specific key
 
   Future<bool> removeData({required String key}) async {
     return await sharedPreferences.remove(key);
   }
 
-//! this method to check if local database contains {key}
+  //! this method to check if local database contains {key}
   Future<bool> containsKey({required String key}) async {
     return sharedPreferences.containsKey(key);
   }
@@ -67,11 +66,8 @@ class CacheHelper {
     return sharedPreferences.clear();
   }
 
-//! this fun to put data in local data base using key
-  Future<dynamic> put({
-    required String key,
-    required dynamic value,
-  }) async {
+  //! this fun to put data in local data base using key
+  Future<dynamic> put({required String key, required dynamic value}) async {
     if (value is String) {
       return await sharedPreferences.setString(key, value);
     } else if (value is bool) {
@@ -88,7 +84,7 @@ class CacheHelper {
     if (code != null) {
       return code;
     } else {
-      return 'en';
+      return 'ar';
     }
   }
 

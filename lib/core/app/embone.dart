@@ -1,8 +1,7 @@
 import 'package:embone/core/component/widgets/app_theme.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/localization_settings.dart';
-import 'package:embone/features/auth/view/pages/splash_screen.dart';
-import 'package:embone/features/home/view/home_screen.dart';
+import 'package:embone/features/client/auth/view/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../services/service_locator.dart';
 
-GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class Embone extends StatelessWidget {
   const Embone({super.key});
@@ -26,7 +25,7 @@ class Embone extends StatelessWidget {
           designSize: const Size(375, 812),
           builder: (context, child) {
             return MaterialApp(
-              key: navigatorKey,
+              navigatorKey: navigatorKey,
               theme: AppTheme.getLightTheme(sl<GlobalCubit>().language),
 
               builder: (context, child) {

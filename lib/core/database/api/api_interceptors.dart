@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:embone/core/constants/AppConstants.dart';
+import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';

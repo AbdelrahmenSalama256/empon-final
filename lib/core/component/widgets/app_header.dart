@@ -1,20 +1,12 @@
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-enum HeaderAlignment {
-  left,
-  center,
-  right,
-  spaceBetween,
-}
+enum HeaderAlignment { left, center, right, spaceBetween }
 
-enum HeaderStyle {
-  standard,
-  transparent,
-  elevated,
-}
+enum HeaderStyle { standard, transparent, elevated }
 
 class AppHeader extends StatelessWidget {
   final String? title;
@@ -37,6 +29,7 @@ class AppHeader extends StatelessWidget {
   final Widget? bottom;
   final double? elevation;
   final bool automaticallyImplyLeading;
+  final MainAxisAlignment leadingPosition;
 
   const AppHeader({
     super.key,
@@ -60,18 +53,16 @@ class AppHeader extends StatelessWidget {
     this.bottom,
     this.elevation,
     this.automaticallyImplyLeading = true,
+    this.leadingPosition = MainAxisAlignment.start,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = Directionality.of(context) == TextDirection.rtl;
-
-    // Determine if we should show a back button based on navigation stack
+    final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
     final canPop = Navigator.of(context).canPop();
     final shouldShowBackButton = showBackButton ||
         (automaticallyImplyLeading && canPop && leading == null);
 
-    // Build the leading widget (back button or custom leading)
     Widget? leadingWidget;
     if (leading != null) {
       leadingWidget = leading;
@@ -85,111 +76,118 @@ class AppHeader extends StatelessWidget {
             border: Border.all(color: AppColors.grey, width: 0.2.w),
           ),
           child: Icon(
-            isRTL ? CupertinoIcons.arrow_right : CupertinoIcons.arrow_left,
+            Icons.arrow_back_rounded,
             size: 20.h,
             color: AppColors.black,
           ),
         ),
-        onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
+        onPressed: onBackPressed ?? () => Navigator.pop(context),
       );
     }
 
-    // Build the title widget
-    Widget? titleContent;
-    if (titleWidget != null) {
-      titleContent = titleWidget;
-    } else if (showLogo) {
-      titleContent = Image.asset(
-        logoPath,
-        height: logoHeight ?? 32.h,
-        width: logoWidth ?? 118.w,
-        fit: BoxFit.contain,
-      );
-    } else if (title != null) {
-      titleContent = Text(
-        title!,
-        style: titleStyle ??
-            TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w400,
-              color: AppColors.black,
-            ),
-        overflow: TextOverflow.ellipsis,
-      );
-    }
+    Widget? titleContent = titleWidget ??
+        (showLogo
+            ? Image.asset(
+                logoPath,
+                height: logoHeight ?? 32.h,
+                width: logoWidth ?? 118.w,
+                fit: BoxFit.contain,
+              )
+            : (title != null
+                ? Text(
+                    title!,
+                    style: titleStyle ??
+                        TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.black,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  )
+                : null));
 
-    // Apply container styling based on header style
-    BoxDecoration? decoration;
-    if (style == HeaderStyle.elevated) {
-      decoration = BoxDecoration(
-        color: backgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: elevation ?? 4,
-            offset: const Offset(0, 2),
+    BoxDecoration? decoration = style == HeaderStyle.elevated
+        ? BoxDecoration(
+            color: backgroundColor,
+            boxShadow: [
+              BoxShadow(
+                // ignore: deprecated_member_use
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: elevation ?? 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          )
+        : BoxDecoration(
+            color: style == HeaderStyle.transparent
+                ? Colors.transparent
+                : backgroundColor,
+          );
+
+    Widget content = Row(
+      mainAxisAlignment: alignment == HeaderAlignment.center
+          ? MainAxisAlignment.center
+          : MainAxisAlignment.spaceBetween,
+      children: [
+        if (leadingWidget != null && leadingPosition == MainAxisAlignment.start)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [leadingWidget],
           ),
-        ],
-      );
-    } else {
-      decoration = BoxDecoration(
-        color: style == HeaderStyle.transparent
-            ? Colors.transparent
-            : backgroundColor,
-      );
-    }
-
-    // Build the main content based on alignment
-    Widget content;
-    switch (alignment) {
-      case HeaderAlignment.left:
-        content = Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: _buildRowChildren(leadingWidget, titleContent, actions),
-        );
-        break;
-      case HeaderAlignment.center:
-        content = Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: _buildRowChildren(leadingWidget, titleContent, actions),
-        );
-        break;
-      case HeaderAlignment.right:
-        content = Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: _buildRowChildren(leadingWidget, titleContent, actions),
-        );
-        break;
-      case HeaderAlignment.spaceBetween:
-      default:
-        content = Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Leading section (back button or custom leading)
-            leadingWidget ?? const SizedBox(width: 40),
-
-            // Title/Logo section
-            if (centerTitle)
-              Expanded(
-                child: Center(
-                  child: titleContent ?? const SizedBox(),
-                ),
-              )
-            else
-              titleContent ?? const SizedBox(),
-
-            // Actions section
-            if (actions != null && actions!.isNotEmpty)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: actions!,
-              )
-            else
-              const SizedBox(width: 40),
+        if (leadingPosition == MainAxisAlignment.center)
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [leadingWidget ?? const SizedBox()],
+            ),
+          ),
+        // Handle title alignment with if statements
+        if (titleContent != null) ...[
+          if (centerTitle == true) ...[
+            Expanded(
+              child: Row(
+                children: [
+                  const Spacer(
+                    flex: 1,
+                  ),
+                  Center(child: titleContent),
+                  const Spacer(
+                    flex: 2,
+                  ),
+                ],
+              ),
+            ),
+          ] else if (isRTL) ...[
+            Expanded(
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: titleContent,
+              ),
+            ),
+          ] else ...[
+            Expanded(
+              child: Align(
+                alignment: centerTitle == true
+                    ? Alignment.center
+                    : isRTL
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                child: titleContent,
+              ),
+            ),
           ],
-        );
-        break;
-    }
+        ] else ...[
+          const SizedBox.shrink(),
+        ],
+        if (actions != null && actions!.isNotEmpty)
+          Row(mainAxisSize: MainAxisSize.min, children: actions!),
+        if (leadingWidget != null && leadingPosition == MainAxisAlignment.end)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [leadingWidget],
+          ),
+      ],
+    );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -203,35 +201,5 @@ class AppHeader extends StatelessWidget {
         if (bottom != null) bottom!,
       ],
     );
-  }
-
-  List<Widget> _buildRowChildren(
-      Widget? leadingWidget, Widget? titleContent, List<Widget>? actions) {
-    final List<Widget> children = [];
-
-    if (leadingWidget != null) {
-      children.add(leadingWidget);
-    }
-
-    if (titleContent != null) {
-      if (centerTitle && children.isNotEmpty) {
-        children.add(Expanded(
-          child: Center(child: titleContent),
-        ));
-      } else {
-        children.add(titleContent);
-      }
-    }
-
-    if (actions != null && actions.isNotEmpty) {
-      children.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: actions,
-        ),
-      );
-    }
-
-    return children;
   }
 }

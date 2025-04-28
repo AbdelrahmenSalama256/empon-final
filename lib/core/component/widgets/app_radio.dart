@@ -10,14 +10,14 @@ class AppRadio<T> extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
 
   const AppRadio({
-    Key? key,
+    super.key,
     required this.value,
     required this.groupValue,
     required this.onChanged,
     this.text = '',
     this.child,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

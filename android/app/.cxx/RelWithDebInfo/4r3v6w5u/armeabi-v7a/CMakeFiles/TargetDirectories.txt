@@ -1,0 +1,2 @@
+C:/ebada/embone/android/app/.cxx/RelWithDebInfo/4r3v6w5u/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/ebada/embone/android/app/.cxx/RelWithDebInfo/4r3v6w5u/armeabi-v7a/CMakeFiles/rebuild_cache.dir

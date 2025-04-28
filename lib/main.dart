@@ -34,12 +34,12 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => GlobalCubit()..init(),
+          create: (context) => sl<GlobalCubit>()..init(),
         ),
       ],
       child: DevicePreview(
         enabled: !kReleaseMode,
-        
+
         // enabled: false,
         builder: (context) => UpgradeAlert(
             upgrader: Upgrader(

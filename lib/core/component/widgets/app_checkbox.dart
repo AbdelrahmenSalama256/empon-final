@@ -9,13 +9,13 @@ class AppCheckbox extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
 
   const AppCheckbox({
-    Key? key,
+    super.key,
     required this.value,
     required this.onChanged,
     this.text = '',
     this.child,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

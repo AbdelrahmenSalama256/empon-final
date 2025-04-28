@@ -1,0 +1,2 @@
+C:/ebada/embone/android/app/.cxx/Debug/5ro5h3z0/x86_64/CMakeFiles/edit_cache.dir
+C:/ebada/embone/android/app/.cxx/Debug/5ro5h3z0/x86_64/CMakeFiles/rebuild_cache.dir

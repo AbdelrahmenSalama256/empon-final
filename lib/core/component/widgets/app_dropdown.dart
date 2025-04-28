@@ -1,0 +1,167 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:embone/core/constants/app_colors.dart';
+
+class AppDropdownField extends StatelessWidget {
+  final String hint;
+  final String? value;
+  final List<String> items;
+  final ValueChanged<String?> onChanged;
+  final FormFieldValidator<String>? validator;
+  final bool showErrorBorder;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final EdgeInsetsGeometry? contentPadding;
+  final double? dropdownIconSize;
+  final Color? dropdownIconColor;
+  final TextStyle? hintStyle;
+  final TextStyle? selectedTextStyle;
+
+  const AppDropdownField({
+    super.key,
+    required this.hint,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+    this.validator,
+    this.showErrorBorder = false,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.contentPadding,
+    this.dropdownIconSize,
+    this.dropdownIconColor,
+    this.hintStyle,
+    this.selectedTextStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => _showDropdownBottomSheet(context),
+      child: Container(
+        padding: contentPadding ??
+            EdgeInsets.symmetric(
+              horizontal: 5.w,
+              vertical: 10.h,
+            ),
+        decoration: BoxDecoration(
+          color: const Color(0xffF0F2F9),
+          borderRadius: BorderRadius.circular(15.r),
+          border: showErrorBorder && validator?.call(value) != null
+              ? Border.all(color: AppColors.error, width: 1.0)
+              : null,
+        ),
+        child: Row(
+          children: [
+            // Prefix Icon
+            if (prefixIcon != null) ...[
+              prefixIcon!,
+              SizedBox(width: 0.w),
+            ],
+
+            // Text Content
+            Expanded(
+              child: Text(
+                value ?? hint,
+                style: value == null
+                    ? hintStyle ??
+                        TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400, // Responsive font size
+                          // ignore: deprecated_member_use
+                          color: const Color(0xff8F95AB).withOpacity(0.7),
+                        )
+                    : selectedTextStyle ??
+                        TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400, // Responsive font size
+                          // ignore: deprecated_member_use
+                          color: const Color(0xff8F95AB),
+                        ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+
+            // Suffix Icon (custom or default dropdown icon)
+            if (suffixIcon != null) ...[
+              SizedBox(width: 12.w),
+              suffixIcon!,
+            ] else ...[
+              SizedBox(width: 8.w),
+              Container(
+                width: 25.w,
+                height: 25.h,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: dropdownIconColor ?? AppColors.black,
+                  size: dropdownIconSize ?? 24.w,
+                ),
+              ),
+              SizedBox(width: 8.w),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDropdownBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+      ),
+      builder: (context) => Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(16.w),
+              child: Text(
+                hint,
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            Divider(height: 1.h),
+            SizedBox(
+              height: items.length > 5 ? 300.h : null,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return ListTile(
+                    title: Text(
+                      item,
+                      style: TextStyle(fontSize: 16.sp),
+                    ),
+                    trailing: value == item
+                        ? Icon(Icons.check,
+                            color: AppColors.primary, size: 24.w)
+                        : null,
+                    onTap: () {
+                      onChanged(item);
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -13,7 +13,7 @@ class AppStepIndicator extends StatelessWidget {
   final bool showStepText;
 
   const AppStepIndicator({
-    Key? key,
+    super.key,
     required this.currentStep,
     required this.totalSteps,
     this.circleRadius = 12,
@@ -22,7 +22,7 @@ class AppStepIndicator extends StatelessWidget {
     this.inactiveColor = AppColors.border,
     this.textStyle,
     this.showStepText = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class AppStepIndicator extends StatelessWidget {
                 child: Center(
                   child: Text(
                     stepNumber.toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,

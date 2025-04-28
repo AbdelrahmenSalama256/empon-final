@@ -1,13 +1,13 @@
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/auth/view/pages/login_screen.dart';
-import 'package:embone/features/auth/view/pages/register_screen.dart';
+import 'package:embone/features/client/auth/view/pages/login_screen.dart';
+import 'package:embone/features/client/auth/view/pages/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class WelcomePage extends StatelessWidget {
-  const WelcomePage({Key? key}) : super(key: key);
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {

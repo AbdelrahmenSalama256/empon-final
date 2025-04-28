@@ -80,6 +80,7 @@ class AppTheme {
         ),
       ),
       textSelectionTheme: TextSelectionThemeData(
+        // ignore: deprecated_member_use
         selectionColor: AppColors.primary.withOpacity(0.4),
         selectionHandleColor: AppColors.primary,
         cursorColor: AppColors.primary,
@@ -173,6 +174,55 @@ class AppTheme {
         color: AppColors.divider,
         thickness: 1,
         space: 1,
+      ), // Date Picker Theme
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: AppColors.background,
+        surfaceTintColor: AppColors.background,
+        headerBackgroundColor: AppColors.primary,
+        headerForegroundColor: Colors.white,
+        todayBorder: const BorderSide(color: AppColors.primary),
+        dayStyle: TextStyle(
+          fontFamily: language == "ar" ? 'Beiruti' : "Poppins",
+          color: AppColors.textPrimary,
+        ),
+        dayOverlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
+            // ignore: deprecated_member_use
+            return AppColors.primary.withOpacity(0.1);
+          }
+          return Colors.transparent;
+        }),
+        yearStyle: TextStyle(
+          fontFamily: language == "ar" ? 'Beiruti' : "Poppins",
+          color: AppColors.textPrimary,
+        ),
+        yearOverlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
+            // ignore: deprecated_member_use
+            return AppColors.primary.withOpacity(0.1);
+          }
+          return Colors.transparent;
+        }),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppColors.border),
+        ),
+      ),
+      // Time Picker Theme (for completeness)
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: AppColors.background,
+        hourMinuteTextColor: AppColors.textPrimary,
+        hourMinuteColor: AppColors.surface,
+        dayPeriodTextColor: AppColors.textPrimary,
+        dayPeriodColor: AppColors.surface,
+        dialHandColor: AppColors.primary,
+        dialBackgroundColor: AppColors.surface,
+        dialTextColor: AppColors.textPrimary,
+        entryModeIconColor: AppColors.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppColors.border),
+        ),
       ),
     );
   }
