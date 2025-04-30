@@ -151,7 +151,7 @@ class _AddProfilePhotoForBuisnissAccountPageState
                       // padding: EdgeInsets.symmetric(horizontal: 24.w),
                     ),
 
-                    SizedBox(height: 32.h),
+                    SizedBox(height: 32.h.h),
                     Column(
                       // crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,

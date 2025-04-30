@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
+import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:embone/core/network/local_network.dart';
@@ -24,6 +27,11 @@ class GlobalCubit extends Cubit<GlobalState> {
             sl<CacheHelper>().getDataString(key: AppConstants.userType),
         orElse: () => UserType.client); // Default to "client"
     emit(UserTypeLoadedState());
+    PrintUtil.warning(
+        "User type is ${sl<CacheHelper>().getDataString(key: AppConstants.userType)}");
+    getCurrentLocation();
+
+    getUserProfile();
     // changeLanguage();
   }
 
@@ -138,6 +146,95 @@ class GlobalCubit extends Cubit<GlobalState> {
   String? userName, userEmail, userAvatar, userPhone;
   int? userId, points;
   bool? userEmailVerified;
+  String? userLastName,
+      userBirthDate,
+      userGender,
+      userAnotherEmail,
+      userBalance;
+  bool? userAnotherEmailVerified, userPhoneVerified, userIsOnline;
+  String? userFcmToken, userWsToken, userLastSeen, userCreatedAt;
+  List<dynamic>? userAddresses, userAccount;
+
+  User? user;
+
+  Future<void> getUserProfile() async {
+    emit(const ProfileLoading());
+
+    if (sl<CacheHelper>().getDataString(key: AppConstants.token) == null) {
+      PrintUtil.error("No token found, user is not logged in.");
+      emit(const ProfileError("No token found, please log in."));
+      return;
+    }
+
+    final response = await sl<LoginRepo>().getUserProfile();
+    response.fold(
+      (failure) {
+        PrintUtil.error("Failed to get user profile: $failure");
+        emit(ProfileError(failure));
+      },
+      (userData) {
+        // Cache the user profile
+        sl<CacheHelper>().setData(
+          AppConstants.userProfile,
+          jsonEncode(userData.toJson()),
+        );
+
+        // Update cubit fields
+        user = userData;
+        userId = userData.id;
+        userName = userData.firstName;
+        userLastName = userData.lastName;
+        userBirthDate = userData.birthDate;
+        userGender = userData.gender;
+        userPhone = userData.phone;
+        userEmail = userData.email;
+        userAnotherEmail = userData.anotherEmail;
+        userAvatar = userData.image;
+        userEmailVerified = userData.emailVerifiedAt;
+        userAnotherEmailVerified = userData.anotherEmailVerifiedAt;
+        userPhoneVerified = userData.phoneVerifiedAt;
+        userBalance = userData.balance;
+        userFcmToken = userData.fcmToken;
+        userWsToken = userData.wsToken;
+        userLastSeen = userData.lastSeen;
+        userIsOnline = userData.isOnline;
+        userCreatedAt = userData.createdAt;
+        userAddresses = userData.addresses;
+        userAccount = userData.account;
+
+        PrintUtil.success(
+            "User profile fetched successfully: $userName $userLastName");
+        PrintUtil.info(
+            "Cached user profile: ${sl<CacheHelper>().getDataString(key: AppConstants.userProfile)}");
+        emit(const ProfileLoaded());
+      },
+    );
+  }
+
+  Future<void> logout() async {
+    emit(const LogoutLoading());
+
+    if (sl<CacheHelper>().getDataString(key: AppConstants.token) == null) {
+      PrintUtil.error("No token found, user is not logged in.");
+      emit(const LogoutError("No token found, please log in."));
+      return;
+    }
+
+    final response = await sl<LoginRepo>().userLogout();
+    response.fold(
+      (failure) {
+        PrintUtil.error("Failed to log out: $failure");
+        emit(LogoutError(failure));
+      },
+      (message) {
+        // Clear cached data
+        sl<CacheHelper>().clearData();
+
+        PrintUtil.success("User logged out successfully: $message");
+        emit(LogoutSuccess(message));
+      },
+    );
+  }
 }
 
 enum UserType {

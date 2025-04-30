@@ -3,7 +3,7 @@ import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/base_screen.dart';
-import 'package:embone/features/client/auth/view/pages/login_screen.dart';
+import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -67,7 +67,7 @@ class _SplashPageState extends State<SplashPage>
         if (isLoggedIn != null) {
           destination = const BaseScreen();
         } else {
-          destination = const LoginPage();
+          destination = const IntroPage();
         }
 
         Navigator.of(context)

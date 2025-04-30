@@ -24,37 +24,27 @@ class GenderSelectionCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF0F2F9),
-        borderRadius: BorderRadius.circular(12.r), // Responsive radius
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(
-            vertical: 12.h, horizontal: 16.w), // Responsive padding
+        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
         child: Column(
-          children: [
-            _buildGenderOption(
-              context,
-              Gender.male,
-              'male'.tr(context),
-              'assets/images/svg/male.svg',
-              isRTL,
-            ),
-            SizedBox(height: 12.h), // Responsive spacing
-            _buildGenderOption(
-              context,
-              Gender.female,
-              'female'.tr(context),
-              'assets/images/svg/female.svg',
-              isRTL,
-            ),
-            SizedBox(height: 12.h), // Responsive spacing
-            _buildGenderOption(
-              context,
-              Gender.other,
-              'other'.tr(context),
-              'assets/images/svg/others.svg',
-              isRTL,
-            ),
-          ],
+          children: Gender.values.map((gender) {
+            final isSelected = selectedGender == gender;
+            return Column(
+              children: [
+                _buildGenderOption(
+                  context,
+                  gender,
+                  gender.toString().split('.').last.tr(context),
+                  'assets/images/svg/${gender.toString().split('.').last}.svg',
+                  isRTL,
+                  isSelected,
+                ),
+                if (gender != Gender.values.last) SizedBox(height: 12.h),
+              ],
+            );
+          }).toList(),
         ),
       ),
     );
@@ -66,28 +56,19 @@ class GenderSelectionCard extends StatelessWidget {
     String text,
     String svgPath,
     bool isRTL,
+    bool isSelected,
   ) {
     return InkWell(
       onTap: () => onGenderChanged(gender),
-      borderRadius: BorderRadius.circular(8.r), // Responsive radius
+      borderRadius: BorderRadius.circular(8.r),
       child: Padding(
-        padding:
-            EdgeInsets.symmetric(vertical: 8.h), // Adjusted for better spacing
+        padding: EdgeInsets.symmetric(vertical: 8.h),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // if (!isRTL) ...[
-            //   _buildGenderText(text, svgPath, isRTL),
-            //   Expanded(child: Container()),
-            //   _buildRadioButton(gender),
-            // ] else ...[
-            //   _buildRadioButton(gender),
-            //   Expanded(child: Container()),
-            //   _buildGenderText(text, svgPath, isRTL),
-            // ],
             _buildGenderText(text, svgPath, isRTL),
-            Expanded(child: Container()),
-            _buildRadioButton(gender),
+            const Spacer(),
+            _buildRadioButton(isSelected),
           ],
         ),
       ),
@@ -131,25 +112,23 @@ class GenderSelectionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRadioButton(Gender gender) {
+  Widget _buildRadioButton(bool isSelected) {
     return Container(
-      width: 20.w, // Responsive width
-      height: 20.h, // Responsive height
+      width: 20.w,
+      height: 20.h,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: selectedGender == gender
-              ? AppColors.primary
-              : Colors.grey.shade400,
-          width: 1.5.w, // Responsive border width
+          color: isSelected ? AppColors.primary : Colors.grey.shade400,
+          width: 1.5.w,
         ),
         color: Colors.white,
       ),
-      child: selectedGender == gender
+      child: isSelected
           ? Center(
               child: Container(
-                width: 12.w, // Responsive width
-                height: 12.h, // Responsive height
+                width: 12.w,
+                height: 12.h,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.primary,

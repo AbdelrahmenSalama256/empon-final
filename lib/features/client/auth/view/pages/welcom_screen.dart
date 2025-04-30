@@ -63,7 +63,7 @@ class WelcomePage extends StatelessWidget {
                 width: 326.w,
                 height: 244.h,
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
               Text(
                 'welcome_to_empon'.tr(context),
                 style: const TextStyle(

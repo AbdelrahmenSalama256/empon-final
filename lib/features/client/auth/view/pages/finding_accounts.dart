@@ -40,7 +40,7 @@ class FindingAccountsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 32.h),
+                    SizedBox(height: 32.h.h),
 
                     // Profile Image
                     Container(
@@ -60,14 +60,13 @@ class FindingAccountsPage extends StatelessWidget {
                           width: 120.w,
                           height: 120.w,
                           fit: BoxFit.cover,
-                          errorBuilder:
-                              (context, error, stackTrace) => Center(
-                                child: Icon(
-                                  CupertinoIcons.person,
-                                  size: 50.w,
-                                  color: Colors.grey,
-                                ),
-                              ),
+                          errorBuilder: (context, error, stackTrace) => Center(
+                            child: Icon(
+                              CupertinoIcons.person,
+                              size: 50.w,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -121,7 +120,7 @@ class FindingAccountsPage extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
 
-                    SizedBox(height: 32.h),
+                    SizedBox(height: 32.h.h),
 
                     // Sign in with password button
                     AppButton(

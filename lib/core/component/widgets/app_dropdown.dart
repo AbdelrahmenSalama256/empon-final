@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:embone/core/constants/app_colors.dart';
@@ -62,20 +63,19 @@ class AppDropdownField extends StatelessWidget {
             // Text Content
             Expanded(
               child: Text(
-                value ?? hint,
-                style: value == null
+                value?.isNotEmpty == true ? value! : hint,
+                style: value?.isNotEmpty != true
                     ? hintStyle ??
                         TextStyle(
                           fontSize: 12.sp,
-                          fontWeight: FontWeight.w400, // Responsive font size
-                          // ignore: deprecated_member_use
-                          color: const Color(0xff8F95AB).withOpacity(0.7),
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xff8F95AB)
+                              .withAlpha((0.7 * 255).toInt()),
                         )
                     : selectedTextStyle ??
                         TextStyle(
                           fontSize: 12.sp,
-                          fontWeight: FontWeight.w400, // Responsive font size
-                          // ignore: deprecated_member_use
+                          fontWeight: FontWeight.w400,
                           color: const Color(0xff8F95AB),
                         ),
                 overflow: TextOverflow.ellipsis,
@@ -152,6 +152,9 @@ class AppDropdownField extends StatelessWidget {
                             color: AppColors.primary, size: 24.w)
                         : null,
                     onTap: () {
+                      if (kDebugMode) {
+                        print("Selected item in bottom sheet: $item");
+                      }
                       onChanged(item);
                       Navigator.pop(context);
                     },

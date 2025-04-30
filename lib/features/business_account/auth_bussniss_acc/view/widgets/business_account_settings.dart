@@ -61,7 +61,7 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                 ),
                 SizedBox(height: 16.h),
                 _buildMediaUploadSection(context),
-                SizedBox(height: 32.h),
+                SizedBox(height: 32.h.h),
               ],
             ),
           ),

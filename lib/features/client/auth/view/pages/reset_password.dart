@@ -75,7 +75,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: 32.h),
+                      SizedBox(height: 32.h.h),
                       Container(
                         width: 100.w,
                         height: 100.w,
@@ -121,7 +121,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      SizedBox(height: 32.h),
+                      SizedBox(height: 32.h.h),
                       AppTextField(
                         controller: _passwordController,
                         labelText: 'new_password'.tr(context),
@@ -159,7 +159,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           context,
                         ),
                       ),
-                      SizedBox(height: 32.h),
+                      SizedBox(height: 32.h.h),
                       AppButton(
                         text: 'confirm'.tr(context),
                         isLoading: _isLoading,

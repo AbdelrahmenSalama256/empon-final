@@ -133,7 +133,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                           currentStep: 5,
                           totalSteps: 8,
                         ),
-                        SizedBox(height: 32.h),
+                        SizedBox(height: 32.h.h),
                         Text(
                           'enter_otp'.tr(context),
                           style: TextStyle(
@@ -150,7 +150,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                             color: AppColors.textSecondary,
                           ),
                         ),
-                        SizedBox(height: 32.h),
+                        SizedBox(height: 32.h.h),
                         Pinput(
                           controller: _otpControllers,
                           length: 4,
@@ -158,7 +158,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                           pinAnimationType: PinAnimationType.fade,
                           keyboardType: TextInputType.number,
                         ),
-                        SizedBox(height: 32.h),
+                        SizedBox(height: 32.h.h),
                         TextButton(
                           onPressed: _resendSeconds > 0 ? null : _resendOtp,
                           child: Text(

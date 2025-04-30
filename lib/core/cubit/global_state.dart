@@ -25,3 +25,39 @@ class LanguageChangeState extends GlobalState {}
 class UserTypeLoadedState extends GlobalState {}
 
 class UserTypeChangedState extends GlobalState {}
+
+class ProfileLoading extends GlobalState {
+  const ProfileLoading();
+}
+
+class ProfileLoaded extends GlobalState {
+  const ProfileLoaded();
+}
+
+class ProfileError extends GlobalState {
+  final String message;
+
+  const ProfileError(this.message);
+}
+
+class LogoutLoading extends GlobalState {
+  const LogoutLoading();
+}
+
+class LogoutSuccess extends GlobalState {
+  final String message;
+
+  const LogoutSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class LogoutError extends GlobalState {
+  final String message;
+
+  const LogoutError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

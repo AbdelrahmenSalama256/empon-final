@@ -8,11 +8,13 @@ import 'package:image_picker/image_picker.dart';
 
 class ProfileImagePicker extends StatefulWidget {
   final File? profileImage;
+  final String? networkImageUrl;
   final Function() onPickImage;
 
   const ProfileImagePicker({
     super.key,
-    required this.profileImage,
+    this.profileImage,
+    this.networkImageUrl,
     required this.onPickImage,
   });
 
@@ -22,15 +24,9 @@ class ProfileImagePicker extends StatefulWidget {
 
 class _ProfileImagePickerState extends State<ProfileImagePicker> {
   File? _selectedImage;
-  // ignore: unused_field
   final bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
-    // final status = source == ImageSource.gallery
-    //     ? await Permission.photos.request()
-    //     : await Permission.photos.request();
-
-    // if (status.isGranted) {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
@@ -44,6 +40,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
         setState(() {
           _selectedImage = File(image.path);
         });
+        widget.onPickImage(); // Notify parent that an image was picked
       }
     } catch (e) {
       if (!mounted) return;
@@ -103,72 +100,90 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine which image to display: local picked image, prop-passed image, network image, or placeholder
+    final displayImage = _selectedImage ?? widget.profileImage;
+    final hasNetworkImage =
+        widget.networkImageUrl != null && widget.networkImageUrl!.isNotEmpty;
+
     return GestureDetector(
-      onTap: widget.onPickImage,
-      child: GestureDetector(
-        onTap: _showImageSourceDialog,
-        child: Stack(
-          children: [
-            Container(
-              width: 100.w,
-              height: 100.w,
-              decoration: const BoxDecoration(
+      onTap: _showImageSourceDialog,
+      child: Stack(
+        children: [
+          Container(
+            width: 100.w,
+            height: 100.w,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFFF5F5F5),
+            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : displayImage != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(50.r),
+                        child: Image.file(
+                          displayImage,
+                          width: 100.w,
+                          height: 100.w,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : hasNetworkImage
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(50.r),
+                            child: Image.network(
+                              widget.networkImageUrl!,
+                              width: 100.w,
+                              height: 100.w,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  _buildPlaceholder(),
+                            ),
+                          )
+                        : _buildPlaceholder(),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              width: 24.w,
+              height: 24.w,
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFFF5F5F5),
+                color: Colors.white,
+                border: Border.all(color: Colors.grey.shade200, width: 1.w),
               ),
-              child: _selectedImage != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(50.r),
-                      child: Image.file(
-                        _selectedImage!,
-                        width: 100.w,
-                        height: 100.w,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 40.w,
-                            height: 40.w,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFFD9D9D9),
-                            ),
-                          ),
-                          SizedBox(height: 5.h),
-                          Container(
-                            width: 50.w,
-                            height: 20.h,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFD9D9D9),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              child: Icon(Icons.edit, size: 14.w, color: AppColors.primary),
             ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                width: 24.w,
-                height: 24.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey.shade200, width: 1.w),
-                ),
-                child: Icon(Icons.edit, size: 14.w, color: AppColors.primary),
-              ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 40.w,
+            height: 40.w,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFFD9D9D9),
             ),
-          ],
-        ),
+          ),
+          SizedBox(height: 5.h),
+          Container(
+            width: 50.w,
+            height: 20.h,
+            decoration: const BoxDecoration(
+              color: Color(0xFFD9D9D9),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+          ),
+        ],
       ),
     );
   }

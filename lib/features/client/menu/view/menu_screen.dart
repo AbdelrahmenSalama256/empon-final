@@ -1,14 +1,13 @@
 import 'package:embone/core/app/embone.dart';
+import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/network/local_network.dart';
-import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
-import 'package:embone/features/client/auth/view/pages/welcom_screen.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/followers._screen.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
 import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
@@ -39,8 +38,31 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: BlocBuilder<GlobalCubit, GlobalState>(
+      body: BlocConsumer<GlobalCubit, GlobalState>(
+        listener: (context, state) {
+          if (state is LogoutSuccess) {
+            Navigator.of(context).pop();
+
+            navigatorKey.currentState!.pushAndRemoveUntil(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const IntroPage(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+                transitionDuration: const Duration(milliseconds: 300),
+              ),
+              (Route<dynamic> route) => false,
+            );
+            context.read<GlobalCubit>().changeBottomNavIndex(0);
+          }
+        },
         builder: (context, state) {
+          final cubit = context.read<GlobalCubit>();
           return SafeArea(
             child: Column(
               children: [
@@ -171,22 +193,28 @@ class MenuScreen extends StatelessWidget {
                               : SizedBox(height: 24.h),
                           isVendor != true
                               ? ProfileSection(
-                                  userName: 'صوفيا',
-                                  userImageUrl: 'assets/images/profile.png',
+                                  userName: cubit.userName ?? '',
+                                  userImageUrl: cubit.userAvatar ??
+                                      'assets/images/profile.png',
                                   subtitle: 'user_account'.tr(context),
                                   isVendor: isVendor!,
                                   onTap: () {
-                                    context
-                                        .read<GlobalCubit>()
-                                        .setUserType(UserType.client);
+                                    if (cubit.userType == UserType.client) {
+                                      navigateTo(
+                                          context, const SettingsScreen());
+                                    } else {
+                                      showAccountsBottomSheet(context);
+                                    }
+                                    // cubit.setUserType(UserType.client);
                                   },
                                 )
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     ProfileSection(
-                                      userName: 'صوفيا',
-                                      userImageUrl: 'assets/images/profile.png',
+                                      userName: cubit.userName ?? '',
+                                      userImageUrl: cubit.userAvatar ??
+                                          'assets/images/profile.png',
                                       subtitle: 'user_account'.tr(context),
                                       isVendor: isVendor!,
                                       onTap: () {
@@ -222,7 +250,7 @@ class MenuScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                          SizedBox(height: 32.h),
+                          SizedBox(height: 32.h.h),
                           isVendor != true
                               ? Column(
                                   children: [
@@ -330,7 +358,7 @@ class MenuScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                          SizedBox(height: 32.h),
+                          SizedBox(height: 32.h.h),
 
                           isVendor != true
                               ? const SizedBox()
@@ -407,49 +435,30 @@ class MenuScreen extends StatelessWidget {
                           isVendor != true
                               ? SizedBox(height: 30.h)
                               : const SizedBox(),
-                          SignOutButton(
-                            onPressed: () {
-                              // Show confirmation popup
-                              CustomPopup.show(
-                                type: PopupType.alert,
-                                context: context,
-                                titleColor: const Color(0xffEC4B4B),
-                                title: "sign_out".tr(context),
-                                message: "sign_out_confirmation".tr(context),
-                                primaryButtonText: "yes".tr(context),
-                                secondaryButtonText: "no".tr(context),
-                                onPrimaryButtonPressed: () {
-                                  sl<CacheHelper>().clearData();
-
-                                  navigatorKey.currentState!.pushAndRemoveUntil(
-                                    PageRouteBuilder(
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          const WelcomePage(),
-                                      transitionsBuilder: (context, animation,
-                                          secondaryAnimation, child) {
-                                        return FadeTransition(
-                                          opacity: animation,
-                                          child: child,
-                                        );
+                          state is LogoutLoading
+                              ? const Center(child: CustomLoadingIndicator())
+                              : SignOutButton(
+                                  onPressed: () {
+                                    // Show confirmation popup
+                                    CustomPopup.show(
+                                      type: PopupType.alert,
+                                      context: context,
+                                      titleColor: const Color(0xffEC4B4B),
+                                      title: "sign_out".tr(context),
+                                      message:
+                                          "sign_out_confirmation".tr(context),
+                                      primaryButtonText: "yes".tr(context),
+                                      secondaryButtonText: "no".tr(context),
+                                      onPrimaryButtonPressed: () {
+                                        cubit.logout();
                                       },
-                                      transitionDuration:
-                                          const Duration(milliseconds: 300),
-                                    ),
-                                    (Route<dynamic> route) => false,
-                                  );
-                                  context
-                                      .read<GlobalCubit>()
-                                      .changeBottomNavIndex(0);
-                                  Navigator.of(context).pop();
-                                },
-                                onSecondaryButtonPressed: () {
-                                  // Dismiss the popup if user cancels
-                                  Navigator.of(context).pop();
-                                },
-                              );
-                            },
-                          ),
+                                      onSecondaryButtonPressed: () {
+                                        // Dismiss the popup if user cancels
+                                        Navigator.of(context).pop();
+                                      },
+                                    );
+                                  },
+                                ),
                           SizedBox(height: 30.h),
                         ],
                       ),

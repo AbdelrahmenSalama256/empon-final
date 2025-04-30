@@ -34,7 +34,7 @@ class CongratesScreen extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                             color: AppColors.primary),
                       ),
-                      SizedBox(height: 32.h),
+                      SizedBox(height: 32.h.h),
 
                       // Success icon
                       SvgPicture.asset(
@@ -88,7 +88,7 @@ class CongratesScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 32.h),
+              SizedBox(height: 32.h.h),
             ],
           ),
         ),

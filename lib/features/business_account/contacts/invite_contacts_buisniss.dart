@@ -94,6 +94,7 @@ class _InviteContactsInBuisnissAccountPageState
           isSelected: !_contacts[index].isSelected,
         );
       }
+      setState(() {});
     });
   }
 

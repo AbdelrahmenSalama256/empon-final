@@ -107,7 +107,7 @@ class _CreateBusinessAccountTypePageState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 32.h),
+                    SizedBox(height: 32.h.h),
 
                     // Business account name section
                     Text(

@@ -7,13 +7,13 @@ class EndPoints {
   static const String userLogin = "${baseUrl}login";
   static const String userProfile = "${baseUrl}profile";
   //! Register
-  static const String userRegister = "${baseUrl}auth/signup";
+  static const String userRegister = "${baseUrl}register";
   //! Verification
   static const String userVerification = "${baseUrl}auth/send-verification";
   static const String userConfirmCode = "${baseUrl}auth/confirm-code-register";
   static const String userResendCode = "${baseUrl}auth/password/resend_code";
   //! Logout
-  static const String userLogout = "${baseUrl}auth/logout";
+  static const String userLogout = "${baseUrl}logout";
   static const String deleteAccount = "${baseUrl}auth/account-deletion";
   //! Forget Password
   static const String forgetPassword = "${baseUrl}auth/password/forget_request";

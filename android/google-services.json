@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "921753454148",
+    "project_id": "empon-2d23c",
+    "storage_bucket": "empon-2d23c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:921753454148:android:310669662ede25c76ade11",
+        "android_client_info": {
+          "package_name": "com.example.embone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrrfcmGXdSdZVoBn4nn0JHR4qoirEPuBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

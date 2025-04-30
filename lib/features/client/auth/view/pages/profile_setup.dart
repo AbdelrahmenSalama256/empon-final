@@ -7,6 +7,7 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/core/utils/validator.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileSetupPage extends StatefulWidget {
   final String email;
@@ -175,7 +176,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
                 // Title and subtitle
                 Text(
                   'profile_photo_title'.tr(context),
@@ -195,7 +196,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
                 // Username field
                 AppTextField(
                   controller: _usernameController,
@@ -219,7 +220,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                   prefixIcon: const Icon(Icons.info_outline),
                   maxLines: 3,
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
                 // Complete setup button
                 AppButton(
                   text: 'complete_setup'.tr(context),

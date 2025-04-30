@@ -82,7 +82,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       fit: BoxFit.contain,
                     ),
                   ),
-                  SizedBox(height: 32.h),
+                  SizedBox(height: 32.h.h),
                   // Title
                   Text(
                     'reset_password_title'.tr(context),
@@ -104,7 +104,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  SizedBox(height: 32.h),
+                  SizedBox(height: 32.h.h),
 
                   // Email field
                   AppTextField(

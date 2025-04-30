@@ -1,19 +1,22 @@
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
-import 'package:embone/features/client/auth/view/pages/register_screen.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/first_name_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class WelcomePage extends StatelessWidget {
-  const WelcomePage({super.key});
+class IntroPage extends StatelessWidget {
+  const IntroPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isSmallScreen = size.width < 360;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -28,10 +31,11 @@ class WelcomePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SvgPicture.asset(
-                          'assets/images/welcome_illustration.svg',
-                          height: isSmallScreen ? 180 : 220,
+                          'assets/images/svg/welcome.svg',
+                          width: 326.w,
+                          height: 244.h,
                         ),
-                        const SizedBox(height: 40),
+                        SizedBox(height: 32.h),
                         Text(
                           'welcome'.tr(context),
                           style: Theme.of(context).textTheme.displayLarge,
@@ -41,7 +45,7 @@ class WelcomePage extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Text(
-                            'welcome_message'.tr(context),
+                            'profile_welcome_message'.tr(context),
                             style:
                                 Theme.of(context).textTheme.bodyLarge?.copyWith(
                                       color: AppColors.textSecondary,
@@ -59,11 +63,7 @@ class WelcomePage extends StatelessWidget {
                   AppButton(
                     text: 'login'.tr(context),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginPage()),
-                      );
+                      navigateTo(context, const LoginPage());
                     },
                   ),
                   const SizedBox(height: 16),
@@ -71,11 +71,13 @@ class WelcomePage extends StatelessWidget {
                     text: 'register'.tr(context),
                     type: AppButtonType.secondary,
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterPage()),
-                      );
+                      navigateTo(
+                          context,
+                          BlocProvider(
+                            create: (context) =>
+                                RegisterCubit(sl<RegisterRepo>()),
+                            child: const FirstNamePage(),
+                          ));
                     },
                   ),
                 ],

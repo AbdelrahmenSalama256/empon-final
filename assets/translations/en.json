@@ -497,6 +497,7 @@
     "45+"
   ],
   "gender_hint": "Gender",
+  "gender_required": "Gender is required",
   "gender_items": [
     "Male",
     "Female",
@@ -600,5 +601,23 @@
   "clearnotifications": "Clear All Notifications",
   "confirm_clearnotifications": "Are you sure you want to clear all notifications?",
   "nonotifications": "No Notifications",
-  "newnotifications_will_appear": "New notifications will appear here."
+  "newnotifications_will_appear": "New notifications will appear here.",
+  "first_name_required": "First name is required",
+  "last_name_required": "Last name is required",
+  "date_required": "Date is required",
+  "invalid_date_format": "Invalid date format (YYYY-MM-DD)",
+  "age_must_be_greater_than_5": "Your age must be greater than 5 years",
+  "invalid_phone_format": "Invalid phone number format",
+  "another_email_required": "Another email is required",
+  "invalid_email_format": "Invalid email format",
+  "password_too_short": "Password must be at least 8 characters",
+  "passwords_do_not_match": "Passwords do not match",
+  "invalid_country": "Please select a valid country",
+  "invalid_governorate": "Please select a valid governorate",
+  "city_required": "City/Area is required",
+  "detailed_address_required": "Detailed address is required",
+  "location_required": "Please select a location",
+  "invalid_image_format": "Image must be of type jpeg, jpg, png, gif, or svg",
+  "error_picking_image": "Error picking image",
+  "registration_successful": "Registration successful"
 }

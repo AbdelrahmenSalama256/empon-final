@@ -9,6 +9,7 @@ import 'package:embone/features/client/auth/view/pages/login_screen.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/first_name_page.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -131,7 +132,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
                 // Email field
                 AppTextField(
                   controller: _emailController,
@@ -184,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: const TextStyle(fontSize: 12),
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
                 // Register button
                 AppButton(
                   text: 'continue'.tr(context),

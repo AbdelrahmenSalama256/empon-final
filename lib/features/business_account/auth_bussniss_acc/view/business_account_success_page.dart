@@ -35,7 +35,7 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(height: 32.h),
+                      SizedBox(height: 32.h.h),
                       Text(
                         'business_account_created'.tr(context),
                         style: TextStyle(
@@ -87,7 +87,7 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                       navigateTo(context, const HelpSupportPage());
                     },
                   ),
-                  SizedBox(height: 32.h),
+                  SizedBox(height: 32.h.h),
                 ],
               ),
             ],

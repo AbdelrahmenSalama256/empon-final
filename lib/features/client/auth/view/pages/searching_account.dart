@@ -92,12 +92,12 @@ class _SearchingAccountPageState extends State<SearchingAccountPage> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                          SizedBox(height: 32.h),
+                          SizedBox(height: 32.h.h),
                           QuestionWidget(
                             question: 'search_for_accounts'.tr(context),
                             subtitle: 'search_account_description'.tr(context),
                           ),
-                          SizedBox(height: 32.h),
+                          SizedBox(height: 32.h.h),
                           AppTextField(
                             controller: _searchingEmailController,
                             labelText: 'phone_or_email'.tr(context),
@@ -113,7 +113,7 @@ class _SearchingAccountPageState extends State<SearchingAccountPage> {
                             validator: (value) =>
                                 Validators.validateEmail(value, context),
                           ),
-                          SizedBox(height: 32.h),
+                          SizedBox(height: 32.h.h),
                           AppButton(
                             text: 'search'.tr(context),
                             isLoading: _isLoading,

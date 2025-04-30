@@ -1,12 +1,14 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:embone/core/app/embone.dart';
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/base/view/welcome/welcome_setup.dart';
+import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
+import 'package:embone/features/client/menu/view/inner_screens/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/language_selector.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/notifications_toggle.dart';
@@ -29,8 +31,19 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: BlocBuilder<GlobalCubit, GlobalState>(
+      body: BlocConsumer<GlobalCubit, GlobalState>(
+        listener: (context, state) {
+          if (state is ProfileError) {
+            showToast(
+              context,
+              message: state.message,
+              // color: Colors.red,
+              state: ToastStates.error,
+            );
+          }
+        },
         builder: (context, state) {
+          final cubit = context.read<GlobalCubit>();
           return SafeArea(
             child: Column(
               children: [
@@ -44,16 +57,26 @@ class SettingsScreen extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Column(
                         children: [
-                          // Profile Section
                           SizedBox(height: 24.h),
-                          const ProfileSection(),
-
+                          if (state is ProfileLoading)
+                            const Center(child: CircularProgressIndicator())
+                          else
+                            ProfileSection(
+                              userName:
+                                  "${cubit.userName ?? ''} ${cubit.userLastName ?? ''}"
+                                      .trim(),
+                              userImageUrl: cubit.userAvatar ??
+                                  'assets/images/profile.png',
+                              subtitle: cubit.userEmail ?? '',
+                              isVendor: isVendor ?? false,
+                              onTap: () {},
+                            ),
                           // Edit Profile
                           SizedBox(height: 16.h),
                           EditProfile(
                             onTap: () {
                               isVendor != true
-                                  ? navigateTo(context, const EditProfile())
+                                  ? navigateTo(context, const EditProfilePage())
                                   : navigateTo(
                                       context,
                                       const CreateBusinessAccountSettings(
@@ -152,7 +175,7 @@ class SettingsScreen extends StatelessWidget {
                                     PageRouteBuilder(
                                       pageBuilder: (context, animation,
                                               secondaryAnimation) =>
-                                          const WelcomePage(),
+                                          const IntroPage(),
                                       transitionsBuilder: (context, animation,
                                           secondaryAnimation, child) {
                                         return FadeTransition(

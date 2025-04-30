@@ -42,7 +42,11 @@ class ProfileSection extends StatelessWidget {
           ? Row(
               children: [
                 CircleAvatar(
-                    radius: 24.r, backgroundImage: AssetImage(userImageUrl)),
+                    radius: 24.r,
+                    backgroundColor: AppColors.textPrimary,
+                    backgroundImage: NetworkImage(userImageUrl == ""
+                        ? "https://static-00.iconduck.com/assets.00/avatar-default-icon-1024x1024-dvpl2mz1.png"
+                        : userImageUrl)),
                 SizedBox(width: 12.w),
                 Text(
                   userName,

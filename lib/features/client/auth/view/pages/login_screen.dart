@@ -150,9 +150,7 @@ class _LoginPageState extends State<LoginPage>
                             text: 'sign_in'.tr(context),
                             isLoading: state is LoginLoading
                                 ? true
-                                : state is LoginError
-                                    ? true
-                                    : false,
+                                : false,
                             onPressed: () {
                               cubit.login();
                             },
