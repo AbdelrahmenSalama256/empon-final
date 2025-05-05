@@ -55,20 +55,8 @@ class AppDatePicker extends StatelessWidget {
       initialDate: initialDateTime,
       firstDate: firstDateTime,
       lastDate: lastDateTime,
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-            dialogTheme: const DialogThemeData(backgroundColor: Colors.white),
-          ),
-          child: child!,
-        );
-      },
+
+      // border for the dialog
     );
 
     if (picked != null) {

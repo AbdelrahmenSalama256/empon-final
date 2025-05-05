@@ -4,6 +4,7 @@ import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/core/notification/notification_handler.dart';
+import 'package:embone/features/client/auth/data/models/login_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RegisterRepo {
@@ -18,7 +19,7 @@ class RegisterRepo {
     required String gender,
     required String phone,
     required String email,
-    required String anotherEmail,
+    String? anotherEmail,
     required String password,
     required String passwordConfirmation,
     required String countryId,
@@ -41,7 +42,7 @@ class RegisterRepo {
         "gender": gender,
         "phone": phone,
         "email": email,
-        "another_email": anotherEmail,
+        if (anotherEmail != null) "another_email": anotherEmail,
         "password": password,
         "password_confirmation": passwordConfirmation,
         "fcm_token": fcmToken,
@@ -64,6 +65,52 @@ class RegisterRepo {
       );
 
       return Right(response.data['message']);
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, LoginModel>> verifyAccount({
+    required String phone,
+    required String otp,
+  }) async {
+    try {
+      Map<String, dynamic> data = {
+        "phone": phone,
+        "otp": otp,
+      };
+
+      final response = await api.post(
+        EndPoints.userVerification,
+        data: data,
+        isFormData: true,
+      );
+
+      return Right(LoginModel.fromJson(response.data as Map<String, dynamic>));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, LoginModel>> resendOtp({
+    required String phone,
+  }) async {
+    try {
+      Map<String, dynamic> data = {
+        "value": phone,
+      };
+
+      final response = await api.post(
+        EndPoints.userSendOtp,
+        data: data,
+        isFormData: true,
+      );
+
+      return Right(LoginModel.fromJson(response.data as Map<String, dynamic>));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {

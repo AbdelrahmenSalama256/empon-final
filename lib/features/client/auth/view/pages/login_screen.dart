@@ -1,13 +1,18 @@
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/core/utils/validator.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/login_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/register_screen.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/otp_verification_page.dart';
 import 'package:embone/features/client/auth/view/pages/searching_account.dart';
-import 'package:embone/features/client/auth/view/pages/welcom_screen.dart';
+import 'package:embone/features/client/auth/view/pages/verification_screen.dart';
 import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
@@ -72,10 +77,47 @@ class _LoginPageState extends State<LoginPage>
             showToast(context,
                 message: state.message, state: ToastStates.error);
           } else if (state is LoginSuccess) {
-            showToast(context,
-                message: 'login_success'.tr(context),
-                state: ToastStates.success);
-            navigateAndFinish(context, const BaseScreen());
+            if (state.isVerified) {
+              context.read<GlobalCubit>().getUserProfile();
+
+              navigateAndFinish(context, const BaseScreen());
+            } else {
+              if (state.isEmail != null) {
+                showToast(context,
+                    message: 'please_verify_your_email'.tr(context),
+                    state: ToastStates.error);
+                navigateTo(
+                  context,
+                  BlocProvider(
+                    create: (context) => LoginCubit(sl<LoginRepo>()),
+                    child: OtpVerificationPage(
+                      phoneNumber:
+                          context.read<LoginCubit>().valueController.text,
+                    ),
+                  ),
+                );
+              } else {
+                showToast(context,
+                    message: 'please_verify_your_phone'.tr(context),
+                    state: ToastStates.error);
+                navigateTo(
+                  context,
+                  BlocProvider(
+                    create: (context) => RegisterCubit(sl<RegisterRepo>()),
+                    child: const VerificationPage(
+                        // phone:
+                        // c.valueController.text,
+                        ),
+                  ),
+                );
+              }
+
+              // abdo.salamar@psps.com
+              // abdo.salamar@osos.com
+              // 01156250673
+              // 123456789Aa@
+              // 01020697423
+            }
           }
         },
         builder: (context, state) {
@@ -126,8 +168,8 @@ class _LoginPageState extends State<LoginPage>
                               color: const Color(0xff8F95AB).withOpacity(0.7),
                               size: 24.sp,
                             ),
-                            validator: (value) =>
-                                Validators.validateEmail(value, context),
+                            validator: (value) => Validators.validateRequired(
+                                value, 'phone_or_email'.tr(context), context),
                           ),
                           SizedBox(height: 16.h),
                           AppTextField(
@@ -148,13 +190,11 @@ class _LoginPageState extends State<LoginPage>
                           SizedBox(height: 24.h),
                           AppButton(
                             text: 'sign_in'.tr(context),
-                            isLoading: state is LoginLoading
-                                ? true
-                                : false,
+                            isLoading: false,
                             onPressed: () {
                               cubit.login();
                             },
-                            height: 56.h,
+                            // height: 56.h,
                           ),
                           SizedBox(height: 5.h),
                           TextButton(
@@ -184,11 +224,15 @@ class _LoginPageState extends State<LoginPage>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const WelcomePage(),
+                                  builder: (context) => BlocProvider(
+                                    create: (context) =>
+                                        RegisterCubit(sl<RegisterRepo>()),
+                                    child: const RegisterPage(),
+                                  ),
                                 ),
                               );
                             },
-                            height: 48.h,
+                            // height: 48.h,
                           ),
                           SizedBox(height: 40.h),
                         ],

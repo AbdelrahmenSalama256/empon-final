@@ -6,7 +6,7 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
-import 'package:embone/features/client/auth/view/pages/register_steps/first_name_page.dart';
+import 'package:embone/features/client/auth/view/pages/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -76,7 +76,7 @@ class IntroPage extends StatelessWidget {
                           BlocProvider(
                             create: (context) =>
                                 RegisterCubit(sl<RegisterRepo>()),
-                            child: const FirstNamePage(),
+                            child: const RegisterPage(),
                           ));
                     },
                   ),

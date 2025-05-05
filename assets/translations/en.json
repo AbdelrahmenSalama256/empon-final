@@ -73,6 +73,7 @@
   "verification_code_sent": "Verification code has been sent to your email",
   "verification_code_title": "Enter verification code",
   "verification_code_subtitle": "We've sent a code to your email",
+  "verification_code_subtitle_phone": "We've sent a code to your phone",
   "didnt_receive_code": "Didn't receive code?",
   "resend": "Resend",
   "verify_button": "Verify",
@@ -619,5 +620,14 @@
   "location_required": "Please select a location",
   "invalid_image_format": "Image must be of type jpeg, jpg, png, gif, or svg",
   "error_picking_image": "Error picking image",
-  "registration_successful": "Registration successful"
+  "registration_successful": "Registration successful",
+  "please_fill_all_fields": "Please fill all fields",
+  "select_date_of_birth": "Select Date of Birth",
+  "another_email.must_be_different": "Another email must be different",
+  "please_verify_your_email": "Please verify your email",
+  "please_verify_your_phone": "Please verify your phone",
+  "please_enter_email": "Please enter your email",
+  "please_enter_valid_email": "Please enter a valid email",
+  "verification_successful": "Verification successful"
+
 }

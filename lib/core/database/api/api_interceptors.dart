@@ -15,7 +15,7 @@ class ApiInterceptors extends Interceptor {
 
     options.headers[ApiKey.authorization] =
         token != null ? 'Bearer $token' : null;
-    options.headers["App-Language"] =
+    options.headers["lang"] =
         sl<CacheHelper>().getCachedLanguage() == "ar" ? "ar" : "en";
 
     options.headers["Cookie"] = "maxliss_session=$cookie";

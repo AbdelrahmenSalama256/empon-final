@@ -9,7 +9,8 @@ class EndPoints {
   //! Register
   static const String userRegister = "${baseUrl}register";
   //! Verification
-  static const String userVerification = "${baseUrl}auth/send-verification";
+  static const String userVerification = "${baseUrl}verify-phone-otp";
+  static const String userSendOtp = "${baseUrl}send-otp";
   static const String userConfirmCode = "${baseUrl}auth/confirm-code-register";
   static const String userResendCode = "${baseUrl}auth/password/resend_code";
   //! Logout
@@ -26,7 +27,10 @@ class EndPoints {
   //! Reset Password Check Otp
   static const String resetPasswordCheckOtp =
       "${baseUrl}auth/password/validate_otp";
-  //! Reset Password
+  //! locations
+  static const String countries = '${baseUrl}countries';
+  static const String states = '${baseUrl}states';
+  static const String cities = '${baseUrl}cities';
 }
 
 class ApiKey {

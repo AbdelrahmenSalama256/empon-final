@@ -1,15 +1,25 @@
-import 'package:embone/core/component/widgets/app_button.dart';
-import 'package:embone/core/component/widgets/app_checkbox.dart';
-import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/component/custom_toast.dart';
+import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/core/utils/validator.dart';
-import 'package:embone/features/client/auth/view/pages/login_screen.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/email/another_email_page.dart';
+import 'package:embone/features/client/auth/view/pages/email/email_page.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/add_new_address_page.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/create_password_page.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/date_of_birth_page.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/first_name_page.dart';
-import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/gender_page.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/phone_number_page.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/remember_me_page.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/terms_conditions_page.dart';
+import 'package:embone/features/client/auth/view/pages/verification_screen.dart';
+import 'package:embone/features/client/contacts/view/contacts_page.dart';
+import 'package:embone/features/client/profile/view/pages/add_profile_photo_page.dart';
+import 'package:embone/features/client/profile/view/pages/profile_photo_page.dart';
+import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,230 +29,153 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _agreeToTerms = false;
-  bool _isLoading = false;
+  final PageController _pageController = PageController();
+  late RegisterCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = RegisterCubit(sl<RegisterRepo>());
+  }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _pageController.dispose();
+    _cubit.close();
     super.dispose();
   }
 
-  void _register() {
-    if (!_agreeToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('agree_terms_required'.tr(context))),
+  void nextStep() {
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void previousStep() {
+    if (_pageController.page?.round() == 0) {
+      Navigator.pop(context);
+    } else {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
       );
-      return;
     }
+  }
 
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // Simulate API call
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-        });
-        if (!mounted) return;
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const FirstNamePage(),
-          ),
-        );
-      });
-    }
+  void _handleRegistrationComplete() {
+    nextStep(); // Move to VerificationPage instead of navigating
   }
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            isRTL ? Icons.arrow_forward : Icons.arrow_back,
-            color: AppColors.textPrimary,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // EMPON logo at the top
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0, bottom: 24.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset(
-                        'assets/images/logo.png',
-                        height: 24,
-                      ),
-                      const Icon(
-                        Icons.language,
-                        color: AppColors.textSecondary,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
-                // Welcome illustration
-                Image.asset(
-                  'assets/images/welcome_illustration.png',
-                  height: 120,
-                ),
-                const SizedBox(height: 24),
-                // Title and subtitle
-                Text(
-                  'welcome_to_empon'.tr(context),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'create_account_subtitle'.tr(context),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 32.h),
-                // Email field
-                AppTextField(
-                  controller: _emailController,
-                  labelText: 'email'.tr(context),
-                  hintText: 'enter_email'.tr(context),
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  prefixIcon: const Icon(Icons.email_outlined),
-                  validator: (value) =>
-                      Validators.validateEmail(value, context),
-                ),
-                const SizedBox(height: 16),
-                // Password field
-                AppTextField(
-                  controller: _passwordController,
-                  labelText: 'password'.tr(context),
-                  hintText: 'enter_password'.tr(context),
-                  obscureText: true,
-                  textInputAction: TextInputAction.next,
-                  prefixIcon: const Icon(Icons.lock_outlined),
-                  validator: (value) =>
-                      Validators.validatePassword(value, context),
-                ),
-                const SizedBox(height: 16),
-                // Confirm password field
-                AppTextField(
-                  controller: _confirmPasswordController,
-                  labelText: 'confirm_password'.tr(context),
-                  hintText: 'enter_password'.tr(context),
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
-                  prefixIcon: const Icon(Icons.lock_outlined),
-                  validator: (value) => Validators.validateConfirmPassword(
-                    value,
-                    _passwordController.text,
-                    context,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Terms and conditions checkbox
-                AppCheckbox(
-                  value: _agreeToTerms,
-                  onChanged: (value) {
-                    setState(() {
-                      _agreeToTerms = value ?? false;
-                    });
-                  },
-                  child: Text(
-                    'terms_agree'.tr(context),
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ),
-                SizedBox(height: 32.h),
-                // Register button
-                AppButton(
-                  text: 'continue'.tr(context),
-                  isLoading: _isLoading,
-                  onPressed: _register,
-                ),
-                const SizedBox(height: 16),
-                // Already have an account
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return BlocProvider(
+      create: (context) => _cubit,
+      child: BlocBuilder<RegisterCubit, RegisterState>(
+        builder: (context, state) {
+          return BlocListener<RegisterCubit, RegisterState>(
+            listener: (context, state) {
+              if (state is RegisterSuccess) {
+                _handleRegistrationComplete();
+              }
+              if (state is RegisterError) {
+                showToast(context,
+                    message: state.message, state: ToastStates.error);
+              }
+              if (state is VerifyOtpSuccess) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const BaseScreen()),
+                  (route) => false,
+                );
+              }
+              if (state is VerifyOtpError) {
+                showToast(context,
+                    message: state.message, state: ToastStates.error);
+              }
+            },
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: SafeArea(
+                child: Column(
                   children: [
-                    Text(
-                      'already_have_account'.tr(context),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
+                    // CustomHeader(
+                    //   showBackButton: true,
+                    //   showLogo: true,
+                    //   onBackPressed: previousStep,
+                    //   title: 'register'.tr(context),
+                    // ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: PageView(
+                        controller: _pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          FirstNamePage(
+                            onNextStep: nextStep,
                           ),
-                        );
-                      },
-                      child: Text(
-                        'login'.tr(context),
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
+                          DateOfBirthPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          GenderPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          PhoneNumberPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          CreatePasswordPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          RememberMePage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          TermsConditionsPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          AddNewAddressPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          AddProfilePhotoPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          ProfilePhotoPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          ContactsPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          EmailPage(
+                            onNextStep: nextStep,
+                            onPreviousStep: previousStep,
+                          ),
+                          AnotherEmailPage(
+                            onPreviousStep: previousStep,
+                          ),
+                          VerificationPage(
+                            onNextStep: () {
+                              navigateAndFinish(context, const BaseScreen());
+                            },
+                            onPreviousStep: previousStep,
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                // Progress indicator
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '1/7',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

@@ -5,7 +5,7 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
-import 'package:embone/features/client/auth/view/pages/email/email_page.dart';
+// import 'package:embone/features/client/auth/view/pages/email/email_page.dart';
 import 'package:embone/features/client/contacts/view/widgets/contact_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -95,15 +95,15 @@ class _InviteContactsPageState extends State<InviteContactsPage> {
                           state: ToastStates.error);
                       return;
                     }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: cubit,
-                          child: const EmailPage(),
-                        ),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => BlocProvider.value(
+                    //       value: cubit,
+                    //       child: const EmailPage(),
+                    //     ),
+                    //   ),
+                    // );
                   },
                   onDonePressed: () {
                     if (!cubit.hasSelectedContacts) {
@@ -112,15 +112,15 @@ class _InviteContactsPageState extends State<InviteContactsPage> {
                           state: ToastStates.error);
                       return;
                     }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider.value(
-                          value: cubit,
-                          child: const EmailPage(),
-                        ),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => BlocProvider.value(
+                    //       value: cubit,
+                    //       child: const EmailPage(),
+                    //     ),
+                    //   ),
+                    // );
                   },
                 ),
               ],

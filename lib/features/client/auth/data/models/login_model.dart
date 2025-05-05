@@ -25,18 +25,24 @@ class LoginModel {
 class LoginData {
   final User? user;
   final bool? isDeleted;
+  final bool? isVerified;
 
-  LoginData({this.user, this.isDeleted});
+  LoginData({this.user, this.isDeleted, this.isVerified});
 
   factory LoginData.fromJson(Map<String, dynamic> json) {
     return LoginData(
-      user: json['user'] != null ? User.fromJson(json['user']) : null,
+      // Parse user fields directly from the data object
+      user: User.fromJson(json), // Pass the entire data object to User.fromJson
       isDeleted: json['is_deleted'] as bool?,
+      isVerified: json['is_verified'] as bool? ??
+          (json['phone_verified_at'] == true ||
+              json['email_verified_at'] == true),
     );
   }
 
   Map<String, dynamic> toJson() => {
         'user': user?.toJson(),
         'is_deleted': isDeleted,
+        'is_verified': isVerified,
       };
 }

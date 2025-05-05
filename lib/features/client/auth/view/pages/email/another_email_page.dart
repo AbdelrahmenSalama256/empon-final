@@ -2,7 +2,10 @@ import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/verification_screen.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
@@ -11,44 +14,57 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AnotherEmailPage extends StatelessWidget {
-  const AnotherEmailPage({super.key});
+  final VoidCallback onPreviousStep;
+  const AnotherEmailPage({
+    super.key,
+    required this.onPreviousStep,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RegisterCubit, RegisterState>(
-      listener: (context, state) {
-        if (state is RegisterError) {
-          showToast(context, message: state.message, state: ToastStates.error);
-        }
-        if (state is RegisterSuccess) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const VerificationPage(),
-            ),
-            (route) => false,
-          );
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
-      },
-      builder: (context, state) {
-        final cubit = context.read<RegisterCubit>();
+    final cubit = context.read<RegisterCubit>();
+    final formKey = GlobalKey<FormState>();
 
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: SafeArea(
-            child: Column(
-              children: [
-                CustomHeader(
-                  showBackButton: false,
-                  showLogo: true,
-                  onBackPressed: () => Navigator.pop(context),
-                  title: 'register'.tr(context),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: BlocListener<RegisterCubit, RegisterState>(
+        listener: (context, state) {
+          if (state is RegisterError) {
+            showToast(
+              context,
+              message: state.message,
+              state: ToastStates.error,
+            );
+          } else if (state is RegisterSuccess) {
+            showToast(
+              context,
+              message: 'registration_successful'.tr(context),
+              state: ToastStates.success,
+            );
+            navigateTo(
+              context,
+              BlocProvider(
+                create: (context) => RegisterCubit(sl<RegisterRepo>()),
+                child: const VerificationPage(),
+              ),
+            );
+          }
+        },
+        child: SafeArea(
+          child: Column(
+            children: [
+              CustomHeader(
+                showBackButton: true,
+                showLogo: true,
+                onBackPressed: onPreviousStep,
+                title: 'register'.tr(context),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: Form(
+                      key: formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -77,6 +93,22 @@ class AnotherEmailPage extends StatelessWidget {
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.done,
                             prefixIcon: const Icon(Icons.email_outlined),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null; // Empty is valid
+                              }
+                              final emailRegExp =
+                                  RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                              if (!emailRegExp.hasMatch(value)) {
+                                return 'please_enter_valid_another_email'
+                                    .tr(context);
+                              }
+                              if (value == cubit.emailController.text) {
+                                return 'another_email_must_be_different'
+                                    .tr(context);
+                              }
+                              return null;
+                            },
                           ),
                           SizedBox(height: 20.h),
                           Text(
@@ -91,20 +123,27 @@ class AnotherEmailPage extends StatelessWidget {
                           SizedBox(height: 20.h),
                           AppButton(
                             text: 'finish'.tr(context),
-                            isLoading:
-                                state is RegisterLoading == true ? true : false,
-                            onPressed: cubit.anotherEmailController.text !=
-                                    cubit.emailController.text
-                                ? () {
-                                    cubit.register();
-                                  }
-                                : null,
+                            isLoading: context.select<RegisterCubit, bool>(
+                              (cubit) => cubit.state is RegisterLoading,
+                            ),
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                cubit.register();
+                              } else {
+                                showToast(
+                                  context,
+                                  message: 'please_enter_valid_another_email'
+                                      .tr(context),
+                                  state: ToastStates.error,
+                                );
+                              }
+                            },
                             height: 50.h,
                             width: double.infinity,
                           ),
                           SizedBox(height: 16.h),
                           TextButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: onPreviousStep,
                             child: Text(
                               'back'.tr(context),
                               style: TextStyle(
@@ -118,11 +157,11 @@ class AnotherEmailPage extends StatelessWidget {
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

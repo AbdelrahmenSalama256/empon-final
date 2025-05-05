@@ -17,4 +17,9 @@ class LoginError extends LoginState {
   const LoginError({required this.message});
 }
 
-class LoginSuccess extends LoginState {}
+class LoginSuccess extends LoginState {
+  final bool isVerified;
+  final bool? isEmail;
+
+  const LoginSuccess(this.isEmail, {required this.isVerified});
+}

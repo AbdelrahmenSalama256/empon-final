@@ -74,6 +74,7 @@
   "verification_code_sent": "تم إرسال رمز التحقق إلى بريدك الإلكتروني",
   "verification_code_title": "أدخل رمز التحقق",
   "verification_code_subtitle": "لقد أرسلنا رمزًا إلى بريدك الإلكتروني",
+  "verification_code_subtitle_phone": "لقد أرسلنا رمزًا إلى هاتفك",
   "didnt_receive_code": "لم تستلم الرمز؟",
   "resend": "إعادة إرسال",
   "verify_button": "تحقق",
@@ -620,5 +621,13 @@
   "location_required": "يرجى اختيار موقع",
   "invalid_image_format": "يجب أن تكون الصورة من نوع jpeg، jpg، png، gif، أو svg",
   "error_picking_image": "خطأ أثناء اختيار الصورة",
-  "registration_successful": "تم التسجيل بنجاح"
+  "registration_successful": "تم التسجيل بنجاح",
+  "please_fill_all_fields": "يرجى ملء جميع الحقول",
+  "select_date_of_birth": "اختر تاريخ الميلاد",
+  "another_email.must_be_different": "البريد الإلكتروني الآخر يجب أن يكون مختلفًا",
+  "please_verify_your_email": "يرجى التحقق من بريدك الإلكتروني",
+  "please_verify_your_phone": "يرجى التحقق من رقم هاتفك",
+  "please_enter_email": "يرجى إدخال البريد الإلكتروني",
+  "please_enter_valid_email": "يرجى إدخال بريد إلكتروني صالح",
+  "verification_successful": "تم التحقق بنجاح"
 }

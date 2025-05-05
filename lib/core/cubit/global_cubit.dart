@@ -143,8 +143,8 @@ class GlobalCubit extends Cubit<GlobalState> {
   }
 
   //! User Data
-  String? userName, userEmail, userAvatar, userPhone;
-  int? userId, points;
+  String? userName, userEmail, userId, userAvatar, userPhone;
+  int? points;
   bool? userEmailVerified;
   String? userLastName,
       userBirthDate,

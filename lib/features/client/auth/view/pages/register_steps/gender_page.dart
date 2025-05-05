@@ -6,7 +6,6 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
-import 'package:embone/features/client/auth/view/pages/register_steps/phone_number_page.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/gender_card_selection.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class GenderPage extends StatefulWidget {
-  const GenderPage({super.key});
+  final VoidCallback onNextStep;
+  final VoidCallback onPreviousStep;
+  const GenderPage(
+      {super.key, required this.onNextStep, required this.onPreviousStep});
 
   @override
   State<GenderPage> createState() => _GenderPageState();
@@ -33,7 +35,7 @@ class _GenderPageState extends State<GenderPage> {
             CustomHeader(
               showBackButton: true,
               showLogo: true,
-              onBackPressed: () => Navigator.pop(context),
+              onBackPressed: () => widget.onPreviousStep(),
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -85,15 +87,8 @@ class _GenderPageState extends State<GenderPage> {
                               state: ToastStates.error);
                           return;
                         }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: cubit,
-                              child: const PhoneNumberPage(),
-                            ),
-                          ),
-                        );
+
+                        widget.onNextStep();
                       },
                       height: 50.h,
                       width: double.infinity,

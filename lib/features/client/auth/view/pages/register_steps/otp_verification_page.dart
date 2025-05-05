@@ -1,10 +1,15 @@
 import 'package:embone/core/component/custom_header.dart';
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
-import 'package:embone/core/component/widgets/app_step_indicator.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/client/auth/view/pages/reset_password.dart';
+import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/base/view/welcome/base_screen.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
 import 'package:pinput/pinput.dart';
@@ -22,178 +27,185 @@ class OtpVerificationPage extends StatefulWidget {
 }
 
 class _OtpVerificationPageState extends State<OtpVerificationPage> {
-  final TextEditingController _otpControllers = TextEditingController();
-  final List<FocusNode> _focusNodes = List.generate(
-    4,
-    (_) => FocusNode(),
-  );
-
-  bool _isLoading = false;
-  int _resendSeconds = 60;
   Timer? _timer;
 
   @override
-  void initState() {
-    super.initState();
-    _startResendTimer();
-  }
-
-  @override
   void dispose() {
-    _otpControllers.dispose();
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
     _timer?.cancel();
     super.dispose();
   }
 
-  void _startResendTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_resendSeconds > 0) {
-        setState(() {
-          _resendSeconds--;
-        });
-      } else {
-        _timer?.cancel();
-      }
-    });
-  }
-
-  void _resendOtp() {
-    if (_resendSeconds > 0) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _isLoading = false;
-        _resendSeconds = 60;
-      });
-
-      _startResendTimer();
-
-      // Check if the widget is still mounted before using context
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('otp_resent'.tr(context))),
-      );
-    });
-  }
-
-  void _verifyOtp() {
-    setState(() {
-      _isLoading = true;
-    });
-
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (!mounted) return;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const ResetPasswordPage(),
-        ),
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomHeader(
-              showBackButton: true,
-              showLogo: true,
-              onBackPressed: () => Navigator.pop(context),
-              title: 'verification'.tr(context),
-            ),
-            Expanded(
-              child: Container(
-                alignment: Alignment.center,
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 16.h),
-                        const AppStepIndicator(
-                          currentStep: 5,
-                          totalSteps: 8,
-                        ),
-                        SizedBox(height: 32.h.h),
-                        Text(
-                          'enter_otp'.tr(context),
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          '${'otp_sent_to'.tr(context)} ${widget.phoneNumber}',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        SizedBox(height: 32.h.h),
-                        Pinput(
-                          controller: _otpControllers,
-                          length: 4,
-                          obscureText: false,
-                          pinAnimationType: PinAnimationType.fade,
-                          keyboardType: TextInputType.number,
-                        ),
-                        SizedBox(height: 32.h.h),
-                        TextButton(
-                          onPressed: _resendSeconds > 0 ? null : _resendOtp,
-                          child: Text(
-                            _resendSeconds > 0
-                                ? '${'resend_code_in'.tr(context)} $_resendSeconds'
-                                : 'resend_code'.tr(context),
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: _resendSeconds > 0
-                                  ? Colors.grey
-                                  : AppColors.primary,
+    return BlocProvider(
+      create: (context) => RegisterCubit(sl<RegisterRepo>()),
+      child: BlocConsumer<RegisterCubit, RegisterState>(
+        listener: (context, state) {
+          if (state is VerifyOtpError) {
+            showToast(
+              context,
+              message: state.message,
+              state: ToastStates.error,
+            );
+          }
+          if (state is VerifyOtpSuccess) {
+            navigateAndFinish(context, const BaseScreen());
+          }
+        },
+        builder: (context, state) {
+          final cubit = context.read<RegisterCubit>();
+
+          void startResendTimer() {
+            _timer?.cancel();
+            _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              if (cubit.resendSeconds > 0) {
+                cubit.updateResendSeconds(cubit.resendSeconds - 1);
+                setState(() {});
+              } else {
+                timer.cancel();
+                setState(() {});
+              }
+            });
+          }
+
+          if (cubit.resendSeconds == 60) {
+            startResendTimer();
+          }
+
+          return Scaffold(
+            backgroundColor: AppColors.white,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  CustomHeader(
+                    showBackButton: true,
+                    showLogo: true,
+                    onBackPressed: () => Navigator.pop(context),
+                    title: 'verification'.tr(context),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // SizedBox(height: 16.h),
+                            // const AppStepIndicator(
+                            //   currentStep: 5,
+                            //   totalSteps: 8,
+                            // ),
+                            SizedBox(height: 32.h),
+                            Center(
+                              child: Image.asset(
+                                'assets/images/name.png',
+                                width: 326.w,
+                                height: 244.h,
+                                fit: BoxFit.contain,
+                              ),
                             ),
-                          ),
+                            SizedBox(height: 32.h),
+                            Text(
+                              'verification_code_title'.tr(context),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                            Text(
+                              '${'otp_sent_to'.tr(context)} ${widget.phoneNumber}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            SizedBox(height: 32.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24.w),
+                              child: Pinput(
+                                controller: cubit.otpController,
+                                length: 4,
+                                obscureText: false,
+                                pinAnimationType: PinAnimationType.fade,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            SizedBox(height: 32.h),
+                            AppButton(
+                              text: 'verify_button'.tr(context),
+                              isLoading: state is VerifyOtpLoading,
+                              onPressed: () {
+                                cubit.phoneController.text = widget.phoneNumber;
+                                if (cubit.otpController.text.isEmpty) {
+                                  showToast(
+                                    context,
+                                    message: 'otp_empty'.tr(context),
+                                    state: ToastStates.error,
+                                  );
+                                  return;
+                                } else {
+                                  cubit.verifyOtp(
+                                    phone: cubit.phoneController.text,
+                                  );
+                                }
+                              },
+                              height: 50.h,
+                              width: double.infinity,
+                            ),
+                            SizedBox(height: 24.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'didnt_receive_code'.tr(context),
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: cubit.resendSeconds > 0
+                                      ? null
+                                      : () {
+                                          cubit.updateResendSeconds(60);
+                                          startResendTimer();
+                                          showToast(
+                                            context,
+                                            message: 'otp_resent'.tr(context),
+                                            state: ToastStates.success,
+                                          );
+                                          // TODO: Call cubit.resendOtp if implemented
+                                          // cubit.resendOtp(phone: widget.phoneNumber);
+                                        },
+                                  child: Text(
+                                    cubit.resendSeconds > 0
+                                        ? '${'resend_code_in'.tr(context)} ${cubit.resendSeconds}'
+                                        : 'resend'.tr(context),
+                                    style: TextStyle(
+                                      color: cubit.resendSeconds > 0
+                                          ? AppColors.textSecondary
+                                          : AppColors.primary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 30.h),
+                          ],
                         ),
-                        AppButton(
-                          text: 'verify'.tr(context),
-                          isLoading: _isLoading,
-                          onPressed: _verifyOtp,
-                          height: 50.h,
-                          width: double.infinity,
-                          textStyle: TextStyle(
-                            fontSize: 14.sp,
-                            color: AppColors.white,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        SizedBox(height: 30.h),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

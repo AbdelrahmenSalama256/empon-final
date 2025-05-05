@@ -76,6 +76,7 @@ dependencies:
   http_parser: ^4.1.2
   bloc: ^9.0.0
   path: ^1.9.1
+  easy_stepper: ^0.8.5+1
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 
 class AppDropdownField extends StatelessWidget {
   final String hint;
@@ -17,6 +17,7 @@ class AppDropdownField extends StatelessWidget {
   final Color? dropdownIconColor;
   final TextStyle? hintStyle;
   final TextStyle? selectedTextStyle;
+  final bool enabled;
 
   const AppDropdownField({
     super.key,
@@ -33,12 +34,13 @@ class AppDropdownField extends StatelessWidget {
     this.dropdownIconColor,
     this.hintStyle,
     this.selectedTextStyle,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => _showDropdownBottomSheet(context),
+      onTap: enabled ? () => _showDropdownBottomSheet(context) : null,
       child: Container(
         padding: contentPadding ??
             EdgeInsets.symmetric(
@@ -46,7 +48,7 @@ class AppDropdownField extends StatelessWidget {
               vertical: 10.h,
             ),
         decoration: BoxDecoration(
-          color: const Color(0xffF0F2F9),
+          color: enabled ? const Color(0xffF0F2F9) : const Color(0xffE0E0E0),
           borderRadius: BorderRadius.circular(15.r),
           border: showErrorBorder && validator?.call(value) != null
               ? Border.all(color: AppColors.error, width: 1.0)
@@ -92,12 +94,14 @@ class AppDropdownField extends StatelessWidget {
                 width: 25.w,
                 height: 25.h,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: enabled ? Colors.white : const Color(0xffE0E0E0),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Icon(
                   Icons.keyboard_arrow_down,
-                  color: dropdownIconColor ?? AppColors.black,
+                  color: enabled
+                      ? (dropdownIconColor ?? AppColors.black)
+                      : Colors.grey,
                   size: dropdownIconSize ?? 24.w,
                 ),
               ),
@@ -110,6 +114,7 @@ class AppDropdownField extends StatelessWidget {
   }
 
   void _showDropdownBottomSheet(BuildContext context) {
+    PrintUtil.info("Opening dropdown bottom sheet for: $hint");
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -152,9 +157,7 @@ class AppDropdownField extends StatelessWidget {
                             color: AppColors.primary, size: 24.w)
                         : null,
                     onTap: () {
-                      if (kDebugMode) {
-                        print("Selected item in bottom sheet: $item");
-                      }
+                      PrintUtil.info("Selected item: $item");
                       onChanged(item);
                       Navigator.pop(context);
                     },
