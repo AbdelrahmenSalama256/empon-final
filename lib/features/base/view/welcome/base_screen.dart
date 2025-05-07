@@ -1,6 +1,9 @@
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/widgets/nav_bar_item.dart';
 import 'package:embone/features/business_account/dashboard/view/dashboard_screen.dart';
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
+import 'package:embone/features/client/home/data/repo/home_repo.dart';
+import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/menu/view/menu_screen.dart';
 import 'package:embone/features/client/shop/view/shop_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +28,10 @@ class _BaseScreenState extends State<BaseScreen> {
     switch (userType) {
       case UserType.client:
         return [
-          const HomeScreen(),
+          BlocProvider(
+            create: (context) => HomeCubit(sl<HomeRepo>()),
+            child: const HomeScreen(),
+          ),
           const CartScreen(),
           const ShopScreen(),
           const NotificationsPage(),

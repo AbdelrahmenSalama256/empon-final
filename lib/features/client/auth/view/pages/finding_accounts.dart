@@ -3,25 +3,38 @@ import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/auth/view/pages/forget_password_verification.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
-import 'package:embone/features/client/auth/view/pages/register_steps/otp_verification_page.dart';
 import 'package:embone/features/client/auth/view/pages/searching_account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FindingAccountsPage extends StatelessWidget {
-  final String firstName;
-  final String phoneNumber;
+  final String? phoneNumber;
+  final String? firstName;
+  final String? imageUrl;
+  final String? email;
 
   const FindingAccountsPage({
     super.key,
-    required this.firstName,
-    required this.phoneNumber,
+    this.phoneNumber,
+    this.firstName,
+    this.imageUrl,
+    this.email,
   });
+
+  String _maskPhoneNumber(String phoneNumber) {
+    if (phoneNumber.length < 4) return phoneNumber;
+    return "${phoneNumber.substring(0, 3)} ******* ${phoneNumber.substring(phoneNumber.length - 1)}";
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -40,7 +53,7 @@ class FindingAccountsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 32.h.h),
+                    SizedBox(height: 32.h),
 
                     // Profile Image
                     Container(
@@ -55,16 +68,24 @@ class FindingAccountsPage extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(60.r),
-                        child: Image.asset(
-                          "assets/images/profile.png",
+                        child: Image.network(
+                          imageUrl ?? 'assets/images/profile.png',
                           width: 120.w,
                           height: 120.w,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Center(
-                            child: Icon(
-                              CupertinoIcons.person,
-                              size: 50.w,
-                              color: Colors.grey,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
+                            "assets/images/profile.png",
+                            width: 120.w,
+                            height: 120.w,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Center(
+                              child: Icon(
+                                CupertinoIcons.person,
+                                size: 50.w,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
                         ),
@@ -72,7 +93,6 @@ class FindingAccountsPage extends StatelessWidget {
                     ),
                     SizedBox(height: 24.h),
 
-                    // User Info - First line with blue text
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
@@ -81,12 +101,15 @@ class FindingAccountsPage extends StatelessWidget {
                             text: 'you_are_user'.tr(context),
                             style: TextStyle(
                               fontSize: 16.sp,
+                              fontFamily: isRTL == true ? 'Beiruti' : "Poppins",
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
                             ),
                           ),
                           TextSpan(
-                            text: 'you_are_you'.tr(context),
+                            text: firstName?.isNotEmpty == true
+                                ? firstName!
+                                : 'you_are_you'.tr(context),
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
@@ -98,29 +121,41 @@ class FindingAccountsPage extends StatelessWidget {
                     ),
                     SizedBox(height: 16.h),
 
-                    // Verification code message
-                    Text(
-                      "verification_code_message".tr(context),
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: AppColors.textPrimary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 4.h),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Verification code message
+                        Text(
+                          "verification_code_message".tr(context),
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          textAlign: TextAlign.start,
+                        ),
+                        SizedBox(height: 4.h),
 
-                    // Phone number with asterisks
-                    Text(
-                      "130 ******** 9",
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                      textAlign: TextAlign.center,
+                        // Phone number with asterisks or email
+                        Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Text(
+                            phoneNumber?.isNotEmpty == true
+                                ? _maskPhoneNumber(phoneNumber!)
+                                : email?.isNotEmpty == true
+                                    ? email!
+                                    : "masked_phone_number".tr(context),
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xff7C7C7C),
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                      ],
                     ),
-
-                    SizedBox(height: 32.h.h),
+                    SizedBox(height: 32.h),
 
                     // Sign in with password button
                     AppButton(
@@ -142,27 +177,6 @@ class FindingAccountsPage extends StatelessWidget {
                     // Bottom buttons row
                     Row(
                       children: [
-                        // Continue button
-                        Expanded(
-                          child: AppButton(
-                            text: 'continue'.tr(context),
-                            onPressed: () {
-                              navigateTo(
-                                context,
-                                OtpVerificationPage(phoneNumber: phoneNumber),
-                              );
-                            },
-                            type: AppButtonType.primary,
-                            height: 50.h,
-                            textStyle: TextStyle(
-                              fontSize: 14.sp,
-                              color: AppColors.white,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16.w),
-
                         // Try another method button
                         Expanded(
                           child: AppButton(
@@ -178,6 +192,38 @@ class FindingAccountsPage extends StatelessWidget {
                             textStyle: TextStyle(
                               fontSize: 14.sp,
                               color: AppColors.primary,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        Expanded(
+                          child: AppButton(
+                            text: 'continue'.tr(context),
+                            onPressed: () {
+                              navigateTo(
+                                context,
+                                ForgotPasswordVerificationPage(
+                                  email: email?.isNotEmpty == true
+                                      ? email!
+                                      : email ?? '',
+                                  firstName: firstName?.isNotEmpty == true
+                                      ? firstName!
+                                      : firstName ?? '',
+                                  phoneNumber: phoneNumber?.isNotEmpty == true
+                                      ? phoneNumber!
+                                      : phoneNumber ?? '',
+                                  imageUrl: imageUrl?.isNotEmpty == true
+                                      ? imageUrl!
+                                      : imageUrl ?? '',
+                                ),
+                              );
+                            },
+                            type: AppButtonType.primary,
+                            height: 50.h,
+                            textStyle: TextStyle(
+                              fontSize: 14.sp,
+                              color: AppColors.white,
                               fontWeight: FontWeight.w400,
                             ),
                           ),

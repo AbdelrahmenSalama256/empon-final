@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AppTheme {
   static ThemeData getLightTheme(String language) {
     return ThemeData(
+      fontFamily: language == "ar" ? 'Beiruti' : "Poppins", // ✅ أضف هذا السطر
+
       primaryColor: AppColors.primary,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,

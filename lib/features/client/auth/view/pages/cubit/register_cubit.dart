@@ -416,7 +416,7 @@ class RegisterCubit extends Cubit<RegisterState> {
           otpController.clear();
           emit(ResendOtpSuccess(result.message ?? ""));
         } else {
-          emit(ResendOtpError("Failed to retrieve authentication token"));
+          emit(const ResendOtpError("Failed to retrieve authentication token"));
         }
       },
     );

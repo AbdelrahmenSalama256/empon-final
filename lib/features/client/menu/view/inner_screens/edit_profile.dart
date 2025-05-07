@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -54,20 +53,6 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
     _phoneController.dispose();
     _emailController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-      maxWidth: 800,
-      maxHeight: 800,
-    );
-
-    if (image != null) {
-      setState(() {});
-    }
   }
 
   Future<void> _saveChanges() async {

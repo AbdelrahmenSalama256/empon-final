@@ -1,0 +1,2 @@
+D:/empon-clinent-app/android/app/.cxx/Debug/3y33289l/x86/CMakeFiles/edit_cache.dir
+D:/empon-clinent-app/android/app/.cxx/Debug/3y33289l/x86/CMakeFiles/rebuild_cache.dir

@@ -198,8 +198,9 @@
   "confirm_email_title": "تأكيد بريدك الإلكتروني",
   "confirm_email_subtitle": "يرجى تأكيد عنوان بريدك الإلكتروني لإكمال الإعداد",
   "finish": "إنهاء",
-  "search_account": "البحث عن حسابات",
-  "search_for_accounts": "البحث عن حسابات",
+  "search_account": "البحث عن حسابك",
+  "search_for_accounts": "البحث عن حسابك",
+  "search_account_hint": "قد تتلقى منا إشعارات عبر واتساب ورسائل SMS أو على الإيميل.",
   "search_account_description": "يرجى إدخال بريدك الإلكتروني أو رقم هاتفك للبحث عن حسابات.",
   "enter_phone_or_email": "أدخل رقم الهاتف أو البريد الإلكتروني",
   "search": "بحث",
@@ -208,8 +209,9 @@
   "confirm_photo": "تأكيد الصورة",
   "change_photo": "تغيير الصورة",
   "finding_accounts": "البحث عن الحسابات",
-  "you_are_user": "أنت مستخدم الفعل -",
-  "you_are_you": "أنت أنت",
+  "you_are_user": "أنت المستخدم - ",
+  "you_are_you": "هل هذا أنت؟",
+
   "verification_code_message": "سوف نقوم بإرسال الرمز التأكيدي إلى",
   "masked_phone_number": "130 ******** 9",
   "sign_in_with_password": "تسجيل الدخول باستخدام كلمة السر",
@@ -399,9 +401,11 @@
   "write_massage_here": "اكتب رسالتك",
   "followers_tab": "المتابعون",
   "you": "أنت",
+  "search_do": "إبحث",
   "search_placeholder": "ابحث في المتابعين...",
   "favorite_stores": "المتاجر المفضلة",
   "favorite_products": "المنتجات  المفضلة",
+  "enter_verification_code": "أدخل رمز التأكيد",
   "what_name": "ما اسمك؟",
   "wallet": "المحفظة",
   "all_wallet_transactions": "كل المعاملات التي تمت من خلال المحفظة",
@@ -504,46 +508,16 @@
   "next_category": "الفئة التالية",
   "auto_publish_label": "نشر المنتج بشكل تلقائي",
   "ad_duration_hint": "مدة الإعلان",
-  "ad_duration_items": [
-    "يوم",
-    "أسبوع",
-    "شهر",
-    "3 أشهر"
-  ],
+  "ad_duration_items": ["يوم", "أسبوع", "شهر", "3 أشهر"],
   "target_age_hint": "العمر المستهدف",
-  "target_age_items": [
-    "18-24",
-    "25-34",
-    "35-44",
-    "45+"
-  ],
+  "target_age_items": ["18-24", "25-34", "35-44", "45+"],
   "gender_hint": "النوع",
-  "gender_items": [
-    "ذكر",
-    "أنثى",
-    "غير محدد"
-  ],
+  "gender_items": ["ذكر", "أنثى", "غير محدد"],
   "ad_monitoring_hint": "مراقبة الإعلان",
-  "ad_monitoring_items": [
-    "نعم",
-    "لا"
-  ],
-  "expected_appearance_items": [
-    "عالي",
-    "متوسط",
-    "منخفض"
-  ],
-  "city_items": [
-    "الرياض",
-    "جدة",
-    "الدمام",
-    "مكة"
-  ],
-  "province_items": [
-    "المنطقة الشرقية",
-    "المنطقة الغربية",
-    "المنطقة الوسطى"
-  ],
+  "ad_monitoring_items": ["نعم", "لا"],
+  "expected_appearance_items": ["عالي", "متوسط", "منخفض"],
+  "city_items": ["الرياض", "جدة", "الدمام", "مكة"],
+  "province_items": ["المنطقة الشرقية", "المنطقة الغربية", "المنطقة الوسطى"],
   "location_note": "يتم تحديد الموقع تلقائيًا بشكل افتراضي إذا رغبت",
   "next_category_button": "الفئة التالية",
   "product_name_hint": "اسم المنتج",
@@ -629,5 +603,9 @@
   "please_verify_your_phone": "يرجى التحقق من رقم هاتفك",
   "please_enter_email": "يرجى إدخال البريد الإلكتروني",
   "please_enter_valid_email": "يرجى إدخال بريد إلكتروني صالح",
-  "verification_successful": "تم التحقق بنجاح"
+  "verification_successful": "تم التحقق بنجاح",
+  "welcome_back": "مرحباً بك",
+  "verification_code_hint": "يرجى تفقد بريدك الإلكتروني للعثور على الرسالة التي تحتوي على الرمز. يتكون الرمز من 8 من الأرقام.",
+  "enter_new_password": "أدخل كلمة مرور جديدة",
+  "enter_confirm_password": "أدخل تأكيد كلمة المرور"
 }

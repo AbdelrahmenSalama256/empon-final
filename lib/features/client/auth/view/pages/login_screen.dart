@@ -5,15 +5,17 @@ import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/core/utils/validator.dart';
+import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/forget_password_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/login_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
-import 'package:embone/features/client/auth/view/pages/register_screen.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/otp_verification_page.dart';
 import 'package:embone/features/client/auth/view/pages/searching_account.dart';
 import 'package:embone/features/client/auth/view/pages/verification_screen.dart';
 import 'package:embone/features/base/view/welcome/base_screen.dart';
+import 'package:embone/features/client/auth/view/pages/welcom_screen.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -122,6 +124,7 @@ class _LoginPageState extends State<LoginPage>
         },
         builder: (context, state) {
           final cubit = context.read<LoginCubit>();
+          final isLoading = state is LoginSuccess;
 
           return Scaffold(
             backgroundColor: Colors.white,
@@ -190,7 +193,7 @@ class _LoginPageState extends State<LoginPage>
                           SizedBox(height: 24.h),
                           AppButton(
                             text: 'sign_in'.tr(context),
-                            isLoading: false,
+                            isLoading: isLoading,
                             onPressed: () {
                               cubit.login();
                             },
@@ -202,8 +205,11 @@ class _LoginPageState extends State<LoginPage>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SearchingAccountPage(),
+                                  builder: (context) => BlocProvider(
+                                    create: (context) => ForgetPasswordCubit(
+                                        sl<ForgetPasswordRepo>()),
+                                    child: const SearchingAccountPage(),
+                                  ),
                                 ),
                               );
                             },
@@ -224,11 +230,7 @@ class _LoginPageState extends State<LoginPage>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => BlocProvider(
-                                    create: (context) =>
-                                        RegisterCubit(sl<RegisterRepo>()),
-                                    child: const RegisterPage(),
-                                  ),
+                                  builder: (context) => const WelcomePage(),
                                 ),
                               );
                             },

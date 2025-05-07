@@ -31,8 +31,7 @@ class LoginData {
 
   factory LoginData.fromJson(Map<String, dynamic> json) {
     return LoginData(
-      // Parse user fields directly from the data object
-      user: User.fromJson(json), // Pass the entire data object to User.fromJson
+      user: User.fromJson(json),
       isDeleted: json['is_deleted'] as bool?,
       isVerified: json['is_verified'] as bool? ??
           (json['phone_verified_at'] == true ||

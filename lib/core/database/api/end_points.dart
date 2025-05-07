@@ -31,6 +31,12 @@ class EndPoints {
   static const String countries = '${baseUrl}countries';
   static const String states = '${baseUrl}states';
   static const String cities = '${baseUrl}cities';
+  // ! Reset Password
+  static const String forgotPassword = "${baseUrl}forgot-password";
+  static const String verifyOtpForgotPassword =
+      "${baseUrl}verify-otp-forgot-password";
+  static const String resetPassword = "${baseUrl}reset-password";
+  static const String home = "${baseUrl}home";
 }
 
 class ApiKey {

@@ -167,155 +167,184 @@ class _AnimatedProductCardState extends State<ProductCard>
             color: Colors.white,
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
-                // ignore: deprecated_member_use
-                width: 0.5.w,
-                // ignore: deprecated_member_use
-                color: const Color(0xff000000).withOpacity(0.33)),
+              width: 0.5.w,
+              color: const Color(0xff000000).withOpacity(0.33),
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Product image with favorite button
-              Stack(
-                children: [
-                  // Product image
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: Image.asset(
-                      widget.imageUrl,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => Center(
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 40.w,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Favorite button
-                  PositionedDirectional(
-                    top: 20.h,
-                    start: 15.w,
-                    child: GestureDetector(
-                      onTap: _toggleFavorite,
-                      child: ScaleTransition(
-                        scale: _favoriteScaleAnimation,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          width: 29.w,
-                          height: 29.w,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: Center(
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              transitionBuilder:
-                                  (Widget child, Animation<double> animation) {
-                                return ScaleTransition(
-                                    scale: animation, child: child);
+              SizedBox(
+                height: 225.h, // Fixed height to match image size
+                child: Stack(
+                  children: [
+                    // Updated image widget to handle network/asset images
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: widget.imageUrl.startsWith('http')
+                          ? Image.network(
+                              widget.imageUrl,
+                              height: 225.h,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  _buildImageErrorWidget(),
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
                               },
-                              child: SvgPicture.asset(
-                                _isFavorite
-                                    ? "assets/images/svg/heart-active.svg"
-                                    : "assets/images/svg/heart.svg",
-                                width: _isFavorite ? 24.w : 20.w,
-                                height: _isFavorite ? 24.h : 20.h,
+                            )
+                          : Image.asset(
+                              widget.imageUrl,
+                              height: 225.h,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  _buildImageErrorWidget(),
+                            ),
+                    ),
+                    // Favorite button
+                    PositionedDirectional(
+                      top: 20.h,
+                      start: 15.w,
+                      child: GestureDetector(
+                        onTap: _toggleFavorite,
+                        child: ScaleTransition(
+                          scale: _favoriteScaleAnimation,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: 29.w,
+                            height: 29.w,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Center(
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                transitionBuilder: (Widget child,
+                                    Animation<double> animation) {
+                                  return ScaleTransition(
+                                    scale: animation,
+                                    child: child,
+                                  );
+                                },
+                                child: SvgPicture.asset(
+                                  _isFavorite
+                                      ? "assets/images/svg/heart-active.svg"
+                                      : "assets/images/svg/heart.svg",
+                                  width: _isFavorite ? 24.w : 20.w,
+                                  height: _isFavorite ? 24.h : 20.h,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-
-              //! Product details
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Title (start)
-                        Text(
-                          widget.title,
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.black,
-                          ),
-                        ),
-                        // Price (end)
-                        Text(
-                          '${widget.price.toStringAsFixed(2)} ${"currency".tr(context)}',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.black,
-                          ),
-                          //
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 20.h),
-
-                    //! Badge and action button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        if (widget.badge != null)
+              // Product details with flexible height
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 8.h), // Reduced spacing
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                           Text(
-                            "${widget.badge}",
+                            widget.title,
                             style: TextStyle(
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w400,
                               color: AppColors.black,
                             ),
-                            //
                           ),
-                        if (widget.actionText != null)
-                          GestureDetector(
-                            onTap: _onCartTap,
-                            child: ScaleTransition(
-                              scale: _cartScaleAnimation,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w,
-                                  vertical: 8.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffDFE0E5),
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                child: Text(
-                                  'shop_now'.tr(context),
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.black,
+                          Text(
+                            '${widget.price.toStringAsFixed(2)} ${"currency".tr(context)}',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8.h), // Reduced spacing
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (widget.badge != null)
+                            Text(
+                              widget.badge!,
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.black,
+                              ),
+                            ),
+                          if (widget.actionText != null)
+                            GestureDetector(
+                              onTap: _onCartTap,
+                              child: ScaleTransition(
+                                scale: _cartScaleAnimation,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                    vertical: 8.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffDFE0E5),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Text(
+                                    widget.actionText!,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.black,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageErrorWidget() {
+    return Center(
+      child: Container(
+        color: Colors.grey.shade200,
+        child: Icon(
+          Icons.image_not_supported_outlined,
+          size: 40.w,
+          color: Colors.grey,
         ),
       ),
     );

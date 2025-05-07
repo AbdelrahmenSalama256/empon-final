@@ -100,7 +100,6 @@ class _ChangePasswordProfileScreenState
                       SizedBox(height: 16.h),
 
                       //! Profile Image
-                      // Profile image
                       Center(
                         child: ProfileImagePicker(
                           profileImage: _profileImage,

@@ -61,6 +61,8 @@
   "select_gender": "Select gender",
   "reset_password": "Reset Password",
   "new_password": "New Password",
+  "enter_new_password": "Enter New Password",
+  "enter_confirm_password": "Enter Confirm Password",
   "reset_password_instructions": "Enter your email to receive password reset instructions",
   "reset_link_sent": "Reset link has been sent to your email",
   "check_email": "Check your email",
@@ -198,18 +200,21 @@
   "confirm_email_title": "Confirm your email",
   "confirm_email_subtitle": "Please confirm your email address to complete setup",
   "finish": "Finish",
-  "search_account": "Search for Accounts",
-  "search_for_accounts": "Search for Accounts",
+  "search_account": "Search for Your Accounts",
+  "search_for_accounts": "Search for Your Accounts",
+  "search_account_hint": "You may receive notifications from us via WhatsApp, SMS, or email.",
   "search_account_description": "Please enter your email or phone number to search for accounts.",
   "enter_phone_or_email": "Enter Phone Number or Email",
   "search": "Search",
+  "search_do": "Search",
   "very_confident_user": "Very Confident User",
   "secret_number": "Secret Number: {number}",
   "confirm_photo": "Confirm Photo",
+  "enter_verification_code": "Enter the verification code",
   "change_photo": "Change Photo",
   "finding_accounts": "Finding Accounts",
-  "you_are_user": "You are the user -",
-  "you_are_you": "You are you",
+  "you_are_user": "You are the user - ",
+  "you_are_you": "Is this you?",
   "you": "You",
   "verification_code_message": "We will send the verification code to",
   "masked_phone_number": "130 ******** 9",
@@ -484,42 +489,16 @@
   "next_category": "Next Category",
   "auto_publish_label": "Publish product automatically",
   "ad_duration_hint": "Ad duration",
-  "ad_duration_items": [
-    "Day",
-    "Week",
-    "Month",
-    "3 Months"
-  ],
+  "ad_duration_items": ["Day", "Week", "Month", "3 Months"],
   "target_age_hint": "Target age",
-  "target_age_items": [
-    "18-24",
-    "25-34",
-    "35-44",
-    "45+"
-  ],
+  "target_age_items": ["18-24", "25-34", "35-44", "45+"],
   "gender_hint": "Gender",
   "gender_required": "Gender is required",
-  "gender_items": [
-    "Male",
-    "Female",
-    "Unspecified"
-  ],
+  "gender_items": ["Male", "Female", "Unspecified"],
   "ad_monitoring_hint": "Ad monitoring",
-  "ad_monitoring_items": [
-    "Yes",
-    "No"
-  ],
-  "expected_appearance_items": [
-    "High",
-    "Medium",
-    "Low"
-  ],
-  "city_items": [
-    "Riyadh",
-    "Jeddah",
-    "Dammam",
-    "Makkah"
-  ],
+  "ad_monitoring_items": ["Yes", "No"],
+  "expected_appearance_items": ["High", "Medium", "Low"],
+  "city_items": ["Riyadh", "Jeddah", "Dammam", "Makkah"],
   "province_items": [
     "Eastern Province",
     "Western Province",
@@ -628,6 +607,7 @@
   "please_verify_your_phone": "Please verify your phone",
   "please_enter_email": "Please enter your email",
   "please_enter_valid_email": "Please enter a valid email",
-  "verification_successful": "Verification successful"
-
+  "verification_successful": "Verification successful",
+  "welcome_back": "Welcome back",
+  "verification_code_hint": "Please check your email for the message containing the code. The code consists of 8 digits."
 }

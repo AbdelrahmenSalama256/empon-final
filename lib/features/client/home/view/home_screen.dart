@@ -1,8 +1,13 @@
+import 'package:embone/core/component/custom_loading_indicator.dart';
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/chat/view/massages_screen.dart';
+import 'package:embone/features/client/home/data/repo/home_repo.dart';
+import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/home/view/widgets/product_card.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
 import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
@@ -17,182 +22,151 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sample data for the ProductCards
-    final List<Map<String, dynamic>> products = [
-      {
-        'imageUrl': 'assets/images/test-product.png',
-        'title': 'حذاء رياضي',
-        'price': 900.00,
-        'badge': 'best_seller'.tr(context),
-        'actionText': 'shop_now'.tr(context),
-        'isFavorite': false,
-      },
-      {
-        'imageUrl': 'assets/images/test-product-1.png',
-        'title': 'حذاء رياضي',
-        'price': 850.00,
-        'badge': 'new'.tr(context),
-        'actionText': 'shop_now'.tr(context),
-        'isFavorite': false,
-      },
-    ];
+    return BlocProvider(
+      create: (context) => HomeCubit(sl<HomeRepo>())..init(),
+      child: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          final cubit = context.read<HomeCubit>();
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
-          children: [
-            // SizedBox(height: 16.h),
-            AppHeader(
-              title: "menu".tr(context),
-              centerTitle: false,
-              showLogo: true,
-              leadingPosition: MainAxisAlignment.end,
-              alignment: HeaderAlignment.spaceBetween,
-              titleStyle: TextStyle(fontSize: 20.sp),
-              showBackButton: false,
-              style: HeaderStyle.standard,
-              automaticallyImplyLeading: false,
-              // padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.h),
-              leading: Row(
+          return SafeArea(
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: Column(
                 children: [
-                  // Chat Icon
-                  IconButton(
-                    icon: Icon(
-                      CupertinoIcons.chat_bubble_text,
-                      size: 28.h,
-                      color: const Color(0xff000000),
+                  AppHeader(
+                    title: "menu".tr(context),
+                    centerTitle: false,
+                    showLogo: true,
+                    leadingPosition: MainAxisAlignment.end,
+                    alignment: HeaderAlignment.spaceBetween,
+                    titleStyle: TextStyle(fontSize: 20.sp),
+                    showBackButton: false,
+                    style: HeaderStyle.standard,
+                    automaticallyImplyLeading: false,
+                    leading: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            CupertinoIcons.chat_bubble_text,
+                            size: 28.h,
+                            color: const Color(0xff000000),
+                          ),
+                          onPressed: () {
+                            navigateTo(context, const MassagesScreen());
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            CupertinoIcons.search,
+                            size: 28.h,
+                            color: const Color(0xff000000),
+                          ),
+                          onPressed: () {
+                            navigateTo(context, const SearchPage());
+                          },
+                        ),
+                      ],
                     ),
-                    onPressed: () {
-                      navigateTo(context, const MassagesScreen());
-                    },
                   ),
-
-                  // Search Icon
-                  IconButton(
-                    icon: Icon(
-                      CupertinoIcons.search,
-                      size: 28.h,
-                      color: const Color(0xff000000),
-                    ),
-                    onPressed: () {
-                      navigateTo(context, const SearchPage());
-                    },
-                  ),
+                  SizedBox(height: 10.h),
+                  state is HomeLoading
+                      ? const Expanded(
+                          child: Center(child: CustomLoadingIndicator()))
+                      : Expanded(
+                          child: cubit.homeModel == null
+                              ? const Center(child: Text('No data available'))
+                              : SingleChildScrollView(
+                                  child: Column(
+                                    children: cubit.homeModel!.accounts
+                                        .map((account) {
+                                      return Container(
+                                        decoration: const BoxDecoration(
+                                            color: Color(0xffF6F6F6)),
+                                        child: Column(
+                                          children: [
+                                            SectionHeader(
+                                              backgroundColor:
+                                                  const Color(0xffF6F6F6),
+                                              title: account.name,
+                                              imageUrl: account.image,
+                                              isNetworkImage: true,
+                                              subtitle: "sponsored".tr(context),
+                                              showCloseButton: true,
+                                              onClose: () {
+                                                context
+                                                    .read<GlobalCubit>()
+                                                    .changeBottomNavIndex(0);
+                                              },
+                                            ),
+                                            SizedBox(
+                                              height: 360.h,
+                                              child: ListView.builder(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemCount:
+                                                    account.products.length,
+                                                itemBuilder: (context, index) {
+                                                  final product =
+                                                      account.products[index];
+                                                  return ProductCard(
+                                                    imageUrl: product.imageUrl,
+                                                    title: product.name,
+                                                    price: double.parse(
+                                                        product.price),
+                                                    badge: 'best_seller'
+                                                        .tr(context),
+                                                    actionText:
+                                                        'shop_now'.tr(context),
+                                                    isFavorite:
+                                                        product.isFavourite,
+                                                    onFavoriteToggle: () {
+                                                      context
+                                                          .read<HomeCubit>()
+                                                          .toggleFavorite(
+                                                              product.id);
+                                                      showToast(
+                                                        context,
+                                                        message: product
+                                                                .isFavourite
+                                                            ? 'Removed from favorites'
+                                                            : 'Added to favorites',
+                                                        state:
+                                                            ToastStates.success,
+                                                      );
+                                                    },
+                                                    onActionTap: () {
+                                                      context
+                                                          .read<HomeCubit>()
+                                                          .onActionTap(
+                                                              product.id);
+                                                      showToast(
+                                                        context,
+                                                        message:
+                                                            'Product added to cart',
+                                                        state:
+                                                            ToastStates.success,
+                                                      );
+                                                    },
+                                                    onCardTap: () {
+                                                      navigateTo(context,
+                                                          const ProductDetailPage());
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                        ),
                 ],
               ),
             ),
-
-            SizedBox(height: 10.h),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: const BoxDecoration(color: Color(0xffF6F6F6)),
-                      child: Column(
-                        children: [
-                          SectionHeader(
-                            backgroundColor: const Color(0xffF6F6F6),
-                            title: "كومفرت شوز",
-                            imageUrl: "assets/images/brand-logo.png",
-                            subtitle: "sponsored".tr(context),
-                            showCloseButton: true,
-                            onClose: () {
-                              context
-                                  .read<GlobalCubit>()
-                                  .changeBottomNavIndex(0);
-                            },
-                          ),
-                          SizedBox(
-                            height: 360.h,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: products.length,
-                              itemBuilder: (context, index) {
-                                final product = products[index];
-                                return ProductCard(
-                                  imageUrl: product['imageUrl'],
-                                  title: product['title'],
-                                  price: product['price'],
-                                  badge: product['badge'],
-                                  actionText: product['actionText'],
-                                  isFavorite: product['isFavorite'],
-                                  onFavoriteToggle: () {
-                                    // Handle favorite toggle
-                                  },
-                                  onActionTap: () {
-                                    // Handle action tap
-                                  },
-                                  onCardTap: () {
-                                    navigateTo(
-                                      context,
-                                      const ProductDetailPage(),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10.h),
-                    Container(
-                      decoration: const BoxDecoration(color: Color(0xffF6F6F6)),
-                      child: Column(
-                        children: [
-                          SectionHeader(
-                            backgroundColor: const Color(0xffF6F6F6),
-                            title: "بكسي ستايل",
-                            imageUrl: "assets/images/brand-two.png",
-                            subtitle: "sponsored".tr(context),
-                            showCloseButton: true,
-                            onClose: () {
-                              context
-                                  .read<GlobalCubit>()
-                                  .changeBottomNavIndex(0);
-                            },
-                          ),
-                          SizedBox(
-                            height: 360.h,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: products.length,
-                              itemBuilder: (context, index) {
-                                final product = products[index];
-                                return ProductCard(
-                                  imageUrl: product['imageUrl'],
-                                  title: product['title'],
-                                  price: product['price'],
-                                  badge: product['badge'],
-                                  actionText: product['actionText'],
-                                  isFavorite: product['isFavorite'],
-                                  onFavoriteToggle: () {
-                                    // Handle favorite toggle
-                                  },
-                                  onActionTap: () {
-                                    // Handle action tap
-                                  },
-                                  onCardTap: () {
-                                    navigateTo(
-                                      context,
-                                      const ProductDetailPage(),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

@@ -12,6 +12,7 @@ class SectionHeader extends StatelessWidget {
   final double? height;
   final Color backgroundColor;
   final EdgeInsetsGeometry padding;
+  final bool isNetworkImage;
 
   const SectionHeader({
     super.key,
@@ -23,6 +24,7 @@ class SectionHeader extends StatelessWidget {
     this.height,
     this.backgroundColor = Colors.white,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    this.isNetworkImage = false,
   });
 
   @override
@@ -44,27 +46,37 @@ class SectionHeader extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20.r),
-                child: Image.asset(
-                  imageUrl!,
-                  width: 48.w,
-                  height: 48.w,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    width: 48.w,
-                    height: 48.w,
-                    color: Colors.grey.shade200,
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      size: 20.sp,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
+                child: isNetworkImage
+                    ? Image.network(
+                        imageUrl!,
+                        width: 48.w,
+                        height: 48.w,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            _buildErrorWidget(),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        imageUrl!,
+                        width: 48.w,
+                        height: 48.w,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            _buildErrorWidget(),
+                      ),
               ),
             ),
-
           SizedBox(width: 10.w),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,8 +102,6 @@ class SectionHeader extends StatelessWidget {
               ],
             ),
           ),
-
-          // زر الإغلاق (إن كان مفعلاً)
           if (showCloseButton)
             IconButton(
               icon: Icon(
@@ -107,6 +117,19 @@ class SectionHeader extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Container(
+      width: 48.w,
+      height: 48.w,
+      color: Colors.grey.shade200,
+      child: Icon(
+        Icons.image_not_supported_outlined,
+        size: 20.sp,
+        color: Colors.grey,
       ),
     );
   }
