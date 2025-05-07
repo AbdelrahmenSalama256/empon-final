@@ -1,15 +1,20 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
+import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart' as loc;
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
@@ -19,34 +24,54 @@ class GlobalCubit extends Cubit<GlobalState> {
   GlobalCubit() : super(GlobalInitial());
 
   init() {
-    // userType = sl<CacheHelper>().getDataString(key: AppConstants.user) ??
-    //     "client"; // Default to "client"
-    userType = UserType.values.firstWhere(
-        (e) =>
-            e.name ==
-            sl<CacheHelper>().getDataString(key: AppConstants.userType),
-        orElse: () => UserType.client); // Default to "client"
+    userType =
+        sl<CacheHelper>().getDataString(key: AppConstants.userType) == null
+            ? UserType.client
+            : UserType.values.firstWhere(
+                (e) =>
+                    e.name ==
+                    sl<CacheHelper>().getDataString(key: AppConstants.userType),
+                orElse: () => UserType.client,
+              );
     emit(UserTypeLoadedState());
     PrintUtil.warning(
         "User type is ${sl<CacheHelper>().getDataString(key: AppConstants.userType)}");
     getCurrentLocation();
-
     getUserProfile();
-    // changeLanguage();
   }
 
-//! User Type Management
-  UserType? userType =
-      sl<CacheHelper>().getDataString(key: AppConstants.userType) == null
-          ? UserType.client
-          : UserType.values.firstWhere(
-              (e) =>
-                  e.name ==
-                  sl<CacheHelper>().getDataString(key: AppConstants.userType),
-              orElse: () => UserType.client,
-            );
+  // Controllers
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController anotherEmailController = TextEditingController();
+  final TextEditingController birthDateController = TextEditingController();
 
-  //! Bottom Navigation
+  // State
+  Gender selectedGender = Gender.male;
+  XFile? profileImage;
+  bool isLoading = false;
+
+  void initProfileData() {
+    firstNameController.text = userName ?? '';
+    lastNameController.text = userLastName ?? '';
+    phoneController.text = userPhone ?? '';
+    emailController.text = userEmail ?? '';
+    anotherEmailController.text = userAnotherEmail ?? '';
+    birthDateController.text = userBirthDate ?? '';
+    selectedGender = userGender == 'male'
+        ? Gender.male
+        : userGender == 'female'
+            ? Gender.female
+            : Gender.other;
+    emit(const ProfileLoaded());
+  }
+
+  // User Type Management
+  UserType? userType;
+
+  // Bottom Navigation
   int currentNavIndex = 0;
   PersistentTabController controller = PersistentTabController();
 
@@ -67,7 +92,7 @@ class GlobalCubit extends Cubit<GlobalState> {
     }
   }
 
-  //! Language
+  // Language
   String language = sl<CacheHelper>().getCachedLanguage();
   changeLanguage() async {
     sl<CacheHelper>().getCachedLanguage() == "en"
@@ -76,11 +101,9 @@ class GlobalCubit extends Cubit<GlobalState> {
     language = sl<CacheHelper>().getCachedLanguage();
     log("language is $language");
     emit(LanguageChangeState());
-
-    // Restart.restartApp();
   }
 
-  //! Location
+  // Location
   String? currentLocation;
   double currentLat = 30.062628785575555;
   double currentLong = 31.335285600000006;
@@ -90,18 +113,15 @@ class GlobalCubit extends Cubit<GlobalState> {
     bool serviceEnabled;
     loc.PermissionStatus permissionGranted;
 
-    // Check if location services are enabled
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
         PrintUtil.error('Location services are disabled.');
-
         return;
       }
     }
 
-    // Check for permission status
     permissionGranted = await location.hasPermission();
     if (permissionGranted == loc.PermissionStatus.denied) {
       permissionGranted = await location.requestPermission();
@@ -111,18 +131,13 @@ class GlobalCubit extends Cubit<GlobalState> {
       }
     }
 
-    // Get the current location
     try {
       loc.LocationData locationData = await location.getLocation();
-
       double latitude = locationData.latitude!;
       double longitude = locationData.longitude!;
 
-      // Convert coordinates to address
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        latitude,
-        longitude,
-      );
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
       Placemark place = placemarks[0];
       final newAddress =
           "${place.subThoroughfare}${place.subThoroughfare == '' ? '' : ', '}"
@@ -142,7 +157,7 @@ class GlobalCubit extends Cubit<GlobalState> {
     }
   }
 
-  //! User Data
+  // User Data
   String? userName, userEmail, userId, userAvatar, userPhone;
   int? points;
   bool? userEmailVerified;
@@ -173,13 +188,9 @@ class GlobalCubit extends Cubit<GlobalState> {
         emit(ProfileError(failure));
       },
       (userData) {
-        // Cache the user profile
-        sl<CacheHelper>().setData(
-          AppConstants.userProfile,
-          jsonEncode(userData.toJson()),
-        );
-
-        // Update cubit fields
+        sl<CacheHelper>()
+            .setData(AppConstants.userProfile, jsonEncode(userData.toJson()));
+        Print.important(userData.fcmToken);
         user = userData;
         userId = userData.id;
         userName = userData.firstName;
@@ -227,13 +238,59 @@ class GlobalCubit extends Cubit<GlobalState> {
         emit(LogoutError(failure));
       },
       (message) {
-        // Clear cached data
         sl<CacheHelper>().clearData();
-
         PrintUtil.success("User logged out successfully: $message");
         emit(LogoutSuccess(message));
       },
     );
+  }
+
+  Future<void> updateUserProfile() async {
+    if (isLoading) return;
+
+    emit(const ProfileLoading());
+    isLoading = true;
+
+    final response = await sl<ProfileRepo>().updateProfile(
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      birthDate: birthDateController.text,
+      gender: selectedGender.name,
+      phone: phoneController.text,
+      email: emailController.text,
+      anotherEmail: anotherEmailController.text.isNotEmpty
+          ? anotherEmailController.text
+          : null,
+      image: profileImage,
+    );
+
+    response.fold(
+      (error) {
+        Print.error("Profile update failed: $error");
+        emit(ProfileError(error));
+      },
+      (result) async {
+        Print.success("Profile updated successfully!");
+        userName = firstNameController.text;
+        userLastName = lastNameController.text;
+        userPhone = phoneController.text;
+        userEmail = emailController.text;
+        userGender = selectedGender.name;
+        // Fetch updated profile to get the new avatar URL
+        await getUserProfile();
+        isLoading = false;
+      },
+    );
+  }
+
+  void setProfileImage(XFile? image) {
+    profileImage = image;
+    emit(const ProfileDataUpdated());
+  }
+
+  void setGender(Gender gender) {
+    selectedGender = gender;
+    emit(const ProfileDataUpdated());
   }
 }
 

@@ -5,16 +5,14 @@ import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/utils/validator.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/gender_card_selection.dart';
-import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:embone/features/client/menu/view/inner_screens/change_password_profile_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/profile_section.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -24,275 +22,82 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageEnState extends State<EditProfilePage> {
-  late TextEditingController _firstNameController;
-  late TextEditingController _lastNameController;
-  late TextEditingController _phoneController;
-  late TextEditingController _emailController;
-  late Gender _selectedGender;
-  bool _isLoading = false;
+  late String originalFirstName;
+  late String originalLastName;
+  late String originalPhone;
+  late String originalEmail;
+  late String originalAnotherEmail;
+  late String originalBirthDate;
+  late Gender originalGender;
 
   @override
   void initState() {
     super.initState();
     final cubit = context.read<GlobalCubit>();
-    _firstNameController = TextEditingController(text: cubit.userName ?? '');
-    _lastNameController = TextEditingController(text: cubit.userLastName ?? '');
-    _phoneController = TextEditingController(text: cubit.userPhone ?? '');
-    _emailController = TextEditingController(text: cubit.userEmail ?? '');
-    _selectedGender = cubit.userGender == 'male'
-        ? Gender.male
-        : cubit.userGender == 'female'
-            ? Gender.female
-            : Gender.other;
+    cubit.initProfileData();
+    originalFirstName = cubit.firstNameController.text;
+    originalLastName = cubit.lastNameController.text;
+    originalPhone = cubit.phoneController.text;
+    originalEmail = cubit.emailController.text;
+    originalAnotherEmail = cubit.anotherEmailController.text;
+    originalBirthDate = cubit.birthDateController.text;
+    originalGender = cubit.selectedGender;
   }
 
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    super.dispose();
+  bool _hasChanges(GlobalCubit cubit) {
+    return cubit.firstNameController.text != originalFirstName ||
+        cubit.lastNameController.text != originalLastName ||
+        cubit.phoneController.text != originalPhone ||
+        cubit.emailController.text != originalEmail ||
+        cubit.anotherEmailController.text != originalAnotherEmail ||
+        cubit.birthDateController.text != originalBirthDate ||
+        cubit.selectedGender != originalGender;
   }
 
-  Future<void> _saveChanges() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Validate inputs
-    final phoneValidation =
-        Validators.validatePhone(_phoneController.text, context);
-    final emailValidation =
-        Validators.validateEmail(_emailController.text, context);
-    final firstNameValidation =
-        Validators.validateName(_firstNameController.text, context);
-    final lastNameValidation =
-        Validators.validateName(_lastNameController.text, context);
-
-    if (firstNameValidation != null) {
-      showToast(context,
-          message: firstNameValidation, state: ToastStates.error);
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-    if (lastNameValidation != null) {
-      showToast(context, message: lastNameValidation, state: ToastStates.error);
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-    if (phoneValidation != null) {
-      showToast(context, message: phoneValidation, state: ToastStates.error);
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-    if (emailValidation != null) {
-      showToast(context, message: emailValidation, state: ToastStates.error);
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-
-    // Update profile via cubit
-    // await context.read<GlobalCubit>().updateUserProfile(
-    //       firstName: _firstNameController.text,
-    //       lastName: _lastNameController.text,
-    //       phone: _phoneController.text,
-    //       email: _emailController.text,
-    //       gender: _selectedGender.name,
-    //       image: _profileImage,
-    //     );
-
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  void _showEditBottomSheet({
-    required String title,
-    required TextEditingController controller,
-    required TextInputType keyboardType,
-    List<TextInputFormatter>? inputFormatters,
-    String? Function(String?)? validator,
-  }) {
-    final TextEditingController tempController = TextEditingController(
-      text: controller.text,
-    );
-
-    showModalBottomSheet(
+  Future<void> _selectDate(BuildContext context, GlobalCubit cubit) async {
+    final DateTime? picked = await showDatePicker(
       context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-      ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16.w,
-          right: 16.w,
-          top: 16.h,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16.h),
-              AppTextField(
-                controller: tempController,
-                keyboardType: keyboardType,
-                inputFormatters: inputFormatters,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 16.w,
-                  vertical: 12.h,
-                ),
-                autofocus: true,
-                validator: validator,
-              ),
-              SizedBox(height: 16.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'cancel'.tr(context),
-                      style: TextStyle(color: Colors.grey, fontSize: 16.sp),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      final validationError =
-                          validator?.call(tempController.text);
-                      if (validationError != null) {
-                        showToast(context,
-                            message: validationError, state: ToastStates.error);
-                        return;
-                      }
-                      setState(() {
-                        controller.text = tempController.text;
-                      });
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'save'.tr(context),
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-            ],
-          ),
-        ),
-      ),
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
     );
-  }
-
-  Widget _buildFieldContainer({
-    required String label,
-    required String data,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xff8F95AB),
-          ),
-        ),
-        SizedBox(height: 10.h),
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 16.h,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.r),
-              border: Border.all(color: const Color(0xffF0F2F9)),
-              color: const Color(0xffF0F2F9),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  icon,
-                  // ignore: deprecated_member_use
-                  color: const Color(0xff8F95AB).withOpacity(0.7),
-                  size: 24.w,
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Text(
-                    data.isEmpty ? 'Not set' : data,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xff8F95AB).withOpacity(0.7),
-                    ),
-                  ),
-                ),
-                Icon(
-                  CupertinoIcons.pencil,
-                  size: 20.sp,
-                  color: const Color(0xff8F95AB).withOpacity(0.7),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
+    if (picked != null) {
+      setState(() {
+        cubit.birthDateController.text =
+            DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: false,
-      body: BlocConsumer<GlobalCubit, GlobalState>(
-        listener: (context, state) {
-          if (state is ProfileError) {
-            showToast(
-              context,
-              message: state.message,
-              state: ToastStates.error,
-            );
-            setState(() {
-              _isLoading = false;
-            });
-          } else if (state is ProfileLoaded) {
-            showToast(
-              context,
+    return BlocConsumer<GlobalCubit, GlobalState>(
+      listener: (context, state) {
+        if (state is ProfileError) {
+          showToast(context, message: state.message, state: ToastStates.error);
+        } else if (state is ProfileLoaded) {
+          showToast(context,
               message: 'profile_updated_successfully'.tr(context),
-              state: ToastStates.success,
-            );
-            Navigator.pop(context);
-          }
-        },
-        builder: (context, state) {
+              state: ToastStates.success);
+          Navigator.pop(context);
           final cubit = context.read<GlobalCubit>();
-          return SafeArea(
+          setState(() {
+            originalFirstName = cubit.firstNameController.text;
+            originalLastName = cubit.lastNameController.text;
+            originalPhone = cubit.phoneController.text;
+            originalEmail = cubit.emailController.text;
+            originalAnotherEmail = cubit.anotherEmailController.text;
+            originalBirthDate = cubit.birthDateController.text;
+            originalGender = cubit.selectedGender;
+          });
+        }
+      },
+      builder: (context, state) {
+        final cubit = context.read<GlobalCubit>();
+        return Scaffold(
+          backgroundColor: Colors.white,
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
             child: Column(
               children: [
                 AppHeader(
@@ -315,7 +120,7 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                           Center(
                             child: ProfileSection(
                               userName:
-                                  "${cubit.userName ?? ''} ${cubit.userLastName ?? ''}"
+                                  "${cubit.firstNameController.text} ${cubit.lastNameController.text}"
                                       .trim(),
                               userImageUrl: cubit.userAvatar ??
                                   'assets/images/profile.png',
@@ -326,33 +131,105 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                           ),
                         SizedBox(height: 16.h),
                         _buildFieldContainer(
-                          label: "edit_first_name".tr(context),
-                          data: _firstNameController.text,
+                          label: "first_name".tr(context),
+                          data: cubit.firstNameController.text,
                           icon: Icons.person_outline,
                           onTap: () => _showEditBottomSheet(
                             title: 'edit_first_name'.tr(context),
-                            controller: _firstNameController,
+                            controller: cubit.firstNameController,
                             keyboardType: TextInputType.name,
-                            validator: (value) =>
-                                Validators.validateName(value, context),
                           ),
                         ),
                         SizedBox(height: 24.h),
                         _buildFieldContainer(
-                          label: "edit_last_name".tr(context),
-                          data: _lastNameController.text,
+                          label: "last_name".tr(context),
+                          data: cubit.lastNameController.text,
                           icon: Icons.person_outline,
                           onTap: () => _showEditBottomSheet(
                             title: 'edit_last_name'.tr(context),
-                            controller: _lastNameController,
+                            controller: cubit.lastNameController,
                             keyboardType: TextInputType.name,
-                            validator: (value) =>
-                                Validators.validateName(value, context),
                           ),
                         ),
                         SizedBox(height: 24.h),
+                        _buildFieldContainer(
+                          label: "phone_number".tr(context),
+                          data: cubit.phoneController.text,
+                          icon: Icons.phone_outlined,
+                          onTap: () => _showEditBottomSheet(
+                            title: 'edit_phone_number'.tr(context),
+                            controller: cubit.phoneController,
+                            keyboardType: TextInputType.phone,
+                          ),
+                        ),
+                        SizedBox(height: 24.h),
+                        _buildFieldContainer(
+                          label: "email_address".tr(context),
+                          data: cubit.emailController.text,
+                          icon: Icons.email_outlined,
+                          onTap: () => _showEditBottomSheet(
+                            title: 'edit_email_address'.tr(context),
+                            controller: cubit.emailController,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                          trailing: cubit.userEmailVerified == false
+                              ? Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w, vertical: 4.h),
+                                  decoration: BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                  child: Text(
+                                    'not_verified'.tr(context),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10.sp,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                        SizedBox(height: 24.h),
+                        _buildFieldContainer(
+                          label: "another_email".tr(context),
+                          data: cubit.anotherEmailController.text,
+                          icon: Icons.email_outlined,
+                          onTap: () => _showEditBottomSheet(
+                            title: 'edit_another_email'.tr(context),
+                            controller: cubit.anotherEmailController,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                          trailing: cubit
+                                      .anotherEmailController.text.isNotEmpty &&
+                                  cubit.userAnotherEmailVerified == false
+                              ? Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w, vertical: 4.h),
+                                  decoration: BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                  child: Text(
+                                    'not_verified'.tr(context),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10.sp,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                        SizedBox(height: 24.h),
+                        _buildFieldContainer(
+                          label: "birth_date".tr(context),
+                          data: cubit.birthDateController.text,
+                          icon: Icons.calendar_today,
+                          onTap: () => _selectDate(context, cubit),
+                        ),
+                        SizedBox(height: 24.h),
                         Text(
-                          "edit_gender".tr(context),
+                          "gender".tr(context),
                           style: TextStyle(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w400,
@@ -361,45 +238,14 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                         ),
                         SizedBox(height: 10.h),
                         GenderSelectionCard(
-                          selectedGender: _selectedGender,
+                          selectedGender: cubit.selectedGender,
                           onGenderChanged: (Gender value) {
-                            setState(() {
-                              _selectedGender = value;
-                            });
+                            cubit.setGender(value);
                           },
                         ),
                         SizedBox(height: 24.h),
-                        _buildFieldContainer(
-                          label: "edit_phone_number".tr(context),
-                          data: _phoneController.text,
-                          icon: Icons.phone_outlined,
-                          onTap: () => _showEditBottomSheet(
-                            title: 'edit_phone_number'.tr(context),
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            validator: (value) =>
-                                Validators.validatePhone(value, context),
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
-                        _buildFieldContainer(
-                          label: "edit_email_address".tr(context),
-                          data: _emailController.text,
-                          icon: Icons.email_outlined,
-                          onTap: () => _showEditBottomSheet(
-                            title: 'edit_email_address'.tr(context),
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) =>
-                                Validators.validateEmail(value, context),
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
                         Text(
-                          "edit_password".tr(context),
+                          "change_password".tr(context),
                           style: TextStyle(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w400,
@@ -414,9 +260,7 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 16.h,
-                            ),
+                                horizontal: 16.w, vertical: 16.h),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15.r),
                               border:
@@ -453,14 +297,53 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 32.h),
-                        AppButton(
-                          text: 'save_changes'.tr(context),
-                          onPressed: _saveChanges,
-                          isLoading: _isLoading,
-                          height: 50.h,
-                          width: double.infinity,
+                        SizedBox(height: 24.h),
+                        Text(
+                          "additional_info".tr(context),
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
+                        SizedBox(height: 10.h),
+                        _buildInfoField(
+                          label: "last_seen".tr(context),
+                          data: cubit.userLastSeen ?? 'Not available',
+                        ),
+                        SizedBox(height: 10.h),
+                        _buildInfoField(
+                          label: "is_online".tr(context),
+                          data: cubit.userIsOnline == true
+                              ? 'online'.tr(context)
+                              : 'offline'.tr(context),
+                        ),
+                        SizedBox(height: 10.h),
+                        _buildInfoField(
+                          label: "is_verified".tr(context),
+                          data: cubit.user?.isOnline == true
+                              ? 'verified'.tr(context)
+                              : 'not_verified'.tr(context),
+                        ),
+                        SizedBox(height: 10.h),
+                        _buildInfoField(
+                          label: "created_at".tr(context),
+                          data: cubit.userCreatedAt ?? 'Not available',
+                        ),
+                        SizedBox(height: 10.h),
+                        _buildInfoField(
+                          label: "balance".tr(context),
+                          data: cubit.userBalance?.toString() ?? '0',
+                        ),
+                        SizedBox(height: 32.h),
+                        if (_hasChanges(cubit))
+                          AppButton(
+                            text: 'save_changes'.tr(context),
+                            onPressed: cubit.updateUserProfile,
+                            isLoading: cubit.isLoading,
+                            height: 50.h,
+                            width: double.infinity,
+                          ),
                         SizedBox(height: 30.h),
                       ],
                     ),
@@ -468,9 +351,178 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                 ),
               ],
             ),
-          );
-        },
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEditBottomSheet({
+    required String title,
+    required TextEditingController controller,
+    required TextInputType keyboardType,
+  }) {
+    final TextEditingController tempController =
+        TextEditingController(text: controller.text);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16.w,
+          right: 16.w,
+          top: 16.h,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 16.h),
+              TextField(
+                controller: tempController,
+                keyboardType: keyboardType,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                ),
+                autofocus: true,
+              ),
+              SizedBox(height: 16.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'cancel'.tr(context),
+                      style: TextStyle(color: Colors.grey, fontSize: 16.sp),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        controller.text = tempController.text;
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'save'.tr(context),
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.h),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFieldContainer({
+    required String label,
+    required String data,
+    required IconData icon,
+    required VoidCallback onTap,
+    Widget? trailing,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w400,
+            color: const Color(0xff8F95AB),
+          ),
+        ),
+        SizedBox(height: 10.h),
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.r),
+              border: Border.all(color: const Color(0xffF0F2F9)),
+              color: const Color(0xffF0F2F9),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  color: const Color(0xff8F95AB).withOpacity(0.7),
+                  size: 24.w,
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    data.isEmpty ? 'Not set' : data,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xff8F95AB).withOpacity(0.7),
+                    ),
+                  ),
+                ),
+                if (trailing != null) ...[
+                  trailing,
+                  SizedBox(width: 8.w),
+                ],
+                Icon(
+                  CupertinoIcons.pencil,
+                  size: 20.sp,
+                  color: const Color(0xff8F95AB).withOpacity(0.7),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoField({
+    required String label,
+    required String data,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w400,
+            color: const Color(0xff8F95AB),
+          ),
+        ),
+        Text(
+          data,
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+        ),
+      ],
     );
   }
 }

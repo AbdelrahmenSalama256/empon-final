@@ -6,6 +6,7 @@ class EndPoints {
   //! Login
   static const String userLogin = "${baseUrl}login";
   static const String userProfile = "${baseUrl}profile";
+  static const String updateProfile = "${baseUrl}profile-update";
   //! Register
   static const String userRegister = "${baseUrl}register";
   //! Verification
@@ -37,6 +38,15 @@ class EndPoints {
       "${baseUrl}verify-otp-forgot-password";
   static const String resetPassword = "${baseUrl}reset-password";
   static const String home = "${baseUrl}home";
+  // ! Search
+  static const String search = "${baseUrl}search";
+  static const String searchHistory = '${baseUrl}history-search';
+  static const String goToProduct = '${baseUrl}go-to-product';
+  static const String recentView = '${baseUrl}recent-view';
+  static const String clearHistory = '${baseUrl}history-searches';
+
+  // ! Notifications
+  static const String notifications = '${baseUrl}notifications';
 }
 
 class ApiKey {

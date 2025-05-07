@@ -61,3 +61,6 @@ class LogoutError extends GlobalState {
   @override
   List<Object> get props => [message];
 }
+class ProfileDataUpdated extends GlobalState {
+  const ProfileDataUpdated();
+}

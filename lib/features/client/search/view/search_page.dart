@@ -1,13 +1,17 @@
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:embone/features/client/search/view/widgets/recent_search_section.dart';
 import 'package:embone/features/client/search/view/widgets/recently_viewd_section.dart';
+import 'package:embone/features/client/search/view/widgets/search_results_section.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -36,9 +40,6 @@ class _SearchPageState extends State<SearchPage> {
     },
   ];
 
-  // Mock data for recent searches
-  final List<String> _recentSearches = ['sports_shoe', 'womens_perfume'];
-
   @override
   void initState() {
     super.initState();
@@ -57,12 +58,8 @@ class _SearchPageState extends State<SearchPage> {
 
   void _onSearch(String query) {
     if (query.trim().isNotEmpty) {
-      // Handle search
-      if (kDebugMode) {
-        print('Searching for: $query');
-      }
-      // In a real app, you would navigate to a search results page
-      // or update the current page with results
+      // Trigger search using SearchCubit
+      context.read<SearchCubit>().search(query);
     }
   }
 
@@ -84,46 +81,111 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Header with back button and title
-              _buildHeader(),
-
-              SizedBox(height: 16.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
+    return BlocBuilder<SearchCubit, SearchState>(
+      builder: (context, state) {
+        final searchModel = context.read<SearchCubit>().searchModel;
+        final searchHistoryModel =
+            context.read<SearchCubit>().searchHistoryModel;
+        final cubit = context.read<SearchCubit>();
+        return BlocListener<SearchCubit, SearchState>(
+          listener: (context, state) {
+            if (state is SearchSuccess) {
+              cubit.fetchSearchHistory();
+            }
+            if (state is DeleteSearchHistorySuccess) {
+              showToast(context,
+                  message: "deleted_success".tr(context),
+                  state: ToastStates.success);
+            }
+            if (state is ClearHistorySuccess) {
+              Navigator.of(context).pop();
+            }
+          },
+          child: Scaffold(
+            backgroundColor: AppColors.white,
+            body: SafeArea(
+              child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Search bar
-                    _buildSearchBar(),
+                    // Header with back button and title
+                    _buildHeader(),
 
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 16.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Search bar
+                          _buildSearchBar(),
 
-                    // Recently viewed section
-                    RecentlyViewedSection(
-                      recentlyViewed: _recentlyViewed,
-                      onItemTap: _onRecentItemTap,
-                    ),
+                          SizedBox(height: 24.h),
 
-                    SizedBox(height: 24.h),
+                          //! Recently viewed section
+                          RecentlyViewedSection(
+                            recentlyViewed: cubit.recentViewModel?.items ?? [],
+                            onItemTap: _onRecentItemTap,
+                            onClearTap: () {
+                              cubit.clearHistory();
+                            },
+                          ),
 
-                    // Recent searches section
-                    RecentSearchesSection(
-                      recentSearches: _recentSearches,
-                      onSearchTap: _onRecentSearchTap,
+                          SizedBox(height: 24.h),
+
+                          // Recent searches section
+                          RecentSearchesSection(
+                            recentSearches: searchHistoryModel?.history ?? [],
+                            onSearchTap: _onRecentSearchTap,
+                            onRemoveTap: (id) {
+                              context
+                                  .read<SearchCubit>()
+                                  .deleteSearchHistory(id: id);
+                            },
+                          ),
+
+                          state is SearchLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : searchModel != null &&
+                                      searchModel.products.isNotEmpty
+                                  ? SearchResultsSection(
+                                      products: searchModel.products,
+                                      onGoingTap: (id) {
+                                        cubit.goToProduct(id: id);
+                                      },
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'search_results'.tr(context),
+                                          style: TextStyle(
+                                              fontSize: 18.sp,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        Center(
+                                          child: Text(
+                                            "no_results".tr(context),
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 20.sp,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -153,6 +215,19 @@ class _SearchPageState extends State<SearchPage> {
           color: const Color(0xff8F95AB).withOpacity(0.7),
           size: 24.sp,
         ),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? GestureDetector(
+                onTap: () {
+                  _searchController.clear();
+                  setState(() {});
+                },
+                child: Icon(
+                  CupertinoIcons.xmark,
+                  color: const Color(0xff8F95AB).withOpacity(0.7),
+                  size: 20.sp,
+                ),
+              )
+            : null,
         onSubmitted: _onSearch,
       ),
     );

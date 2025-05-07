@@ -5,11 +5,14 @@ import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/forget_password_verification.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
 import 'package:embone/features/client/auth/view/pages/searching_account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FindingAccountsPage extends StatelessWidget {
@@ -198,33 +201,45 @@ class FindingAccountsPage extends StatelessWidget {
                         ),
                         SizedBox(width: 16.w),
                         Expanded(
-                          child: AppButton(
-                            text: 'continue'.tr(context),
-                            onPressed: () {
-                              navigateTo(
-                                context,
-                                ForgotPasswordVerificationPage(
-                                  email: email?.isNotEmpty == true
-                                      ? email!
-                                      : email ?? '',
-                                  firstName: firstName?.isNotEmpty == true
-                                      ? firstName!
-                                      : firstName ?? '',
-                                  phoneNumber: phoneNumber?.isNotEmpty == true
-                                      ? phoneNumber!
-                                      : phoneNumber ?? '',
-                                  imageUrl: imageUrl?.isNotEmpty == true
-                                      ? imageUrl!
-                                      : imageUrl ?? '',
-                                ),
-                              );
-                            },
-                            type: AppButtonType.primary,
-                            height: 50.h,
-                            textStyle: TextStyle(
-                              fontSize: 14.sp,
-                              color: AppColors.white,
-                              fontWeight: FontWeight.w400,
+                          child: BlocProvider(
+                            create: (context) =>
+                                RegisterCubit(sl<RegisterRepo>()),
+                            child: BlocBuilder<RegisterCubit, RegisterState>(
+                              builder: (context, state) {
+                                return AppButton(
+                                  text: 'continue'.tr(context),
+                                  onPressed: () {
+                                    navigateTo(
+                                      context,
+                                      ForgotPasswordVerificationPage(
+                                        email: email?.isNotEmpty == true
+                                            ? email!
+                                            : email ?? '',
+                                        firstName: firstName?.isNotEmpty == true
+                                            ? firstName!
+                                            : firstName ?? '',
+                                        phoneNumber:
+                                            phoneNumber?.isNotEmpty == true
+                                                ? phoneNumber!
+                                                : phoneNumber ?? '',
+                                        imageUrl: imageUrl?.isNotEmpty == true
+                                            ? imageUrl!
+                                            : imageUrl ?? '',
+                                      ),
+                                    );
+                                    context.read<RegisterCubit>().resendOtp(
+                                          phone: phoneNumber ?? "",
+                                        );
+                                  },
+                                  type: AppButtonType.primary,
+                                  height: 50.h,
+                                  textStyle: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
