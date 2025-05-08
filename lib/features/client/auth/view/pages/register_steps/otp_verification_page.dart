@@ -3,11 +3,13 @@ import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/menu/view/inner_screens/widgets/profile_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,9 +18,11 @@ import 'package:pinput/pinput.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final String phoneNumber;
+  final String? type;
 
   const OtpVerificationPage({
     super.key,
+    this.type,
     required this.phoneNumber,
   });
 
@@ -49,7 +53,11 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             );
           }
           if (state is VerifyOtpSuccess) {
-            navigateAndFinish(context, const BaseScreen());
+            if (widget.type == "profile") {
+              Navigator.pop(context);
+            } else {
+              navigateAndFinish(context, const BaseScreen());
+            }
           }
         },
         builder: (context, state) {
@@ -95,15 +103,34 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                             //   currentStep: 5,
                             //   totalSteps: 8,
                             // ),
+                            //! Profile Image
                             SizedBox(height: 32.h),
-                            Center(
-                              child: Image.asset(
-                                'assets/images/name.png',
-                                width: 326.w,
-                                height: 244.h,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
+                            widget.type != null
+                                ? Center(
+                                    child: ProfileSection(
+                                      userName:
+                                          "${context.read<GlobalCubit>().firstNameController.text} ${context.read<GlobalCubit>().lastNameController.text}"
+                                              .trim(),
+                                      userImageUrl: context
+                                              .read<GlobalCubit>()
+                                              .userAvatar ??
+                                          'assets/images/profile.png',
+                                      subtitle: '',
+                                      isVendor: false,
+                                      onTap: () {
+                                        // Handle tap action if needed (e.g., show dialog or navigate)
+                                        // For now, this is a placeholder
+                                      },
+                                    ),
+                                  )
+                                : Center(
+                                    child: Image.asset(
+                                      'assets/images/name.png',
+                                      width: 326.w,
+                                      height: 244.h,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
                             SizedBox(height: 32.h),
                             Text(
                               'verification_code_title'.tr(context),

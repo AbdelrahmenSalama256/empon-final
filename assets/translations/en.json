@@ -649,5 +649,9 @@
   "another_email": "Another Email",
   "edit_another_email": "Edit Another Email",
   "edit_birth_date": "Edit Birth Date",
-  "change_password": "Change Password"
+  "not_verified": "Not Verified",
+  "change_password": "Change Password",
+  "profile_updated_successfully": "Profile Updated Successfully",
+  "password_changed_successfully": "Password Changed Successfully",
+  "no_products_found": "No Product Found"
 }

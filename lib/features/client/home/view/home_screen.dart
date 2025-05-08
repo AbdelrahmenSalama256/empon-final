@@ -30,155 +30,160 @@ class HomeScreen extends StatelessWidget {
         builder: (context, state) {
           final cubit = context.read<HomeCubit>();
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              cubit.init();
+          return BlocListener<GlobalCubit, GlobalState>(
+            listener: (context, globalState) {
+              if (globalState is WishlistSuccess) {
+                showToast(
+                  context,
+                  message: globalState.message,
+                  state: ToastStates.success,
+                );
+              }
             },
-            child: SafeArea(
-              child: Scaffold(
-                backgroundColor: Colors.white,
-                body: Column(
-                  children: [
-                    AppHeader(
-                      title: "menu".tr(context),
-                      centerTitle: false,
-                      showLogo: true,
-                      leadingPosition: MainAxisAlignment.end,
-                      alignment: HeaderAlignment.spaceBetween,
-                      titleStyle: TextStyle(fontSize: 20.sp),
-                      showBackButton: false,
-                      style: HeaderStyle.standard,
-                      automaticallyImplyLeading: false,
-                      leading: Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              CupertinoIcons.chat_bubble_text,
-                              size: 28.h,
-                              color: const Color(0xff000000),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                cubit.init();
+              },
+              child: SafeArea(
+                child: Scaffold(
+                  backgroundColor: Colors.white,
+                  body: Column(
+                    children: [
+                      AppHeader(
+                        title: "menu".tr(context),
+                        centerTitle: false,
+                        showLogo: true,
+                        leadingPosition: MainAxisAlignment.end,
+                        alignment: HeaderAlignment.spaceBetween,
+                        titleStyle: TextStyle(fontSize: 20.sp),
+                        showBackButton: false,
+                        style: HeaderStyle.standard,
+                        automaticallyImplyLeading: false,
+                        leading: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                CupertinoIcons.chat_bubble_text,
+                                size: 28.h,
+                                color: const Color(0xff000000),
+                              ),
+                              onPressed: () {
+                                navigateTo(context, const MassagesScreen());
+                              },
                             ),
-                            onPressed: () {
-                              navigateTo(context, const MassagesScreen());
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              CupertinoIcons.search,
-                              size: 28.h,
-                              color: const Color(0xff000000),
+                            IconButton(
+                              icon: Icon(
+                                CupertinoIcons.search,
+                                size: 28.h,
+                                color: const Color(0xff000000),
+                              ),
+                              onPressed: () {
+                                navigateTo(
+                                  context,
+                                  BlocProvider(
+                                    create: (context) =>
+                                        SearchCubit(sl<SearchRepo>())..init(),
+                                    child: const SearchPage(),
+                                  ),
+                                );
+                              },
                             ),
-                            onPressed: () {
-                              navigateTo(
-                                context,
-                                BlocProvider(
-                                  create: (context) =>
-                                      SearchCubit(sl<SearchRepo>())..init(),
-                                  child: const SearchPage(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10.h),
-                    state is HomeLoading
-                        ? const Expanded(
-                            child: Center(child: CustomLoadingIndicator()))
-                        : Expanded(
-                            child: cubit.homeModel == null
-                                ? const Center(child: Text('No data available'))
-                                : SingleChildScrollView(
-                                    child: Column(
-                                      children: cubit.homeModel!.accounts
-                                          .map((account) {
-                                        return Container(
-                                          decoration: const BoxDecoration(
-                                              color: Color(0xffF6F6F6)),
-                                          child: Column(
-                                            children: [
-                                              SectionHeader(
-                                                backgroundColor:
-                                                    const Color(0xffF6F6F6),
-                                                title: account.name,
-                                                imageUrl: account.image,
-                                                isNetworkImage: true,
-                                                subtitle:
-                                                    "sponsored".tr(context),
-                                                showCloseButton: true,
-                                                onClose: () {
-                                                  context
-                                                      .read<GlobalCubit>()
-                                                      .changeBottomNavIndex(0);
-                                                },
-                                              ),
-                                              SizedBox(
-                                                height: 360.h,
-                                                child: ListView.builder(
-                                                  scrollDirection:
-                                                      Axis.horizontal,
-                                                  itemCount:
-                                                      account.products.length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    final product =
-                                                        account.products[index];
-                                                    return ProductCard(
-                                                      imageUrl:
-                                                          product.imageUrl,
-                                                      title: product.name,
-                                                      price: double.parse(
-                                                          product.price),
-                                                      badge: 'best_seller'
-                                                          .tr(context),
-                                                      actionText: 'shop_now'
-                                                          .tr(context),
-                                                      isFavorite:
-                                                          product.isFavourite,
-                                                      onFavoriteToggle: () {
-                                                        context
-                                                            .read<HomeCubit>()
-                                                            .toggleFavorite(
-                                                                product.id);
-                                                        showToast(
-                                                          context,
-                                                          message: product
-                                                                  .isFavourite
-                                                              ? 'Removed from favorites'
-                                                              : 'Added to favorites',
-                                                          state: ToastStates
-                                                              .success,
-                                                        );
-                                                      },
-                                                      onActionTap: () {
-                                                        context
-                                                            .read<HomeCubit>()
-                                                            .onActionTap(
-                                                                product.id);
-                                                        showToast(
-                                                          context,
-                                                          message:
-                                                              'Product added to cart',
-                                                          state: ToastStates
-                                                              .success,
-                                                        );
-                                                      },
-                                                      onCardTap: () {
-                                                        navigateTo(context,
-                                                            const ProductDetailPage());
-                                                      },
-                                                    );
+                      SizedBox(height: 10.h),
+                      state is HomeLoading
+                          ? const Expanded(
+                              child: Center(child: CustomLoadingIndicator()))
+                          : Expanded(
+                              child: cubit.homeModel == null
+                                  ? const Center(
+                                      child: Text('No data available'))
+                                  : SingleChildScrollView(
+                                      child: Column(
+                                        children: cubit.homeModel!.accounts
+                                            .map((account) {
+                                          return Container(
+                                            decoration: const BoxDecoration(
+                                                color: Color(0xffF6F6F6)),
+                                            child: Column(
+                                              children: [
+                                                SectionHeader(
+                                                  backgroundColor:
+                                                      const Color(0xffF6F6F6),
+                                                  title: account.name,
+                                                  imageUrl: account.image,
+                                                  isNetworkImage: true,
+                                                  subtitle:
+                                                      "sponsored".tr(context),
+                                                  showCloseButton: true,
+                                                  onClose: () {
+                                                    context
+                                                        .read<GlobalCubit>()
+                                                        .changeBottomNavIndex(
+                                                            0);
                                                   },
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }).toList(),
+                                                SizedBox(
+                                                  height: 360.h,
+                                                  child: ListView.builder(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    itemCount:
+                                                        account.products.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      final product = account
+                                                          .products[index];
+                                                      return ProductCard(
+                                                        imageUrl:
+                                                            product.imageUrl,
+                                                        title: product.name,
+                                                        price: double.parse(
+                                                            product.price),
+                                                        badge: 'best_seller'
+                                                            .tr(context),
+                                                        actionText: 'shop_now'
+                                                            .tr(context),
+                                                        isFavorite:
+                                                            product.isFavourite,
+                                                        onFavoriteToggle: () {
+                                                          context
+                                                              .read<
+                                                                  GlobalCubit>()
+                                                              .addProductToWishlist(
+                                                                  product.id);
+                                                        },
+                                                        onActionTap: () {
+                                                          context
+                                                              .read<HomeCubit>()
+                                                              .onActionTap(
+                                                                  product.id);
+                                                          showToast(
+                                                            context,
+                                                            message:
+                                                                'Product added to cart',
+                                                            state: ToastStates
+                                                                .success,
+                                                          );
+                                                        },
+                                                        onCardTap: () {
+                                                          navigateTo(context,
+                                                              const ProductDetailPage());
+                                                        },
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
                                     ),
-                                  ),
-                          ),
-                  ],
+                            ),
+                    ],
+                  ),
                 ),
               ),
             ),

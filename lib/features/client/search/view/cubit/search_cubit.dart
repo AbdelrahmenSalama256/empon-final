@@ -79,17 +79,18 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-  Future<void> goToProduct({required int id}) async {
+  void goToProduct({required int id}) async {
     emit(GoToProductLoading());
     final response = await searchRepo.goToProduct(id: id);
     response.fold(
       (l) {
         Print.error(l);
         emit(GoToProductError(message: l));
-        getRecentView();
       },
       (r) {
         Print.success('You are going to product ========> successfully');
+        getRecentView();
+
         emit(GoToProductSuccess());
       },
     );

@@ -1,6 +1,6 @@
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/client/menu/view/inner_screens/store_favourits.dart';
+import 'package:embone/features/client/menu/view/inner_screens/wishlist_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/action_buttons_store.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +43,7 @@ class _ActionButtonsRowState extends State<ActionButtonsRow> {
                       : "assets/images/svg/heart.svg",
                   label: 'favorite'.tr(context),
                   onPressed: () {
-                    navigateTo(context, const StoreFavourites());
+                    navigateTo(context, const WishlistScreen());
                   },
                 ),
                 ActionButton(
@@ -83,7 +83,7 @@ class _ActionButtonsRowState extends State<ActionButtonsRow> {
                       : "assets/images/svg/heart.svg",
                   label: 'favorite'.tr(context),
                   onPressed: () {
-                    navigateTo(context, const StoreFavourites());
+                    navigateTo(context, const WishlistScreen());
                   },
                 ),
                 ActionButton(

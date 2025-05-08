@@ -650,5 +650,9 @@
   "another_email": "بريد إلكتروني آخر",
   "edit_another_email": "تعديل البريد الإلكتروني الآخر",
   "edit_birth_date": "تعديل تاريخ الميلاد",
-  "change_password": "تغيير كلمة المرور"
+  "change_password": "تغيير كلمة المرور",
+  "not_verified": "غير موثق",
+  "profile_updated_successfully": "تم تحديث الملف الشخصي بنجاح",
+  "password_changed_successfully": "تم تغيير كلمة المرور بنجاح",
+  "no_products_found": "لا توجد منتجات"
 }

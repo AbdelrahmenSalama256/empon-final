@@ -6,27 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ProfileImagePicker extends StatefulWidget {
-  final File? profileImage;
+class ProfileImagePicker extends StatelessWidget {
+  final XFile? profileImage;
   final String? networkImageUrl;
-  final Function() onPickImage;
+  final Function(XFile?) onImagePicked;
 
   const ProfileImagePicker({
     super.key,
     this.profileImage,
     this.networkImageUrl,
-    required this.onPickImage,
+    required this.onImagePicked,
   });
 
-  @override
-  State<ProfileImagePicker> createState() => _ProfileImagePickerState();
-}
-
-class _ProfileImagePickerState extends State<ProfileImagePicker> {
-  File? _selectedImage;
-  final bool _isLoading = false;
-
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> _pickImage(BuildContext context, ImageSource source) async {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(
@@ -35,23 +27,18 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
         maxWidth: 800,
         maxHeight: 800,
       );
-
       if (image != null) {
-        setState(() {
-          _selectedImage = File(image.path);
-        });
-        widget.onPickImage(); // Notify parent that an image was picked
+        onImagePicked(image); // Notify parent with the selected XFile
       }
     } catch (e) {
-      if (!mounted) return;
-
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('error_picking_image'.tr(context))),
       );
     }
   }
 
-  void _showImageSourceDialog() {
+  void _showImageSourceDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -78,7 +65,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
               title: Text('camera'.tr(context)),
               onTap: () {
                 Navigator.pop(context);
-                _pickImage(ImageSource.camera);
+                _pickImage(context, ImageSource.camera);
               },
             ),
             ListTile(
@@ -89,7 +76,7 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
               title: Text('gallery'.tr(context)),
               onTap: () {
                 Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
+                _pickImage(context, ImageSource.gallery);
               },
             ),
           ],
@@ -100,13 +87,11 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine which image to display: local picked image, prop-passed image, network image, or placeholder
-    final displayImage = _selectedImage ?? widget.profileImage;
     final hasNetworkImage =
-        widget.networkImageUrl != null && widget.networkImageUrl!.isNotEmpty;
+        networkImageUrl != null && networkImageUrl!.isNotEmpty;
 
     return GestureDetector(
-      onTap: _showImageSourceDialog,
+      onTap: () => _showImageSourceDialog(context),
       child: Stack(
         children: [
           Container(
@@ -116,31 +101,29 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
               shape: BoxShape.circle,
               color: Color(0xFFF5F5F5),
             ),
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : displayImage != null
+            child: profileImage != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(50.r),
+                    child: Image.file(
+                      File(profileImage!.path),
+                      width: 100.w,
+                      height: 100.w,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : hasNetworkImage
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(50.r),
-                        child: Image.file(
-                          displayImage,
+                        child: Image.network(
+                          networkImageUrl!,
                           width: 100.w,
                           height: 100.w,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _buildPlaceholder(),
                         ),
                       )
-                    : hasNetworkImage
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(50.r),
-                            child: Image.network(
-                              widget.networkImageUrl!,
-                              width: 100.w,
-                              height: 100.w,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  _buildPlaceholder(),
-                            ),
-                          )
-                        : _buildPlaceholder(),
+                    : _buildPlaceholder(),
           ),
           Positioned(
             bottom: 0,

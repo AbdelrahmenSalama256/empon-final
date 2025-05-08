@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -29,6 +30,7 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
   late String originalAnotherEmail;
   late String originalBirthDate;
   late Gender originalGender;
+  late XFile? originalProfileImage;
 
   @override
   void initState() {
@@ -42,6 +44,7 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
     originalAnotherEmail = cubit.anotherEmailController.text;
     originalBirthDate = cubit.birthDateController.text;
     originalGender = cubit.selectedGender;
+    originalProfileImage = cubit.profileImage;
   }
 
   bool _hasChanges(GlobalCubit cubit) {
@@ -51,7 +54,8 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
         cubit.emailController.text != originalEmail ||
         cubit.anotherEmailController.text != originalAnotherEmail ||
         cubit.birthDateController.text != originalBirthDate ||
-        cubit.selectedGender != originalGender;
+        cubit.selectedGender != originalGender ||
+        cubit.profileImage != originalProfileImage;
   }
 
   Future<void> _selectDate(BuildContext context, GlobalCubit cubit) async {
@@ -71,285 +75,251 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GlobalCubit, GlobalState>(
-      listener: (context, state) {
-        if (state is ProfileError) {
-          showToast(context, message: state.message, state: ToastStates.error);
-        } else if (state is ProfileLoaded) {
-          showToast(context,
-              message: 'profile_updated_successfully'.tr(context),
-              state: ToastStates.success);
-          Navigator.pop(context);
-          final cubit = context.read<GlobalCubit>();
-          setState(() {
-            originalFirstName = cubit.firstNameController.text;
-            originalLastName = cubit.lastNameController.text;
-            originalPhone = cubit.phoneController.text;
-            originalEmail = cubit.emailController.text;
-            originalAnotherEmail = cubit.anotherEmailController.text;
-            originalBirthDate = cubit.birthDateController.text;
-            originalGender = cubit.selectedGender;
-          });
-        }
-      },
+    return BlocBuilder<GlobalCubit, GlobalState>(
       builder: (context, state) {
         final cubit = context.read<GlobalCubit>();
-        return Scaffold(
-          backgroundColor: Colors.white,
-          resizeToAvoidBottomInset: false,
-          body: SafeArea(
-            child: Column(
-              children: [
-                AppHeader(
-                  title: 'edit_profile'.tr(context),
-                  showBackButton: true,
-                  centerTitle: true,
-                  style: HeaderStyle.standard,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 24.h),
-                        if (state is ProfileLoading)
-                          const Center(child: CircularProgressIndicator())
-                        else
-                          Center(
-                            child: ProfileSection(
-                              userName:
-                                  "${cubit.firstNameController.text} ${cubit.lastNameController.text}"
-                                      .trim(),
-                              userImageUrl: cubit.userAvatar ??
-                                  'assets/images/profile.png',
-                              subtitle: '',
-                              isVendor: false,
-                              onTap: () {},
+
+        return BlocListener<GlobalCubit, GlobalState>(
+          listener: (context, state) {
+            if (state is ProfileError) {
+              showToast(context,
+                  message: state.message, state: ToastStates.error);
+            } else if (state is ProfileUpdated) {
+              showToast(context,
+                  message: 'profile_updated_successfully'.tr(context),
+                  state: ToastStates.success);
+              setState(() {
+                originalFirstName = cubit.firstNameController.text;
+                originalLastName = cubit.lastNameController.text;
+                originalPhone = cubit.phoneController.text;
+                originalEmail = cubit.emailController.text;
+                originalAnotherEmail = cubit.anotherEmailController.text;
+                originalBirthDate = cubit.birthDateController.text;
+                originalGender = cubit.selectedGender;
+                originalProfileImage = cubit.profileImage;
+              });
+              cubit.getUserProfile();
+            }
+          },
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            resizeToAvoidBottomInset: false,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  AppHeader(
+                    title: 'edit_profile'.tr(context),
+                    showBackButton: true,
+                    centerTitle: true,
+                    style: HeaderStyle.standard,
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 16.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 24.h),
+                          if (state is ProfileLoading)
+                            const Center(child: CircularProgressIndicator())
+                          else
+                            Center(
+                              child: ProfileSection(
+                                userName:
+                                    "${cubit.firstNameController.text} ${cubit.lastNameController.text}"
+                                        .trim(),
+                                userImageUrl: cubit.userAvatar ??
+                                    'assets/images/profile.png',
+                                subtitle: '',
+                                isVendor: false,
+                                onTap: () {},
+                              ),
+                            ),
+                          SizedBox(height: 16.h),
+                          _buildFieldContainer(
+                            label: "first_name".tr(context),
+                            data: cubit.firstNameController.text,
+                            icon: Icons.person_outline,
+                            onTap: () => _showEditBottomSheet(
+                              title: 'edit_first_name'.tr(context),
+                              controller: cubit.firstNameController,
+                              keyboardType: TextInputType.name,
                             ),
                           ),
-                        SizedBox(height: 16.h),
-                        _buildFieldContainer(
-                          label: "first_name".tr(context),
-                          data: cubit.firstNameController.text,
-                          icon: Icons.person_outline,
-                          onTap: () => _showEditBottomSheet(
-                            title: 'edit_first_name'.tr(context),
-                            controller: cubit.firstNameController,
-                            keyboardType: TextInputType.name,
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
-                        _buildFieldContainer(
-                          label: "last_name".tr(context),
-                          data: cubit.lastNameController.text,
-                          icon: Icons.person_outline,
-                          onTap: () => _showEditBottomSheet(
-                            title: 'edit_last_name'.tr(context),
-                            controller: cubit.lastNameController,
-                            keyboardType: TextInputType.name,
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
-                        _buildFieldContainer(
-                          label: "phone_number".tr(context),
-                          data: cubit.phoneController.text,
-                          icon: Icons.phone_outlined,
-                          onTap: () => _showEditBottomSheet(
-                            title: 'edit_phone_number'.tr(context),
-                            controller: cubit.phoneController,
-                            keyboardType: TextInputType.phone,
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
-                        _buildFieldContainer(
-                          label: "email_address".tr(context),
-                          data: cubit.emailController.text,
-                          icon: Icons.email_outlined,
-                          onTap: () => _showEditBottomSheet(
-                            title: 'edit_email_address'.tr(context),
-                            controller: cubit.emailController,
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          trailing: cubit.userEmailVerified == false
-                              ? Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8.w, vertical: 4.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    borderRadius: BorderRadius.circular(12.r),
-                                  ),
-                                  child: Text(
-                                    'not_verified'.tr(context),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10.sp,
-                                    ),
-                                  ),
-                                )
-                              : null,
-                        ),
-                        SizedBox(height: 24.h),
-                        _buildFieldContainer(
-                          label: "another_email".tr(context),
-                          data: cubit.anotherEmailController.text,
-                          icon: Icons.email_outlined,
-                          onTap: () => _showEditBottomSheet(
-                            title: 'edit_another_email'.tr(context),
-                            controller: cubit.anotherEmailController,
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          trailing: cubit
-                                      .anotherEmailController.text.isNotEmpty &&
-                                  cubit.userAnotherEmailVerified == false
-                              ? Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8.w, vertical: 4.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    borderRadius: BorderRadius.circular(12.r),
-                                  ),
-                                  child: Text(
-                                    'not_verified'.tr(context),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10.sp,
-                                    ),
-                                  ),
-                                )
-                              : null,
-                        ),
-                        SizedBox(height: 24.h),
-                        _buildFieldContainer(
-                          label: "birth_date".tr(context),
-                          data: cubit.birthDateController.text,
-                          icon: Icons.calendar_today,
-                          onTap: () => _selectDate(context, cubit),
-                        ),
-                        SizedBox(height: 24.h),
-                        Text(
-                          "gender".tr(context),
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xff8F95AB),
-                          ),
-                        ),
-                        SizedBox(height: 10.h),
-                        GenderSelectionCard(
-                          selectedGender: cubit.selectedGender,
-                          onGenderChanged: (Gender value) {
-                            cubit.setGender(value);
-                          },
-                        ),
-                        SizedBox(height: 24.h),
-                        Text(
-                          "change_password".tr(context),
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xff8F95AB),
-                          ),
-                        ),
-                        SizedBox(height: 10.h),
-                        GestureDetector(
-                          onTap: () {
-                            navigateTo(
-                                context, const ChangePasswordProfileScreen());
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 16.h),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.r),
-                              border:
-                                  Border.all(color: const Color(0xffF0F2F9)),
-                              color: const Color(0xffF0F2F9),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.lock_outline,
-                                  color:
-                                      const Color(0xff8F95AB).withOpacity(0.7),
-                                  size: 24.w,
-                                ),
-                                SizedBox(width: 12.w),
-                                Expanded(
-                                  child: Text(
-                                    'change_password'.tr(context),
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: const Color(0xff8F95AB)
-                                          .withOpacity(0.7),
-                                    ),
-                                  ),
-                                ),
-                                Icon(
-                                  CupertinoIcons.pencil,
-                                  size: 20.sp,
-                                  color:
-                                      const Color(0xff8F95AB).withOpacity(0.7),
-                                ),
-                              ],
+                          SizedBox(height: 24.h),
+                          _buildFieldContainer(
+                            label: "last_name".tr(context),
+                            data: cubit.lastNameController.text,
+                            icon: Icons.person_outline,
+                            onTap: () => _showEditBottomSheet(
+                              title: 'edit_last_name'.tr(context),
+                              controller: cubit.lastNameController,
+                              keyboardType: TextInputType.name,
                             ),
                           ),
-                        ),
-                        SizedBox(height: 24.h),
-                        Text(
-                          "additional_info".tr(context),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                          SizedBox(height: 24.h),
+                          _buildFieldContainer(
+                            label: "phone_number".tr(context),
+                            data: cubit.phoneController.text,
+                            icon: Icons.phone_outlined,
+                            onTap: () => _showEditBottomSheet(
+                              title: 'edit_phone_number'.tr(context),
+                              controller: cubit.phoneController,
+                              keyboardType: TextInputType.phone,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 10.h),
-                        _buildInfoField(
-                          label: "last_seen".tr(context),
-                          data: cubit.userLastSeen ?? 'Not available',
-                        ),
-                        SizedBox(height: 10.h),
-                        _buildInfoField(
-                          label: "is_online".tr(context),
-                          data: cubit.userIsOnline == true
-                              ? 'online'.tr(context)
-                              : 'offline'.tr(context),
-                        ),
-                        SizedBox(height: 10.h),
-                        _buildInfoField(
-                          label: "is_verified".tr(context),
-                          data: cubit.user?.isOnline == true
-                              ? 'verified'.tr(context)
-                              : 'not_verified'.tr(context),
-                        ),
-                        SizedBox(height: 10.h),
-                        _buildInfoField(
-                          label: "created_at".tr(context),
-                          data: cubit.userCreatedAt ?? 'Not available',
-                        ),
-                        SizedBox(height: 10.h),
-                        _buildInfoField(
-                          label: "balance".tr(context),
-                          data: cubit.userBalance?.toString() ?? '0',
-                        ),
-                        SizedBox(height: 32.h),
-                        if (_hasChanges(cubit))
-                          AppButton(
-                            text: 'save_changes'.tr(context),
-                            onPressed: cubit.updateUserProfile,
-                            isLoading: cubit.isLoading,
-                            height: 50.h,
-                            width: double.infinity,
+                          SizedBox(height: 24.h),
+                          _buildFieldContainer(
+                            label: "email_address".tr(context),
+                            data: cubit.emailController.text,
+                            icon: Icons.email_outlined,
+                            onTap: () => _showEditBottomSheet(
+                              title: 'edit_email_address'.tr(context),
+                              controller: cubit.emailController,
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            trailing: cubit.userEmailVerified == false
+                                ? Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w, vertical: 4.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.redAccent,
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    child: Text(
+                                      'not_verified'.tr(context),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10.sp,
+                                      ),
+                                    ),
+                                  )
+                                : null,
                           ),
-                        SizedBox(height: 30.h),
-                      ],
+                          SizedBox(height: 24.h),
+                          _buildFieldContainer(
+                            label: "another_email".tr(context),
+                            data: cubit.anotherEmailController.text,
+                            icon: Icons.email_outlined,
+                            onTap: () => _showEditBottomSheet(
+                              title: 'edit_another_email'.tr(context),
+                              controller: cubit.anotherEmailController,
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            trailing: cubit.anotherEmailController.text
+                                        .isNotEmpty &&
+                                    cubit.userAnotherEmailVerified == false
+                                ? Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w, vertical: 4.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.redAccent,
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    child: Text(
+                                      'not_verified'.tr(context),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10.sp,
+                                      ),
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          SizedBox(height: 24.h),
+                          _buildFieldContainer(
+                            label: "birth_date".tr(context),
+                            data: cubit.birthDateController.text,
+                            icon: Icons.calendar_today,
+                            onTap: () => _selectDate(context, cubit),
+                          ),
+                          SizedBox(height: 24.h),
+                          Text(
+                            "gender".tr(context),
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xff8F95AB),
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          GenderSelectionCard(
+                            selectedGender: cubit.selectedGender,
+                            onGenderChanged: (Gender value) {
+                              cubit.setGender(value);
+                            },
+                          ),
+                          SizedBox(height: 24.h),
+                          Text(
+                            "change_password".tr(context),
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xff8F95AB),
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          GestureDetector(
+                            onTap: () {
+                              navigateTo(
+                                  context, const ChangePasswordProfileScreen());
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 16.h),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.r),
+                                border:
+                                    Border.all(color: const Color(0xffF0F2F9)),
+                                color: const Color(0xffF0F2F9),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.lock_outline,
+                                    color: const Color(0xff8F95AB)
+                                        .withOpacity(0.7),
+                                    size: 24.w,
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Expanded(
+                                    child: Text(
+                                      'change_password'.tr(context),
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: const Color(0xff8F95AB)
+                                            .withOpacity(0.7),
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    CupertinoIcons.pencil,
+                                    size: 20.sp,
+                                    color: const Color(0xff8F95AB)
+                                        .withOpacity(0.7),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 32.h),
+                          if (_hasChanges(cubit))
+                            AppButton(
+                              text: 'save_changes'.tr(context),
+                              onPressed: cubit.updateUserProfile,
+                              isLoading: cubit.isLoading,
+                              height: 50.h,
+                              width: double.infinity,
+                            ),
+                          SizedBox(height: 30.h),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -493,33 +463,6 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                 ),
               ],
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoField({
-    required String label,
-    required String data,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xff8F95AB),
-          ),
-        ),
-        Text(
-          data,
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
           ),
         ),
       ],

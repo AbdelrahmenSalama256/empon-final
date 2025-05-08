@@ -7,6 +7,8 @@ import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/menu/view/menu_screen.dart';
 import 'package:embone/features/client/notifications/data/repo/notifications_repo.dart';
 import 'package:embone/features/client/notifications/view/cubit/notifications_cubit.dart';
+import 'package:embone/features/client/shop/data/repo/shop_repo.dart';
+import 'package:embone/features/client/shop/view/cubit/shop_cubit.dart';
 import 'package:embone/features/client/shop/view/shop_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,7 +37,10 @@ class _BaseScreenState extends State<BaseScreen> {
             child: const HomeScreen(),
           ),
           const CartScreen(),
-          const ShopScreen(),
+          BlocProvider(
+            create: (context) => ShopCubit(sl<ShopRepo>()),
+            child: const ShopScreen(),
+          ),
           BlocProvider(
             create: (context) =>
                 NotificationsCubit(sl<NotificationsRepo>())..init(),

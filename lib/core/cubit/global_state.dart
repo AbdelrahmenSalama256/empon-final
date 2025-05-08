@@ -61,6 +61,24 @@ class LogoutError extends GlobalState {
   @override
   List<Object> get props => [message];
 }
+
 class ProfileDataUpdated extends GlobalState {
   const ProfileDataUpdated();
+}
+
+class ProfileUpdated extends GlobalState {
+  const ProfileUpdated();
+}
+
+class WishlistLoading extends GlobalState {}
+
+class WishlistSuccess extends GlobalState {
+  final String message;
+  const WishlistSuccess(this.message);
+}
+
+class WishlistError extends GlobalState {
+  final String message;
+
+  const WishlistError(this.message);
 }

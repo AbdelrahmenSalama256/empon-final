@@ -7,6 +7,7 @@ class EndPoints {
   static const String userLogin = "${baseUrl}login";
   static const String userProfile = "${baseUrl}profile";
   static const String updateProfile = "${baseUrl}profile-update";
+  static const String updatePassword = "${baseUrl}update-password";
   //! Register
   static const String userRegister = "${baseUrl}register";
   //! Verification
@@ -47,6 +48,14 @@ class EndPoints {
 
   // ! Notifications
   static const String notifications = '${baseUrl}notifications';
+
+  // ! shop
+  static const String shopNearby = '${baseUrl}homeWithLocation';
+
+  // ! Wishlist
+  static const String favorites = '${baseUrl}favourite';
+  static const String addProductToWishlist = '${baseUrl}favourite/product';
+  static const String addAccountToWishlist = '${baseUrl}favourite/account';
 }
 
 class ApiKey {

@@ -50,4 +50,32 @@ class ProfileRepo {
       return Left('Failed to update profile: $e');
     }
   }
+
+  Future<Either<String, String>> updatePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    try {
+      Map<String, dynamic> data = {
+        "old_password": oldPassword,
+        "password": newPassword,
+        "password_confirmation": confirmNewPassword,
+      };
+
+      final response = await api.post(
+        EndPoints.updatePassword,
+        data: data,
+        isFormData: true,
+      );
+
+      return Right(response.data['message']);
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left('Failed to update profile: $e');
+    }
+  }
 }

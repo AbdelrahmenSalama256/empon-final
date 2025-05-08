@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
@@ -8,6 +7,7 @@ import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
+import 'package:embone/features/client/menu/data/repo/wishlist_repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,6 +47,11 @@ class GlobalCubit extends Cubit<GlobalState> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController anotherEmailController = TextEditingController();
   final TextEditingController birthDateController = TextEditingController();
+  final TextEditingController oldPasswordController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  final TextEditingController confrimNewPasswordController =
+      TextEditingController();
 
   // State
   Gender selectedGender = Gender.male;
@@ -168,7 +173,8 @@ class GlobalCubit extends Cubit<GlobalState> {
       userBalance;
   bool? userAnotherEmailVerified, userPhoneVerified, userIsOnline;
   String? userFcmToken, userWsToken, userLastSeen, userCreatedAt;
-  List<dynamic>? userAddresses, userAccount;
+  List<Address>? userAddresses;
+  List<Account>? userAccount;
 
   User? user;
 
@@ -217,7 +223,7 @@ class GlobalCubit extends Cubit<GlobalState> {
             "User profile fetched successfully: $userName $userLastName");
         PrintUtil.info(
             "Cached user profile: ${sl<CacheHelper>().getDataString(key: AppConstants.userProfile)}");
-        emit(const ProfileLoaded());
+        initProfileData();
       },
     );
   }
@@ -268,6 +274,7 @@ class GlobalCubit extends Cubit<GlobalState> {
       (error) {
         Print.error("Profile update failed: $error");
         emit(ProfileError(error));
+        isLoading = false;
       },
       (result) async {
         Print.success("Profile updated successfully!");
@@ -276,9 +283,15 @@ class GlobalCubit extends Cubit<GlobalState> {
         userPhone = phoneController.text;
         userEmail = emailController.text;
         userGender = selectedGender.name;
-        // Fetch updated profile to get the new avatar URL
-        await getUserProfile();
+        userAnotherEmail = anotherEmailController.text.isNotEmpty
+            ? anotherEmailController.text
+            : null;
+        userBirthDate = birthDateController.text;
+        profileImage = null; // Reset profile image after successful upload
+        await getUserProfile(); // Fetch updated profile to get the new avatar URL
         isLoading = false;
+        emit(
+            const ProfileUpdated()); // Emit a distinct state for successful update
       },
     );
   }
@@ -291,6 +304,63 @@ class GlobalCubit extends Cubit<GlobalState> {
   void setGender(Gender gender) {
     selectedGender = gender;
     emit(const ProfileDataUpdated());
+  }
+
+  Future<void> updatePasswordProfile() async {
+    if (isLoading) return;
+
+    emit(const ProfileLoading());
+    isLoading = true;
+
+    final response = await sl<ProfileRepo>().updatePassword(
+        confirmNewPassword: confrimNewPasswordController.text,
+        newPassword: newPasswordController.text,
+        oldPassword: oldPasswordController.text);
+
+    response.fold(
+      (error) {
+        Print.error("Profile update failed: $error");
+        emit(ProfileError(error));
+        isLoading = false;
+      },
+      (result) async {
+        Print.success("Profile updated successfully!");
+
+        emit(const ProfileUpdated());
+      },
+    );
+  }
+
+  Future<void> addProductToWishlist(int productId) async {
+    emit(WishlistLoading());
+    final response = await sl<WishlistRepo>().addProductToWishlist(productId);
+    response.fold(
+      (l) {
+        Print.error(l);
+        emit(WishlistError(l));
+      },
+      (r) {
+        emit(WishlistSuccess(r));
+        Print.success(r);
+      },
+    );
+  }
+
+  Future<void> addAccountToWishlist(int accountId) async {
+    emit(WishlistLoading());
+    final response =
+        await await sl<WishlistRepo>().addAccountToWishlist(accountId);
+    response.fold(
+      (l) {
+        Print.error(l);
+        emit(WishlistError(l));
+      },
+      (r) {
+        emit(WishlistSuccess(r));
+
+        Print.success(r);
+      },
+    );
   }
 }
 

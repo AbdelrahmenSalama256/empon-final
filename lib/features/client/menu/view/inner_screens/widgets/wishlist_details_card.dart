@@ -1,4 +1,6 @@
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -36,10 +38,19 @@ class ProductDetails extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Center(
-                    child: Image.asset(
+                    child: Image.network(
                       item['brandLogo'],
                       width: 24.w,
                       height: 24.h,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 100.w,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.2),
+                          ),
+                          child: const Icon(CupertinoIcons.photo_camera_solid),
+                        );
+                      },
                     ),
                   ),
                 ),

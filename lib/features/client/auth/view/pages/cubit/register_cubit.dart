@@ -325,7 +325,7 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   void updateResendSeconds(int seconds) {
     resendSeconds = seconds;
-    
+
     emit(RegisterInitial());
   }
 
@@ -407,17 +407,8 @@ class RegisterCubit extends Cubit<RegisterState> {
       (error) {
         emit(ResendOtpError(error));
       },
-      (result) async {
-        if (result.data?.user?.token != null) {
-          sl<CacheHelper>().setData(ApiKey.token, result.data!.user!.token!);
-          sl<CacheHelper>().saveData(
-              key: AppConstants.token, value: result.data!.user!.token!);
-          await sl<GlobalCubit>().getUserProfile();
-          otpController.clear();
-          emit(ResendOtpSuccess(result.message ?? ""));
-        } else {
-          emit(const ResendOtpError("Failed to retrieve authentication token"));
-        }
+      (result) {
+        emit(ResendOtpSuccess(result.message ?? ""));
       },
     );
   }

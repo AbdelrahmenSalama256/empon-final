@@ -7,7 +7,6 @@ import 'package:embone/features/client/search/view/widgets/recent_search_section
 import 'package:embone/features/client/search/view/widgets/recently_viewd_section.dart';
 import 'package:embone/features/client/search/view/widgets/search_results_section.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,22 +22,6 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-
-  // Mock data for recently viewed items
-  final List<Map<String, dynamic>> _recentlyViewed = [
-    {'id': 1, 'image': 'assets/images/test-product.png', 'name': 'black_shirt'},
-    {'id': 2, 'image': 'assets/images/test-product-1.png', 'name': 'red_shoes'},
-    {
-      'id': 3,
-      'image': 'assets/images/test-product.png',
-      'name': 'womens_perfume',
-    },
-    {
-      'id': 4,
-      'image': 'assets/images/test-product-1.png',
-      'name': 'sports_shoe',
-    },
-  ];
 
   @override
   void initState() {
@@ -61,15 +44,6 @@ class _SearchPageState extends State<SearchPage> {
       // Trigger search using SearchCubit
       context.read<SearchCubit>().search(query);
     }
-  }
-
-  void _onRecentItemTap(int id) {
-    // Handle tapping on a recently viewed item
-    final item = _recentlyViewed.firstWhere((item) => item['id'] == id);
-    if (kDebugMode) {
-      print('Tapped on recently viewed item: ${item['name']}');
-    }
-    // In a real app, you would navigate to the product details page
   }
 
   void _onRecentSearchTap(String query) {
@@ -124,7 +98,9 @@ class _SearchPageState extends State<SearchPage> {
                           //! Recently viewed section
                           RecentlyViewedSection(
                             recentlyViewed: cubit.recentViewModel?.items ?? [],
-                            onItemTap: _onRecentItemTap,
+                            onItemTap: (p0) {
+                              cubit.goToProduct(id: p0);
+                            },
                             onClearTap: () {
                               cubit.clearHistory();
                             },

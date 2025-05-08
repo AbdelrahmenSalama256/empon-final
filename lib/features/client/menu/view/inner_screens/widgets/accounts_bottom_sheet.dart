@@ -28,23 +28,13 @@ class AccountsBottomSheetContent extends StatefulWidget {
 
 class _AccountsBottomSheetContentState
     extends State<AccountsBottomSheetContent> {
-  int _selectedAccountIndex = 0;
-
-  final List<Map<String, dynamic>> _accounts = [
-    {
-      'name': 'كومفرت شوز',
-      'image': 'assets/images/brand-logo.png',
-      'isSelected': false,
-    },
-    {
-      'name': 'كومفرت شوز',
-      'image': 'assets/images/brand-logo.png',
-      'isSelected': false,
-    },
-  ];
+  int _selectedAccountIndex = -1; // -1 means personal account is selected
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<GlobalCubit>();
+    final accounts = cubit.userAccount ?? [];
+
     return Container(
       padding: EdgeInsets.all(16.w),
       child: SingleChildScrollView(
@@ -66,7 +56,7 @@ class _AccountsBottomSheetContentState
             // User profile section
             GestureDetector(
               onTap: () {
-                context.read<GlobalCubit>().setUserType(UserType.client);
+                cubit.setUserType(UserType.client);
                 Navigator.pop(context);
               },
               child: Row(
@@ -78,14 +68,14 @@ class _AccountsBottomSheetContentState
                     children: [
                       CircleAvatar(
                         radius: 16.r,
-                        backgroundImage:
-                            const AssetImage('assets/images/profile.png'),
-                        // You can replace with NetworkImage if needed
-                        // backgroundImage: NetworkImage('https://example.com/profile.jpg'),
+                        backgroundImage: cubit.userAvatar != null
+                            ? NetworkImage(cubit.userAvatar!)
+                            : const AssetImage('assets/images/profile.png')
+                                as ImageProvider,
                       ),
                       SizedBox(width: 8.w),
                       Text(
-                        'صوفيا',
+                        cubit.userName ?? 'User',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
@@ -93,50 +83,53 @@ class _AccountsBottomSheetContentState
                       ),
                     ],
                   ),
-                  Container(
-                    width: 24.w,
-                    height: 24.w,
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
+                  if (_selectedAccountIndex == -1)
+                    Container(
+                      width: 24.w,
+                      height: 24.w,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 16.sp,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 16.sp,
-                    ),
-                  ),
                 ],
               ),
             ),
             SizedBox(height: 24.h),
 
             // Business accounts title
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'business_accounts_title'.tr(context),
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+            if (accounts.isNotEmpty)
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'business_accounts_title'.tr(context),
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16.h),
+            SizedBox(height: accounts.isNotEmpty ? 16.h : 0),
 
             // Business accounts list
             ...List.generate(
-              _accounts.length,
+              accounts.length,
               (index) => BusinessAccountOption(
-                name: _accounts[index]['name'],
-                imagePath: _accounts[index]['image'],
+                name: accounts[index].name ?? 'Business Account',
+                imagePath:
+                    accounts[index].logo ?? 'assets/images/brand-logo.png',
                 isSelected: _selectedAccountIndex == index,
                 onTap: () {
                   setState(() {
                     _selectedAccountIndex = index;
                   });
-                  context.read<GlobalCubit>().setUserType(UserType.business);
+                  cubit.setUserType(UserType.business);
                   Navigator.pop(context);
                 },
               ),
@@ -146,6 +139,7 @@ class _AccountsBottomSheetContentState
             // Add store option
             AddStoreOption(
               onTap: () {
+                Navigator.pop(context); // Close the bottom sheet first
                 navigateTo(context, const CreateBusinessAccountTypePage());
               },
             ),
@@ -180,7 +174,7 @@ class BusinessAccountOption extends StatelessWidget {
         decoration: BoxDecoration(
           boxShadow: const [
             BoxShadow(
-              color: Color(0x0F000000), // نفس #0000000F
+              color: Color(0x0F000000),
               offset: Offset(0, 1),
               blurRadius: 5,
               spreadRadius: 0,
@@ -194,11 +188,9 @@ class BusinessAccountOption extends StatelessWidget {
             // Store logo
             CircleAvatar(
               radius: 30.r,
-              child: Image.asset(
-                imagePath,
-                width: 100.w,
-                height: 100.h,
-              ),
+              backgroundImage: imagePath.startsWith('http')
+                  ? NetworkImage(imagePath)
+                  : AssetImage(imagePath) as ImageProvider,
             ),
             SizedBox(width: 12.w),
             // Store name

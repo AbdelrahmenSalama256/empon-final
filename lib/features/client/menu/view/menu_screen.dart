@@ -6,6 +6,7 @@ import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/followers._screen.dart';
@@ -13,7 +14,7 @@ import 'package:embone/features/client/home/view/widgets/section_header_home.dar
 import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/accounts_bottom_sheet.dart';
 import 'package:embone/features/client/menu/view/inner_screens/help_support.dart';
-import 'package:embone/features/client/menu/view/inner_screens/store_favourits.dart';
+import 'package:embone/features/client/menu/view/inner_screens/wishlist_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/store_screen.dart';
 import 'package:embone/features/client/menu/view/widgets/approval_item.dart';
 import 'package:embone/features/client/menu/view/widgets/buisniss_account.dart';
@@ -22,6 +23,8 @@ import 'package:embone/features/client/menu/view/widgets/most_visited.dart';
 import 'package:embone/features/client/menu/view/widgets/quick_access.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
 import 'package:embone/features/client/order/view/my_order_screen.dart';
+import 'package:embone/features/client/search/data/repo/search_repo.dart';
+import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,435 +41,455 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: BlocConsumer<GlobalCubit, GlobalState>(
-        listener: (context, state) {
-          if (state is LogoutSuccess) {
-            Navigator.of(context).pop();
-
-            navigatorKey.currentState!.pushAndRemoveUntil(
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    const IntroPage(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  );
-                },
-                transitionDuration: const Duration(milliseconds: 300),
-              ),
-              (Route<dynamic> route) => false,
-            );
-            context.read<GlobalCubit>().changeBottomNavIndex(0);
-          }
-        },
+      body: BlocBuilder<GlobalCubit, GlobalState>(
         builder: (context, state) {
-          final cubit = context.read<GlobalCubit>();
-          return SafeArea(
-            child: Column(
-              children: [
-                // SizedBox(height: 16.h),
-                isVendor != true
-                    ? AppHeader(
-                        title: "menu".tr(context),
-                        centerTitle: false,
-                        leadingPosition: MainAxisAlignment.end,
-                        alignment: HeaderAlignment.spaceBetween,
-                        titleStyle: TextStyle(fontSize: 20.sp),
-                        showBackButton: false,
-                        style: HeaderStyle.standard,
-                        onBackPressed: () {
-                          context.read<GlobalCubit>().changeBottomNavIndex(0);
-                        },
-                        automaticallyImplyLeading: false,
-                        // padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.h),
-                        leading: Row(
-                          children: [
-                            IconButton(
-                              icon: SvgPicture.asset(
-                                  "assets/images/svg/search.svg",
-                                  width: 24.w,
-                                  height: 24.h),
-                              onPressed: () {
-                                navigateTo(context, const SearchPage());
-                              },
-                            ),
-                            IconButton(
-                              icon: SvgPicture.asset(
-                                  "assets/images/svg/heart.svg",
-                                  width: 24.w,
-                                  height: 24.h),
-                              onPressed: () {
-                                navigateTo(context, const StoreFavourites());
-                              },
-                            ),
-                            IconButton(
-                              icon: Container(
-                                width: 27.w,
-                                height: 27.h,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Color(0xffF0F2F9),
-                                ),
-                                child: Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: Colors.black,
-                                  size: 24.w,
-                                ),
-                              ),
-                              onPressed: () {
-                                showAccountsBottomSheet(context);
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            IconButton(
-                              icon: Container(
-                                width: 35.w,
-                                height: 35.w,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100.h),
-                                  border: Border.all(
-                                      color: AppColors.grey, width: 0.2.w),
-                                ),
-                                child: Icon(
-                                  Icons.arrow_back_rounded,
-                                  size: 20.h,
-                                  color: AppColors.black,
-                                ),
-                              ),
-                              onPressed: () {
-                                context
-                                    .read<GlobalCubit>()
-                                    .changeBottomNavIndex(0);
-                              },
-                            ),
-                            const Spacer(),
-                            Column(
+          return BlocConsumer<GlobalCubit, GlobalState>(
+            listener: (context, state) {
+              if (state is LogoutSuccess) {
+                Navigator.of(context).pop();
+
+                navigatorKey.currentState!.pushAndRemoveUntil(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const IntroPage(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
+                    transitionDuration: const Duration(milliseconds: 300),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+                context.read<GlobalCubit>().changeBottomNavIndex(0);
+              }
+            },
+            builder: (context, state) {
+              final cubit = context.read<GlobalCubit>();
+              return SafeArea(
+                child: Column(
+                  children: [
+                    // SizedBox(height: 16.h),
+                    isVendor != true
+                        ? AppHeader(
+                            title: "menu".tr(context),
+                            centerTitle: false,
+                            leadingPosition: MainAxisAlignment.end,
+                            alignment: HeaderAlignment.spaceBetween,
+                            titleStyle: TextStyle(fontSize: 20.sp),
+                            showBackButton: false,
+                            style: HeaderStyle.standard,
+                            onBackPressed: () {
+                              context
+                                  .read<GlobalCubit>()
+                                  .changeBottomNavIndex(0);
+                            },
+                            automaticallyImplyLeading: false,
+                            // padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.h),
+                            leading: Row(
                               children: [
-                                Center(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(200.r),
-                                    child: Image.asset(
-                                      'assets/images/brand-logo.png',
-                                      width: 74.w,
-                                      height: 74.w,
+                                IconButton(
+                                  icon: SvgPicture.asset(
+                                      "assets/images/svg/search.svg",
+                                      width: 24.w,
+                                      height: 24.h),
+                                  onPressed: () {
+                                    navigateTo(
+                                      context,
+                                      BlocProvider(
+                                        create: (context) =>
+                                            SearchCubit(sl<SearchRepo>())
+                                              ..init(),
+                                        child: const SearchPage(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: SvgPicture.asset(
+                                      "assets/images/svg/heart.svg",
+                                      width: 24.w,
+                                      height: 24.h),
+                                  onPressed: () {
+                                    navigateTo(context, const WishlistScreen());
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Container(
+                                    width: 27.w,
+                                    height: 27.h,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color(0xffF0F2F9),
+                                    ),
+                                    child: Icon(
+                                      Icons.keyboard_arrow_down,
+                                      color: Colors.black,
+                                      size: 24.w,
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  'كومفورت شوز',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  onPressed: () {
+                                    showAccountsBottomSheet(context);
+                                  },
                                 ),
                               ],
                             ),
-                            const Spacer(flex: 2),
-                          ],
-                        ),
-                      ),
-
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                      child: Column(
-                        crossAxisAlignment: isVendor != true
-                            ? CrossAxisAlignment.start
-                            : CrossAxisAlignment.center,
-                        children: [
-                          isVendor != true
-                              ? SizedBox(height: 0.h)
-                              : SizedBox(height: 24.h),
-                          isVendor != true
-                              ? ProfileSection(
-                                  userName: cubit.userName ?? '',
-                                  userImageUrl: cubit.userAvatar ??
-                                      'assets/images/profile.png',
-                                  subtitle: 'user_account'.tr(context),
-                                  isVendor: isVendor!,
-                                  onTap: () {
-                                    if (cubit.userType == UserType.client) {
-                                      navigateTo(
-                                          context, const SettingsScreen());
-                                    } else {
-                                      showAccountsBottomSheet(context);
-                                    }
-                                    // cubit.setUserType(UserType.client);
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                IconButton(
+                                  icon: Container(
+                                    width: 35.w,
+                                    height: 35.w,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(100.h),
+                                      border: Border.all(
+                                          color: AppColors.grey, width: 0.2.w),
+                                    ),
+                                    child: Icon(
+                                      Icons.arrow_back_rounded,
+                                      size: 20.h,
+                                      color: AppColors.black,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    context
+                                        .read<GlobalCubit>()
+                                        .changeBottomNavIndex(0);
                                   },
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+                                const Spacer(),
+                                Column(
                                   children: [
-                                    ProfileSection(
+                                    Center(
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(200.r),
+                                        child: Image.asset(
+                                          'assets/images/brand-logo.png',
+                                          width: 74.w,
+                                          height: 74.w,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      'كومفورت شوز',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(flex: 2),
+                              ],
+                            ),
+                          ),
+
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 8.h),
+                          child: Column(
+                            crossAxisAlignment: isVendor != true
+                                ? CrossAxisAlignment.start
+                                : CrossAxisAlignment.center,
+                            children: [
+                              isVendor != true
+                                  ? SizedBox(height: 0.h)
+                                  : SizedBox(height: 24.h),
+                              isVendor != true
+                                  ? ProfileSection(
                                       userName: cubit.userName ?? '',
                                       userImageUrl: cubit.userAvatar ??
                                           'assets/images/profile.png',
                                       subtitle: 'user_account'.tr(context),
                                       isVendor: isVendor!,
                                       onTap: () {
-                                        context
-                                            .read<GlobalCubit>()
-                                            .setUserType(UserType.client);
+                                        if (cubit.userType == UserType.client) {
+                                          navigateTo(
+                                              context, const SettingsScreen());
+                                        } else {
+                                          showAccountsBottomSheet(context);
+                                        }
+                                        // cubit.setUserType(UserType.client);
                                       },
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ProfileSection(
+                                          userName: cubit.userName ?? '',
+                                          userImageUrl: cubit.userAvatar ??
+                                              'assets/images/profile.png',
+                                          subtitle: 'user_account'.tr(context),
+                                          isVendor: isVendor!,
+                                          onTap: () {
+                                            context
+                                                .read<GlobalCubit>()
+                                                .setUserType(UserType.client);
+                                          },
+                                        ),
+                                        SizedBox(width: 15.w),
+                                        ProfileSection(
+                                          userName: 'كومفرت شوز',
+                                          userImageUrl:
+                                              'assets/images/brand-logo.png',
+                                          isVendor: true,
+                                          subtitle:
+                                              'business_account'.tr(context),
+                                          borderColor: Colors.green,
+                                          onTap: () {
+                                            navigateTo(context,
+                                                const SettingsScreen());
+                                          },
+                                        ),
+                                        SizedBox(width: 15.w),
+                                        ProfileSection(
+                                          userName: 'add_new_buisniss_account'
+                                              .tr(context),
+                                          userImageUrl: '',
+                                          isVendor: isVendor!,
+                                          onTap: () {
+                                            navigateTo(context,
+                                                const CreateBusinessAccountTypePage());
+                                          },
+                                          isAddNew: true,
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 15.w),
-                                    ProfileSection(
-                                      userName: 'كومفرت شوز',
-                                      userImageUrl:
-                                          'assets/images/brand-logo.png',
-                                      isVendor: true,
-                                      subtitle: 'business_account'.tr(context),
-                                      borderColor: Colors.green,
-                                      onTap: () {
-                                        navigateTo(
-                                            context, const SettingsScreen());
-                                      },
+                              SizedBox(height: 32.h.h),
+                              isVendor != true
+                                  ? Column(
+                                      children: [
+                                        SectionHeader(
+                                          backgroundColor: Colors.white,
+                                          title: "most_visited".tr(context),
+                                          padding: const EdgeInsets.all(0),
+                                          showCloseButton: false,
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        SizedBox(
+                                          height: 90.h,
+                                          child: ListView(
+                                            scrollDirection: Axis.horizontal,
+                                            children: [
+                                              VisitedItem(
+                                                name: "Comfort Shoes",
+                                                imageUrl:
+                                                    "assets/images/brand-two.png",
+                                                onTap: () {
+                                                  navigateTo(context,
+                                                      const MyOrdersScreen());
+                                                },
+                                              ),
+                                              SizedBox(width: 16.w),
+                                              VisitedItem(
+                                                name: "Pixy Style",
+                                                imageUrl:
+                                                    "assets/images/brand-logo.png",
+                                                onTap: () {
+                                                  navigateTo(context,
+                                                      const StoreScreen());
+                                                },
+                                              ),
+                                              SizedBox(width: 16.w),
+                                              VisitedItem(
+                                                name: "Golden Scent",
+                                                imageUrl:
+                                                    "assets/images/brand-logo.png",
+                                                onTap: () {
+                                                  navigateTo(context,
+                                                      const StoreScreen());
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(height: 24.h),
+                                      ],
+                                    )
+                                  : SizedBox(
+                                      height: 0.h,
                                     ),
-                                    SizedBox(width: 15.w),
-                                    ProfileSection(
-                                      userName: 'add_new_buisniss_account'
-                                          .tr(context),
-                                      userImageUrl: '',
-                                      isVendor: isVendor!,
-                                      onTap: () {
-                                        navigateTo(context,
-                                            const CreateBusinessAccountTypePage());
-                                      },
-                                      isAddNew: true,
-                                    ),
-                                  ],
-                                ),
-                          SizedBox(height: 32.h.h),
-                          isVendor != true
-                              ? Column(
-                                  children: [
-                                    SectionHeader(
-                                      backgroundColor: Colors.white,
-                                      title: "most_visited".tr(context),
-                                      padding: const EdgeInsets.all(0),
-                                      showCloseButton: false,
-                                    ),
-                                    SizedBox(height: 16.h),
-                                    SizedBox(
-                                      height: 90.h,
-                                      child: ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: [
-                                          VisitedItem(
-                                            name: "Comfort Shoes",
-                                            imageUrl:
-                                                "assets/images/brand-two.png",
+                              isVendor != false
+                                  ? Row(
+                                      children: [
+                                        Expanded(
+                                          child: QuickAccessButton(
+                                            onTap: () {
+                                              context
+                                                  .read<GlobalCubit>()
+                                                  .changeBottomNavIndex(0);
+                                            },
+                                            title: "home".tr(context),
+                                            icon: "assets/images/home.png",
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(width: 16.w),
+                                        Expanded(
+                                          child: QuickAccessButton(
+                                            onTap: () {
+                                              context
+                                                  .read<GlobalCubit>()
+                                                  .changeBottomNavIndex(1);
+                                            },
+                                            title: "nav_info".tr(context),
+                                            icon: "assets/images/dashboard.png",
+                                            color: Colors.red.shade100,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Row(
+                                      children: [
+                                        Expanded(
+                                          child: QuickAccessButton(
                                             onTap: () {
                                               navigateTo(context,
-                                                  const MyOrdersScreen());
+                                                  const FollowersPage());
                                             },
-                                          ),
-                                          SizedBox(width: 16.w),
-                                          VisitedItem(
-                                            name: "Pixy Style",
-                                            imageUrl:
+                                            title: "for_members".tr(context),
+                                            icon:
                                                 "assets/images/brand-logo.png",
-                                            onTap: () {
-                                              navigateTo(
-                                                  context, const StoreScreen());
-                                            },
+                                            color: Colors.blue.shade100,
                                           ),
-                                          SizedBox(width: 16.w),
-                                          VisitedItem(
-                                            name: "Golden Scent",
-                                            imageUrl:
-                                                "assets/images/brand-logo.png",
-                                            onTap: () {
-                                              navigateTo(
-                                                  context, const StoreScreen());
-                                            },
+                                        ),
+                                        SizedBox(width: 16.w),
+                                        Expanded(
+                                          child: QuickAccessButton(
+                                            onTap: () {},
+                                            title: "offers".tr(context),
+                                            icon: "assets/images/brand-two.png",
+                                            color: Colors.red.shade100,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 24.h),
-                                  ],
-                                )
-                              : SizedBox(
-                                  height: 0.h,
-                                ),
-                          isVendor != false
-                              ? Row(
-                                  children: [
-                                    Expanded(
-                                      child: QuickAccessButton(
-                                        onTap: () {
-                                          context
-                                              .read<GlobalCubit>()
-                                              .changeBottomNavIndex(0);
-                                        },
-                                        title: "home".tr(context),
-                                        icon: "assets/images/home.png",
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(width: 16.w),
-                                    Expanded(
-                                      child: QuickAccessButton(
-                                        onTap: () {
-                                          context
-                                              .read<GlobalCubit>()
-                                              .changeBottomNavIndex(1);
-                                        },
-                                        title: "nav_info".tr(context),
-                                        icon: "assets/images/dashboard.png",
-                                        color: Colors.red.shade100,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Row(
-                                  children: [
-                                    Expanded(
-                                      child: QuickAccessButton(
-                                        onTap: () {
-                                          navigateTo(
-                                              context, const FollowersPage());
-                                        },
-                                        title: "for_members".tr(context),
-                                        icon: "assets/images/brand-logo.png",
-                                        color: Colors.blue.shade100,
-                                      ),
-                                    ),
-                                    SizedBox(width: 16.w),
-                                    Expanded(
-                                      child: QuickAccessButton(
-                                        onTap: () {},
-                                        title: "offers".tr(context),
-                                        icon: "assets/images/brand-two.png",
-                                        color: Colors.red.shade100,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                          SizedBox(height: 32.h.h),
+                              SizedBox(height: 32.h.h),
 
-                          isVendor != true
-                              ? const SizedBox()
-                              : Wrap(
-                                  children: [
-                                    ApprovalItem(
-                                      title: 'convert_business_to_store'
-                                          .tr(context),
-                                      status: ApprovalStatus.processing,
-                                      icon: Image.asset(
-                                        "assets/images/cycle-circle.png",
-                                        width: 24.w,
-                                        height: 24.h,
-                                      ),
-                                      onApprove: () => CustomPopup.show(
-                                        context: context,
-                                        type: PopupType.success,
-                                        title: "request_sent_successfully"
-                                            .tr(context),
-                                        message:
-                                            "request_under_review".tr(context),
-                                      ),
-                                    ),
+                              isVendor != true
+                                  ? const SizedBox()
+                                  : Wrap(
+                                      children: [
+                                        ApprovalItem(
+                                          title: 'convert_business_to_store'
+                                              .tr(context),
+                                          status: ApprovalStatus.processing,
+                                          icon: Image.asset(
+                                            "assets/images/cycle-circle.png",
+                                            width: 24.w,
+                                            height: 24.h,
+                                          ),
+                                          onApprove: () => CustomPopup.show(
+                                            context: context,
+                                            type: PopupType.success,
+                                            title: "request_sent_successfully"
+                                                .tr(context),
+                                            message: "request_under_review"
+                                                .tr(context),
+                                          ),
+                                        ),
 
-// Second approval item example
-                                    ApprovalItem(
-                                      title: 'identity_verification_request'
-                                          .tr(context),
-                                      status: ApprovalStatus.approved,
-                                      icon: Image.asset(
-                                        "assets/images/verify.png",
-                                        width: 24.w,
-                                        height: 24.h,
-                                      ),
-                                      onApprove: () => CustomPopup.show(
-                                        context: context,
-                                        type: PopupType.success,
-                                        title: "request_sent_successfully"
-                                            .tr(context),
-                                        message:
-                                            "request_under_review".tr(context),
-                                      ),
+                                        // Second approval item example
+                                        ApprovalItem(
+                                          title: 'identity_verification_request'
+                                              .tr(context),
+                                          status: ApprovalStatus.approved,
+                                          icon: Image.asset(
+                                            "assets/images/verify.png",
+                                            width: 24.w,
+                                            height: 24.h,
+                                          ),
+                                          onApprove: () => CustomPopup.show(
+                                            context: context,
+                                            type: PopupType.success,
+                                            title: "request_sent_successfully"
+                                                .tr(context),
+                                            message: "request_under_review"
+                                                .tr(context),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                          SizedBox(height: 50.h),
-                          MenuItem(
-                            ontap: () {
-                              navigateTo(context, const HelpSupportPage());
-                            },
-                            title: "help_support".tr(context),
-                            icon: "assets/images/help.png",
-                            iconColor: Colors.transparent,
-                          ),
-                          SizedBox(height: 16.h),
-                          MenuItem(
-                            ontap: () {
-                              navigateTo(
-                                  context,
-                                  SettingsScreen(
-                                    isVendor: isVendor,
-                                  ));
-                            },
-                            title: "settings_privacy".tr(context),
-                            icon: "assets/images/settings.png",
-                            iconColor: Colors.transparent,
-                          ),
-                          SizedBox(height: 16.h),
+                              SizedBox(height: 50.h),
+                              MenuItem(
+                                ontap: () {
+                                  navigateTo(context, const HelpSupportPage());
+                                },
+                                title: "help_support".tr(context),
+                                icon: "assets/images/help.png",
+                                iconColor: Colors.transparent,
+                              ),
+                              SizedBox(height: 16.h),
+                              MenuItem(
+                                ontap: () {
+                                  navigateTo(
+                                      context,
+                                      SettingsScreen(
+                                        isVendor: isVendor,
+                                      ));
+                                },
+                                title: "settings_privacy".tr(context),
+                                icon: "assets/images/settings.png",
+                                iconColor: Colors.transparent,
+                              ),
+                              SizedBox(height: 16.h),
 
-                          // const Spacer(),
-                          isVendor != true
-                              ? const BusinessAccountSection()
-                              : const SizedBox(),
-                          isVendor != true
-                              ? SizedBox(height: 30.h)
-                              : const SizedBox(),
-                          state is LogoutLoading
-                              ? const Center(child: CustomLoadingIndicator())
-                              : SignOutButton(
-                                  onPressed: () {
-                                    // Show confirmation popup
-                                    CustomPopup.show(
-                                      type: PopupType.alert,
-                                      context: context,
-                                      titleColor: const Color(0xffEC4B4B),
-                                      title: "sign_out".tr(context),
-                                      message:
-                                          "sign_out_confirmation".tr(context),
-                                      primaryButtonText: "yes".tr(context),
-                                      secondaryButtonText: "no".tr(context),
-                                      onPrimaryButtonPressed: () {
-                                        cubit.logout();
+                              // const Spacer(),
+                              isVendor != true
+                                  ? const BusinessAccountSection()
+                                  : const SizedBox(),
+                              isVendor != true
+                                  ? SizedBox(height: 30.h)
+                                  : const SizedBox(),
+                              state is LogoutLoading
+                                  ? const Center(
+                                      child: CustomLoadingIndicator())
+                                  : SignOutButton(
+                                      onPressed: () {
+                                        // Show confirmation popup
+                                        CustomPopup.show(
+                                          type: PopupType.alert,
+                                          context: context,
+                                          titleColor: const Color(0xffEC4B4B),
+                                          title: "sign_out".tr(context),
+                                          message: "sign_out_confirmation"
+                                              .tr(context),
+                                          primaryButtonText: "yes".tr(context),
+                                          secondaryButtonText: "no".tr(context),
+                                          onPrimaryButtonPressed: () {
+                                            cubit.logout();
+                                          },
+                                          onSecondaryButtonPressed: () {
+                                            // Dismiss the popup if user cancels
+                                            Navigator.of(context).pop();
+                                          },
+                                        );
                                       },
-                                      onSecondaryButtonPressed: () {
-                                        // Dismiss the popup if user cancels
-                                        Navigator.of(context).pop();
-                                      },
-                                    );
-                                  },
-                                ),
-                          SizedBox(height: 30.h),
-                        ],
+                                    ),
+                              SizedBox(height: 30.h),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),

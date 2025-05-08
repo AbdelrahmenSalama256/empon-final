@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/app_constant.dart';
-import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -69,7 +68,7 @@ class LoginCubit extends Cubit<LoginState> {
           sl<CacheHelper>()
               .saveData(key: AppConstants.token, value: r.data?.user?.token);
           Print.success("Welcome ${r.data?.user?.firstName ?? ""}");
-          await sl<GlobalCubit>().getUserProfile();
+          // await sl<GlobalCubit>().getUserProfile();
         } else if (r.data!.isVerified == false) {
           isVerified = false;
         }
