@@ -76,7 +76,9 @@ class _ProductDetailVendorPageState extends State<ProductDetailVendorPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Product Image
-                    const ProductImageSection(),
+                    const ProductImageSection(
+                      images: [],
+                    ),
 
                     // Interaction Bar
                     _buildInteractionBar(),

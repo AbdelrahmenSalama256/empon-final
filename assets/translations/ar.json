@@ -654,5 +654,16 @@
   "not_verified": "غير موثق",
   "profile_updated_successfully": "تم تحديث الملف الشخصي بنجاح",
   "password_changed_successfully": "تم تغيير كلمة المرور بنجاح",
-  "no_products_found": "لا توجد منتجات"
+  "no_products_found": "لا توجد منتجات",
+  "no_favorite_stores": "لم يتم العثور على متاجر مفضلة",
+  "no_favorite_products": "لم يتم العثور على منتجات مفضلة",
+  "business_logo": "شعار النشاط التجاري",
+  "cover_image": "صورة الغلاف",
+  "upload_cover_image": "تحميل صورة الغلاف",
+  "add_logo_and_cover_for_business": "أضف شعارًا وصورة غلاف لتعزيز هوية نشاطك التجاري",
+  "confirm_and_create": "تأكيد وإنشاء الحساب",
+  "please_select_both_images": "يرجى اختيار كل من الشعار وصورة الغلاف",
+  "please_select_a_category": "يرجى اختيار فئة",
+  "no_comments": "لا توجد تعليقات",
+  "write_reply_here": "اكتب ردك هنا"
 }

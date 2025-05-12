@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/product_Details/view/widgets/section_title.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +9,7 @@ class ProductInfoSection extends StatefulWidget {
   final String currency;
   final String sellerName;
   final String productId;
+  final List<String> sizes;
 
   const ProductInfoSection({
     super.key,
@@ -19,6 +18,7 @@ class ProductInfoSection extends StatefulWidget {
     required this.currency,
     required this.sellerName,
     required this.productId,
+    required this.sizes,
   });
 
   @override
@@ -26,9 +26,6 @@ class ProductInfoSection extends StatefulWidget {
 }
 
 class _ProductInfoSectionState extends State<ProductInfoSection> {
-  // Sample sizes
-  final List<String> sizes = ['37', '38', '39', '40', '41', '42'];
-  final List<String> unavailableSizes = ['38']; // Size 38 is unavailable
   String? selectedSize;
 
   @override
@@ -36,43 +33,33 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section title
         SectionTitle(
           title: 'product_info'.tr(context),
           titleSize: 16.sp,
           verticalPadding: 15.h,
         ),
-
         SizedBox(height: 16.h),
-
-        // Product information with aligned labels and values
         _buildInfoRow('seller'.tr(context), widget.sellerName),
-
         SizedBox(height: 16.h),
-
         _buildInfoRow('serial_number'.tr(context), widget.productId),
-
-        SizedBox(height: 18.h),
-
-        // Size selector
-        Text(
-          'choose_size'.tr(context),
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xff1E2644),
+        if (widget.sizes.isNotEmpty) ...[
+          SizedBox(height: 18.h),
+          Text(
+            'choose_size'.tr(context),
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xff1E2644),
+            ),
           ),
-        ),
-
-        SizedBox(height: 16.h),
-
-        // Size options
-        Row(
-          children: [
-            for (int i = sizes.length - 1; i >= 0; i--)
-              _buildSizeOption(sizes[i]),
-          ],
-        ),
+          SizedBox(height: 16.h),
+          Row(
+            children: [
+              for (int i = widget.sizes.length - 1; i >= 0; i--)
+                _buildSizeOption(widget.sizes[i]),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -80,7 +67,6 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
   Widget _buildInfoRow(String label, String value) {
     return Row(
       children: [
-        // Fixed width container for labels to ensure alignment
         SizedBox(
           width: 120.w,
           child: Text(
@@ -92,14 +78,14 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
             ),
           ),
         ),
-        // Value with flexible width
         Expanded(
           child: Text(
             value,
             style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xffA0A0A0)),
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+              color: const Color(0xffA0A0A0),
+            ),
           ),
         ),
       ],
@@ -107,23 +93,20 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
   }
 
   Widget _buildSizeOption(String size) {
-    final isUnavailable = unavailableSizes.contains(size);
     final isSelected = selectedSize == size;
 
     return GestureDetector(
-      onTap: isUnavailable
-          ? null
-          : () {
-              setState(() {
-                selectedSize = size;
-              });
-            },
+      onTap: () {
+        setState(() {
+          selectedSize = size;
+        });
+      },
       child: Container(
         width: 40.w,
         height: 40.w,
         margin: EdgeInsets.only(left: 8.w),
         decoration: BoxDecoration(
-          color: isUnavailable ? Colors.grey.shade200 : Colors.white,
+          color: Colors.white,
           border: Border.all(
             color: const Color(0xffF6F6F6),
             width: isSelected ? 1.5 : 1,
@@ -136,9 +119,7 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              color: isUnavailable
-                  ? Colors.grey.shade400
-                  : const Color(0xff1E2644),
+              color: const Color(0xff1E2644),
             ),
           ),
         ),

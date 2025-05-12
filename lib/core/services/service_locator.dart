@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
@@ -7,6 +8,7 @@ import 'package:embone/features/client/locations/data/repo/locations_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wishlist_repo.dart';
 import 'package:embone/features/client/notifications/data/repo/notifications_repo.dart';
+import 'package:embone/features/client/product_Details/data/repo/comment_repo.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/shop/data/repo/shop_repo.dart';
 import 'package:get_it/get_it.dart';
@@ -31,6 +33,8 @@ void initServiceLocator() {
   sl.registerLazySingleton(() => NotificationsRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => WishlistRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => ProfileRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => AccountRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => CommentRepo(sl<DioConsumer>()));
   // sl.registerLazySingleton(() => DataConnectionChecker());
   // sl.registerLazySingleton(() => NetworkInfoImpl(sl<DataConnectionChecker>()));
   //! Repositorys

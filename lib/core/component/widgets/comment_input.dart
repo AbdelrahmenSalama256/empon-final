@@ -1,25 +1,17 @@
-import 'package:embone/core/component/widgets/app_button.dart';
-import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:embone/core/component/widgets/app_button.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 
-class CommentInput extends StatefulWidget {
-  final Function(String)? onSubmit;
+class CommentInput extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback? onSubmit;
 
-  const CommentInput({super.key, this.onSubmit});
-
-  @override
-  State<CommentInput> createState() => _CommentInputState();
-}
-
-class _CommentInputState extends State<CommentInput> {
-  final TextEditingController _commentController = TextEditingController();
-
-  @override
-  void dispose() {
-    _commentController.dispose();
-    super.dispose();
-  }
+  const CommentInput({
+    super.key,
+    required this.controller,
+    this.onSubmit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +27,7 @@ class _CommentInputState extends State<CommentInput> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             child: TextField(
-              controller: _commentController,
+              controller: controller,
               decoration: InputDecoration(
                 hintText: 'write_comment_here'.tr(context),
                 hintStyle: TextStyle(
@@ -50,19 +42,16 @@ class _CommentInputState extends State<CommentInput> {
                   vertical: 0.h,
                   horizontal: 7.w,
                 ),
-
-                // contentPadding: EdgeInsets.zero,
               ),
               textInputAction: TextInputAction.done,
               onSubmitted: (value) {
-                if (value.isNotEmpty && widget.onSubmit != null) {
-                  widget.onSubmit!(value);
-                  _commentController.clear();
+                if (value.isNotEmpty && onSubmit != null) {
+                  onSubmit!();
+                  controller.clear();
                 }
               },
             ),
           ),
-
           // Action buttons area with gray background
           Expanded(
             child: Container(
@@ -83,7 +72,7 @@ class _CommentInputState extends State<CommentInput> {
                       minHeight: 24.h,
                     ),
                     onPressed: () {
-                      // Show emoji picker
+                      // TODO: Implement emoji picker
                     },
                   ),
                   SizedBox(width: 15.w),
@@ -96,10 +85,9 @@ class _CommentInputState extends State<CommentInput> {
                       width: 61.w,
                       backgroundColor: const Color(0xffBDBDBD),
                       onPressed: () {
-                        if (_commentController.text.isNotEmpty &&
-                            widget.onSubmit != null) {
-                          widget.onSubmit!(_commentController.text);
-                          _commentController.clear();
+                        if (controller.text.isNotEmpty && onSubmit != null) {
+                          onSubmit!();
+                          controller.clear();
                         }
                       },
                       text: 'send'.tr(context),

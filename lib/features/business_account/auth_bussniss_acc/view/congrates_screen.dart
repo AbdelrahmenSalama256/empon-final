@@ -30,12 +30,12 @@ class CongratesScreen extends StatelessWidget {
                       Text(
                         'congrates'.tr(context),
                         style: TextStyle(
-                            fontSize: 34.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primary),
+                          fontSize: 34.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary,
+                        ),
                       ),
-                      SizedBox(height: 32.h.h),
-
+                      SizedBox(height: 32.h),
                       // Success icon
                       SvgPicture.asset(
                         'assets/images/svg/congrates.svg',
@@ -43,7 +43,6 @@ class CongratesScreen extends StatelessWidget {
                         height: 324.h,
                         fit: BoxFit.contain,
                       ),
-
                       SizedBox(height: 16.h),
                       Text(
                         'store_note'.tr(context),
@@ -55,13 +54,10 @@ class CongratesScreen extends StatelessWidget {
                           height: 1.5.h,
                         ),
                       ),
-
-                      // SizedBox(height: 10.h),
                     ],
                   ),
                 ),
               ),
-
               // Bottom buttons
               Row(
                 children: [
@@ -88,7 +84,7 @@ class CongratesScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 32.h.h),
+              SizedBox(height: 32.h),
             ],
           ),
         ),

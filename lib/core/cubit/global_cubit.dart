@@ -348,8 +348,7 @@ class GlobalCubit extends Cubit<GlobalState> {
 
   Future<void> addAccountToWishlist(int accountId) async {
     emit(WishlistLoading());
-    final response =
-        await await sl<WishlistRepo>().addAccountToWishlist(accountId);
+    final response = await sl<WishlistRepo>().addAccountToWishlist(accountId);
     response.fold(
       (l) {
         Print.error(l);

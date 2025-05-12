@@ -40,6 +40,7 @@ class HomeStoreContent extends StatelessWidget {
                   context,
                   const ProductDetailPage(
                     isVendor: true,
+                    productId: 0,
                   ),
                 ),
               ),

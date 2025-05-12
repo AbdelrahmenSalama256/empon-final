@@ -144,11 +144,9 @@ class WishlistItemCard extends StatelessWidget {
 
   Widget _buildProductLayout(bool isRTL) {
     final product = item as FavoriteProductModel?;
-
     if (product == null) {
       return const Center(child: Text('Invalid product data'));
     }
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -171,6 +169,7 @@ class WishlistItemCard extends StatelessWidget {
           ),
         ),
         Expanded(
+          // This Expanded is fine and necessary
           child: ProductDetails(
             item: {
               'nameKey': product.name,

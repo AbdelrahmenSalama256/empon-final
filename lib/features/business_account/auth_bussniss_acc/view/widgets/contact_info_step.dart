@@ -1,40 +1,21 @@
-import 'package:embone/core/component/widgets/app_dropdown_form_field.dart';
-import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/utils/validator.dart';
-import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ContactInfoStep extends StatefulWidget {
-  const ContactInfoStep({super.key});
+import 'package:embone/core/component/widgets/app_dropdown_form_field.dart';
+import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/utils/validator.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
+import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 
-  @override
-  State<ContactInfoStep> createState() => _ContactInfoStepState();
-}
-
-class _ContactInfoStepState extends State<ContactInfoStep> {
-  final TextEditingController _websiteController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _postalCodeController = TextEditingController();
-  String? _selectedCountry;
-  String? _selectedGovernorate;
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void dispose() {
-    _websiteController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
-    _cityController.dispose();
-    _postalCodeController.dispose();
-    super.dispose();
-  }
+class ContactInfoStep extends StatelessWidget {
+  final AccountCubit cubit;
+  const ContactInfoStep({
+    super.key,
+    required this.cubit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +23,13 @@ class _ContactInfoStepState extends State<ContactInfoStep> {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Form(
-          key: _formKey,
+          key: GlobalKey<FormState>(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildContactSection(context),
+              _buildContactSection(context, cubit),
               SizedBox(height: 30.h),
-              _buildLocationSection(context),
+              _buildLocationSection(context, cubit),
               SizedBox(height: 24.h),
             ],
           ),
@@ -57,7 +38,7 @@ class _ContactInfoStepState extends State<ContactInfoStep> {
     );
   }
 
-  Widget _buildContactSection(BuildContext context) {
+  Widget _buildContactSection(BuildContext context, AccountCubit cubit) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -71,7 +52,7 @@ class _ContactInfoStepState extends State<ContactInfoStep> {
         ),
         SizedBox(height: 16.h),
         AppTextField(
-          controller: _websiteController,
+          controller: cubit.websiteController,
           labelText: 'website'.tr(context),
           hintText: 'enter_website'.tr(context),
           prefixIcon: Padding(
@@ -83,7 +64,7 @@ class _ContactInfoStepState extends State<ContactInfoStep> {
         ),
         SizedBox(height: 16.h),
         AppTextField(
-          controller: _emailController,
+          controller: cubit.emailController,
           labelText: 'email'.tr(context),
           hintText: 'enter_email'.tr(context),
           prefixIcon: Icon(
@@ -96,7 +77,7 @@ class _ContactInfoStepState extends State<ContactInfoStep> {
         ),
         SizedBox(height: 16.h),
         AppTextField(
-          controller: _phoneController,
+          controller: cubit.phoneController,
           labelText: 'phone_number'.tr(context),
           hintText: 'enter_phone'.tr(context),
           prefixIcon: Icon(
@@ -111,7 +92,7 @@ class _ContactInfoStepState extends State<ContactInfoStep> {
     );
   }
 
-  Widget _buildLocationSection(BuildContext context) {
+  Widget _buildLocationSection(BuildContext context, AccountCubit cubit) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -125,27 +106,20 @@ class _ContactInfoStepState extends State<ContactInfoStep> {
         ),
         SizedBox(height: 16.h),
         AppDropdownFormField(
-          hint: 'country'.tr(context),
-          items: const ['السعودية', 'مصر', 'الإمارات', 'الكويت'],
-          initialValue: _selectedCountry,
+          hint: 'city_region'.tr(context),
+          items: cubit.cityIdMap.keys.toList(),
+          initialValue: cubit.cityIdMap.entries
+              .firstWhere((e) => e.value == cubit.selectedCityId,
+                  orElse: () => const MapEntry('', ''))
+              .key,
           validator: (value) => value == null || value.isEmpty
               ? 'field_required'.tr(context)
               : null,
-          onSaved: (value) => _selectedCountry = value,
-        ),
-        SizedBox(height: 16.h),
-        AppDropdownFormField(
-          hint: 'governorate'.tr(context),
-          items: const ['الرياض', 'جدة', 'الدمام', 'مكة'],
-          initialValue: _selectedGovernorate,
-          validator: (value) => value == null || value.isEmpty
-              ? 'field_required'.tr(context)
-              : null,
-          onSaved: (value) => _selectedGovernorate = value,
+          onSaved: (value) => cubit.updateCityId(value),
         ),
         SizedBox(height: 16.h),
         AppTextField(
-          controller: _addressController,
+          controller: cubit.addressController,
           labelText: 'address'.tr(context),
           hintText: 'enter_address'.tr(context),
           prefixIcon: Icon(
@@ -158,15 +132,7 @@ class _ContactInfoStepState extends State<ContactInfoStep> {
         ),
         SizedBox(height: 16.h),
         AppTextField(
-          controller: _cityController,
-          labelText: 'city_region'.tr(context),
-          hintText: 'enter_city_region'.tr(context),
-          validator: (value) => Validators.validateRequired(
-              value, 'city_region'.tr(context), context),
-        ),
-        SizedBox(height: 16.h),
-        AppTextField(
-          controller: _postalCodeController,
+          controller: cubit.postalCodeController,
           labelText: 'postal_code'.tr(context),
           hintText: 'enter_postal_code'.tr(context),
           keyboardType: TextInputType.number,

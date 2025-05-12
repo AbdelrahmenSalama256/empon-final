@@ -43,6 +43,10 @@ class EndPoints {
   static const String search = "${baseUrl}search";
   static const String searchHistory = '${baseUrl}history-search';
   static const String goToProduct = '${baseUrl}go-to-product';
+  static const String commentParent = '${baseUrl}comment/parent';
+  static const String commentChild = '${baseUrl}comment/child';
+  static const String comment = '${baseUrl}comment';
+  static const String commentLike = '${baseUrl}comment/ilke';
   static const String recentView = '${baseUrl}recent-view';
   static const String clearHistory = '${baseUrl}history-searches';
 
@@ -56,6 +60,10 @@ class EndPoints {
   static const String favorites = '${baseUrl}favourite';
   static const String addProductToWishlist = '${baseUrl}favourite/product';
   static const String addAccountToWishlist = '${baseUrl}favourite/account';
+
+  //// Buissniss Account Case
+  //! Create Account
+  static const String createAccount = '${baseUrl}accounts';
 }
 
 class ApiKey {

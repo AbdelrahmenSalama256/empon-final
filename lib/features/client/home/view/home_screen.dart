@@ -103,81 +103,105 @@ class HomeScreen extends StatelessWidget {
                                       child: Column(
                                         children: cubit.homeModel!.accounts
                                             .map((account) {
-                                          return Container(
-                                            decoration: const BoxDecoration(
-                                                color: Color(0xffF6F6F6)),
-                                            child: Column(
-                                              children: [
-                                                SectionHeader(
-                                                  backgroundColor:
-                                                      const Color(0xffF6F6F6),
-                                                  title: account.name,
-                                                  imageUrl: account.image,
-                                                  isNetworkImage: true,
-                                                  subtitle:
-                                                      "sponsored".tr(context),
-                                                  showCloseButton: true,
-                                                  onClose: () {
-                                                    context
-                                                        .read<GlobalCubit>()
-                                                        .changeBottomNavIndex(
-                                                            0);
-                                                  },
-                                                ),
-                                                SizedBox(
-                                                  height: 360.h,
-                                                  child: ListView.builder(
-                                                    scrollDirection:
-                                                        Axis.horizontal,
-                                                    itemCount:
-                                                        account.products.length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      final product = account
-                                                          .products[index];
-                                                      return ProductCard(
-                                                        imageUrl:
-                                                            product.imageUrl,
-                                                        title: product.name,
-                                                        price: double.parse(
-                                                            product.price),
-                                                        badge: 'best_seller'
+                                          return account.products.isEmpty
+                                              ? const SizedBox.shrink()
+                                              : Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: Color(
+                                                              0xffF6F6F6)),
+                                                  child: Column(
+                                                    children: [
+                                                      SectionHeader(
+                                                        backgroundColor:
+                                                            const Color(
+                                                                0xffF6F6F6),
+                                                        title: account.name,
+                                                        imageUrl: account.image,
+                                                        isNetworkImage: true,
+                                                        subtitle: "sponsored"
                                                             .tr(context),
-                                                        actionText: 'shop_now'
-                                                            .tr(context),
-                                                        isFavorite:
-                                                            product.isFavourite,
-                                                        onFavoriteToggle: () {
+                                                        showCloseButton: true,
+                                                        onClose: () {
                                                           context
                                                               .read<
                                                                   GlobalCubit>()
-                                                              .addProductToWishlist(
-                                                                  product.id);
+                                                              .changeBottomNavIndex(
+                                                                  0);
                                                         },
-                                                        onActionTap: () {
-                                                          context
-                                                              .read<HomeCubit>()
-                                                              .onActionTap(
-                                                                  product.id);
-                                                          showToast(
-                                                            context,
-                                                            message:
-                                                                'Product added to cart',
-                                                            state: ToastStates
-                                                                .success,
-                                                          );
-                                                        },
-                                                        onCardTap: () {
-                                                          navigateTo(context,
-                                                              const ProductDetailPage());
-                                                        },
-                                                      );
-                                                    },
+                                                      ),
+                                                      SizedBox(
+                                                        height: 360.h,
+                                                        child: ListView.builder(
+                                                          scrollDirection:
+                                                              Axis.horizontal,
+                                                          itemCount: account
+                                                              .products.length,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            final product =
+                                                                account.products[
+                                                                    index];
+                                                            return ProductCard(
+                                                              imageUrl: product
+                                                                  .imageUrl,
+                                                              title:
+                                                                  product.name,
+                                                              price: double
+                                                                  .parse(product
+                                                                      .price),
+                                                              badge: 'best_seller'
+                                                                  .tr(context),
+                                                              actionText:
+                                                                  'shop_now'.tr(
+                                                                      context),
+                                                              isFavorite: product
+                                                                  .isFavourite,
+                                                              onFavoriteToggle:
+                                                                  () {
+                                                                context
+                                                                    .read<
+                                                                        GlobalCubit>()
+                                                                    .addProductToWishlist(
+                                                                        product
+                                                                            .id);
+                                                              },
+                                                              onActionTap: () {
+                                                                context
+                                                                    .read<
+                                                                        HomeCubit>()
+                                                                    .onActionTap(
+                                                                        product
+                                                                            .id);
+                                                                showToast(
+                                                                  context,
+                                                                  message:
+                                                                      'Product added to cart',
+                                                                  state: ToastStates
+                                                                      .success,
+                                                                );
+                                                              },
+                                                              onCardTap: () {
+                                                                navigateTo(
+                                                                    context,
+                                                                    BlocProvider(
+                                                                      create: (context) =>
+                                                                          SearchCubit(
+                                                                              sl<SearchRepo>()),
+                                                                      child:
+                                                                          ProductDetailPage(
+                                                                        productId:
+                                                                            product.id,
+                                                                      ),
+                                                                    ));
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
+                                                );
                                         }).toList(),
                                       ),
                                     ),

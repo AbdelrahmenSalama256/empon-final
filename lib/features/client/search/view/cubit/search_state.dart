@@ -57,6 +57,7 @@ class RecentViewError extends SearchState {
   final String message;
   const RecentViewError({required this.message});
 }
+
 class ClearHistoryLoading extends SearchState {}
 
 class ClearHistorySuccess extends SearchState {}
@@ -65,4 +66,20 @@ class ClearHistoryError extends SearchState {
   final String message;
 
   const ClearHistoryError({required this.message});
+}
+
+class CommentLoading extends SearchState {}
+
+class CommentSuccess extends SearchState {}
+
+class CommentError extends SearchState {
+  final String message;
+
+  const CommentError({required this.message});
+}
+
+class CommentsLoaded extends SearchState {
+  final List<CommentModel> comments;
+
+  const CommentsLoaded(this.comments);
 }

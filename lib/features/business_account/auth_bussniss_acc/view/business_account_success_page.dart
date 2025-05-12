@@ -1,10 +1,13 @@
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/client/menu/view/inner_screens/help_support.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -13,6 +16,8 @@ class BusinessAccountSuccessPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PrintUtil.debug(context.read<AccountCubit>().nameController.text);
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -34,14 +39,14 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                           height: 253.h,
                         ),
                       ),
-
-                      SizedBox(height: 32.h.h),
+                      SizedBox(height: 32.h),
                       Text(
                         'business_account_created'.tr(context),
                         style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.black),
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.black,
+                        ),
                       ),
                       SizedBox(height: 16.h),
                       Text(
@@ -54,7 +59,6 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 8.h),
-
                       Text(
                         '•  ${'account_note'.tr(context)}',
                         style: TextStyle(
@@ -63,12 +67,10 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                           color: const Color(0xff7C7C7C),
                         ),
                       ),
-                      // SizedBox(height: 10.h),
                     ],
                   ),
                 ),
               ),
-
               // Bottom buttons
               Column(
                 children: [
@@ -76,7 +78,11 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                     text: 'continue'.tr(context),
                     onPressed: () {
                       navigateTo(
-                          context, const CreateBusinessAccountSettings());
+                          context,
+                          BlocProvider.value(
+                            value: context.read<AccountCubit>(),
+                            child: const CreateBusinessAccountSettings(),
+                          ));
                     },
                   ),
                   SizedBox(height: 12.h),
@@ -84,10 +90,15 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                     text: 'help_support'.tr(context),
                     type: AppButtonType.secondary,
                     onPressed: () {
-                      navigateTo(context, const HelpSupportPage());
+                      navigateTo(
+                          context,
+                          BlocProvider.value(
+                            value: context.read<AccountCubit>(),
+                            child: const HelpSupportPage(),
+                          ));
                     },
                   ),
-                  SizedBox(height: 32.h.h),
+                  SizedBox(height: 32.h),
                 ],
               ),
             ],

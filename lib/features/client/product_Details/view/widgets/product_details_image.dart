@@ -1,35 +1,22 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductImageSection extends StatefulWidget {
-  const ProductImageSection({super.key});
+  final List<String> images;
+
+  const ProductImageSection({super.key, required this.images});
 
   @override
   _ProductImageSectionState createState() => _ProductImageSectionState();
 }
 
 class _ProductImageSectionState extends State<ProductImageSection> {
-  // Controller for the PageView
   final PageController _pageController = PageController();
-
-  // List of image paths (replace with your actual image assets)
-  final List<String> _images = [
-    'assets/images/test-product.png',
-    'assets/images/test-product2.png', // Example additional images
-    'assets/images/test-product3.png',
-    'assets/images/test-product4.png',
-    'assets/images/test-product5.png',
-  ];
-
-  // Track the current page index
   int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    // Listen to page changes to update the current page index
     _pageController.addListener(() {
       setState(() {
         _currentPage = _pageController.page?.round() ?? 0;
@@ -45,33 +32,39 @@ class _ProductImageSectionState extends State<ProductImageSection> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.images.isEmpty) {
+      return SizedBox(
+        height: 250.h,
+        child: const Center(child: Text('No images available')),
+      );
+    }
+
     return Column(
       children: [
-        // Product image slider
         SizedBox(
           height: 250.h,
           child: PageView.builder(
             controller: _pageController,
-            itemCount: _images.length,
+            itemCount: widget.images.length,
             itemBuilder: (context, index) {
               return Center(
-                child: Image.asset(
-                  _images[index],
+                child: Image.network(
+                  widget.images[index],
                   fit: BoxFit.contain,
                   height: 250.h,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(child: Icon(Icons.error));
+                  },
                 ),
               );
             },
           ),
         ),
-        SizedBox(
-          height: 15.h,
-        ),
-        // Image navigation dots
+        SizedBox(height: 15.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
-            _images.length,
+            widget.images.length,
             (index) => Container(
               width: 8.w,
               height: 8.w,

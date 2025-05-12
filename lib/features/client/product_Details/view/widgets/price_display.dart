@@ -1,22 +1,18 @@
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/locale/app_loacl.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 class PriceDisplay extends StatelessWidget {
   final double currentPrice;
-  final double originalPrice;
-  final String? currency;
-  final bool showTag;
+  final double? originalPrice;
+  final String currency;
 
   const PriceDisplay({
     super.key,
     required this.currentPrice,
-    required this.originalPrice,
-    this.currency,
-    this.showTag = true,
+    this.originalPrice,
+    required this.currency,
   });
 
   @override
@@ -43,32 +39,34 @@ class PriceDisplay extends StatelessWidget {
           ),
           SizedBox(width: 4.w),
           Text(
-            currency ?? 'currency'.tr(context),
+            currency,
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
               color: const Color(0xff152354),
             ),
           ),
-          SizedBox(width: 16.w),
-          Text(
-            originalPrice.toStringAsFixed(0),
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w400,
-              decoration: TextDecoration.lineThrough,
-              color: AppColors.primary,
+          if (originalPrice != null) ...[
+            SizedBox(width: 16.w),
+            Text(
+              originalPrice!.toStringAsFixed(0),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w400,
+                decoration: TextDecoration.lineThrough,
+                color: AppColors.primary,
+              ),
             ),
-          ),
-          SizedBox(width: 4.w),
-          Text(
-            currency ?? 'currency'.tr(context),
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w400,
-              color: const Color(0xff152354),
+            SizedBox(width: 4.w),
+            Text(
+              currency,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w400,
+                color: const Color(0xff152354),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

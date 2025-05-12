@@ -6,6 +6,8 @@ import 'package:embone/features/client/search/data/model/search_history_model.da
 import 'package:embone/features/client/search/data/model/search_model.dart';
 import 'package:embone/features/client/search/data/model/search_recent_view.dart';
 
+import '../../../product_Details/data/model/product_model.dart';
+
 class SearchRepo {
   final ApiConsumer api;
 
@@ -56,16 +58,17 @@ class SearchRepo {
     }
   }
 
-  Future<Either<String, String>> goToProduct({required final int id}) async {
+  Future<Either<String, ProductModel>> goToProduct(
+      {required final int id}) async {
     try {
       final response = await api.get("${EndPoints.goToProduct}/$id");
-      return Right(response.data['message'] ?? 'Done');
+      return Right(ProductModel.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
       return Left(e.errorModel.detail);
     } catch (e) {
-      return Left('Failed to fetch search history: $e');
+      return Left('Failed to fetch product: $e');
     }
   }
 
