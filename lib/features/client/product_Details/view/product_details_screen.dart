@@ -164,6 +164,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       .where((url) => url?.isNotEmpty ?? false)
                                       .map((url) => url ?? ''),
                                 ],
+                                autoPlay: true,
+                                autoPlayInterval: const Duration(seconds: 4),
                               ),
                               SizedBox(height: 15.h),
                               InteractionBar(

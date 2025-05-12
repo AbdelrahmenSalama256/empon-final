@@ -1,8 +1,12 @@
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
+import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
+import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/widgets/recent_search_section.dart';
 import 'package:embone/features/client/search/view/widgets/recently_viewd_section.dart';
 import 'package:embone/features/client/search/view/widgets/search_results_section.dart';
@@ -99,7 +103,15 @@ class _SearchPageState extends State<SearchPage> {
                           RecentlyViewedSection(
                             recentlyViewed: cubit.recentViewModel?.items ?? [],
                             onItemTap: (p0) {
-                              cubit.goToProduct(id: p0);
+                              navigateTo(
+                                  context,
+                                  BlocProvider(
+                                    create: (context) =>
+                                        SearchCubit(sl<SearchRepo>()),
+                                    child: ProductDetailPage(
+                                      productId: p0,
+                                    ),
+                                  ));
                             },
                             onClearTap: () {
                               cubit.clearHistory();

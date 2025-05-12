@@ -61,7 +61,7 @@ class CommentItem extends StatelessWidget {
                                 cubit: cubit,
                                 reply: reply,
                                 isRTL: isRTL,
-                                replyController: TextEditingController(),
+                                replyController: cubit.commentController,
                                 productId: productId,
                               ))
                           .toList(),

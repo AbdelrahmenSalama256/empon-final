@@ -77,6 +77,7 @@ dependencies:
   bloc: ^9.0.0
   path: ^1.9.1
   easy_stepper: ^0.8.5+1
+  carousel_slider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
