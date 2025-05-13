@@ -61,6 +61,12 @@ class EndPoints {
   static const String addProductToWishlist = '${baseUrl}favourite/product';
   static const String addAccountToWishlist = '${baseUrl}favourite/account';
 
+  // ! Cart
+  static const String cart = '${baseUrl}carts';
+  static const String addProductToCart = '${baseUrl}carts';
+  static const String updateCartItemQuantity = '${baseUrl}carts';
+  static const String removeCartItem = '${baseUrl}carts';
+
   //// Buissniss Account Case
   //! Create Account
   static const String createAccount = '${baseUrl}accounts';

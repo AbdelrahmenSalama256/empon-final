@@ -2,6 +2,8 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/widgets/nav_bar_item.dart';
 import 'package:embone/features/business_account/dashboard/view/dashboard_screen.dart';
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
+import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
+import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
 import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/menu/view/menu_screen.dart';
@@ -36,7 +38,10 @@ class _BaseScreenState extends State<BaseScreen> {
             create: (context) => HomeCubit(sl<HomeRepo>()),
             child: const HomeScreen(),
           ),
-          const CartScreen(),
+          BlocProvider(
+            create: (context) => CartCubit(sl<CartRepo>()),
+            child: const CartScreen(),
+          ),
           BlocProvider(
             create: (context) => ShopCubit(sl<ShopRepo>()),
             child: const ShopScreen(),

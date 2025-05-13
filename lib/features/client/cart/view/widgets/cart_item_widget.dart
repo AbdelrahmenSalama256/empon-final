@@ -1,15 +1,16 @@
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/cart/data/model/cart_item_model.dart';
+import 'package:embone/features/client/cart/data/model/cart_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 class CartItemWidget extends StatelessWidget {
-  final CartItem item;
+  final CartItemModel item;
   final Function(int) onQuantityChanged;
-  final Function(int, int) onMenuPressed; // Two arguments (action and index)
+  final Function(int) onMenuPressed;
   final GlobalKey menuKey;
 
   const CartItemWidget({
@@ -22,10 +23,7 @@ class CartItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine the text direction based on the current locale
     final textDirection = Directionality.of(context);
-
-    // Separator for categories (comma for Arabic, regular comma for English)
     final separator = textDirection == TextDirection.rtl ? '، ' : ', ';
 
     return Container(
@@ -46,11 +44,10 @@ class CartItemWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Product image
           ClipRRect(
             borderRadius: BorderRadius.circular(8.r),
-            child: Image.asset(
-              item.imageUrl,
+            child: Image.network(
+              item.image,
               width: 119.w,
               height: 95.h,
               fit: BoxFit.cover,
@@ -67,10 +64,7 @@ class CartItemWidget extends StatelessWidget {
               },
             ),
           ),
-
           SizedBox(width: 12.w),
-
-          // Product details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,31 +74,30 @@ class CartItemWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.title,
+                        item.name,
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    // PopupMenuButton for the menu
                     PopupMenuButton<String>(
                       shape: ContinuousRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.r),
-                          side: BorderSide.none),
+                        borderRadius: BorderRadius.circular(20.r),
+                        side: BorderSide.none,
+                      ),
                       offset: const Offset(0, 50),
                       icon: const Icon(
                         Icons.more_vert,
                         color: Colors.grey,
                       ),
-                      // padding: EdgeInsets.zero,
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(10.r),
                       onSelected: (value) {
                         if (value == 'favorite') {
-                          onMenuPressed(0, 0); // 0 for "Add to Favorites"
+                          onMenuPressed(0); // 0 for "Add to Favorites"
                         } else if (value == 'remove') {
-                          onMenuPressed(1, 0); // 1 for "Remove"
+                          onMenuPressed(1); // 1 for "Remove"
                         }
                       },
                       itemBuilder: (BuildContext context) {
@@ -147,35 +140,27 @@ class CartItemWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 SizedBox(height: 4.h),
-
-                // Categories
                 Text(
-                  '${item.category}$separator${item.subCategory}$separator${'cart_size_label'.tr(context)} ${item.size}',
+                  '${item.color}$separator${item.name}$separator${'cart_size_label'.tr(context)} ${item.attributes?.name}',
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: Colors.grey.shade600,
                   ),
                 ),
-
                 SizedBox(height: 12.h),
-
-                // Price and quantity controls
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       textDirection == TextDirection.rtl
-                          ? '${item.price.toStringAsFixed(0)} ${'currency_egp'.tr(context)}'
-                          : '${'currency_egp'.tr(context)} ${item.price.toStringAsFixed(0)}',
+                          ? '${item.price} ${'currency_egp'.tr(context)}'
+                          : '${'currency_egp'.tr(context)} ${item.price}',
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    // Quantity controls
                     Row(
                       children: [
                         _buildQuantityButton(
@@ -219,7 +204,6 @@ class CartItemWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(100.r),
-          // border: Border.all(color: Colors.grey.shade300),
           boxShadow: const [
             BoxShadow(
               color: Color(0x0F000000),

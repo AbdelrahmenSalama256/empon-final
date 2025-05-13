@@ -3,6 +3,7 @@ import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/acc
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
+import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
 import 'package:embone/features/client/locations/data/repo/locations_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
@@ -35,6 +36,7 @@ void initServiceLocator() {
   sl.registerLazySingleton(() => ProfileRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => AccountRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => CommentRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => CartRepo(sl<DioConsumer>()));
   // sl.registerLazySingleton(() => DataConnectionChecker());
   // sl.registerLazySingleton(() => NetworkInfoImpl(sl<DataConnectionChecker>()));
   //! Repositorys
