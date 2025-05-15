@@ -9,6 +9,7 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
 import 'package:embone/features/client/menu/view/inner_screens/edit_profile.dart';
+import 'package:embone/features/client/menu/view/inner_screens/widgets/addresses_section.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/language_selector.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/notifications_toggle.dart';
@@ -105,6 +106,17 @@ class SettingsScreen extends StatelessWidget {
                                     const Color(0xffe3e3e380).withOpacity(0.3),
                                 height: 1.h,
                               ),
+                              // Adresses
+                              SizedBox(height: 16.h),
+                              const AddressesSection(),
+                              SizedBox(height: 16.h),
+                              Divider(
+                                // ignore: use_full_hex_values_for_flutter_colors
+                                color:
+                                    const Color(0xffe3e3e380).withOpacity(0.3),
+                                height: 1.h,
+                              ),
+
                               // Edit Profile
                               SizedBox(height: 16.h),
                               const Wallet(),

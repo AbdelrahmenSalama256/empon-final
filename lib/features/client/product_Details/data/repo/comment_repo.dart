@@ -80,7 +80,7 @@ class CommentRepo {
     required String comment,
   }) async {
     try {
-      final response = await api.put(
+        await api.put(
         '${EndPoints.comment}/$commentId',
         data: {
           'comment': comment,

@@ -36,13 +36,6 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _searchFocusNode.dispose();
-    super.dispose();
-  }
-
   void _onSearch(String query) {
     if (query.trim().isNotEmpty) {
       // Trigger search using SearchCubit
@@ -211,7 +204,7 @@ class _SearchPageState extends State<SearchPage> {
                 },
                 child: Icon(
                   CupertinoIcons.xmark,
-                  color: const Color(0xff8F95AB).withOpacity(0.7),
+                  color: const Color(0xff8F95AB).withValues(alpha: 0.7),
                   size: 20.sp,
                 ),
               )

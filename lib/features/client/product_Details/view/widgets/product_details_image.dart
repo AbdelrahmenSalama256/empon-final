@@ -15,7 +15,7 @@ class ProductImageSection extends StatefulWidget {
   });
 
   @override
-  _ProductImageSectionState createState() => _ProductImageSectionState();
+  State<ProductImageSection> createState() => _ProductImageSectionState();
 }
 
 class _ProductImageSectionState extends State<ProductImageSection> {

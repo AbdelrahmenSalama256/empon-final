@@ -69,7 +69,8 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
     final confirmPassword = confirmPasswordController.text.trim();
 
     if (!formKey.currentState!.validate() || password != confirmPassword) {
-      emit(ResetPasswordValidationFailed(message: 'Passwords do not match'));
+      emit(const ResetPasswordValidationFailed(
+          message: 'Passwords do not match'));
       return;
     }
 

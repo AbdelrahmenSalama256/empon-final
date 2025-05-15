@@ -6,6 +6,7 @@ import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
+import 'package:embone/features/client/menu/data/repo/address_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wishlist_repo.dart';
 import 'package:equatable/equatable.dart';
@@ -22,6 +23,12 @@ part 'global_state.dart';
 
 class GlobalCubit extends Cubit<GlobalState> {
   GlobalCubit() : super(GlobalInitial());
+
+  User? user =
+      sl<CacheHelper>().getDataString(key: AppConstants.userProfile) != null
+          ? User.fromJson(jsonDecode(
+              sl<CacheHelper>().getDataString(key: AppConstants.userProfile)!))
+          : null;
 
   init() {
     userType =
@@ -40,7 +47,6 @@ class GlobalCubit extends Cubit<GlobalState> {
     getUserProfile();
   }
 
-  // Controllers
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
@@ -53,7 +59,6 @@ class GlobalCubit extends Cubit<GlobalState> {
   final TextEditingController confrimNewPasswordController =
       TextEditingController();
 
-  // State
   Gender selectedGender = Gender.male;
   XFile? profileImage;
   bool isLoading = false;
@@ -73,10 +78,8 @@ class GlobalCubit extends Cubit<GlobalState> {
     emit(const ProfileLoaded());
   }
 
-  // User Type Management
   UserType? userType;
 
-  // Bottom Navigation
   int currentNavIndex = 0;
   PersistentTabController controller = PersistentTabController();
 
@@ -97,7 +100,6 @@ class GlobalCubit extends Cubit<GlobalState> {
     }
   }
 
-  // Language
   String language = sl<CacheHelper>().getCachedLanguage();
   changeLanguage() async {
     sl<CacheHelper>().getCachedLanguage() == "en"
@@ -108,7 +110,6 @@ class GlobalCubit extends Cubit<GlobalState> {
     emit(LanguageChangeState());
   }
 
-  // Location
   String? currentLocation;
   double currentLat = 30.062628785575555;
   double currentLong = 31.335285600000006;
@@ -162,7 +163,6 @@ class GlobalCubit extends Cubit<GlobalState> {
     }
   }
 
-  // User Data
   String? userName, userEmail, userId, userAvatar, userPhone;
   int? points;
   bool? userEmailVerified;
@@ -176,9 +176,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   List<Address>? userAddresses;
   List<Account>? userAccount;
 
-  User? user;
-
-  Future<void> getUserProfile() async {
+  Future<void> getUserProfile({bool forceRefresh = false}) async {
     emit(const ProfileLoading());
 
     if (sl<CacheHelper>().getDataString(key: AppConstants.token) == null) {
@@ -187,6 +185,19 @@ class GlobalCubit extends Cubit<GlobalState> {
       return;
     }
 
+    if (!forceRefresh && user != null) {
+      PrintUtil.success(
+          "Loaded user profile from cache: ${user!.firstName} ${user!.lastName}");
+      _updateUserData(user!);
+      emit(const ProfileLoaded());
+      _fetchAndUpdateProfile();
+      return;
+    }
+
+    await _fetchAndUpdateProfile();
+  }
+
+  Future<void> _fetchAndUpdateProfile() async {
     final response = await sl<LoginRepo>().getUserProfile();
     response.fold(
       (failure) {
@@ -196,36 +207,39 @@ class GlobalCubit extends Cubit<GlobalState> {
       (userData) {
         sl<CacheHelper>()
             .setData(AppConstants.userProfile, jsonEncode(userData.toJson()));
-        Print.important(userData.fcmToken);
         user = userData;
-        userId = userData.id;
-        userName = userData.firstName;
-        userLastName = userData.lastName;
-        userBirthDate = userData.birthDate;
-        userGender = userData.gender;
-        userPhone = userData.phone;
-        userEmail = userData.email;
-        userAnotherEmail = userData.anotherEmail;
-        userAvatar = userData.image;
-        userEmailVerified = userData.emailVerifiedAt;
-        userAnotherEmailVerified = userData.anotherEmailVerifiedAt;
-        userPhoneVerified = userData.phoneVerifiedAt;
-        userBalance = userData.balance;
-        userFcmToken = userData.fcmToken;
-        userWsToken = userData.wsToken;
-        userLastSeen = userData.lastSeen;
-        userIsOnline = userData.isOnline;
-        userCreatedAt = userData.createdAt;
-        userAddresses = userData.addresses;
-        userAccount = userData.account;
-
+        _updateUserData(userData);
         PrintUtil.success(
-            "User profile fetched successfully: $userName $userLastName");
+            "User profile fetched successfully: ${userData.firstName} ${userData.lastName}");
         PrintUtil.info(
             "Cached user profile: ${sl<CacheHelper>().getDataString(key: AppConstants.userProfile)}");
-        initProfileData();
+        emit(const ProfileLoaded());
       },
     );
+  }
+
+  void _updateUserData(User userData) {
+    userId = userData.id;
+    userName = userData.firstName;
+    userLastName = userData.lastName;
+    userBirthDate = userData.birthDate;
+    userGender = userData.gender;
+    userPhone = userData.phone;
+    userEmail = userData.email;
+    userAnotherEmail = userData.anotherEmail;
+    userAvatar = userData.image;
+    userEmailVerified = userData.emailVerifiedAt;
+    userAnotherEmailVerified = userData.anotherEmailVerifiedAt;
+    userPhoneVerified = userData.phoneVerifiedAt;
+    userBalance = userData.balance;
+    userFcmToken = userData.fcmToken;
+    userWsToken = userData.wsToken;
+    userLastSeen = userData.lastSeen;
+    userIsOnline = userData.isOnline;
+    userCreatedAt = userData.createdAt;
+    userAddresses = userData.addresses;
+    userAccount = userData.account;
+    initProfileData();
   }
 
   Future<void> logout() async {
@@ -245,6 +259,7 @@ class GlobalCubit extends Cubit<GlobalState> {
       },
       (message) {
         sl<CacheHelper>().clearData();
+        user = null;
         PrintUtil.success("User logged out successfully: $message");
         emit(LogoutSuccess(message));
       },
@@ -272,12 +287,12 @@ class GlobalCubit extends Cubit<GlobalState> {
 
     response.fold(
       (error) {
-        Print.error("Profile update failed: $error");
+        PrintUtil.error("Profile update failed: $error");
         emit(ProfileError(error));
         isLoading = false;
       },
       (result) async {
-        Print.success("Profile updated successfully!");
+        PrintUtil.success("Profile updated successfully!");
         userName = firstNameController.text;
         userLastName = lastNameController.text;
         userPhone = phoneController.text;
@@ -287,11 +302,10 @@ class GlobalCubit extends Cubit<GlobalState> {
             ? anotherEmailController.text
             : null;
         userBirthDate = birthDateController.text;
-        profileImage = null; // Reset profile image after successful upload
-        await getUserProfile(); // Fetch updated profile to get the new avatar URL
+        profileImage = null;
+        await getUserProfile(forceRefresh: true);
         isLoading = false;
-        emit(
-            const ProfileUpdated()); // Emit a distinct state for successful update
+        emit(ProfileUpdated());
       },
     );
   }
@@ -313,20 +327,22 @@ class GlobalCubit extends Cubit<GlobalState> {
     isLoading = true;
 
     final response = await sl<ProfileRepo>().updatePassword(
-        confirmNewPassword: confrimNewPasswordController.text,
-        newPassword: newPasswordController.text,
-        oldPassword: oldPasswordController.text);
+      confirmNewPassword: confrimNewPasswordController.text,
+      newPassword: newPasswordController.text,
+      oldPassword: oldPasswordController.text,
+    );
 
     response.fold(
       (error) {
-        Print.error("Profile update failed: $error");
+        PrintUtil.error("Profile update failed: $error");
         emit(ProfileError(error));
         isLoading = false;
       },
       (result) async {
-        Print.success("Profile updated successfully!");
-
-        emit(const ProfileUpdated());
+        PrintUtil.success("Profile updated successfully!");
+        await getUserProfile(forceRefresh: true);
+        isLoading = false;
+        emit(ProfileUpdated());
       },
     );
   }
@@ -336,12 +352,12 @@ class GlobalCubit extends Cubit<GlobalState> {
     final response = await sl<WishlistRepo>().addProductToWishlist(productId);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         emit(WishlistError(l));
       },
       (r) {
         emit(WishlistSuccess(r));
-        Print.success(r);
+        PrintUtil.success(r);
       },
     );
   }
@@ -351,13 +367,95 @@ class GlobalCubit extends Cubit<GlobalState> {
     final response = await sl<WishlistRepo>().addAccountToWishlist(accountId);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         emit(WishlistError(l));
       },
       (r) {
         emit(WishlistSuccess(r));
+        PrintUtil.success(r);
+      },
+    );
+  }
 
-        Print.success(r);
+  Future<void> updateAddress(int id, Address address) async {
+    emit(const ProfileLoading());
+    final result = await sl<AddressRepo>().updateAddress(id, address);
+    result.fold(
+      (failure) {
+        emit(ProfileError(failure));
+      },
+      (updatedAddress) {
+        userAddresses = updatedAddress;
+        user = user?.copyWith(addresses: userAddresses);
+        sl<CacheHelper>()
+            .setData(AppConstants.userProfile, jsonEncode(user?.toJson()));
+        emit(ProfileUpdated());
+      },
+    );
+  }
+
+  Future<void> deleteAddress(int id) async {
+    emit(const ProfileLoading());
+    final result = await sl<AddressRepo>().deleteAddress(id);
+    result.fold(
+      (failure) {
+        emit(ProfileError(failure));
+      },
+      (message) {
+        userAddresses =
+            (user?.addresses ?? []).where((addr) => addr.id != id).toList();
+        user = user?.copyWith(addresses: userAddresses);
+        sl<CacheHelper>()
+            .setData(AppConstants.userProfile, jsonEncode(user?.toJson()));
+        emit(ProfileUpdated());
+      },
+    );
+  }
+
+  Future<void> fetchUserAddresses() async {
+    emit(GetAddressLoading());
+    final response = await sl<AddressRepo>().getUserAddresses();
+    response.fold(
+      (l) {
+        Print.error(l);
+        emit(GetAddressError(l));
+      },
+      (r) {
+        userAddresses = r;
+        emit(GetAddressSuccess());
+      },
+    );
+  }
+
+  Future<void> addAddress({
+    required String address,
+    required String city,
+    required String lat,
+    required String lng,
+  }) async {
+    emit(AddressLoading());
+    final result = await sl<AddressRepo>().addAddress(
+      address: address,
+      city: city,
+      lat: lat,
+      lng: lng,
+    );
+    result.fold(
+      (failure) {
+        emit(AddressError(failure));
+      },
+      (newAddress) {
+        final globalCubit = sl<GlobalCubit>();
+        globalCubit.userAddresses = [
+          ...(globalCubit.userAddresses ?? []),
+          ...newAddress.map((addr) => Address.fromJson(addr.toJson()))
+        ];
+        globalCubit.user =
+            globalCubit.user?.copyWith(addresses: globalCubit.userAddresses);
+        sl<CacheHelper>().setData(
+            AppConstants.userProfile, jsonEncode(globalCubit.user?.toJson()));
+        emit(AddressSuccess());
+        fetchUserAddresses();
       },
     );
   }

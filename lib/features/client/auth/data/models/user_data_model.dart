@@ -107,48 +107,144 @@ class User {
         'is_deleted': isDeleted?.toString(),
         'is_verified': isVerified,
       };
+  User copyWith({
+    String? id,
+    String? firstName,
+    String? lastName,
+    String? birthDate,
+    String? gender,
+    String? phone,
+    String? email,
+    String? anotherEmail,
+    String? image,
+    bool? emailVerifiedAt,
+    bool? anotherEmailVerifiedAt,
+    bool? phoneVerifiedAt,
+    String? balance,
+    String? fcmToken,
+    String? wsToken,
+    String? lastSeen,
+    bool? isOnline,
+    String? token,
+    String? createdAt,
+    List<Address>? addresses,
+    List<Account>? account,
+    bool? isDeleted,
+    bool? isVerified,
+  }) {
+    return User(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      birthDate: birthDate ?? this.birthDate,
+      gender: gender ?? this.gender,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      anotherEmail: anotherEmail ?? this.anotherEmail,
+      image: image ?? this.image,
+      emailVerifiedAt: emailVerifiedAt ?? this.emailVerifiedAt,
+      anotherEmailVerifiedAt:
+          anotherEmailVerifiedAt ?? this.anotherEmailVerifiedAt,
+      phoneVerifiedAt: phoneVerifiedAt ?? this.phoneVerifiedAt,
+      balance: balance ?? this.balance,
+      fcmToken: fcmToken ?? this.fcmToken,
+      wsToken: wsToken ?? this.wsToken,
+      lastSeen: lastSeen ?? this.lastSeen,
+      isOnline: isOnline ?? this.isOnline,
+      token: token ?? this.token,
+      createdAt: createdAt ?? this.createdAt,
+      addresses: addresses ?? this.addresses,
+      account: account ?? this.account,
+      isDeleted: isDeleted ?? this.isDeleted,
+      isVerified: isVerified ?? this.isVerified,
+    );
+  }
 }
 
 class Address {
   final int? id;
-  final String? country;
-  final String? state;
-  final String? city;
+  final int? countryId; // Add country ID
+  final int? stateId; // Add state ID
+  final int? cityId; // Add securesocialmedia city ID
+  final String? country; // Keep name for display purposes
+  final String? state; // Keep name for display purposes
+  final String? city; // Keep name for display purposes
   final String? address;
   final String? lat;
   final String? lng;
+  final String? name;
 
   Address({
     this.id,
+    this.countryId,
+    this.stateId,
+    this.cityId,
     this.country,
     this.state,
     this.city,
     this.address,
     this.lat,
     this.lng,
+    this.name,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
-      id: json['id'] as int?,
+      id: json['id '] as int? ?? 0,
+      countryId: json['country_id'] as int?,
+      stateId: json['state_id'] as int?,
+      cityId: json['city_id'] as int?,
       country: json['country'] as String?,
       state: json['state'] as String?,
       city: json['city'] as String?,
       address: json['address'] as String?,
       lat: json['lat'] as String?,
       lng: json['lng'] as String?,
+      name: json['name'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'country_id': countryId,
+        'state_id': stateId,
+        'city_id': cityId,
         'country': country,
         'state': state,
         'city': city,
         'address': address,
         'lat': lat,
         'lng': lng,
+        'name': name,
       };
+
+  Address copyWith({
+    int? id,
+    int? countryId,
+    int? stateId,
+    int? cityId,
+    String? country,
+    String? state,
+    String? city,
+    String? address,
+    String? lat,
+    String? lng,
+    String? name,
+  }) {
+    return Address(
+      id: id ?? this.id,
+      countryId: countryId ?? this.countryId,
+      stateId: stateId ?? this.stateId,
+      cityId: cityId ?? this.cityId,
+      country: country ?? this.country,
+      state: state ?? this.state,
+      city: city ?? this.city,
+      address: address ?? this.address,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+      name: name ?? this.name,
+    );
+  }
 }
 
 class Product {

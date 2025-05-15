@@ -33,6 +33,7 @@ class EndPoints {
   static const String countries = '${baseUrl}countries';
   static const String states = '${baseUrl}states';
   static const String cities = '${baseUrl}cities';
+  static const String address = '${baseUrl}address';
   // ! Reset Password
   static const String forgotPassword = "${baseUrl}forgot-password";
   static const String verifyOtpForgotPassword =
@@ -70,6 +71,7 @@ class EndPoints {
   //// Buissniss Account Case
   //! Create Account
   static const String createAccount = '${baseUrl}accounts';
+  static const String category = '${baseUrl}category';
 }
 
 class ApiKey {

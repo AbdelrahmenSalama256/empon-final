@@ -123,7 +123,8 @@ class ForgotPasswordData {
         'is_online': isOnline,
         'token': token,
         'created_at': createdAt,
-        'addresses': addresses?.map((e) => e.toJson()).toList(),
+        if (addresses != null && addresses!.isNotEmpty)
+          'addresses': addresses!.map((e) => e.toJson()).toList(),
         'account': account,
         'is_deleted': isDeleted,
         'is_verified': isVerified,

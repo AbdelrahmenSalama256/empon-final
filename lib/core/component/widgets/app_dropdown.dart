@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppDropdownField extends StatelessWidget {
   final String hint;
   final String? value;
+  final List<String>? selectedValues;
   final List<String> items;
   final ValueChanged<String?> onChanged;
+  final ValueChanged<List<String>>? onMultipleChanged;
   final FormFieldValidator<String>? validator;
   final bool showErrorBorder;
   final Widget? prefixIcon;
@@ -18,13 +20,16 @@ class AppDropdownField extends StatelessWidget {
   final TextStyle? hintStyle;
   final TextStyle? selectedTextStyle;
   final bool enabled;
+  final bool isMultiSelect;
 
   const AppDropdownField({
     super.key,
     required this.hint,
-    required this.value,
+    this.value,
+    this.selectedValues,
     required this.items,
     required this.onChanged,
+    this.onMultipleChanged,
     this.validator,
     this.showErrorBorder = false,
     this.prefixIcon,
@@ -35,7 +40,11 @@ class AppDropdownField extends StatelessWidget {
     this.hintStyle,
     this.selectedTextStyle,
     this.enabled = true,
-  });
+    this.isMultiSelect = false,
+  }) : assert(
+            (isMultiSelect && onMultipleChanged != null) ||
+                (!isMultiSelect && onChanged != null),
+            'For multiSelect=true, provide onMultipleChanged. For multiSelect=false, provide onChanged.');
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +59,11 @@ class AppDropdownField extends StatelessWidget {
         decoration: BoxDecoration(
           color: enabled ? const Color(0xffF0F2F9) : const Color(0xffE0E0E0),
           borderRadius: BorderRadius.circular(15.r),
-          border: showErrorBorder && validator?.call(value) != null
+          border: showErrorBorder &&
+                  (isMultiSelect
+                      ? (selectedValues == null || selectedValues!.isEmpty) &&
+                          validator?.call('') != null
+                      : validator?.call(value) != null)
               ? Border.all(color: AppColors.error, width: 1.0)
               : null,
         ),
@@ -65,22 +78,10 @@ class AppDropdownField extends StatelessWidget {
             // Text Content
             Expanded(
               child: Text(
-                value?.isNotEmpty == true ? value! : hint,
-                style: value?.isNotEmpty != true
-                    ? hintStyle ??
-                        TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xff8F95AB)
-                              .withAlpha((0.7 * 255).toInt()),
-                        )
-                    : selectedTextStyle ??
-                        TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xff8F95AB),
-                        ),
+                _getDisplayText(),
+                style: _getDisplayStyle(),
                 overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
 
@@ -113,8 +114,51 @@ class AppDropdownField extends StatelessWidget {
     );
   }
 
+  String _getDisplayText() {
+    if (isMultiSelect) {
+      if (selectedValues == null || selectedValues!.isEmpty) {
+        return hint;
+      }
+      if (selectedValues!.length == 1) {
+        return selectedValues!.first;
+      }
+      return '${selectedValues!.length} items selected';
+    } else {
+      return value?.isNotEmpty == true ? value! : hint;
+    }
+  }
+
+  TextStyle _getDisplayStyle() {
+    final bool hasValue = isMultiSelect
+        ? (selectedValues != null && selectedValues!.isNotEmpty)
+        : (value?.isNotEmpty == true);
+
+    return hasValue
+        ? selectedTextStyle ??
+            TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w400,
+              color: const Color(0xff8F95AB),
+            )
+        : hintStyle ??
+            TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w400,
+              color: const Color(0xff8F95AB).withAlpha((0.7 * 255).toInt()),
+            );
+  }
+
   void _showDropdownBottomSheet(BuildContext context) {
     PrintUtil.info("Opening dropdown bottom sheet for: $hint");
+
+    if (isMultiSelect) {
+      _showMultiSelectBottomSheet(context);
+    } else {
+      _showSingleSelectBottomSheet(context);
+    }
+  }
+
+  void _showSingleSelectBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -167,6 +211,104 @@ class AppDropdownField extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showMultiSelectBottomSheet(BuildContext context) {
+    // Create a temporary list to hold selections
+    List<String> tempSelectedValues = List.from(selectedValues ?? []);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        hint,
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          onMultipleChanged!(tempSelectedValues);
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Done',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(height: 1.h),
+                SizedBox(
+                  height: items.length > 5 ? 300.h : null,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      final isSelected = tempSelectedValues.contains(item);
+
+                      return ListTile(
+                        title: Text(
+                          item,
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                        trailing: Checkbox(
+                          value: isSelected,
+                          activeColor: AppColors.primary,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                tempSelectedValues.add(item);
+                              } else {
+                                tempSelectedValues.remove(item);
+                              }
+                            });
+                          },
+                        ),
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              tempSelectedValues.remove(item);
+                            } else {
+                              tempSelectedValues.add(item);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

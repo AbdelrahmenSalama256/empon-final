@@ -66,9 +66,7 @@ class ProfileDataUpdated extends GlobalState {
   const ProfileDataUpdated();
 }
 
-class ProfileUpdated extends GlobalState {
-  const ProfileUpdated();
-}
+class ProfileUpdated extends GlobalState {}
 
 class WishlistLoading extends GlobalState {}
 
@@ -81,4 +79,23 @@ class WishlistError extends GlobalState {
   final String message;
 
   const WishlistError(this.message);
+}
+
+class GetAddressLoading extends GlobalState {}
+
+class GetAddressSuccess extends GlobalState {}
+
+class GetAddressError extends GlobalState {
+  final String message;
+
+  const GetAddressError(this.message);
+}
+
+class AddressLoading extends GlobalState {}
+
+class AddressSuccess extends GlobalState {}
+
+class AddressError extends GlobalState {
+  final String message;
+  const AddressError(this.message);
 }

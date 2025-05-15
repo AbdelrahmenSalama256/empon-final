@@ -1,6 +1,5 @@
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/client/cart/data/model/cart_item_model.dart';
 import 'package:embone/features/client/cart/data/model/cart_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

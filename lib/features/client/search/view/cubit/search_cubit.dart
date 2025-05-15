@@ -9,6 +9,7 @@ import 'package:embone/features/client/search/data/model/search_model.dart';
 import 'package:embone/features/client/search/data/model/search_recent_view.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import '../../../product_Details/data/model/product_model.dart';
 
@@ -153,7 +154,9 @@ class SearchCubit extends Cubit<SearchState> {
       (r) {
         comments = r.data.comments;
         Print.success('Parent comments fetched successfully');
-        print('Set comments: $comments');
+        if (kDebugMode) {
+          print('Set comments: $comments');
+        }
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -330,7 +333,7 @@ class SearchCubit extends Cubit<SearchState> {
 
     if (!found) {
       PrintUtil.error('Comment with ID $commentId not found');
-      if (!isClosed) emit(CommentError(message: 'Comment not found'));
+      if (!isClosed) emit(const CommentError(message: 'Comment not found'));
       return;
     }
 

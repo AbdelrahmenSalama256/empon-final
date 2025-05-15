@@ -15,5 +15,5 @@ class NotificationsSuccess extends NotificationsState {}
 class NotificationsError extends NotificationsState {
   final String message;
 
-  NotificationsError({required this.message});
+  const NotificationsError({required this.message});
 }
