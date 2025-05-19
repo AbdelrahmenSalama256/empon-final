@@ -1,11 +1,4 @@
-part of 'global_cubit.dart';
-
-sealed class GlobalState extends Equatable {
-  const GlobalState();
-
-  @override
-  List<Object> get props => [];
-}
+class GlobalState {}
 
 final class GlobalInitial extends GlobalState {}
 
@@ -17,7 +10,7 @@ class LoadingState extends GlobalState {}
 class ErrorState extends GlobalState {
   final String errorMessage;
 
-  const ErrorState(this.errorMessage);
+  ErrorState(this.errorMessage);
 }
 
 class LanguageChangeState extends GlobalState {}
@@ -26,45 +19,31 @@ class UserTypeLoadedState extends GlobalState {}
 
 class UserTypeChangedState extends GlobalState {}
 
-class ProfileLoading extends GlobalState {
-  const ProfileLoading();
-}
+class ProfileLoading extends GlobalState {}
 
-class ProfileLoaded extends GlobalState {
-  const ProfileLoaded();
-}
+class ProfileLoaded extends GlobalState {}
 
 class ProfileError extends GlobalState {
   final String message;
 
-  const ProfileError(this.message);
+  ProfileError(this.message);
 }
 
-class LogoutLoading extends GlobalState {
-  const LogoutLoading();
-}
+class LogoutLoading extends GlobalState {}
 
 class LogoutSuccess extends GlobalState {
   final String message;
 
-  const LogoutSuccess(this.message);
-
-  @override
-  List<Object> get props => [message];
+  LogoutSuccess(this.message);
 }
 
 class LogoutError extends GlobalState {
   final String message;
 
-  const LogoutError(this.message);
-
-  @override
-  List<Object> get props => [message];
+  LogoutError(this.message);
 }
 
-class ProfileDataUpdated extends GlobalState {
-  const ProfileDataUpdated();
-}
+class ProfileDataUpdated extends GlobalState {}
 
 class ProfileUpdated extends GlobalState {}
 
@@ -72,13 +51,13 @@ class WishlistLoading extends GlobalState {}
 
 class WishlistSuccess extends GlobalState {
   final String message;
-  const WishlistSuccess(this.message);
+  WishlistSuccess(this.message);
 }
 
 class WishlistError extends GlobalState {
   final String message;
 
-  const WishlistError(this.message);
+  WishlistError(this.message);
 }
 
 class GetAddressLoading extends GlobalState {}
@@ -88,7 +67,7 @@ class GetAddressSuccess extends GlobalState {}
 class GetAddressError extends GlobalState {
   final String message;
 
-  const GetAddressError(this.message);
+  GetAddressError(this.message);
 }
 
 class AddressLoading extends GlobalState {}
@@ -97,5 +76,5 @@ class AddressSuccess extends GlobalState {}
 
 class AddressError extends GlobalState {
   final String message;
-  const AddressError(this.message);
+  AddressError(this.message);
 }

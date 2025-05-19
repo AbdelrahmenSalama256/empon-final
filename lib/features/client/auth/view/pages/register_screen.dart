@@ -3,6 +3,7 @@ import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
 import 'package:embone/features/client/auth/view/pages/email/another_email_page.dart';
 import 'package:embone/features/client/auth/view/pages/email/email_page.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/add_new_address_page.dart';

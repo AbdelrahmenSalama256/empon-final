@@ -1,11 +1,6 @@
-part of 'account_cubit.dart';
+import '../../../../client/locations/data/model/location_model.dart';
 
-sealed class AccountState extends Equatable {
-  const AccountState();
-
-  @override
-  List<Object> get props => [];
-}
+class AccountState {}
 
 final class AccountInitial extends AccountState {}
 
@@ -16,7 +11,7 @@ final class AccountSuccess extends AccountState {}
 final class AccountError extends AccountState {
   final String massage;
 
-  const AccountError({required this.massage});
+  AccountError({required this.massage});
 }
 
 class AccountUpdated extends AccountState {}
@@ -24,10 +19,7 @@ class AccountUpdated extends AccountState {}
 class CountriesLoaded extends AccountState {
   final List<LocationModel> countries;
 
-  const CountriesLoaded(this.countries);
-
-  @override
-  List<Object> get props => [countries];
+  CountriesLoaded(this.countries);
 }
 
 class LocationsLoading extends AccountState {}
@@ -35,5 +27,7 @@ class LocationsLoading extends AccountState {}
 class LocationsError extends AccountState {
   final String message;
 
-  const LocationsError(this.message);
+  LocationsError(this.message);
 }
+
+class AccountStepOneCompleted extends AccountState {}

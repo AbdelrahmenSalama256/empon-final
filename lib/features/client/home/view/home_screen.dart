@@ -3,13 +3,16 @@ import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
 import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
+import 'package:embone/features/client/cart/view/cubit/cart_state.dart';
 import 'package:embone/features/client/chat/view/massages_screen.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
 import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
+import 'package:embone/features/client/home/view/cubit/home_state.dart';
 import 'package:embone/features/client/home/view/widgets/product_card.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
 import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
@@ -20,6 +23,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:embone/core/component/widgets/skeleton_loader.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -115,20 +119,63 @@ class HomeScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 10.h),
                           state is HomeLoading
-                              ? const Expanded(
-                                  child:
-                                      Center(child: CustomLoadingIndicator()))
-                              : Expanded(
-                                  child: cubit.homeModel == null
-                                      ? const Center(
-                                          child: Text('No data available'))
-                                      : SingleChildScrollView(
-                                          child: Column(
-                                            children: cubit.homeModel!.accounts
-                                                .map((account) {
-                                              return account.products.isEmpty
-                                                  ? const SizedBox.shrink()
-                                                  : Container(
+                              ? Expanded(
+                                  child: ListView.builder(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10.w),
+                                    itemCount: 3, // Simulate 3 sections
+                                    itemBuilder: (context, index) {
+                                      return ShimmerEffect(
+                                        isLoading: true,
+                                        child: Column(
+                                          children: [
+                                            SkeletonLoader(
+                                              width: double.infinity,
+                                              height: 40.h,
+                                              borderRadius: 8.0,
+                                              margin:
+                                                  EdgeInsets.only(bottom: 10.h),
+                                            ),
+                                            SizedBox(
+                                              height: 360.h,
+                                              child: ListView.builder(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemCount:
+                                                    5, // Simulate 5 products per section
+                                                itemBuilder:
+                                                    (context, itemIndex) {
+                                                  return SkeletonLoader(
+                                                    width: 200.w,
+                                                    height: 300.h,
+                                                    borderRadius: 12.0,
+                                                    margin:
+                                                        EdgeInsets.all(10.w),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.h),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : cubit.homeModel == null
+                                  ? const Center(
+                                      child: Text('No data available'))
+                                  : Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: cubit.homeModel!.accounts
+                                              .map((account) {
+                                            return account.products.isEmpty
+                                                ? const SizedBox.shrink()
+                                                : ShimmerEffect(
+                                                    isLoading:
+                                                        state is HomeLoading,
+                                                    child: Container(
                                                       decoration:
                                                           const BoxDecoration(
                                                               color: Color(
@@ -227,11 +274,12 @@ class HomeScreen extends StatelessWidget {
                                                           ),
                                                         ],
                                                       ),
-                                                    );
-                                            }).toList(),
-                                          ),
+                                                    ),
+                                                  );
+                                          }).toList(),
                                         ),
-                                ),
+                                      ),
+                                    ),
                         ],
                       ),
                     ),

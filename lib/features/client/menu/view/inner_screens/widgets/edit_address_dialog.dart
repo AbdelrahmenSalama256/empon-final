@@ -4,6 +4,7 @@ import 'package:embone/core/component/widgets/app_dropdown.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
 import 'package:embone/features/client/locations/data/model/location_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

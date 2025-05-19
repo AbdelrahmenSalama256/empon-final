@@ -5,6 +5,7 @@ import 'package:embone/features/client/product_Details/data/model/comment_model.
 import 'package:embone/features/client/product_Details/view/widgets/comment_item.dart';
 import 'package:embone/features/client/product_Details/view/widgets/section_title.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
+import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

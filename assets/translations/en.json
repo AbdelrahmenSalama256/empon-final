@@ -685,5 +685,8 @@
   "address_details": "Address Details",
   "street_building_etc": "Street, Building, etc.",
   "state": "State",
-  "required_fields_missing": "Required fields are missing"
+  "required_fields_missing": "Required fields are missing",
+  "no_address_selected": "No Address Selected",
+  "select_shipping_address": "Select Shipping Address",
+  "please_select_shipping_address": "Please select a shipping address"
 }

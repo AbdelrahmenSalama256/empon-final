@@ -3,13 +3,13 @@ import 'dart:developer';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:embone/features/client/menu/data/repo/address_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wishlist_repo.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:embone/core/network/local_network.dart';
@@ -18,8 +18,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart' as loc;
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-
-part 'global_state.dart';
 
 class GlobalCubit extends Cubit<GlobalState> {
   GlobalCubit() : super(GlobalInitial());
@@ -75,7 +73,7 @@ class GlobalCubit extends Cubit<GlobalState> {
         : userGender == 'female'
             ? Gender.female
             : Gender.other;
-    emit(const ProfileLoaded());
+    emit(ProfileLoaded());
   }
 
   UserType? userType;
@@ -177,11 +175,11 @@ class GlobalCubit extends Cubit<GlobalState> {
   List<Account>? userAccount;
 
   Future<void> getUserProfile({bool forceRefresh = false}) async {
-    emit(const ProfileLoading());
+    emit(ProfileLoading());
 
     if (sl<CacheHelper>().getDataString(key: AppConstants.token) == null) {
       PrintUtil.error("No token found, user is not logged in.");
-      emit(const ProfileError("No token found, please log in."));
+      emit(ProfileError("No token found, please log in."));
       return;
     }
 
@@ -189,7 +187,7 @@ class GlobalCubit extends Cubit<GlobalState> {
       PrintUtil.success(
           "Loaded user profile from cache: ${user!.firstName} ${user!.lastName}");
       _updateUserData(user!);
-      emit(const ProfileLoaded());
+      emit(ProfileLoaded());
       _fetchAndUpdateProfile();
       return;
     }
@@ -213,7 +211,7 @@ class GlobalCubit extends Cubit<GlobalState> {
             "User profile fetched successfully: ${userData.firstName} ${userData.lastName}");
         PrintUtil.info(
             "Cached user profile: ${sl<CacheHelper>().getDataString(key: AppConstants.userProfile)}");
-        emit(const ProfileLoaded());
+        emit(ProfileLoaded());
       },
     );
   }
@@ -243,11 +241,11 @@ class GlobalCubit extends Cubit<GlobalState> {
   }
 
   Future<void> logout() async {
-    emit(const LogoutLoading());
+    emit(LogoutLoading());
 
     if (sl<CacheHelper>().getDataString(key: AppConstants.token) == null) {
       PrintUtil.error("No token found, user is not logged in.");
-      emit(const LogoutError("No token found, please log in."));
+      emit(LogoutError("No token found, please log in."));
       return;
     }
 
@@ -269,7 +267,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   Future<void> updateUserProfile() async {
     if (isLoading) return;
 
-    emit(const ProfileLoading());
+    emit(ProfileLoading());
     isLoading = true;
 
     final response = await sl<ProfileRepo>().updateProfile(
@@ -312,18 +310,18 @@ class GlobalCubit extends Cubit<GlobalState> {
 
   void setProfileImage(XFile? image) {
     profileImage = image;
-    emit(const ProfileDataUpdated());
+    emit(ProfileDataUpdated());
   }
 
   void setGender(Gender gender) {
     selectedGender = gender;
-    emit(const ProfileDataUpdated());
+    emit(ProfileDataUpdated());
   }
 
   Future<void> updatePasswordProfile() async {
     if (isLoading) return;
 
-    emit(const ProfileLoading());
+    emit(ProfileLoading());
     isLoading = true;
 
     final response = await sl<ProfileRepo>().updatePassword(
@@ -378,7 +376,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   }
 
   Future<void> updateAddress(int id, Address address) async {
-    emit(const ProfileLoading());
+    emit(ProfileLoading());
     final result = await sl<AddressRepo>().updateAddress(id, address);
     result.fold(
       (failure) {
@@ -395,7 +393,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   }
 
   Future<void> deleteAddress(int id) async {
-    emit(const ProfileLoading());
+    emit(ProfileLoading());
     final result = await sl<AddressRepo>().deleteAddress(id);
     result.fold(
       (failure) {
@@ -455,7 +453,6 @@ class GlobalCubit extends Cubit<GlobalState> {
         sl<CacheHelper>().setData(
             AppConstants.userProfile, jsonEncode(globalCubit.user?.toJson()));
         emit(AddressSuccess());
-        fetchUserAddresses();
       },
     );
   }

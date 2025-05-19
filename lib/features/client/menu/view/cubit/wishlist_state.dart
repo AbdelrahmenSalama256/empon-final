@@ -1,22 +1,15 @@
-part of 'wishlist_cubit.dart';
-
-sealed class WishlistState extends Equatable {
-  const WishlistState();
-
-  @override
-  List<Object> get props => [];
-}
+class WishlistState {}
 
 final class WishlistInitial extends WishlistState {}
 
 class WishlistsLoading extends WishlistState {}
 
 class WishlistsSuccess extends WishlistState {
-  const WishlistsSuccess();
+  WishlistsSuccess();
 }
 
 class WishlistsError extends WishlistState {
   final String message;
 
-  const WishlistsError(this.message);
+  WishlistsError(this.message);
 }

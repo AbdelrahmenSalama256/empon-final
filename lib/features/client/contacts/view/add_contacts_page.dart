@@ -2,6 +2,7 @@ import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
 import 'package:embone/features/client/contacts/view/widgets/contact_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

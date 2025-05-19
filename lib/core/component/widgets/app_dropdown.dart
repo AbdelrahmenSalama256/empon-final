@@ -1,15 +1,17 @@
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppDropdownField extends StatelessWidget {
   final String hint;
-  final String? value;
-  final List<String>? selectedValues;
+  final String? value; // Used for single-select
+  final List<String>? selectedValues; // Used for multi-select
   final List<String> items;
-  final ValueChanged<String?> onChanged;
-  final ValueChanged<List<String>>? onMultipleChanged;
+  final ValueChanged<String?> onChanged; // Callback for single-select
+  final ValueChanged<List<String>>?
+      onMultipleChanged; // Callback for multi-select
   final FormFieldValidator<String>? validator;
   final bool showErrorBorder;
   final Widget? prefixIcon;
@@ -41,9 +43,7 @@ class AppDropdownField extends StatelessWidget {
     this.selectedTextStyle,
     this.enabled = true,
     this.isMultiSelect = false,
-  }) : assert(
-            (isMultiSelect && onMultipleChanged != null) ||
-                (!isMultiSelect && onChanged != null),
+  }) : assert((isMultiSelect && onMultipleChanged != null) || (!isMultiSelect),
             'For multiSelect=true, provide onMultipleChanged. For multiSelect=false, provide onChanged.');
 
   @override
@@ -75,14 +75,9 @@ class AppDropdownField extends StatelessWidget {
               SizedBox(width: 0.w),
             ],
 
-            // Text Content
+            // Text or Chips Content
             Expanded(
-              child: Text(
-                _getDisplayText(),
-                style: _getDisplayStyle(),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
+              child: _buildDisplayContent(context),
             ),
 
             // Suffix Icon (custom or default dropdown icon)
@@ -114,20 +109,60 @@ class AppDropdownField extends StatelessWidget {
     );
   }
 
-  String _getDisplayText() {
+  /// Builds the display content (chips for multi-select, text for single-select).
+  Widget _buildDisplayContent(BuildContext context) {
     if (isMultiSelect) {
       if (selectedValues == null || selectedValues!.isEmpty) {
-        return hint;
+        return Text(
+          hint,
+          style: _getDisplayStyle(),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        );
       }
-      if (selectedValues!.length == 1) {
-        return selectedValues!.first;
-      }
-      return '${selectedValues!.length} items selected';
+      return Wrap(
+        spacing: 8.w,
+        runSpacing: 4.h,
+        children: selectedValues!.map((item) {
+          return Chip(
+            label: Text(
+              item,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: AppColors.primary,
+            deleteIcon: Icon(
+              Icons.close,
+              size: 16.w,
+              color: Colors.white,
+            ),
+            onDeleted: enabled
+                ? () {
+                    final updatedValues = List<String>.from(selectedValues!);
+                    updatedValues.remove(item);
+                    onMultipleChanged!(updatedValues);
+                  }
+                : null,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+          );
+        }).toList(),
+      );
     } else {
-      return value?.isNotEmpty == true ? value! : hint;
+      return Text(
+        value?.isNotEmpty == true ? value! : hint,
+        style: _getDisplayStyle(),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      );
     }
   }
 
+  /// Returns the style for the displayed text (used for hint or single-select).
   TextStyle _getDisplayStyle() {
     final bool hasValue = isMultiSelect
         ? (selectedValues != null && selectedValues!.isNotEmpty)
@@ -148,6 +183,7 @@ class AppDropdownField extends StatelessWidget {
             );
   }
 
+  /// Shows the appropriate bottom sheet based on selection mode.
   void _showDropdownBottomSheet(BuildContext context) {
     PrintUtil.info("Opening dropdown bottom sheet for: $hint");
 
@@ -158,6 +194,7 @@ class AppDropdownField extends StatelessWidget {
     }
   }
 
+  /// Displays a bottom sheet for single-select mode.
   void _showSingleSelectBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -215,6 +252,7 @@ class AppDropdownField extends StatelessWidget {
     );
   }
 
+  /// Displays a bottom sheet for multi-select mode.
   void _showMultiSelectBottomSheet(BuildContext context) {
     // Create a temporary list to hold selections
     List<String> tempSelectedValues = List.from(selectedValues ?? []);
@@ -249,11 +287,13 @@ class AppDropdownField extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
+                          PrintUtil.info(
+                              "Multi-select confirmed: $tempSelectedValues");
                           onMultipleChanged!(tempSelectedValues);
                           Navigator.pop(context);
                         },
                         child: Text(
-                          'Done',
+                          'done'.tr(context),
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
@@ -274,31 +314,22 @@ class AppDropdownField extends StatelessWidget {
                       final item = items[index];
                       final isSelected = tempSelectedValues.contains(item);
 
-                      return ListTile(
+                      return CheckboxListTile(
                         title: Text(
                           item,
                           style: TextStyle(fontSize: 16.sp),
                         ),
-                        trailing: Checkbox(
-                          value: isSelected,
-                          activeColor: AppColors.primary,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              if (value == true) {
-                                tempSelectedValues.add(item);
-                              } else {
-                                tempSelectedValues.remove(item);
-                              }
-                            });
-                          },
-                        ),
-                        onTap: () {
+                        value: isSelected,
+                        activeColor: AppColors.primary,
+                        onChanged: (bool? value) {
                           setState(() {
-                            if (isSelected) {
-                              tempSelectedValues.remove(item);
-                            } else {
+                            if (value == true) {
                               tempSelectedValues.add(item);
+                            } else {
+                              tempSelectedValues.remove(item);
                             }
+                            PrintUtil.info(
+                                "Multi-select updated: $tempSelectedValues");
                           });
                         },
                       );

@@ -1,3 +1,4 @@
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/widgets/nav_bar_item.dart';
 import 'package:embone/features/business_account/dashboard/view/dashboard_screen.dart';

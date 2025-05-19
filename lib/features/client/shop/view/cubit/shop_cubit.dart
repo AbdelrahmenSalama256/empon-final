@@ -2,10 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/features/client/shop/data/model/shop_response_model.dart';
 import 'package:embone/features/client/shop/data/repo/shop_repo.dart';
-import 'package:equatable/equatable.dart';
+import 'package:embone/features/client/shop/view/cubit/shop_state.dart';
 import 'package:location/location.dart';
-
-part 'shop_state.dart';
 
 class ShopCubit extends Cubit<ShopState> {
   final ShopRepo shopRepo;
@@ -24,7 +22,7 @@ class ShopCubit extends Cubit<ShopState> {
     if (latitude != null && longitude != null) {
       fetchShopData(latitude!, longitude!);
     } else {
-      emit(const ShopError('Failed to get location'));
+      emit(ShopError('Failed to get location'));
     }
   }
 
@@ -35,7 +33,7 @@ class ShopCubit extends Cubit<ShopState> {
       if (!serviceEnabled) {
         serviceEnabled = await _location.requestService();
         if (!serviceEnabled) {
-          emit(const ShopError('Location services not enabled'));
+          emit(ShopError('Location services not enabled'));
           return;
         }
       }
@@ -44,7 +42,7 @@ class ShopCubit extends Cubit<ShopState> {
       if (permissionStatus == PermissionStatus.denied) {
         permissionStatus = await _location.requestPermission();
         if (permissionStatus != PermissionStatus.granted) {
-          emit(const ShopError('Location permissions denied'));
+          emit(ShopError('Location permissions denied'));
           return;
         }
       }

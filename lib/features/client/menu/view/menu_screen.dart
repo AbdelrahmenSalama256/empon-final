@@ -5,6 +5,7 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
@@ -262,8 +263,10 @@ class MenuScreen extends StatelessWidget {
                                           userImageUrl: '',
                                           isVendor: isVendor!,
                                           onTap: () {
-                                            navigateTo(context,
-                                                const CreateBusinessAccountTypePage());
+                                            navigateTo(
+                                              context,
+                                              const CreateBusinessAccountTypePage(),
+                                            );
                                           },
                                           isAddNew: true,
                                         ),

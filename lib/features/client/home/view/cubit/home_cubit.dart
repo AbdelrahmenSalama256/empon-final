@@ -2,9 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/features/client/home/data/model/home_model.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
-import 'package:equatable/equatable.dart';
+import 'package:embone/features/client/home/view/cubit/home_state.dart';
 
-part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final HomeRepo homeRepo;

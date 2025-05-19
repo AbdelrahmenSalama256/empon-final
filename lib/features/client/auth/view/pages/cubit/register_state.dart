@@ -1,18 +1,13 @@
-part of 'register_cubit.dart';
+import 'package:embone/features/client/locations/data/model/location_model.dart';
+import 'package:image_picker/image_picker.dart';
 
-sealed class RegisterState extends Equatable {
-  const RegisterState();
-
-  @override
-  List<Object> get props => [];
-}
+class RegisterState {}
 
 final class RegisterInitial extends RegisterState {}
 
 class RegisterStepChanged extends RegisterState {
   final int currentStep;
-
-  const RegisterStepChanged(this.currentStep);
+  RegisterStepChanged(this.currentStep);
 }
 
 class RegisterLoading extends RegisterState {}
@@ -21,8 +16,7 @@ class RegisterSuccess extends RegisterState {}
 
 class RegisterError extends RegisterState {
   final String message;
-
-  const RegisterError({required this.message});
+  RegisterError({required this.message});
 }
 
 class RegisterDataUpdated extends RegisterState {
@@ -33,8 +27,7 @@ class RegisterDataUpdated extends RegisterState {
   final String? lat;
   final String? lng;
   final bool? rememberMe;
-
-  const RegisterDataUpdated({
+  RegisterDataUpdated({
     this.gender,
     this.country,
     this.governorate,
@@ -49,64 +42,56 @@ class VerifyOtpLoading extends RegisterState {}
 
 class VerifyOtpSuccess extends RegisterState {
   final String message;
-
-  const VerifyOtpSuccess(this.message);
+  VerifyOtpSuccess(this.message);
 }
 
 class VerifyOtpError extends RegisterState {
   final String message;
-
-  const VerifyOtpError(this.message);
+  VerifyOtpError(this.message);
 }
 
 class LocationsLoading extends RegisterState {}
 
 class CountriesLoaded extends RegisterState {
   final List<LocationModel> countries;
-
-  const CountriesLoaded(this.countries);
+  CountriesLoaded(this.countries);
 }
 
 class StatesLoaded extends RegisterState {
   final List<LocationModel> states;
-
-  const StatesLoaded(this.states);
+  StatesLoaded(this.states);
 }
 
 class CitiesLoaded extends RegisterState {
   final List<LocationModel> cities;
-
-  const CitiesLoaded(this.cities);
+  CitiesLoaded(this.cities);
 }
 
 class LocationsError extends RegisterState {
   final String message;
-
-  const LocationsError(this.message);
+  LocationsError(this.message);
 }
 
 class SetGenderState extends RegisterState {}
 
 class CurrentStepUpdated extends RegisterState {
   final int step;
-  const CurrentStepUpdated(this.step);
+  CurrentStepUpdated(this.step);
 }
 
 class AgreeToTermsUpdated extends RegisterState {
   final bool agreeToTerms;
-  const AgreeToTermsUpdated(this.agreeToTerms);
+  AgreeToTermsUpdated(this.agreeToTerms);
 }
 
 class ResendOtpLoading extends RegisterState {}
 
 class ResendOtpSuccess extends RegisterState {
   final String message;
-
-  const ResendOtpSuccess(this.message);
+  ResendOtpSuccess(this.message);
 }
 
 class ResendOtpError extends RegisterState {
   final String error;
-
-  const ResendOtpError(this.error);
+  ResendOtpError(this.error);
 }

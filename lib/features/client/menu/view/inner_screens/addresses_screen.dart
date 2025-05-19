@@ -2,6 +2,7 @@ import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
@@ -130,61 +131,53 @@ class _AddressesScreenState extends State<AddressesScreen> {
                                             isSelectable:
                                                 widget.isSelectionMode,
                                           )),
-                                      InkWell(
-                                        onTap: () {
-                                          navigateTo(
-                                            context,
-                                            BlocProvider(
-                                              create: (context) =>
-                                                  RegisterCubit(
-                                                      sl<RegisterRepo>()),
-                                              child: AddNewAddressPage(
-                                                type: "profile",
-                                                onNextStep: () =>
-                                                    Navigator.pop(context),
-                                                onPreviousStep: () =>
-                                                    Navigator.pop(context),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          width: double.infinity,
-                                          height: 50.h,
-                                          margin: EdgeInsets.only(top: 16.h),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(12.r),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.05),
-                                                  blurRadius: 10,
-                                                  offset: const Offset(0, 2)),
-                                            ],
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.add_circle_outline,
-                                                  color: Colors.grey[600],
-                                                  size: 20.sp),
-                                              SizedBox(width: 8.w),
-                                              Text('add_location'.tr(context),
-                                                  style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      color: Colors.grey[600],
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        navigateTo(
+                          context,
+                          BlocProvider(
+                            create: (context) =>
+                                RegisterCubit(sl<RegisterRepo>()),
+                            child: AddNewAddressPage(
+                              type: "profile",
+                              onNextStep: () => Navigator.pop(context),
+                              onPreviousStep: () => Navigator.pop(context),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 50.h,
+                        margin: EdgeInsets.only(top: 16.h),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.r),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2)),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_circle_outline,
+                                color: Colors.grey[600], size: 20.sp),
+                            SizedBox(width: 8.w),
+                            Text('add_location'.tr(context),
+                                style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 );

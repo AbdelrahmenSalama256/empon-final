@@ -1,12 +1,17 @@
 import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
+import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/home/view/widgets/product_card.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
+import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
+import 'package:embone/features/client/search/data/repo/search_repo.dart';
+import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/shop/data/repo/shop_repo.dart';
 import 'package:embone/features/client/shop/view/cubit/shop_cubit.dart';
+import 'package:embone/features/client/shop/view/cubit/shop_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,19 +47,20 @@ class _ShopScreenState extends State<ShopScreen> {
               final cubit = context.read<ShopCubit>();
               final filteredAccounts =
                   _filterAccounts(cubit, cubit.selectedCategory);
-              return state is ShopLoading
-                  ? const Center(child: CustomLoadingIndicator())
-                  : Column(
-                      children: [
-                        AppHeader(
-                          title: "nearby_places".tr(context),
-                          centerTitle: true,
-                          showBackButton: true,
-                          onBackPressed: () {
-                            context.read<GlobalCubit>().changeBottomNavIndex(0);
-                          },
-                        ),
-                        Expanded(
+              return Column(
+                children: [
+                  AppHeader(
+                    title: "nearby_places".tr(context),
+                    centerTitle: true,
+                    showBackButton: true,
+                    onBackPressed: () {
+                      context.read<GlobalCubit>().changeBottomNavIndex(0);
+                    },
+                  ),
+                  state is ShopLoading
+                      ? const Expanded(
+                          child: Center(child: CustomLoadingIndicator()))
+                      : Expanded(
                           child: RefreshIndicator(
                             onRefresh: () async {
                               cubit.init();
@@ -108,8 +114,8 @@ class _ShopScreenState extends State<ShopScreen> {
                             ),
                           ),
                         ),
-                      ],
-                    );
+                ],
+              );
             },
           ),
         ),
@@ -150,7 +156,16 @@ class _ShopScreenState extends State<ShopScreen> {
                   actionText: 'shop_now'.tr(context),
                   isFavorite: product.isFavourite ?? false,
                   onFavoriteToggle: () {},
-                  onActionTap: () {},
+                  onActionTap: () {
+                    navigateTo(
+                        context,
+                        BlocProvider(
+                          create: (context) => SearchCubit(sl<SearchRepo>()),
+                          child: ProductDetailPage(
+                            productId: product.id ?? 0,
+                          ),
+                        ));
+                  },
                   onCardTap: () {},
                 );
               },

@@ -8,12 +8,10 @@ import 'package:embone/features/client/search/data/model/search_history_model.da
 import 'package:embone/features/client/search/data/model/search_model.dart';
 import 'package:embone/features/client/search/data/model/search_recent_view.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
-import 'package:equatable/equatable.dart';
+import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import '../../../product_Details/data/model/product_model.dart';
-
-part 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
   final SearchRepo searchRepo;
@@ -333,7 +331,7 @@ class SearchCubit extends Cubit<SearchState> {
 
     if (!found) {
       PrintUtil.error('Comment with ID $commentId not found');
-      if (!isClosed) emit(const CommentError(message: 'Comment not found'));
+      if (!isClosed) emit(CommentError(message: 'Comment not found'));
       return;
     }
 

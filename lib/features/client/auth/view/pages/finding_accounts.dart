@@ -7,6 +7,7 @@ import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
 import 'package:embone/features/client/auth/view/pages/forget_password_verification.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
 import 'package:embone/features/client/auth/view/pages/searching_account.dart';

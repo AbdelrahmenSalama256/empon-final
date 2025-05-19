@@ -12,17 +12,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class GenderPage extends StatefulWidget {
+class GenderPage extends StatelessWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
   const GenderPage(
       {super.key, required this.onNextStep, required this.onPreviousStep});
 
-  @override
-  State<GenderPage> createState() => _GenderPageState();
-}
-
-class _GenderPageState extends State<GenderPage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.watch<RegisterCubit>();
@@ -35,7 +30,7 @@ class _GenderPageState extends State<GenderPage> {
             CustomHeader(
               showBackButton: true,
               showLogo: true,
-              onBackPressed: () => widget.onPreviousStep(),
+              onBackPressed: () => onPreviousStep(),
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -73,7 +68,6 @@ class _GenderPageState extends State<GenderPage> {
                           : Gender.male,
                       onGenderChanged: (Gender value) {
                         cubit.setGender(value.toString().split('.').last);
-                        setState(() {});
                       },
                     ),
                     SizedBox(height: 16.h),
@@ -88,7 +82,7 @@ class _GenderPageState extends State<GenderPage> {
                           return;
                         }
 
-                        widget.onNextStep();
+                        onNextStep();
                       },
                       height: 50.h,
                       width: double.infinity,

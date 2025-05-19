@@ -1,9 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/features/client/cart/data/model/cart_model.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
-import 'package:equatable/equatable.dart';
+import 'package:embone/features/client/cart/view/cubit/cart_state.dart';
 
-part 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
   final CartRepo cartRepo;

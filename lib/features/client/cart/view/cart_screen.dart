@@ -1,3 +1,4 @@
+import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
@@ -7,6 +8,7 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
 import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
+import 'package:embone/features/client/cart/view/cubit/cart_state.dart';
 import 'package:embone/features/client/cart/view/widgets/cart_bottom_buttons.dart';
 import 'package:embone/features/client/cart/view/widgets/cart_items_list.dart';
 import 'package:embone/features/client/checkout/view/checkout_screen.dart';
@@ -71,15 +73,18 @@ class CartScreen extends StatelessWidget {
                   ),
                   Expanded(
                     child: cartItems.isEmpty
-                        ? RefreshIndicator(
-                            onRefresh: () async {
-                              cubit.fetchCart();
-                            },
-                            child: SingleChildScrollView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              child: _buildEmptyCartWidget(context),
-                            ),
-                          )
+                        ? state is CartLoading
+                            ? const Center(child: CustomLoadingIndicator())
+                            : RefreshIndicator(
+                                onRefresh: () async {
+                                  cubit.fetchCart();
+                                },
+                                child: SingleChildScrollView(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  child: _buildEmptyCartWidget(context),
+                                ),
+                              )
                         : ModalProgressHUD(
                             inAsyncCall: state is CartLoading,
                             child: RefreshIndicator(

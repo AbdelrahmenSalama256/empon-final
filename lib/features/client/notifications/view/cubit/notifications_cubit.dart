@@ -2,9 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/features/client/notifications/data/model/notifications_model.dart';
 import 'package:embone/features/client/notifications/data/repo/notifications_repo.dart';
-import 'package:equatable/equatable.dart';
+import 'package:embone/features/client/notifications/view/cubit/notifications_state.dart';
 
-part 'notifications_state.dart';
 
 class NotificationsCubit extends Cubit<NotificationsState> {
   final NotificationsRepo notificationsRepo;

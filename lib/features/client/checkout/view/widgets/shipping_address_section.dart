@@ -1,11 +1,17 @@
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ShippingAddressSection extends StatelessWidget {
+  final Address? address;
   final VoidCallback onChange;
 
-  const ShippingAddressSection({super.key, required this.onChange});
+  const ShippingAddressSection({
+    super.key,
+    this.address,
+    required this.onChange,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,19 +25,41 @@ class ShippingAddressSection extends StatelessWidget {
             style: TextStyle(color: Colors.grey[600], fontSize: 14.sp),
           ),
           SizedBox(height: 4.h),
-          Text(
-            'checkout_sample_address'.tr(context),
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
-          ),
+          if (address != null)
+            Text(
+              _buildAddressText(address!),
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            )
+          else
+            Text(
+              'no_address_selected'.tr(context),
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+            ),
         ],
       ),
       actionText: 'checkout_change_action'.tr(context),
       onAction: onChange,
     );
   }
+
+  String _buildAddressText(Address address) {
+    final addressParts = [
+      if (address.address != null) address.address,
+      if (address.city != null) address.city,
+      if (address.state != null) address.state,
+      if (address.country != null) address.country,
+    ].where((part) => part != null && part.isNotEmpty).toList();
+
+    final addressString =
+        addressParts.isNotEmpty ? addressParts.join(', ') : 'عنوان غير محدد';
+    return address.name != null
+        ? '${address.name}: $addressString'
+        : addressString;
+  }
 }
 
-// Reusable Section Card Widget
 class SectionCard extends StatelessWidget {
   final String title;
   final Widget content;
@@ -58,7 +86,6 @@ class SectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           width: 0.5.w,
-          // ignore: deprecated_member_use
           color: const Color(0xff000000).withOpacity(0.33),
         ),
       ),

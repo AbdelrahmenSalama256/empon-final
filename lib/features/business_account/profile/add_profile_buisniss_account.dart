@@ -13,6 +13,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../auth_bussniss_acc/view/cubit/account_state.dart';
+
 class AddProfilePhotoForBuisnissAccountPage extends StatefulWidget {
   final AccountCubit cubit;
   const AddProfilePhotoForBuisnissAccountPage({
@@ -110,7 +112,7 @@ class _AddProfilePhotoForBuisnissAccountPageState
       });
 
       // Call createAccount
-      widget.cubit.createAccount();
+      // widget.cubit.createAccount();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('please_select_both_images'.tr(context))),

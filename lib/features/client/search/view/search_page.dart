@@ -7,6 +7,7 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
+import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:embone/features/client/search/view/widgets/recent_search_section.dart';
 import 'package:embone/features/client/search/view/widgets/recently_viewd_section.dart';
 import 'package:embone/features/client/search/view/widgets/search_results_section.dart';

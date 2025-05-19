@@ -1,10 +1,4 @@
-part of 'notifications_cubit.dart';
-
-sealed class NotificationsState extends Equatable {
-  const NotificationsState();
-  @override
-  List<Object?> get props => [];
-}
+class NotificationsState {}
 
 class NotificationsInitial extends NotificationsState {}
 
@@ -15,5 +9,5 @@ class NotificationsSuccess extends NotificationsState {}
 class NotificationsError extends NotificationsState {
   final String message;
 
-  const NotificationsError({required this.message});
+  NotificationsError({required this.message});
 }

@@ -1,14 +1,14 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/client/locations/data/model/location_model.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../data/model/account_model.dart';
-
-part 'account_state.dart';
+import 'account_state.dart';
 
 class AccountCubit extends Cubit<AccountState> {
   final AccountRepo accountRepo;
@@ -45,8 +45,8 @@ class AccountCubit extends Cubit<AccountState> {
   LocationModel? selectedCity;
   List<LocationModel> allLocations = [];
 
-  AccountCubit(this.accountRepo) : super(AccountInitial());
-
+  AccountCubit(this.accountRepo, {this.name}) : super(AccountInitial());
+  final String? name;
   // Update text field values
   void updateName(String value) => nameController.text = value;
   void updateDescription(String value) => descriptionController.text = value;
@@ -65,12 +65,18 @@ class AccountCubit extends Cubit<AccountState> {
     emit(AccountUpdated());
   }
 
+  void updateCategoryIds(List<String> newCategoryIds) {
+    categoryIds = List.from(newCategoryIds);
+    emit(AccountUpdated());
+  }
+
   // Add category IDs
   void addCategoryId(String value) {
     if (!categoryIds.contains(value)) {
       categoryIds.add(value);
-      emit(AccountUpdated());
     }
+    emit(AccountUpdated());
+    log(categoryIds.toString());
   }
 
   // Remove category ID
@@ -150,51 +156,25 @@ class AccountCubit extends Cubit<AccountState> {
     emit(AccountUpdated());
   }
 
-  // Submit the form
-  void createAccount() async {
-    // Validate required fields
-    if (selectedCityId == null ||
-        descriptionController.text.isEmpty ||
-        videoUrlController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        phoneController.text.isEmpty ||
-        addressController.text.isEmpty ||
-        postalCodeController.text.isEmpty ||
-        latController.text.isEmpty ||
-        lngController.text.isEmpty) {
-      emit(const AccountError(massage: 'Please fill all required fields'));
-      return;
-    }
-
+  Future<void> createAccountStepOne() async {
     emit(AccountLoading());
 
-    final response = await accountRepo.createAccount(
-      files: files,
-      name: nameController.text,
-      description: descriptionController.text,
-      videoUrl: videoUrlController.text,
-      website: websiteController.text,
-      email: emailController.text,
-      phone: phoneController.text,
-      cityId: selectedCityId!,
-      address: addressController.text,
-      postalCode: postalCodeController.text,
+    final response = await accountRepo.createAccountStepOne(
+      name: name ?? "",
       categoryIds: categoryIds,
-      lat: latController.text,
-      lng: lngController.text,
     );
 
     response.fold(
       (l) {
-        Print.error('API Error: $l');
+        Print.error('API Error (Step 1): $l');
         emit(AccountError(massage: l));
       },
       (r) {
         account = r;
-        Print.success('Account created successfully: ${r.toString()}');
-        emit(AccountSuccess());
+        Print.success(
+            'Account step one completed successfully: ${r.toString()}');
+        emit(AccountStepOneCompleted());
       },
     );
   }
-
 }

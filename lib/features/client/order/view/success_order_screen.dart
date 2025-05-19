@@ -90,6 +90,7 @@ class SuccessOrderScreen extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: 30.h),
                 child: AppButton(
                   onPressed: () {
+                    Navigator.pop(context);
                     context.read<GlobalCubit>().changeBottomNavIndex(0);
                   },
                   text: 'success_order_back_to_home_button'.tr(context),

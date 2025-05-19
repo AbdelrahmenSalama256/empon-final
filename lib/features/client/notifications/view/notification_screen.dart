@@ -6,6 +6,7 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/notifications/view/cubit/notifications_cubit.dart';
+import 'package:embone/features/client/notifications/view/cubit/notifications_state.dart';
 import 'package:embone/features/client/notifications/view/widgets/notification_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

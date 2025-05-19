@@ -1,4 +1,6 @@
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,17 +23,11 @@ class _LanguageSelectorState extends State<LanguageSelector> {
           onTap: () {
             context.read<GlobalCubit>().changeLanguage();
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  context.read<GlobalCubit>().language == "en"
-                      ? "تم تغيير اللغة إلى العربية"
-                      : "Language changed to English",
-                  textAlign: TextAlign.center,
-                ),
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            showToast(context,
+                message: context.read<GlobalCubit>().language == "en"
+                    ? "تم تغيير اللغة إلى العربية"
+                    : "Language changed to English",
+                state: ToastStates.success);
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

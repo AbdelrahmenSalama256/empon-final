@@ -1,5 +1,6 @@
 import 'package:embone/core/component/widgets/app_theme.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/localization_settings.dart';
 import 'package:embone/features/client/auth/view/pages/splash_screen.dart';
 import 'package:flutter/material.dart';

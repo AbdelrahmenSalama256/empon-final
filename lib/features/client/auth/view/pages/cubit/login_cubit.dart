@@ -5,10 +5,8 @@ import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
-import 'package:equatable/equatable.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/login_state.dart';
 import 'package:flutter/material.dart';
-
-part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   final LoginRepo loginRepo;
@@ -45,7 +43,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     if (type == 'unknown') {
       Print.error('Invalid value format');
-      emit(const LoginError(message: 'Invalid email or phone format'));
+      emit(LoginError(message: 'Invalid email or phone format'));
       return;
     }
 

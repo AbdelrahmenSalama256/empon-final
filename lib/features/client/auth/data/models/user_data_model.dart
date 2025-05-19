@@ -163,16 +163,17 @@ class User {
 
 class Address {
   final int? id;
-  final int? countryId; // Add country ID
-  final int? stateId; // Add state ID
-  final int? cityId; // Add securesocialmedia city ID
-  final String? country; // Keep name for display purposes
-  final String? state; // Keep name for display purposes
-  final String? city; // Keep name for display purposes
+  final int? countryId;
+  final int? stateId;
+  final int? cityId;
+  final String? country;
+  final String? state;
+  final String? city;
   final String? address;
   final String? lat;
   final String? lng;
   final String? name;
+  final bool? isDefault;
 
   Address({
     this.id,
@@ -186,6 +187,7 @@ class Address {
     this.lat,
     this.lng,
     this.name,
+    this.isDefault,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
@@ -201,6 +203,7 @@ class Address {
       lat: json['lat'] as String?,
       lng: json['lng'] as String?,
       name: json['name'] as String?,
+      isDefault: json['is_default'] as bool?,
     );
   }
 
@@ -216,6 +219,7 @@ class Address {
         'lat': lat,
         'lng': lng,
         'name': name,
+        'is_default': isDefault,
       };
 
   Address copyWith({
@@ -230,6 +234,7 @@ class Address {
     String? lat,
     String? lng,
     String? name,
+    bool? isDefault,
   }) {
     return Address(
       id: id ?? this.id,
@@ -243,6 +248,7 @@ class Address {
       lat: lat ?? this.lat,
       lng: lng ?? this.lng,
       name: name ?? this.name,
+      isDefault: isDefault ?? this.isDefault,
     );
   }
 }

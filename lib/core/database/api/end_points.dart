@@ -71,6 +71,7 @@ class EndPoints {
   //// Buissniss Account Case
   //! Create Account
   static const String createAccount = '${baseUrl}accounts';
+  static const String createAccountStepOne = '${baseUrl}accounts/step-one';
   static const String category = '${baseUrl}category';
 }
 

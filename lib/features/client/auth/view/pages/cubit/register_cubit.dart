@@ -7,17 +7,15 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
 import 'package:embone/features/client/contacts/data/model/contact_model.dart';
 import 'package:embone/features/client/locations/data/model/location_model.dart';
 import 'package:embone/features/client/locations/data/repo/locations_repo.dart';
-import 'package:equatable/equatable.dart';
 import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
-
-part 'register_state.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
   final RegisterRepo registerRepo;
@@ -145,13 +143,13 @@ class RegisterCubit extends Cubit<RegisterState> {
 
       if (otp.isEmpty || otp.length < 4) {
         Print.error("Invalid OTP: OTP must be at least 4 digits.");
-        if (!isClosed) emit(const VerifyOtpError("Please enter a valid OTP."));
+        if (!isClosed) emit(VerifyOtpError("Please enter a valid OTP."));
         return;
       }
 
       if (effectivePhone.isEmpty) {
         Print.error("Phone number is empty.");
-        if (!isClosed) emit(const VerifyOtpError("Phone number is required."));
+        if (!isClosed) emit(VerifyOtpError("Phone number is required."));
         return;
       }
 
@@ -183,8 +181,7 @@ class RegisterCubit extends Cubit<RegisterState> {
             } else {
               Print.error(
                   "Token is missing in the response. Data: ${result.data}, User: ${result.data?.user}");
-              emit(const VerifyOtpError(
-                  "Failed to retrieve authentication token"));
+              emit(VerifyOtpError("Failed to retrieve authentication token"));
             }
           },
         );
@@ -299,7 +296,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       emit(RegisterDataUpdated(profileImage: profileImage));
     } else {
       Print.info("Invalid image format - ${image.path}");
-      emit(const RegisterError(
+      emit(RegisterError(
           message: 'Image must be of type jpeg, jpg, png, gif, or svg'));
     }
   }

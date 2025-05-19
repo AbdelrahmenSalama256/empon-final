@@ -22,6 +22,7 @@ import 'package:embone/features/client/product_Details/view/widgets/product_deta
 import 'package:embone/features/client/product_Details/view/widgets/review_section.dart';
 import 'package:embone/features/client/product_Details/view/widgets/section_title.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
+import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

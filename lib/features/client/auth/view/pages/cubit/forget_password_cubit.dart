@@ -1,11 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
-import 'package:embone/features/client/auth/data/models/forget_password_model.dart';
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
-import 'package:equatable/equatable.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/forget_password_state.dart';
 import 'package:flutter/material.dart';
-
-part 'forget_password_state.dart';
 
 class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
   final ForgetPasswordRepo forgetPasswordRepo;
@@ -69,8 +66,7 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
     final confirmPassword = confirmPasswordController.text.trim();
 
     if (!formKey.currentState!.validate() || password != confirmPassword) {
-      emit(const ResetPasswordValidationFailed(
-          message: 'Passwords do not match'));
+      emit(ResetPasswordValidationFailed(message: 'Passwords do not match'));
       return;
     }
 

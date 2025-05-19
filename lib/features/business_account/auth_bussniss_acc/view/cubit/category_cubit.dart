@@ -1,11 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/category_repo.dart';
-import 'package:equatable/equatable.dart';
 
 import '../../data/model/category_model.dart';
-
-part 'category_state.dart';
+import 'category_state.dart';
 
 class CategoryCubit extends Cubit<CategoryState> {
   final CategoryRepo categoryRepo;

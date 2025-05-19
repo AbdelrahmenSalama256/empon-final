@@ -2,9 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/features/client/menu/data/model/wishlist_model.dart';
 import 'package:embone/features/client/menu/data/repo/wishlist_repo.dart';
-import 'package:equatable/equatable.dart';
-
-part 'wishlist_state.dart';
+import 'package:embone/features/client/menu/view/cubit/wishlist_state.dart';
 
 class WishlistCubit extends Cubit<WishlistState> {
   final WishlistRepo wishlistRepo;
@@ -26,7 +24,7 @@ class WishlistCubit extends Cubit<WishlistState> {
         wishlistData = r;
         Print.info(wishlistData);
         Print.success('Wishlist data fetched successfully');
-        emit(const WishlistsSuccess());
+        emit(WishlistsSuccess());
       },
     );
   }
