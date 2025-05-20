@@ -123,7 +123,7 @@ class HomeScreen extends StatelessWidget {
                                   child: ListView.builder(
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 10.w),
-                                    itemCount: 3, // Simulate 3 sections
+                                    itemCount: 3,
                                     itemBuilder: (context, index) {
                                       return ShimmerEffect(
                                         isLoading: true,

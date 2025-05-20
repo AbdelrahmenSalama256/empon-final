@@ -67,6 +67,7 @@ class EndPoints {
   static const String addProductToCart = '${baseUrl}carts';
   static const String updateCartItemQuantity = '${baseUrl}carts';
   static const String removeCartItem = '${baseUrl}carts';
+  static const String cartInfo = '${baseUrl}cart-info';
 
   //// Buissniss Account Case
   //! Create Account

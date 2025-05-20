@@ -1,9 +1,11 @@
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/features/client/checkout/view/cubit/checkout_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OrderSummarySection extends StatelessWidget {
-  const OrderSummarySection({super.key});
+  final CheckoutCubit checkoutCubit;
+  const OrderSummarySection({super.key, required this.checkoutCubit});
 
   @override
   Widget build(BuildContext context) {
@@ -23,19 +25,23 @@ class OrderSummarySection extends StatelessWidget {
         children: [
           _OrderSummaryRow(
             label: 'checkout_products_total_label'.tr(context),
-            value: '\$235.00',
+            value: checkoutCubit.cartInfoModel?.data?.items
+                    ?.fold<double>(0, (sum, item) => sum + item.totalPrice)
+                    .toStringAsFixed(2) ??
+                '0',
           ),
+
           SizedBox(height: 12.h),
-          _OrderSummaryRow(
-            label: 'checkout_delivery_fees_label'.tr(context),
-            value: '\$5.00',
-          ),
-          SizedBox(height: 12.h),
+          // _OrderSummaryRow(
+          //   label: 'checkout_delivery_fees_label'.tr(context),
+          //   value: '\$5.00',
+          // ),
+          // SizedBox(height: 12.h),
           Divider(height: 1.h, color: Colors.grey[300]),
           SizedBox(height: 12.h),
           _OrderSummaryRow(
             label: 'checkout_total_amount_label'.tr(context),
-            value: '\$240.00',
+            value: "${checkoutCubit.cartInfoModel?.data?.totalOrderPrice}",
             isTotal: true,
           ),
         ],

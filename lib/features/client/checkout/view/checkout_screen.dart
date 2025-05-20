@@ -9,6 +9,9 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
+import 'package:embone/features/client/checkout/data/repo/checkout_repo.dart';
+import 'package:embone/features/client/checkout/view/cubit/checkout_cubit.dart';
+import 'package:embone/features/client/checkout/view/cubit/checkout_state.dart';
 import 'package:embone/features/client/checkout/view/widgets/change_address_sheet.dart';
 import 'package:embone/features/client/checkout/view/widgets/order_summary_section.dart';
 import 'package:embone/features/client/checkout/view/widgets/payment_method_section.dart';
@@ -112,91 +115,106 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => RegisterCubit(sl<RegisterRepo>()),
-      child: BlocBuilder<RegisterCubit, RegisterState>(
+      create: (context) => CheckoutCubit(sl<CheckoutRepo>())..getCartInfo(),
+      child: BlocBuilder<CheckoutCubit, CheckoutState>(
         builder: (context, state) {
+          final checkoutCubit = context.read<CheckoutCubit>();
           return BlocProvider(
-            create: (context) => GlobalCubit()..fetchUserAddresses(),
-            child: Scaffold(
-              backgroundColor: Colors.white,
-              body: SafeArea(
-                child: BlocListener<GlobalCubit, GlobalState>(
-                  listener: (context, state) {
-                    if (state is GetAddressSuccess &&
-                        _selectedAddress == null) {
-                      setState(() {
-                        _selectedAddress = context
-                            .read<GlobalCubit>()
-                            .userAddresses
-                            ?.firstOrNull;
-                      });
-                    } else if (state is GetAddressError) {
-                      showToast(context,
-                          message: 'error_fetching_addresses'.tr(context),
-                          state: ToastStates.error);
-                    }
-                  },
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AppHeader(
-                                title: 'checkout_payment_title'.tr(context),
-                                showBackButton: true,
-                                centerTitle: true,
+            create: (context) => RegisterCubit(sl<RegisterRepo>()),
+            child: BlocBuilder<RegisterCubit, RegisterState>(
+              builder: (context, state) {
+                return BlocProvider(
+                  create: (context) => GlobalCubit()..fetchUserAddresses(),
+                  child: Scaffold(
+                    backgroundColor: Colors.white,
+                    body: SafeArea(
+                      child: BlocListener<GlobalCubit, GlobalState>(
+                        listener: (context, state) {
+                          if (state is GetAddressSuccess &&
+                              _selectedAddress == null) {
+                            setState(() {
+                              _selectedAddress = context
+                                  .read<GlobalCubit>()
+                                  .userAddresses
+                                  ?.firstOrNull;
+                            });
+                          } else if (state is GetAddressError) {
+                            showToast(context,
+                                message: 'error_fetching_addresses'.tr(context),
+                                state: ToastStates.error);
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AppHeader(
+                                      title:
+                                          'checkout_payment_title'.tr(context),
+                                      showBackButton: true,
+                                      centerTitle: true,
+                                    ),
+                                    ShippingAddressSection(
+                                      address: _selectedAddress,
+                                      onChange: () {
+                                        _showChangeAddressBottomSheet(context);
+                                      },
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    PaymentMethodSection(
+                                      paymentMethods: _paymentMethods,
+                                      selectedPaymentMethod:
+                                          _selectedPaymentMethod,
+                                      onMethodSelected: (id) {
+                                        setState(() {
+                                          _selectedPaymentMethod = id;
+                                        });
+                                      },
+                                      onChange: () {},
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    OrderSummarySection(
+                                      checkoutCubit: checkoutCubit,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              ShippingAddressSection(
-                                address: _selectedAddress,
-                                onChange: () {
-                                  _showChangeAddressBottomSheet(context);
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(16.w),
+                              child: AppButton(
+                                onPressed: () {
+                                  if (_selectedAddress == null) {
+                                    showToast(context,
+                                        message:
+                                            'please_select_shipping_address'
+                                                .tr(context),
+                                        state: ToastStates.error);
+                                    return;
+                                  }
+                                  navigateReplac(
+                                      context, const SuccessOrderScreen());
                                 },
+                                text:
+                                    'checkout_submit_order_button'.tr(context),
+                                textStyle: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              SizedBox(height: 16.h),
-                              PaymentMethodSection(
-                                paymentMethods: _paymentMethods,
-                                selectedPaymentMethod: _selectedPaymentMethod,
-                                onMethodSelected: (id) {
-                                  setState(() {
-                                    _selectedPaymentMethod = id;
-                                  });
-                                },
-                                onChange: () {},
-                              ),
-                              SizedBox(height: 16.h),
-                              const OrderSummarySection(),
-                            ],
-                          ),
+                            ),
+                            SizedBox(height: 30.h),
+                          ],
                         ),
                       ),
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(16.w),
-                        child: AppButton(
-                          onPressed: () {
-                            if (_selectedAddress == null) {
-                              showToast(context,
-                                  message: 'please_select_shipping_address'
-                                      .tr(context),
-                                  state: ToastStates.error);
-                              return;
-                            }
-                            navigateReplac(context, const SuccessOrderScreen());
-                          },
-                          text: 'checkout_submit_order_button'.tr(context),
-                          textStyle: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 30.h),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           );
         },
