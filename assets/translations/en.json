@@ -688,5 +688,21 @@
   "required_fields_missing": "Required fields are missing",
   "no_address_selected": "No Address Selected",
   "select_shipping_address": "Select Shipping Address",
-  "please_select_shipping_address": "Please select a shipping address"
+  "please_select_shipping_address": "Please select a shipping address",
+  "contacts_on_app": "Contacts on App",
+  "already_on_app": "Already on App",
+  "invite_to_app": "Invite to App",
+  "no_matching_contacts": "No matching contacts found",
+  "on_app": "On App",
+  "frineds_request": "Friends Request",
+  "friend_requests": "Friends Requests",
+  "friend_requests_title": "Friend Requests",
+  "no_friend_requests": "No friend requests",
+  "mutual_friends": "mutual friends",
+  "accept_button": "Accept",
+  "decline_button": "Decline",
+  "add_followers": "Add Friends",
+  "friends": "Friends",
+  "add_friends": "Add Friends",
+  "no_friends": "You have no friends yet."
 }

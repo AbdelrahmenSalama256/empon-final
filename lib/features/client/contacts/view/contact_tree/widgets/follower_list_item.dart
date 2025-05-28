@@ -1,150 +1,97 @@
-import 'package:embone/core/component/widgets/app_button.dart';
-import 'package:embone/core/locale/app_loacl.dart';
+// embone/features/client/contacts/view/contact_tree/widgets/follower_list_item.dart
+import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/features/client/contacts/data/model/friends_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:embone/core/component/widgets/app_button.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 
 class FollowerListItem extends StatelessWidget {
-  final String id;
-  final String name;
-  final String avatar;
-  final bool isVerified;
-  final bool isFollowing;
-  final VoidCallback onFollowPressed;
+  final FriendRequest friend;
+  final VoidCallback onDeletePressed;
 
   const FollowerListItem({
     super.key,
-    required this.id,
-    required this.name,
-    required this.avatar,
-    required this.isVerified,
-    required this.isFollowing,
-    required this.onFollowPressed,
+    required this.friend,
+    required this.onDeletePressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey.shade200,
-            width: 1,
-          ),
-        ),
-      ),
       child: Row(
         children: [
-          // Avatar
           _buildAvatar(),
           SizedBox(width: 12.w),
-
-          // Name and verification
           Expanded(
             child: _buildUserInfo(context),
           ),
-
-          // Follow/Unfollow button
-          _buildFollowButton(context),
+          Expanded(child: _buildDeleteButton(context)),
         ],
       ),
     );
   }
 
   Widget _buildAvatar() {
-    return CircleAvatar(
-      radius: 24.r,
-      backgroundImage: AssetImage(avatar),
-    );
+    return friend.image != null
+        ? CircleAvatar(
+            radius: 24.r,
+            backgroundImage: NetworkImage(friend.image!),
+          )
+        : CircleAvatar(
+            radius: 24.r,
+            child: Icon(
+              CupertinoIcons.person,
+              color: AppColors.primary,
+              size: 25.sp,
+            ),
+          );
   }
 
   Widget _buildUserInfo(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          name,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        SizedBox(height: 2.h),
         Row(
-          mainAxisSize: MainAxisSize.min,
-          textDirection: Directionality.of(context) == TextDirection.rtl
-              ? TextDirection.rtl
-              : TextDirection.ltr,
           children: [
-            if (Directionality.of(context) == TextDirection.ltr) ...[
-              Text(
-                'follower_text'.tr(context),
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xff909090),
-                ),
+            Text(
+              friend.name,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
               ),
-              if (isVerified) SizedBox(width: 4.w),
-              if (isVerified)
-                Icon(
-                  CupertinoIcons.location_solid,
-                  size: 14.sp,
-                  color: const Color(0xff909090),
-                ),
-            ] else ...[
-              if (isVerified)
-                Icon(
-                  CupertinoIcons.location_solid,
-                  size: 14.sp,
-                  color: const Color(0xff909090),
-                ),
-              if (isVerified) SizedBox(width: 4.w),
-              Text(
-                'follower_text'.tr(context),
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xff909090),
-                ),
-              ),
-            ],
+            ),
+            // Uncomment and adjust if online status is needed
+            // if (friend.isOnline == 1)
+            //   Icon(
+            //     Icons.verified,
+            //     size: 16.sp,
+            //     color: Colors.blue,
+            //   ),
           ],
         ),
+        if (friend.lastSeen != null)
+          Text(
+            friend.lastSeen!,
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: Colors.grey,
+            ),
+          ),
       ],
     );
   }
 
-  Widget _buildFollowButton(BuildContext context) {
-    return SizedBox(
-      width: 120.w,
-      child: AppButton(
-        height: 28.h,
-        borderRadius: BorderRadius.circular(8.r),
-        onPressed: onFollowPressed,
-        text: isFollowing
-            ? 'unfollow_button'.tr(context)
-            : 'follow_button'.tr(context),
-        textStyle: TextStyle(
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w500,
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 8.w),
-        prefixIcon: isFollowing
-            ? AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                child: SvgPicture.asset(
-                  "assets/images/svg/like.svg",
-                  width: 16.sp,
-                  // ignore: deprecated_member_use
-                  color: Colors.white,
-                ),
-              )
-            : null,
-      ),
+  Widget _buildDeleteButton(BuildContext context) {
+    return AppButton(
+      onPressed: onDeletePressed,
+      text: 'delete'.tr(context),
+      height: 32.h,
+      // width: 100.w,
+      borderRadius: BorderRadius.circular(8.r),
+      type: AppButtonType.primary,
     );
   }
 }

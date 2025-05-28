@@ -301,7 +301,7 @@ class GlobalCubit extends Cubit<GlobalState> {
             : null;
         userBirthDate = birthDateController.text;
         profileImage = null;
-        await getUserProfile(forceRefresh: true);
+        // await getUserProfile(forceRefresh: true);
         isLoading = false;
         emit(ProfileUpdated());
       },
@@ -338,7 +338,7 @@ class GlobalCubit extends Cubit<GlobalState> {
       },
       (result) async {
         PrintUtil.success("Profile updated successfully!");
-        await getUserProfile(forceRefresh: true);
+        // await getUserProfile(forceRefresh: true);
         isLoading = false;
         emit(ProfileUpdated());
       },

@@ -360,23 +360,23 @@ class MenuScreen extends StatelessWidget {
                                       children: [
                                         Expanded(
                                           child: QuickAccessButton(
-                                            onTap: () {
-                                              navigateTo(context,
-                                                  const FollowersPage());
-                                            },
-                                            title: "for_members".tr(context),
-                                            icon:
-                                                "assets/images/brand-logo.png",
-                                            color: Colors.blue.shade100,
+                                            onTap: () {},
+                                            title: "offers".tr(context),
+                                            icon: "assets/images/discount.png",
+                                            color: Colors.red.shade100,
                                           ),
                                         ),
                                         SizedBox(width: 16.w),
                                         Expanded(
                                           child: QuickAccessButton(
-                                            onTap: () {},
-                                            title: "offers".tr(context),
-                                            icon: "assets/images/brand-two.png",
-                                            color: Colors.red.shade100,
+                                            onTap: () {
+                                              navigateTo(context,
+                                                  const FollowersPage());
+                                            },
+                                            title: "friends".tr(context),
+                                            icon:
+                                                "assets/images/leadership.png",
+                                            color: Colors.blue.shade100,
                                           ),
                                         ),
                                       ],

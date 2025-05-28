@@ -98,4 +98,21 @@ class SearchRepo {
       return Left('Failed to fetch search history: $e');
     }
   }
+
+  Future<Either<String, String>> toggleProductLike({
+    required int productId,
+  }) async {
+    try {
+      await api.post(
+        EndPoints.productLike,
+        data: {'product_id': productId},
+        isFormData: true,
+      );
+      return const Right('Like toggled successfully');
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
 }

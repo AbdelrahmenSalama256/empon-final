@@ -689,5 +689,22 @@
   "required_fields_missing": "الحقول المطلوبة مفقودة",
   "no_address_selected": "لم يتم اختيار عنوان",
   "select_shipping_address": "اختر عنوان الشحن",
-  "please_select_shipping_address": "يرجى اختيار عنوان الشحن"
+  "please_select_shipping_address": "يرجى اختيار عنوان الشحن",
+  "contacts_on_app": "جهات الاتصال على التطبيق",
+  "already_on_app": "موجود بالفعل على التطبيق",
+  "invite_to_app": "دعوة للانضمام إلى التطبيق",
+  "no_matching_contacts": "لا توجد جهات اتصال مطابقة",
+  "on_app": "على التطبيق",
+  "invite": "دعوة",
+  "frineds_request": "طلبات الأصدقاء",
+  "friend_requests": "طلبات الصداقة",
+  "friend_requests_title": "طلبات الصداقة",
+  "no_friend_requests": "لا توجد طلبات صداقة",
+  "mutual_friends": "أصدقاء مشتركين",
+  "accept": "قبول",
+  "decline": "رفض",
+  "add_followers": "إضافة اصدقاء",
+  "friends": "الأصدقاء",
+  "add_friends": "إضافة أصدقاء",
+  "no_friends": "ليس لديك أصدقاء بعد."
 }

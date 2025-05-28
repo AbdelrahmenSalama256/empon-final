@@ -34,81 +34,86 @@ class _ProductImageSectionState extends State<ProductImageSection> {
 
     return Column(
       children: [
-        SizedBox(
-          height: 250.h,
-          child: Stack(
-            children: [
-              CarouselSlider(
-                carouselController: _carouselController,
-                options: CarouselOptions(
-                  height: 250.h,
-                  viewportFraction:
-                      0.85, // Mimics Owl Carousel's partial side visibility
-                  enlargeCenterPage:
-                      true, // Scales center image like Owl Carousel
-                  enableInfiniteScroll: true, // Owl Carousel's loop
-                  autoPlay: widget.autoPlay,
-                  autoPlayInterval: widget.autoPlayInterval,
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                ),
-                items: widget.images.map((imageUrl) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Image.network(
-                        imageUrl,
-                        fit: BoxFit.contain,
-                        height: 250.h,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(child: Icon(Icons.error));
-                        },
-                      );
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: SizedBox(
+            height: 250.h,
+            child: Stack(
+              children: [
+                CarouselSlider(
+                  carouselController: _carouselController,
+                  options: CarouselOptions(
+                    height: 250.h,
+                    viewportFraction:
+                        0.85, // Mimics Owl Carousel's partial side visibility
+                    enlargeCenterPage:
+                        true, // Scales center image like Owl Carousel
+                    enableInfiniteScroll: true, // Owl Carousel's loop
+                    autoPlay: widget.autoPlay,
+                    autoPlayInterval: widget.autoPlayInterval,
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        _currentPage = index;
+                      });
                     },
-                  );
-                }).toList(),
-              ),
-              // Navigation Arrows
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  onPressed: _currentPage > 0
-                      ? () => _carouselController.previousPage(
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          )
-                      : null,
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color:
-                        _currentPage > 0 ? Colors.black : Colors.grey.shade400,
-                    size: 24.w,
+                  ),
+                  items: widget.images.map((imageUrl) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Image.network(
+                          imageUrl,
+                          fit: BoxFit.contain,
+                          height: 250.h,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(child: Icon(Icons.error));
+                          },
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+                // Navigation Arrows
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    onPressed: _currentPage > 0
+                        ? () => _carouselController.previousPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                            )
+                        : null,
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: _currentPage > 0
+                          ? Colors.black
+                          : Colors.grey.shade400,
+                      size: 24.w,
+                    ),
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: IconButton(
-                  onPressed: _currentPage < widget.images.length - 1
-                      ? () => _carouselController.nextPage(
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          )
-                      : null,
-                  icon: Icon(
-                    Icons.arrow_forward_ios,
-                    color: _currentPage < widget.images.length - 1
-                        ? Colors.black
-                        : Colors.grey.shade400,
-                    size: 24.w,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    onPressed: _currentPage < widget.images.length - 1
+                        ? () => _carouselController.nextPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                            )
+                        : null,
+                    icon: Icon(
+                      Icons.arrow_forward_ios,
+                      color: _currentPage < widget.images.length - 1
+                          ? Colors.black
+                          : Colors.grey.shade400,
+                      size: 24.w,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         SizedBox(height: 15.h),

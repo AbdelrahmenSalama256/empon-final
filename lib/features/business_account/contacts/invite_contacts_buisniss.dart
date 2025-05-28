@@ -3,11 +3,9 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/business_account/auth_bussniss_acc/view/congrates_screen.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:embone/features/client/contacts/data/model/contact_model.dart';
 import 'package:embone/features/client/contacts/view/widgets/contact_item.dart';
-import 'package:embone/features/client/contacts/view/widgets/invitation_footer.dart';
 import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,7 +24,6 @@ class InviteContactsInBuisnissAccountPage extends StatefulWidget {
 class _InviteContactsInBuisnissAccountPageState
     extends State<InviteContactsInBuisnissAccountPage> {
   List<ContactModel> _contacts = [];
-  bool _isLoading = false;
   bool _isFetchingContacts = false;
 
   @override
@@ -98,47 +95,6 @@ class _InviteContactsInBuisnissAccountPageState
     });
   }
 
-  void _inviteContacts() {
-    final selectedContacts =
-        _contacts.where((contact) => contact.isSelected).toList();
-    if (selectedContacts.isEmpty) {
-      _showSnackBar('select_at_least_one_contact'.tr(context));
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() => _isLoading = false);
-      _navigateToEmailPage();
-    });
-  }
-
-  void _sendInvitations() {
-    final selectedContacts =
-        _contacts.where((contact) => contact.isSelected).toList();
-    if (selectedContacts.isEmpty) {
-      _showSnackBar('select_at_least_one_contact'.tr(context));
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() => _isLoading = false);
-      _navigateToEmailPage();
-    });
-  }
-
-  void _navigateToEmailPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const CongratesScreen(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
@@ -204,12 +160,6 @@ class _InviteContactsInBuisnissAccountPageState
                             );
                           },
                         ),
-            ),
-            // Footer with buttons
-            InvitationFooter(
-              isLoading: _isLoading,
-              onSendPressed: _sendInvitations,
-              onDonePressed: _inviteContacts,
             ),
           ],
         ),

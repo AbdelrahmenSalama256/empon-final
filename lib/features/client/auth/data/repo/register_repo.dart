@@ -5,6 +5,7 @@ import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/core/notification/notification_handler.dart';
 import 'package:embone/features/client/auth/data/models/login_model.dart';
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RegisterRepo {
@@ -111,6 +112,32 @@ class RegisterRepo {
       );
 
       return Right(LoginModel.fromJson(response.data as Map<String, dynamic>));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, List<User>>> checkRegisteredContacts({
+    required List<String> phoneNumbers,
+  }) async {
+    try {
+      final response = await api.get(
+        EndPoints.checkContacts,
+        data: {'phones': phoneNumbers},
+        isFormData: false,
+      );
+
+      if (response.data['success'] == true) {
+        final List<User> registeredUsers =
+            (response.data['data'] as List<dynamic>)
+                .map((e) => User.fromJson(e as Map<String, dynamic>))
+                .toList();
+        return Right(registeredUsers);
+      } else {
+        return Left(response.data['message'] ?? 'Unknown error');
+      }
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {

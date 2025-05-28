@@ -1,3 +1,5 @@
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
+import 'package:embone/features/client/contacts/data/model/contact_model.dart';
 import 'package:embone/features/client/locations/data/model/location_model.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -94,4 +96,40 @@ class ResendOtpSuccess extends RegisterState {
 class ResendOtpError extends RegisterState {
   final String error;
   ResendOtpError(this.error);
+}
+
+class ContactsLoading extends RegisterState {}
+
+class ContactsLoaded extends RegisterState {
+  final List<ContactModel> contacts;
+  ContactsLoaded(this.contacts);
+}
+
+class ContactsUpdated extends RegisterState {
+  final List<ContactModel> contacts;
+  ContactsUpdated(this.contacts);
+}
+
+class ContactsError extends RegisterState {
+  final String message;
+  ContactsError(this.message);
+}
+
+class ResendOtpTimerUpdated extends RegisterState {
+  final int seconds;
+  ResendOtpTimerUpdated(this.seconds);
+}
+
+class CheckingContactsLoading extends RegisterState {}
+
+class ContactsChecked extends RegisterState {
+  final List<User> registeredUsers;
+  final List<ContactModel> nonRegisteredContacts;
+
+  ContactsChecked(this.registeredUsers, this.nonRegisteredContacts);
+}
+
+class CheckingContactsError extends RegisterState {
+  final String message;
+  CheckingContactsError(this.message);
 }

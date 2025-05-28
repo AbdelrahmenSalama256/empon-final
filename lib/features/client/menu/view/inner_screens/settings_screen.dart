@@ -52,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     // Header
-                    SizedBox(height: 16.h),
+                    // SizedBox(height: 16.h),
                     const SettingsHeader(),
 
                     Expanded(

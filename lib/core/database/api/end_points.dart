@@ -50,6 +50,7 @@ class EndPoints {
   static const String commentLike = '${baseUrl}comment/ilke';
   static const String recentView = '${baseUrl}recent-view';
   static const String clearHistory = '${baseUrl}history-searches';
+  static const String productLike = '${baseUrl}product/ilke';
 
   // ! Notifications
   static const String notifications = '${baseUrl}notifications';
@@ -74,6 +75,14 @@ class EndPoints {
   static const String createAccount = '${baseUrl}accounts';
   static const String createAccountStepOne = '${baseUrl}accounts/step-one';
   static const String category = '${baseUrl}category';
+
+  // ! Contacts
+  static const String checkContacts = '${baseUrl}my-contacts';
+  static const String addFriend = '${baseUrl}friend-request';
+  static const String friendRequests = '${baseUrl}friend-requests';
+  static const String acceptFriendRequest = '${baseUrl}friend-request';
+  static const String declineFriendRequest = '${baseUrl}friend-request';
+  static const String myFriends = '${baseUrl}friends';
 }
 
 class ApiKey {

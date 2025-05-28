@@ -300,7 +300,6 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> toggleLike({required int commentId}) async {
     if (!isClosed) emit(CommentLoading());
 
-    // Optimistically toggle isLiked for immediate UI feedback
     bool found = false;
     comments = comments.map((comment) {
       if (comment.commentId == commentId) {
@@ -371,6 +370,45 @@ class SearchCubit extends Cubit<SearchState> {
         PrintUtil.success(
             'Like toggled successfully for commentId: $commentId');
         if (!isClosed) emit(CommentsLoaded(comments));
+      },
+    );
+  }
+
+  Future<void> toggleProductLike({required int productId}) async {
+    if (!isClosed) emit(LikeProductLoading());
+
+    if (productModel?.data?.id != productId) {
+      if (!isClosed) emit(LikeProductError(message: 'Product not found'));
+      return;
+    }
+
+    final product = productModel!.data!;
+    productModel = ProductModel(
+      success: productModel!.success,
+      message: productModel!.message,
+      data: product.copyWith(
+        likes: (product.likes ?? 0) + (product.isLiked ? -1 : 1),
+        isLiked: !product.isLiked,
+      ),
+    );
+
+    if (!isClosed) emit(LikeProductLoaded(productModel!));
+
+    final response = await searchRepo.toggleProductLike(productId: productId);
+    response.fold(
+      (l) {
+        productModel = ProductModel(
+          success: productModel!.success,
+          message: productModel!.message,
+          data: product.copyWith(
+            likes: (product.likes ?? 0),
+            isLiked: product.isLiked,
+          ),
+        );
+        if (!isClosed) emit(LikeProductError(message: l));
+      },
+      (_) {
+        if (!isClosed) emit(LikeProductLoaded(productModel!));
       },
     );
   }

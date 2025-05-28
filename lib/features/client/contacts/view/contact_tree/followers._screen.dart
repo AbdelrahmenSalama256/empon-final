@@ -1,7 +1,20 @@
+// embone/features/client/contacts/view/my_friends_page.dart
 import 'package:embone/core/component/widgets/app_header.dart';
+import 'package:embone/core/component/custom_toast.dart';
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/contacts/data/repo/friends_repo.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/widgets/follower_list_item.dart';
+import 'package:embone/features/client/contacts/view/cubit/friends_cubit.dart';
+import 'package:embone/features/client/contacts/view/cubit/friends_state.dart';
+import 'package:embone/features/client/contacts/view/invite_contacts_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FollowersPage extends StatefulWidget {
   const FollowersPage({super.key});
@@ -11,83 +24,105 @@ class FollowersPage extends StatefulWidget {
 }
 
 class _FollowersPageState extends State<FollowersPage> {
-  final List<Map<String, dynamic>> _followers = [
-    {
-      'id': '1',
-      'name': 'Maria Khalid',
-      'isVerified': true,
-      'avatar': 'assets/images/profile.png',
-      'isFollowing': true,
-    },
-    {
-      'id': '2',
-      'name': 'Diana Sayal',
-      'isVerified': true,
-      'avatar': 'assets/images/brand-two.png',
-      'isFollowing': true,
-    },
-    {
-      'id': '3',
-      'name': 'Comfort Shoes',
-      'isVerified': true,
-      'avatar': 'assets/images/brand-logo.png',
-      'isFollowing': true,
-    },
-    {
-      'id': '4',
-      'name': 'Naseeba Attar',
-      'isVerified': true,
-      'avatar': 'assets/images/profile.png',
-      'isFollowing': true,
-    },
-  ];
-
-  void _toggleFollow(String id) {
-    setState(() {
-      final index = _followers.indexWhere((follower) => follower['id'] == id);
-      if (index != -1) {
-        _followers[index]['isFollowing'] = !_followers[index]['isFollowing'];
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            AppHeader(
-              title: 'follower_title'.tr(context),
-              centerTitle: true,
-              showBackButton: true,
-            ),
+    return BlocProvider(
+      create: (context) => FriendsCubit(sl<FriendsRepo>())..fetchMyFriends(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: BlocConsumer<FriendsCubit, FriendsState>(
+            listener: (context, state) {
+              if (state is FriendsError) {
+                showToast(context,
+                    message: state.error, state: ToastStates.error);
+              }
+            },
+            builder: (context, state) {
+              // final cubit = context.read<FriendsCubit>();
 
-            // Follower List
-            _buildFollowersList(),
-          ],
+              return Column(
+                children: [
+                  _buildHeader(context),
+                  _buildFriendsList(context, state),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildFollowersList() {
+  Widget _buildHeader(BuildContext context) {
+    return AppHeader(
+      title: 'friends'.tr(context),
+      centerTitle: true,
+      showBackButton: true,
+      actions: [
+        IconButton(
+          tooltip: 'add_friends'.tr(context),
+          icon: Icon(
+            CupertinoIcons.person_add,
+            color: AppColors.primary,
+            size: 25.sp,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (_) =>
+                      RegisterCubit(sl<RegisterRepo>())..fetchContacts(context),
+                  child: const InviteContactsPage(),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFriendsList(BuildContext context, FriendsState state) {
+    final friendsCubit = context.read<FriendsCubit>();
+    final friends = friendsCubit.acceptedFriends;
+
+    if (state is FriendsLoading) {
+      return const Expanded(
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (friends.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Text(
+            'no_friends'.tr(context),
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Expanded(
-      child: ListView.builder(
-        itemCount: _followers.length,
+      child: ListView.separated(
+        itemCount: friends.length,
         itemBuilder: (context, index) {
-          final follower = _followers[index];
+          final friend = friends[index];
           return FollowerListItem(
-            id: follower['id'],
-            name: follower['name'],
-            avatar: follower['avatar'],
-            isVerified: follower['isVerified'],
-            isFollowing: follower['isFollowing'],
-            onFollowPressed: () => _toggleFollow(follower['id']),
+            friend: friend,
+            onDeletePressed: () {
+              context
+                  .read<FriendsCubit>()
+                  .declineFriendRequest(friend.id.toString());
+            },
           );
         },
+        separatorBuilder: (context, index) => const Divider(height: 1),
       ),
     );
   }

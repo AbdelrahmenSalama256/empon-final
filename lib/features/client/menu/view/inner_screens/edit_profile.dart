@@ -99,7 +99,7 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                 originalGender = cubit.selectedGender;
                 originalProfileImage = cubit.profileImage;
               });
-              cubit.getUserProfile();
+              // cubit.getUserProfile();
             }
           },
           child: Scaffold(

@@ -1,4 +1,5 @@
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
+import 'package:embone/features/client/product_Details/data/model/product_model.dart';
 
 class SearchState {}
 
@@ -77,4 +78,18 @@ class CommentsLoaded extends SearchState {
   final List<CommentModel> comments;
 
   CommentsLoaded(this.comments);
+}
+
+class LikeProductLoading extends SearchState {}
+
+class LikeProductLoaded extends SearchState {
+  final ProductModel? productModel;
+
+  LikeProductLoaded(this.productModel);
+}
+
+class LikeProductError extends SearchState {
+  final String message;
+
+  LikeProductError({required this.message});
 }

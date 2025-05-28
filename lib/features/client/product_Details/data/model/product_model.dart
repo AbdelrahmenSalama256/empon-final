@@ -36,6 +36,7 @@ class ProductData {
   final int? vendorId;
   final String? vendorName;
   final int? isSale;
+  final bool isLiked;
   final String? discountType;
   final String? discountValue;
   final List<Variation>? variations;
@@ -49,6 +50,7 @@ class ProductData {
     this.id,
     this.name,
     this.description,
+    this.isLiked = false,
     this.code,
     this.category,
     this.price,
@@ -75,6 +77,7 @@ class ProductData {
       price: json['price'],
       vendorId: json['vendor_id'],
       vendorName: json['vendor_name'],
+      isLiked: json['is_liked'] ?? false,
       isSale: json['is_sale'],
       discountType: json['discount_type'],
       discountValue: json['discount_value'],
@@ -98,6 +101,7 @@ class ProductData {
       'description': description,
       'code': code,
       'category': category,
+      'is_liked': isLiked,
       'price': price,
       'vendor_id': vendorId,
       'vendor_name': vendorName,
@@ -111,6 +115,48 @@ class ProductData {
       'created_at': createdAt,
       'updated_at': updatedAt,
     };
+  }
+
+  ProductData copyWith({
+    int? id,
+    String? name,
+    String? description,
+    String? code,
+    String? category,
+    String? price,
+    int? vendorId,
+    String? vendorName,
+    int? isSale,
+    bool? isLiked,
+    String? discountType,
+    String? discountValue,
+    List<Variation>? variations,
+    int? likes,
+    String? image,
+    List<ImageData>? images,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return ProductData(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      code: code ?? this.code,
+      category: category ?? this.category,
+      price: price ?? this.price,
+      vendorId: vendorId ?? this.vendorId,
+      vendorName: vendorName ?? this.vendorName,
+      isSale: isSale ?? this.isSale,
+      isLiked: isLiked ?? this.isLiked,
+      discountType: discountType ?? this.discountType,
+      discountValue: discountValue ?? this.discountValue,
+      variations: variations ?? this.variations,
+      likes: likes ?? this.likes,
+      image: image ?? this.image,
+      images: images ?? this.images,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
   }
 }
 

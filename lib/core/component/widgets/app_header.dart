@@ -130,65 +130,46 @@ class AppHeader extends StatelessWidget {
           : MainAxisAlignment.spaceBetween,
       children: [
         if (leadingWidget != null && leadingPosition == MainAxisAlignment.start)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [leadingWidget],
-          ),
-        if (leadingPosition == MainAxisAlignment.center)
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [leadingWidget ?? const SizedBox()],
-            ),
-          ),
-        // Handle title alignment with if statements
+          leadingWidget,
+
         if (titleContent != null) ...[
-          if (centerTitle == true) ...[
+          if (centerTitle)
             Expanded(
-              child: Row(
-                children: [
-                  const Spacer(
-                    flex: 1,
-                  ),
-                  Center(child: titleContent),
-                  const Spacer(
-                    flex: 2,
-                  ),
-                ],
-              ),
-            ),
-          ] else if (isRTL) ...[
+              child: actions != null
+                  ? Center(child: titleContent)
+                  : Row(
+                      children: [
+                        const Spacer(
+                          flex: 1,
+                        ),
+                        Center(child: titleContent),
+                        const Spacer(
+                          flex: 2,
+                        ),
+                      ],
+                    ),
+            )
+          else
             Expanded(
               child: Align(
-                alignment: AlignmentDirectional.centerStart,
+                alignment: isRTL
+                    ? AlignmentDirectional.centerStart
+                    : AlignmentDirectional.centerEnd,
                 child: titleContent,
               ),
             ),
-          ] else ...[
-            Expanded(
-              child: Align(
-                alignment: centerTitle == true
-                    ? Alignment.center
-                    : isRTL
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                child: titleContent,
-              ),
-            ),
-          ],
-        ] else ...[
-          const SizedBox.shrink(),
-        ],
+        ] else
+          const Spacer(),
+
+        // Actions on the right
         if (actions != null && actions!.isNotEmpty)
           Row(mainAxisSize: MainAxisSize.min, children: actions!),
+
+        // Leading widget on the right (if positioned there)
         if (leadingWidget != null && leadingPosition == MainAxisAlignment.end)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [leadingWidget],
-          ),
+          leadingWidget,
       ],
     );
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

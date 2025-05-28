@@ -1,12 +1,15 @@
 import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:embone/features/client/contacts/view/invite_contacts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/services/service_locator.dart';
 
 class ContactsPage extends StatelessWidget {
   final VoidCallback onNextStep;
@@ -16,8 +19,6 @@ class ContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<RegisterCubit>();
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -30,7 +31,7 @@ class ContactsPage extends StatelessWidget {
               title: 'register'.tr(context),
             ),
             Expanded(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: Column(
                   children: [
@@ -54,8 +55,9 @@ class ContactsPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: cubit,
+                            builder: (context) => BlocProvider(
+                              create: (_) => RegisterCubit(sl<RegisterRepo>())
+                                ..fetchContacts(context),
                               child: const InviteContactsPage(),
                             ),
                           ),

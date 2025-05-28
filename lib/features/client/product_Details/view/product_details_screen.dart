@@ -2,6 +2,8 @@ import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -26,6 +28,7 @@ import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final bool isVendor;
@@ -95,6 +98,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   @override
   Widget build(BuildContext context) {
     final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
+    final ScrollController scrollController = ScrollController();
+    final GlobalKey reviewSectionKey = GlobalKey();
 
     final List<Map<String, dynamic>> products = [
       {
@@ -139,209 +144,242 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     .toList() ??
                 [];
 
-            return Column(
-              children: [
-                AppHeader(
-                  title: 'product_details'.tr(context),
-                  centerTitle: true,
-                  onBackPressed: () => Navigator.pop(context),
-                ),
-                state is GoToProductLoading
-                    ? const Expanded(
-                        child: Center(child: CustomLoadingIndicator()))
-                    : Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 16.h),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              ProductImageSection(
-                                images: [
-                                  product?.image ?? '',
-                                  ...(product?.images?.map((img) => img.url) ??
-                                          [])
-                                      .where((url) => url?.isNotEmpty ?? false)
-                                      .map((url) => url ?? ''),
-                                ],
-                                autoPlay: true,
-                                autoPlayInterval: const Duration(seconds: 4),
-                              ),
-                              SizedBox(height: 15.h),
-                              InteractionBar(
-                                isVendor: widget.isVendor,
-                                likeCount: product?.likes ?? 0,
-                                onEdit: () {
-                                  navigateTo(context, const AddProductPage());
-                                },
-                                onDelete: () => CustomPopup.show(
-                                  context: context,
-                                  type: PopupType.alert,
-                                  title: 'delete_product'.tr(context),
-                                  titleColor: const Color(0xffEC4B4B),
-                                  message: 'confirmation_message'.tr(context),
-                                  primaryButtonText: "yes".tr(context),
-                                  secondaryButtonText: "no".tr(context),
-                                  onPrimaryButtonPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                commentCount: cubit.commentResponse?.total ?? 0,
-                                onShare: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Share pressed')),
-                                  );
-                                },
-                                onLike: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Like pressed')),
-                                  );
-                                },
-                                onComment: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Comment pressed')),
-                                  );
-                                },
-                                onThumbsUp: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Thumbs up pressed')),
-                                  );
-                                },
-                              ),
-                              SizedBox(height: 15.h),
-                              if (widget.isVendor)
-                                InventoryButton(
-                                  onPressed: () {},
-                                ),
-                              SizedBox(height: 15.h),
-                              ColorOptionsSection(
-                                availableColors: availableColors.isNotEmpty
-                                    ? availableColors
-                                    : [Colors.grey],
-                                selectedColorIndex: _selectedColorIndex,
-                                onColorSelected: _onColorSelected,
-                              ),
-                              SizedBox(height: 15.h),
-                              PriceDisplay(
-                                currency: "",
-                                currentPrice:
-                                    double.tryParse(product?.price ?? '0') ??
-                                        0.0,
-                                originalPrice: product?.isSale == 1.0
-                                    ? (double.tryParse(product?.price ?? '0') ??
-                                            0.0) *
-                                        1.5
-                                    : null,
-                              ),
-                              SizedBox(height: 15.h),
-                              ProductInfoSection(
-                                name: product?.name ?? 'Unknown Product',
-                                price: double.tryParse(product?.price ?? '0') ??
-                                    0.0,
-                                currency: "EGP",
-                                sellerName:
-                                    product?.vendorName ?? 'Unknown Seller',
-                                productId: product?.code ?? 'N/A',
-                                sizes: sizes,
-                              ),
-                              SizedBox(height: 10.h),
-                              QuantitySelectorSection(
-                                isVendor: widget.isVendor,
-                                quantity: _quantity,
-                                onQuantityChanged: _onQuantityChanged,
-                              ),
-                              SizedBox(height: 15.h),
-                              // In your ProductDetailPage build method where you use ReviewsSection:
-                              ReviewsSection(
-                                reviews: cubit.comments,
-                                commentController: cubit.commentController,
-                                isVendor: widget.isVendor,
-                                cubit: cubit,
-                                productId: widget.productId,
-                              ),
-                              SizedBox(height: 15.h),
-                              ShippingInfoSection(
-                                startDate: "1 مارس",
-                                endDate: "3 مارس",
-                                price: "2500",
-                                origin: product?.vendorName ?? 'Unknown Origin',
-                              ),
-                              SizedBox(height: 15.h),
-                              if (!widget.isVendor) const AddToCartButton(),
-                              SizedBox(height: 15.h),
-                              ProductDescriptionSection(
-                                description: product?.description ??
-                                    'No description available.',
-                              ),
-                              SizedBox(height: 15.h),
-                              if (!widget.isVendor)
-                                ContactForm(
-                                  onSubmit: (email) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content:
-                                              Text('Email submitted: $email')),
-                                    );
-                                  },
-                                ),
-                              SizedBox(height: 15.h),
-                              if (!widget.isVendor)
-                                Container(
-                                  decoration: const BoxDecoration(
-                                      color: Color(0xffF6F6F6)),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SectionTitle(
-                                        title: 'related_products'.tr(context),
-                                        titleSize: 16.sp,
-                                        verticalPadding: 15.h,
-                                      ),
-                                      SizedBox(height: 8.h),
-                                      SizedBox(
-                                        height: 350.h,
-                                        child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          reverse: isRTL,
-                                          itemCount: products.length,
-                                          itemBuilder: (context, index) {
-                                            final product = products[index];
-                                            return ProductCard(
-                                              imageUrl: product['imageUrl'],
-                                              title: product['title'],
-                                              price: product['price'],
-                                              badge: product['badge'],
-                                              actionText: product['actionText'],
-                                              isFavorite: product['isFavorite'],
-                                              onFavoriteToggle: () {},
-                                              onActionTap: () {},
-                                              onCardTap: () {
-                                                navigateTo(
-                                                    context,
-                                                    ProductDetailPage(
-                                                        isVendor:
-                                                            widget.isVendor,
-                                                        productId: 22));
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      ),
+            return BlocBuilder<GlobalCubit, GlobalState>(
+              builder: (context, state) {
+                return Column(
+                  children: [
+                    AppHeader(
+                      title: 'product_details'.tr(context),
+                      centerTitle: true,
+                      onBackPressed: () => Navigator.pop(context),
+                    ),
+                    state is GoToProductLoading
+                        ? const Expanded(
+                            child: Center(child: CustomLoadingIndicator()))
+                        : Expanded(
+                            child: SingleChildScrollView(
+                              controller: scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 16.h),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  ProductImageSection(
+                                    images: [
+                                      product?.image ?? '',
+                                      ...(product?.images
+                                                  ?.map((img) => img.url) ??
+                                              [])
+                                          .where(
+                                              (url) => url?.isNotEmpty ?? false)
+                                          .map((url) => url ?? ''),
                                     ],
+                                    autoPlay: true,
+                                    autoPlayInterval:
+                                        const Duration(seconds: 4),
                                   ),
-                                ),
-                              SizedBox(height: 10.h),
-                            ],
+                                  SizedBox(height: 15.h),
+                                  InteractionBar(
+                                    isVendor: widget.isVendor,
+                                    likeCount: product?.likes ?? 0,
+                                    onEdit: () {
+                                      navigateTo(
+                                          context, const AddProductPage());
+                                    },
+                                    onDelete: () => CustomPopup.show(
+                                      context: context,
+                                      type: PopupType.alert,
+                                      title: 'delete_product'.tr(context),
+                                      titleColor: const Color(0xffEC4B4B),
+                                      message:
+                                          'confirmation_message'.tr(context),
+                                      primaryButtonText: "yes".tr(context),
+                                      secondaryButtonText: "no".tr(context),
+                                      onPrimaryButtonPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    commentCount:
+                                        cubit.commentResponse?.total ?? 0,
+                                    onShare: () {
+                                      final productId =
+                                          cubit.productModel?.data?.id ?? 0;
+                                      final productName =
+                                          cubit.productModel?.data?.name ??
+                                              "Product";
+                                      final deepLink =
+                                          "myapp://product/$productId";
+
+                                      Share.share(
+                                        "Check out this product: $productName\n$deepLink",
+                                        subject: "Awesome Product on Our App",
+                                      );
+                                    },
+                                    onLike: () {
+                                      context
+                                          .read<GlobalCubit>()
+                                          .addProductToWishlist(
+                                              cubit.productModel?.data?.id ??
+                                                  0);
+                                    },
+                                    onComment: () {
+                                      final context =
+                                          reviewSectionKey.currentContext;
+                                      if (context != null) {
+                                        Scrollable.ensureVisible(
+                                          context,
+                                          duration:
+                                              const Duration(milliseconds: 500),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      }
+                                    },
+                                    onThumbsUp: () {
+                                      cubit.toggleProductLike(
+                                        productId:
+                                            cubit.productModel?.data?.id ?? 0,
+                                      );
+                                    },
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  if (widget.isVendor)
+                                    InventoryButton(
+                                      onPressed: () {},
+                                    ),
+                                  SizedBox(height: 15.h),
+                                  ColorOptionsSection(
+                                    availableColors: availableColors.isNotEmpty
+                                        ? availableColors
+                                        : [Colors.grey],
+                                    selectedColorIndex: _selectedColorIndex,
+                                    onColorSelected: _onColorSelected,
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  PriceDisplay(
+                                    currency: "",
+                                    currentPrice: double.tryParse(
+                                            product?.price ?? '0') ??
+                                        0.0,
+                                    originalPrice: product?.isSale == 1.0
+                                        ? (double.tryParse(
+                                                    product?.price ?? '0') ??
+                                                0.0) *
+                                            1.5
+                                        : null,
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  ProductInfoSection(
+                                    name: product?.name ?? 'Unknown Product',
+                                    price: double.tryParse(
+                                            product?.price ?? '0') ??
+                                        0.0,
+                                    currency: "EGP",
+                                    sellerName:
+                                        product?.vendorName ?? 'Unknown Seller',
+                                    productId: product?.code ?? 'N/A',
+                                    sizes: sizes,
+                                  ),
+                                  SizedBox(height: 10.h),
+                                  QuantitySelectorSection(
+                                    isVendor: widget.isVendor,
+                                    quantity: _quantity,
+                                    onQuantityChanged: _onQuantityChanged,
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  ReviewsSection(
+                                    key: reviewSectionKey,
+                                    reviews: cubit.comments,
+                                    commentController: cubit.commentController,
+                                    isVendor: widget.isVendor,
+                                    cubit: cubit,
+                                    productId: widget.productId,
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  ShippingInfoSection(
+                                    startDate: "1 مارس",
+                                    endDate: "3 مارس",
+                                    price: "2500",
+                                    origin:
+                                        product?.vendorName ?? 'Unknown Origin',
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  if (!widget.isVendor) const AddToCartButton(),
+                                  SizedBox(height: 15.h),
+                                  ProductDescriptionSection(
+                                    description: product?.description ??
+                                        'No description available.',
+                                  ),
+                                  SizedBox(height: 15.h),
+                                  if (!widget.isVendor)
+                                    ContactForm(
+                                      onSubmit: (email) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  'Email submitted: $email')),
+                                        );
+                                      },
+                                    ),
+                                  SizedBox(height: 15.h),
+                                  if (!widget.isVendor)
+                                    Container(
+                                      decoration: const BoxDecoration(
+                                          color: Color(0xffF6F6F6)),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SectionTitle(
+                                            title:
+                                                'related_products'.tr(context),
+                                            titleSize: 16.sp,
+                                            verticalPadding: 15.h,
+                                          ),
+                                          SizedBox(height: 8.h),
+                                          SizedBox(
+                                            height: 350.h,
+                                            child: ListView.builder(
+                                              scrollDirection: Axis.horizontal,
+                                              reverse: isRTL,
+                                              itemCount: products.length,
+                                              itemBuilder: (context, index) {
+                                                final product = products[index];
+                                                return ProductCard(
+                                                  imageUrl: product['imageUrl'],
+                                                  title: product['title'],
+                                                  price: product['price'],
+                                                  badge: product['badge'],
+                                                  actionText:
+                                                      product['actionText'],
+                                                  isFavorite:
+                                                      product['isFavorite'],
+                                                  onFavoriteToggle: () {},
+                                                  onActionTap: () {},
+                                                  onCardTap: () {
+                                                    navigateTo(
+                                                        context,
+                                                        ProductDetailPage(
+                                                            isVendor:
+                                                                widget.isVendor,
+                                                            productId: 22));
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  SizedBox(height: 10.h),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-              ],
+                  ],
+                );
+              },
             );
           },
         ),

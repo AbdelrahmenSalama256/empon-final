@@ -6,6 +6,7 @@ import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
 import 'package:embone/features/client/contacts/data/model/contact_model.dart';
@@ -49,11 +50,12 @@ class RegisterCubit extends Cubit<RegisterState> {
   int resendSeconds = 60;
   List<ContactModel> contacts = [];
   bool isFetchingContacts = false;
-
+  List<User> registeredUsers = [];
+  List<ContactModel> nonRegisteredContacts = [];
   List<LocationModel> allCountries = [];
   List<LocationModel> allStates = [];
   List<LocationModel> allCities = [];
-
+  bool hasFetchedContacts = false;
   Future<void> fetchAllLocations() async {
     emit(LocationsLoading());
 
@@ -327,49 +329,122 @@ class RegisterCubit extends Cubit<RegisterState> {
   }
 
   Future<void> fetchContacts(BuildContext context) async {
+    if (hasFetchedContacts) return; // منع التنفيذ لو تم من قبل
     isFetchingContacts = true;
-    emit(RegisterInitial());
+    emit(ContactsLoading());
 
     final permissionStatus = await Permission.contacts.request();
     if (permissionStatus.isGranted) {
       try {
         final deviceContacts = await FastContacts.getAllContacts();
-        contacts = deviceContacts.asMap().entries.map((entry) {
-          final contact = entry.value;
-          final phone = contact.phones.isNotEmpty
-              ? contact.phones.first.number
-              : 'no_phone'.tr(context);
-          final nameParts = contact.displayName.split(' ');
-          String initials = '';
-          if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
-            initials = nameParts[0][0];
-            if (nameParts.length > 1 && nameParts[1].isNotEmpty) {
-              initials += ' ${nameParts[1][0]}';
-            }
+        contacts = deviceContacts
+            .asMap()
+            .entries
+            .map((entry) {
+              final contact = entry.value;
+              String phone = contact.phones.isNotEmpty
+                  ? contact.phones.first.number
+                      .replaceAll(RegExp(r'[^\d+]'), '')
+                  : 'no_phone'.tr(context);
+              if (phone.length < 10 || phone.contains(RegExp(r'[a-zA-Z*]'))) {
+                return null;
+              }
+              String cleanedName =
+                  contact.displayName.replaceAll(RegExp(r'[^\w\s]'), '');
+              if (cleanedName.isEmpty) {
+                cleanedName = 'Unknown';
+              }
+              final nameParts = cleanedName.split(' ');
+              String initials = '';
+              if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
+                initials = nameParts[0][0];
+                if (nameParts.length > 1 && nameParts[1].isNotEmpty) {
+                  initials += ' ${nameParts[1][0]}';
+                }
+              }
+              return ContactModel(
+                id: entry.key.toString(),
+                name: cleanedName,
+                phone: phone,
+                isSelected: false,
+                initial: initials,
+              );
+            })
+            .whereType<ContactModel>()
+            .toList();
+
+        final seenPhones = <String>{};
+        contacts = contacts.where((contact) {
+          if (seenPhones.contains(contact.phone)) {
+            return false;
           }
-          return ContactModel(
-            id: entry.key.toString(),
-            name: contact.displayName,
-            phone: phone,
-            isSelected: false,
-            initial: initials,
-          );
+          seenPhones.add(contact.phone);
+          return true;
         }).toList();
-      } catch (e) {
+
+        Print.info(
+            "Fetched ${contacts.length} cleaned and deduplicated contacts");
+
+        final allPhoneNumbers =
+            contacts.map((contact) => contact.phone).toList();
+        await checkContacts(context, allPhoneNumbers);
+        hasFetchedContacts = true; // وضع علامة إن التنفيذ تم
+      } catch (e, stackTrace) {
+        Print.error("Error fetching contacts: $e\n$stackTrace");
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('failed_to_load_contacts'.tr(context))),
         );
+        emit(ContactsError('failed_to_load_contacts'.tr(context)));
       }
     } else {
+      Print.info("Contacts permission denied");
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('contacts_permission_denied'.tr(context))),
       );
+      emit(ContactsError('contacts_permission_denied'.tr(context)));
     }
 
     isFetchingContacts = false;
-    emit(RegisterInitial());
+  }
+
+  Future<void> checkContacts(
+      BuildContext context, List<String> phoneNumbers) async {
+    emit(CheckingContactsLoading());
+
+    Print.info("Sending all phone numbers to server: $phoneNumbers");
+
+    final response = await registerRepo.checkRegisteredContacts(
+      phoneNumbers: phoneNumbers,
+    );
+
+    response.fold(
+      (error) {
+        Print.error("Failed to check contacts: $error");
+        emit(CheckingContactsError(error));
+      },
+      (registeredUsersResponse) {
+        registeredUsers = registeredUsersResponse;
+        Print.info(
+            "Registered users returned from server: ${registeredUsers.map((user) => user.phone).toList()}");
+
+        final registeredPhoneNumbers = registeredUsersResponse
+            .map((user) => user.phone)
+            .where((phone) => phone != null)
+            .toList()
+            .cast<String>();
+        Print.info("Registered phone numbers: $registeredPhoneNumbers");
+
+        nonRegisteredContacts = contacts
+            .where((contact) => !registeredPhoneNumbers.contains(contact.phone))
+            .toList();
+        Print.info(
+            "Non-registered contacts: ${nonRegisteredContacts.map((contact) => contact.phone).toList()}");
+
+        emit(ContactsChecked(registeredUsers, nonRegisteredContacts));
+      },
+    );
   }
 
   void toggleContactSelection(String id) {
@@ -380,6 +455,14 @@ class RegisterCubit extends Cubit<RegisterState> {
       );
       emit(RegisterInitial());
     }
+  }
+
+  isContactSelected(String id) {
+    final index = contacts.indexWhere((contact) => contact.id == id);
+    if (index != -1) {
+      return contacts[index].isSelected;
+    }
+    return false;
   }
 
   bool get hasSelectedContacts => contacts.any((contact) => contact.isSelected);
