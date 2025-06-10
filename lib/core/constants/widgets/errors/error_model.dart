@@ -9,6 +9,8 @@
 //   }
 // }
 
+import 'package:embone/core/constants/widgets/print_util.dart';
+
 class ErrorModel {
   final String detail;
 
@@ -45,6 +47,7 @@ class ErrorModel {
       // Default message if neither 'data' nor 'message' are found
       detailMessage = 'An unknown error occurred';
     }
+    PrintUtil.error(detailMessage);
 
     return ErrorModel(
       detail: detailMessage,

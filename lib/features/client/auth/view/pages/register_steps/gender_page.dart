@@ -3,6 +3,7 @@ import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_step_indicator.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
@@ -62,10 +63,12 @@ class GenderPage extends StatelessWidget {
                       selectedGender: cubit.gender != null
                           ? Gender.values.firstWhere(
                               (e) =>
-                                  e.toString().split('.').last == cubit.gender,
+                                  (e.toString().split('.').last) == cubit.gender,
+                                  
+                                  
                               orElse: () => Gender.male,
                             )
-                          : Gender.male,
+                          :Gender.male,
                       onGenderChanged: (Gender value) {
                         cubit.setGender(value.toString().split('.').last);
                       },
@@ -76,11 +79,11 @@ class GenderPage extends StatelessWidget {
                       isLoading: false,
                       onPressed: () {
                         if (cubit.gender == null) {
-                          showToast(context,
-                              message: 'gender_required'.tr(context),
-                              state: ToastStates.error);
-                          return;
+                          cubit.gender= "male";
+                          PrintUtil.success(cubit.gender);
+
                         }
+                        PrintUtil.success(cubit.gender);
 
                         onNextStep();
                       },

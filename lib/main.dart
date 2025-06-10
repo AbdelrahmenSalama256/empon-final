@@ -15,6 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
   await Firebase.initializeApp();
+  
 
   //! Orientations
   SystemChrome.setPreferredOrientations([
@@ -41,6 +42,7 @@ void main() async {
         ),
       ],
       child: DevicePreview(
+        
         enabled: !kReleaseMode,
 
         // enabled: false,

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -55,6 +56,7 @@ class DioConsumer extends ApiConsumer {
     bool isFormData = false,
   }) async {
     try {
+      
       var res = await dio.get(
         path,
         data: isFormData ? FormData.fromMap(data) : data,
@@ -62,6 +64,7 @@ class DioConsumer extends ApiConsumer {
       );
       return res;
     } on DioException catch (e) {
+      PrintUtil.error(e);
       handleDioException(e);
     }
   }

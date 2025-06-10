@@ -3,6 +3,7 @@ import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/email/email_page.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:embone/features/client/contacts/view/invite_contacts_page.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +12,24 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/services/service_locator.dart';
 
-class ContactsPage extends StatelessWidget {
+class ContactsPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
   const ContactsPage(
       {super.key, required this.onNextStep, required this.onPreviousStep});
+
+  @override
+  State<ContactsPage> createState() => _ContactsPageState();
+}
+
+class _ContactsPageState extends State<ContactsPage> {
+  late RegisterCubit cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    cubit = context.read<RegisterCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +41,9 @@ class ContactsPage extends StatelessWidget {
             CustomHeader(
               showBackButton: false,
               showLogo: true,
-              onBackPressed: () => onPreviousStep(),
+              onBackPressed: () {
+                            Navigator.pop(context);
+                          },
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -69,7 +85,20 @@ class ContactsPage extends StatelessWidget {
                     SizedBox(height: 16.h),
                     AppButton(
                       text: 'skip'.tr(context),
-                      onPressed: () => onNextStep(),
+                      onPressed: () => () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider.value(
+                                  value: cubit,
+                                  child: EmailPage(
+                                    onNextStep: widget.onNextStep,
+                                    onPreviousStep: widget.onPreviousStep,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                       height: 50.h,
                       type: AppButtonType.text,
                       width: double.infinity,

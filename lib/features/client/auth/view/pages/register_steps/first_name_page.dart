@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
@@ -111,7 +113,7 @@ class FirstNamePage extends StatelessWidget {
                               state: ToastStates.error);
                           return;
                         }
-                        cubit.setCurrentStep(1);
+                        cubit.setCurrentStep(2);
                         onNextStep();
                       },
                       height: 50.h,

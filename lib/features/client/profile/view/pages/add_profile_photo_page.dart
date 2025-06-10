@@ -12,6 +12,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../contacts/view/contacts_page.dart';
+
 class AddProfilePhotoPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
@@ -102,7 +104,7 @@ class _AddProfilePhotoPageState extends State<AddProfilePhotoPage> {
             CustomHeader(
               showBackButton: false,
               showLogo: true,
-              onBackPressed: () => widget.onPreviousStep(),
+              onBackPressed: widget.onPreviousStep,
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -207,16 +209,20 @@ class _AddProfilePhotoPageState extends State<AddProfilePhotoPage> {
                         ),
                         SizedBox(height: 16.h),
                         TextButton(
+                          // onPressed: () => widget.onNextStep(),
                           onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => BlocProvider.value(
-                            //       value: cubit,
-                            //       child: const ContactsPage(),
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider.value(
+                                  value: cubit,
+                                  child: ContactsPage(
+                                    onNextStep: widget.onNextStep,
+                                    onPreviousStep: widget.onPreviousStep,
+                                  ),
+                                ),
+                              ),
+                            );
                           },
                           child: Text(
                             'skip'.tr(context),

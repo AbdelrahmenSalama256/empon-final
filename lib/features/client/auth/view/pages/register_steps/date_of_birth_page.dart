@@ -3,12 +3,15 @@ import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_date_picker.dart';
 import 'package:embone/core/component/widgets/app_step_indicator.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../../../core/component/custom_toast.dart';
 
 class DateOfBirthPage extends StatelessWidget {
   final VoidCallback onNextStep;
@@ -73,7 +76,33 @@ class DateOfBirthPage extends StatelessWidget {
                       text: 'next'.tr(context),
                       isLoading: false,
                       onPressed: () {
-                        onNextStep();
+                        if (cubit.birthDateController.text.isEmpty) {
+                          // Show error if no date is selected or parsing fails
+                          showToast(context,
+                              message: 'Please_select_a_valid_birth_date'.tr(context),
+                              state: ToastStates.error);
+                          return;
+                        }
+                        final selectedDate =
+                            DateTime.tryParse(cubit.birthDateController.text)??null;
+
+                        final today = DateTime.now();
+                        final age = today.year -
+                            selectedDate!.year -
+                            ((today.month < selectedDate.month ||
+                                    (today.month == selectedDate.month &&
+                                        today.day < selectedDate.day))
+                                ? 1
+                                : 0);
+
+                        if (age < 5) {
+                          showToast(context,
+                              message: 'You_must_be_at_least_5_years_old_to_continue'.tr(context),
+                              state: ToastStates.error);
+                          
+                        } else {
+                          onNextStep();
+                        }
                       },
                       height: 50.h,
                       width: double.infinity,

@@ -704,5 +704,7 @@
   "add_followers": "Add Friends",
   "friends": "Friends",
   "add_friends": "Add Friends",
-  "no_friends": "You have no friends yet."
+  "no_friends": "You have no friends yet.",
+  "Please_select_a_valid_birth_date":"Please select a valid birth date",
+  "You_must_be_at_least_5_years_old_to_continue":"You must be at least 5 years old to continue."
 }
