@@ -85,7 +85,7 @@ class _ContactsPageState extends State<ContactsPage> {
                     SizedBox(height: 16.h),
                     AppButton(
                       text: 'skip'.tr(context),
-                      onPressed: () => () {
+                      onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(

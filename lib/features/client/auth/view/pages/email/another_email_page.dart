@@ -128,16 +128,7 @@ class AnotherEmailPage extends StatelessWidget {
                               (cubit) => cubit.state is RegisterLoading,
                             ),
                             onPressed: () {
-                              if (formKey.currentState!.validate()) {
-                                cubit.register();
-                              } else {
-                                showToast(
-                                  context,
-                                  message: 'please_enter_valid_another_email'
-                                      .tr(context),
-                                  state: ToastStates.error,
-                                );
-                              }
+                              cubit.register();
                             },
                             height: 50.h,
                             width: double.infinity,

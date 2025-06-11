@@ -151,15 +151,16 @@ class _RegisterPageState extends State<RegisterPage> {
                             onNextStep: nextStep,
                             onPreviousStep: previousStep,
                           ),
-                          ContactsPage(
-                            onNextStep: nextStep,
-                            onPreviousStep: previousStep,
-                          ),
+                          
                           EmailPage(
                             onNextStep: nextStep,
                             onPreviousStep: previousStep,
                           ),
                           AnotherEmailPage(
+                            onPreviousStep: previousStep,
+                          ),
+                          ContactsPage(
+                            onNextStep: nextStep,
                             onPreviousStep: previousStep,
                           ),
                           VerificationPage(

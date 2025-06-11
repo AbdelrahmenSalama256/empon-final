@@ -136,7 +136,7 @@ class RegisterCubit extends Cubit<RegisterState> {
   void verifyOtp({String? phone}) async {
     if (!isClosed) {
       // Use phone parameter if provided, otherwise fall back to phoneController.text
-      final effectivePhone = phone?.trim() ?? phoneController.text.trim();
+      final effectivePhone = phoneController.text.trim();
       final otp = otpController.text.trim();
 
       Print.info("Starting OTP verification process...");
