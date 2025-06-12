@@ -207,7 +207,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                             state: ToastStates.success,
                                           );
                                           // TODO: Call cubit.resendOtp if implemented
-                                          // cubit.resendOtp(phone: widget.phoneNumber);
+                                           cubit.resendOtp(phone: cubit.phoneController.text); 
                                         },
                                   child: Text(
                                     cubit.resendSeconds > 0

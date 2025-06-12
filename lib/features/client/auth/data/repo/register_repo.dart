@@ -6,6 +6,7 @@ import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/core/notification/notification_handler.dart';
 import 'package:embone/features/client/auth/data/models/login_model.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
+import 'package:embone/features/client/auth/data/models/verification_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RegisterRepo {
@@ -138,6 +139,41 @@ class RegisterRepo {
       } else {
         return Left(response.data['message'] ?? 'Unknown error');
       }
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+  
+  Future<Either<String, VerificationResponse>> verifyPhoneNumber(String phoneNumber) async {
+    try {
+      final response = await api.post(
+        EndPoints.userVerifyPhone,
+        data: {'phone': phoneNumber},
+      );
+      if (response.data['success'] != true) {
+        return Left(response.data['message'] ?? 'Unknown error');
+      }
+        return Right(VerificationResponse.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);   
+       
+    }
+  }
+  
+  Future<Either<String, VerificationResponse>> verifyEmail(String email) async {
+    try {
+      final response = await api.post(
+        EndPoints.userVerifyPhone,
+        data: {'email': email},
+      );
+      if (response.data['success'] != true) {
+        return Left(response.data['message'] ?? 'Unknown error');
+      }
+      return Right(VerificationResponse.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {

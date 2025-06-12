@@ -708,6 +708,7 @@
   "add_friends": "إضافة أصدقاء",
   "no_friends": "ليس لديك أصدقاء بعد.",
   "Please_select_a_valid_birth_date":"الرجاء تحديد تاريخ ميلاد صحيح",
-  "You_must_be_at_least_5_years_old_to_continue":"يجب أن يكون عمرك 5 سنوات على الأقل للاستمرار."
+  "You_must_be_at_least_5_years_old_to_continue":"يجب أن يكون عمرك 5 سنوات على الأقل للاستمرار.",
+  "guest_login":"الاستمرار كزائر"
 
 }

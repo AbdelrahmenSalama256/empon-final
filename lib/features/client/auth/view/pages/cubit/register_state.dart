@@ -133,3 +133,40 @@ class CheckingContactsError extends RegisterState {
   final String message;
   CheckingContactsError(this.message);
 }
+
+class VerifyPhoneNumber extends RegisterState {
+  final String phoneNumber;
+
+  VerifyPhoneNumber(this.phoneNumber);
+}
+
+class VerifyPhoneNumberLoading extends RegisterState {}
+
+class VerifyPhoneNumberSuccess extends RegisterState {
+  final String message;
+
+  VerifyPhoneNumberSuccess(this.message);
+}
+
+class VerifyPhoneNumberError extends RegisterState {
+  final String error;
+
+  VerifyPhoneNumberError(this.error);
+}
+
+class VerifyEmail extends RegisterState {
+  final String email;
+
+  VerifyEmail(this.email);
+}
+class VerifyEmailLoading extends RegisterState {}
+class VerifyEmailSuccess extends RegisterState {
+  final String message;
+
+  VerifyEmailSuccess(this.message);
+}
+class VerifyEmailError extends RegisterState {
+  final String error;
+
+  VerifyEmailError(this.error);
+}

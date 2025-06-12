@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/app_constant.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/core/locale/app_loacl.dart';
@@ -491,5 +492,35 @@ class RegisterCubit extends Cubit<RegisterState> {
         emit(ResendOtpSuccess(result.message ?? ""));
       },
     );
+  }
+
+  void verifyPhoneNumber(String phone)async {
+    if (phone.isEmpty) {
+      PrintUtil.error("please_enter_phone");
+      emit(VerifyPhoneNumberError( 'please_enter_phone'));
+      return;
+    }
+
+    if (!RegExp(r'^\+?[0-9]{10,15}$').hasMatch(phone)) {
+      PrintUtil.error("invalid_phone_format");
+      emit(VerifyPhoneNumberError( 'invalid_phone_format'));
+      return;
+    }
+    PrintUtil.success("Phone number verified: $phone");
+    emit(VerifyPhoneNumberLoading());
+    final response = await registerRepo.verifyPhoneNumber( phone);
+    
+
+    if (isClosed) return;
+
+    response.fold(
+      (error) {
+        emit(VerifyPhoneNumberError(error));
+      },
+      (result) {
+        PrintUtil.success("Phone number verification successful: ${result.message}");	
+        emit(VerifyPhoneNumberSuccess(result.message));
+      },
+    ); 
   }
 }

@@ -15,6 +15,8 @@ class EndPoints {
   static const String userSendOtp = "${baseUrl}send-otp";
   static const String userConfirmCode = "${baseUrl}auth/confirm-code-register";
   static const String userResendCode = "${baseUrl}auth/password/resend_code";
+  static const String userVerifyEmail = "${baseUrl}check-email";
+  static const String userVerifyPhone = "${baseUrl}check-phone";
   //! Logout
   static const String userLogout = "${baseUrl}logout";
   static const String deleteAccount = "${baseUrl}auth/account-deletion";
