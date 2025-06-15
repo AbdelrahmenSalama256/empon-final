@@ -14,12 +14,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
 
-class PhoneNumberPage extends StatelessWidget {
+class PhoneNumberPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
   const PhoneNumberPage(
       {super.key, required this.onNextStep, required this.onPreviousStep});
 
+  @override
+  State<PhoneNumberPage> createState() => _PhoneNumberPageState();
+}
+
+class _PhoneNumberPageState extends State<PhoneNumberPage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<RegisterCubit>();
@@ -35,7 +40,7 @@ class PhoneNumberPage extends StatelessWidget {
         if (state is VerifyPhoneNumberSuccess) {
           PrintUtil.success('Phone number verified successfully');
           showToast(context, message: state.message, state: ToastStates.success);
-          onNextStep();
+          widget.onNextStep();
         }},
       child:SafeArea(
       child: Scaffold(
@@ -46,7 +51,7 @@ class PhoneNumberPage extends StatelessWidget {
               CustomHeader(
                 showBackButton: true,
                 showLogo: true,
-                onBackPressed: () => onPreviousStep(),
+                onBackPressed: () => widget.onPreviousStep(),
                 title: 'register'.tr(context),
               ),
               Expanded(

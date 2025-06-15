@@ -44,7 +44,7 @@ class RegisterRepo {
         "gender": gender,
         "phone": phone,
         "email": email,
-        if (anotherEmail != null) "another_email": anotherEmail,
+        "another_email": anotherEmail,
         "password": password,
         "password_confirmation": passwordConfirmation,
         "fcm_token": fcmToken,
@@ -54,11 +54,9 @@ class RegisterRepo {
         "lat": lat,
         "lng": lng,
         "address": address,
+        "image":image != null ? await uploadImageToAPI(image) : null,
       };
 
-      if (image != null) {
-        data['image'] = await uploadImageToAPI(image);
-      }
 
       final response = await api.post(
         EndPoints.userRegister,
@@ -167,7 +165,7 @@ class RegisterRepo {
   Future<Either<String, VerificationResponse>> verifyEmail(String email) async {
     try {
       final response = await api.post(
-        EndPoints.userVerifyPhone,
+        EndPoints.userVerifyEmail,
         data: {'email': email},
       );
       if (response.data['success'] != true) {

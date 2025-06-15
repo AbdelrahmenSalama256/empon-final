@@ -277,7 +277,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       lat: lat!,
       lng: lng!,
       address: detailedAddress,
-      image: profileImage,
+      image: profileImage??null,
     );
 
     response.fold(
@@ -473,10 +473,10 @@ class RegisterCubit extends Cubit<RegisterState> {
     emit(CurrentStepUpdated(step));
   }
 
-  void resendOtp({String? phone}) async {
+  void resendOtp({required String phone}) async {
     if (isClosed) return;
 
-    final effectivePhone = phone?.trim() ?? phoneController.text.trim();
+    final effectivePhone =  phoneController.text.trim()?? phone;
 
     emit(ResendOtpLoading());
 
@@ -522,5 +522,24 @@ class RegisterCubit extends Cubit<RegisterState> {
         emit(VerifyPhoneNumberSuccess(result.message));
       },
     ); 
+  }
+
+    void verifyEmail(String email) async {
+    PrintUtil.success("email verified: $email");
+    emit(VerifyEmailLoading());
+    final response = await registerRepo.verifyEmail(email);
+
+    if (isClosed) return;
+
+    response.fold(
+      (error) {
+        emit(VerifyEmailError(error));
+      },
+      (result) {
+        PrintUtil.success(
+            "email verification successful: ${result.message}");
+        emit(VerifyEmailSuccess(result.message));
+      },
+    );
   }
 }

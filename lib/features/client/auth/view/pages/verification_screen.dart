@@ -79,14 +79,15 @@ class _VerificationPageState extends State<VerificationPage> {
                   message: 'verification_successful'.tr(context),
                   state: ToastStates.success,
                 );
-                widget.onNextStep ??
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BaseScreen(),
-                      ),
-                      (route) => false,
-                    );
+                widget.onNextStep!();
+                // navigateAndFinish()
+                    // Navigator.pushAndRemoveUntil(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => const BaseScreen(),
+                    //   ),
+                    //   (route) => false,
+                    // );
               }
             },
             child: SafeArea(
@@ -96,7 +97,7 @@ class _VerificationPageState extends State<VerificationPage> {
                     showBackButton: true,
                     showLogo: true,
                     onBackPressed: () =>
-                        widget.onPreviousStep ?? Navigator.pop(context),
+                        widget.onPreviousStep!(),
                     title: 'verification'.tr(context),
                   ),
                   Expanded(
@@ -175,9 +176,7 @@ class _VerificationPageState extends State<VerificationPage> {
                                       : () {
                                           cubit.updateResendSeconds(0);
                                           startResendTimer();
-                                          cubit.resendOtp(
-                                            phone: cubit.phoneController.text,
-                                          );
+                                          cubit.resendOtp(phone:cubit.phoneController.text);
                                         },
                                   child: Text(
                                     cubit.resendSeconds > 0

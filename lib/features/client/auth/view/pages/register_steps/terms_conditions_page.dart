@@ -9,12 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class TermsConditionsPage extends StatelessWidget {
+class TermsConditionsPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
   const TermsConditionsPage(
       {super.key, required this.onNextStep, required this.onPreviousStep});
 
+  @override
+  State<TermsConditionsPage> createState() => _TermsConditionsPageState();
+}
+
+class _TermsConditionsPageState extends State<TermsConditionsPage> {
   @override
   Widget build(BuildContext context) {
     context.read<RegisterCubit>();
@@ -27,7 +32,7 @@ class TermsConditionsPage extends StatelessWidget {
             CustomHeader(
               showBackButton: false,
               showLogo: true,
-              onBackPressed: () => onPreviousStep(),
+              onBackPressed: () => widget.onPreviousStep(),
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -56,7 +61,7 @@ class TermsConditionsPage extends StatelessWidget {
                       text: 'agree'.tr(context),
                       isLoading: false,
                       onPressed: () {
-                        onNextStep();
+                        widget.onNextStep();
                       },
                       height: 50.h,
                       width: double.infinity,

@@ -12,12 +12,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CreatePasswordPage extends StatelessWidget {
+class CreatePasswordPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
   const CreatePasswordPage(
       {super.key, required this.onNextStep, required this.onPreviousStep});
 
+  @override
+  State<CreatePasswordPage> createState() => _CreatePasswordPageState();
+}
+
+class _CreatePasswordPageState extends State<CreatePasswordPage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<RegisterCubit>();
@@ -30,7 +35,7 @@ class CreatePasswordPage extends StatelessWidget {
             CustomHeader(
               showBackButton: true,
               showLogo: true,
-              onBackPressed: () => onPreviousStep(),
+              onBackPressed: () => widget.onPreviousStep(),
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -118,7 +123,7 @@ class CreatePasswordPage extends StatelessWidget {
                                 state: ToastStates.error);
                             return;
                           }
-                          onNextStep();
+                          widget.onNextStep();
                         },
                         height: 50.h,
                         width: double.infinity,

@@ -4,12 +4,16 @@ import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
+import 'package:embone/features/client/auth/view/pages/email/another_email_page.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
+import 'package:embone/features/client/profile/view/pages/add_profile_photo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 
-class EmailPage extends StatelessWidget {
+class EmailPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
   const EmailPage({
@@ -19,11 +23,30 @@ class EmailPage extends StatelessWidget {
   });
 
   @override
+  State<EmailPage> createState() => _EmailPageState();
+}
+
+class _EmailPageState extends State<EmailPage> {
+  @override
   Widget build(BuildContext context) {
     final cubit = context.read<RegisterCubit>();
     final formKey = GlobalKey<FormState>();
-
-    return Scaffold(
+return BlocBuilder(
+      bloc: cubit,
+      builder: (context, state) {
+        return BlocListener<RegisterCubit, RegisterState>(
+          listener: (context, state) {
+        if (state is VerifyEmailError) {
+          PrintUtil.error('Email verification failed: ${state.error}');
+          showToast(context, message: state.error, state: ToastStates.error);
+        }
+        if (state is VerifyEmailSuccess) {
+          PrintUtil.success('Email verified successfully');
+          showToast(context, message: state.message, state: ToastStates.success);
+          widget.onNextStep();
+          
+        }},
+      child: Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
@@ -31,7 +54,7 @@ class EmailPage extends StatelessWidget {
             CustomHeader(
               showBackButton: true,
               showLogo: true,
-              onBackPressed: onPreviousStep,
+              onBackPressed:()=> widget.onPreviousStep(),
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -100,7 +123,8 @@ class EmailPage extends StatelessWidget {
                           isLoading: false,
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
-                              onNextStep();
+                              
+                            cubit.verifyEmail(cubit.emailController.text);
                             } else {
                               showToast(
                                 context,
@@ -114,7 +138,7 @@ class EmailPage extends StatelessWidget {
                         ),
                         SizedBox(height: 16.h),
                         TextButton(
-                          onPressed: onPreviousStep,
+                          onPressed:widget.onPreviousStep,
                           child: Text(
                             'back'.tr(context),
                             style: TextStyle(
@@ -132,6 +156,7 @@ class EmailPage extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+    );});
   }
 }

@@ -9,12 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class RememberMePage extends StatelessWidget {
+class RememberMePage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
   const RememberMePage(
       {super.key, required this.onNextStep, required this.onPreviousStep});
 
+  @override
+  State<RememberMePage> createState() => _RememberMePageState();
+}
+
+class _RememberMePageState extends State<RememberMePage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<RegisterCubit>();
@@ -27,7 +32,7 @@ class RememberMePage extends StatelessWidget {
             CustomHeader(
               showBackButton: false,
               showLogo: true,
-              onBackPressed: () => onPreviousStep(),
+              onBackPressed: () => widget.onPreviousStep(),
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -57,7 +62,7 @@ class RememberMePage extends StatelessWidget {
                       isLoading: false,
                       onPressed: () {
                         cubit.setRememberMe(true);
-                        onNextStep();
+                        widget.onNextStep();
                       },
                       height: 50.h,
                       width: double.infinity,
@@ -68,7 +73,7 @@ class RememberMePage extends StatelessWidget {
                       onPressed: () {
                         cubit.setRememberMe(false);
 
-                        onNextStep();
+                        widget.onNextStep();
                       },
                       height: 50.h,
                       type: AppButtonType.secondary,

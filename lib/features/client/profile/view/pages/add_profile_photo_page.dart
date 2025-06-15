@@ -5,6 +5,7 @@ import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/email/email_page.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +105,7 @@ class _AddProfilePhotoPageState extends State<AddProfilePhotoPage> {
             CustomHeader(
               showBackButton: false,
               showLogo: true,
-              onBackPressed: widget.onPreviousStep,
+              onBackPressed:()=> widget.onPreviousStep(),
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -209,21 +210,22 @@ class _AddProfilePhotoPageState extends State<AddProfilePhotoPage> {
                         ),
                         SizedBox(height: 16.h),
                         TextButton(
-                          // onPressed: () => widget.onNextStep(),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BlocProvider.value(
-                                  value: cubit,
-                                  child: ContactsPage(
-                                    onNextStep: widget.onNextStep,
-                                    onPreviousStep: widget.onPreviousStep,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                          onPressed: () => widget.onNextStep(),
+                          // onPressed: () {
+                          //   // widget.onNextStep();
+                          //   Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => BlocProvider.value(
+                          //         value: cubit,
+                          //         child: EmailPage(
+                          //           onNextStep: widget.onNextStep,
+                          //           onPreviousStep: widget.onPreviousStep,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   );
+                          // },
                           child: Text(
                             'skip'.tr(context),
                             style: TextStyle(

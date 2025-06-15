@@ -13,13 +13,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../core/component/custom_toast.dart';
 
-class DateOfBirthPage extends StatelessWidget {
+class DateOfBirthPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
 
   const DateOfBirthPage(
       {super.key, required this.onNextStep, required this.onPreviousStep});
 
+  @override
+  State<DateOfBirthPage> createState() => _DateOfBirthPageState();
+}
+
+class _DateOfBirthPageState extends State<DateOfBirthPage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<RegisterCubit>();
@@ -32,7 +37,7 @@ class DateOfBirthPage extends StatelessWidget {
             CustomHeader(
               showBackButton: true,
               showLogo: true,
-              onBackPressed: () => onPreviousStep(),
+              onBackPressed: () => widget.onPreviousStep(),
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -101,7 +106,7 @@ class DateOfBirthPage extends StatelessWidget {
                               state: ToastStates.error);
                           
                         } else {
-                          onNextStep();
+                          widget.onNextStep();
                         }
                       },
                       height: 50.h,

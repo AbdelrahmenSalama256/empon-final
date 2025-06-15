@@ -41,9 +41,10 @@ class _ContactsPageState extends State<ContactsPage> {
             CustomHeader(
               showBackButton: false,
               showLogo: true,
-              onBackPressed: () {
-                            Navigator.pop(context);
-                          },
+              onBackPressed: widget.onPreviousStep,
+              // () {
+              //               Navigator.pop(context);
+              //             },
               title: 'register'.tr(context),
             ),
             Expanded(
@@ -86,19 +87,20 @@ class _ContactsPageState extends State<ContactsPage> {
                     AppButton(
                       text: 'skip'.tr(context),
                       onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BlocProvider.value(
-                                  value: cubit,
-                                  child: EmailPage(
-                                    onNextStep: widget.onNextStep,
-                                    onPreviousStep: widget.onPreviousStep,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                        widget.onNextStep();
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => BlocProvider.value(
+                              //       value: cubit,
+                              //       child: EmailPage(
+                              //         onNextStep: widget.onNextStep,
+                              //         onPreviousStep: widget.onPreviousStep,
+                              //       ),
+                              //     ),
+                              //   ),
+                              // );
+                            },
                       height: 50.h,
                       type: AppButtonType.text,
                       width: double.infinity,

@@ -2,25 +2,29 @@ import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart';
-import 'package:embone/features/client/auth/view/pages/verification_screen.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class AnotherEmailPage extends StatelessWidget {
+class AnotherEmailPage extends StatefulWidget {
   final VoidCallback onPreviousStep;
+  final VoidCallback? onNextStep;
   const AnotherEmailPage({
     super.key,
     required this.onPreviousStep,
+    required this.onNextStep,
+
   });
 
+  @override
+  State<AnotherEmailPage> createState() => _AnotherEmailPageState();
+}
+
+class _AnotherEmailPageState extends State<AnotherEmailPage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<RegisterCubit>();
@@ -42,13 +46,16 @@ class AnotherEmailPage extends StatelessWidget {
               message: 'registration_successful'.tr(context),
               state: ToastStates.success,
             );
-            navigateTo(
-              context,
-              BlocProvider(
-                create: (context) => RegisterCubit(sl<RegisterRepo>()),
-                child: const VerificationPage(),
-              ),
-            );
+            if (widget.onNextStep != null) {
+              widget.onNextStep!();
+            }
+            // navigateTo(
+            //   context,
+            //   BlocProvider(
+            //     create: (context) => RegisterCubit(sl<RegisterRepo>()),
+            //     child: const VerificationPage(),
+            //   ),
+            // );
           }
         },
         child: SafeArea(
@@ -57,7 +64,7 @@ class AnotherEmailPage extends StatelessWidget {
               CustomHeader(
                 showBackButton: true,
                 showLogo: true,
-                onBackPressed: onPreviousStep,
+                onBackPressed: ()=> widget.onPreviousStep(),
                 title: 'register'.tr(context),
               ),
               Expanded(
@@ -135,7 +142,7 @@ class AnotherEmailPage extends StatelessWidget {
                           ),
                           SizedBox(height: 16.h),
                           TextButton(
-                            onPressed: onPreviousStep,
+                            onPressed:()=> widget.onPreviousStep(),
                             child: Text(
                               'back'.tr(context),
                               style: TextStyle(

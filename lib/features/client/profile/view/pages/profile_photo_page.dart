@@ -8,12 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ProfilePhotoPage extends StatelessWidget {
+class ProfilePhotoPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
   const ProfilePhotoPage(
       {super.key, required this.onNextStep, required this.onPreviousStep});
 
+  @override
+  State<ProfilePhotoPage> createState() => _ProfilePhotoPageState();
+}
+
+class _ProfilePhotoPageState extends State<ProfilePhotoPage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<RegisterCubit>();
@@ -26,7 +31,7 @@ class ProfilePhotoPage extends StatelessWidget {
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
-        onPreviousStep();
+        widget.onPreviousStep();
         return false;
       },
       child: Scaffold(
@@ -82,7 +87,7 @@ class ProfilePhotoPage extends StatelessWidget {
                       AppButton(
                         text: 'next'.tr(context),
                         onPressed: () {
-                          onNextStep();
+                          widget.onNextStep();
                           // cubit.register();
                         },
                         height: 50.h,

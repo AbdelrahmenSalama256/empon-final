@@ -14,11 +14,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class FirstNamePage extends StatelessWidget {
+class FirstNamePage extends StatefulWidget {
   final VoidCallback onNextStep;
 
   const FirstNamePage({super.key, required this.onNextStep});
 
+  @override
+  State<FirstNamePage> createState() => _FirstNamePageState();
+}
+
+class _FirstNamePageState extends State<FirstNamePage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<RegisterCubit>();
@@ -114,7 +119,7 @@ class FirstNamePage extends StatelessWidget {
                           return;
                         }
                         cubit.setCurrentStep(2);
-                        onNextStep();
+                        widget.onNextStep();
                       },
                       height: 50.h,
                       width: double.infinity,
