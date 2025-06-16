@@ -1,4 +1,5 @@
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -97,6 +98,7 @@ class QuantitySelectorSection extends StatelessWidget {
                     _QuantityButton(
                       icon: Icons.add,
                       onPressed: () {
+                        PrintUtil.info('Increase quantity: $quantity');
                         onQuantityChanged(quantity + 1);
                       },
                     ),

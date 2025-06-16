@@ -3,6 +3,8 @@ import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
+import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +41,12 @@ void main() async {
       providers: [
         BlocProvider(
           create: (context) => sl<GlobalCubit>()..init(),
+        ),
+        BlocProvider<CartCubit>(
+          create: (_) => CartCubit(
+            sl<CartRepo>(),
+          )..fetchCart(
+          ),
         ),
       ],
       child: DevicePreview(

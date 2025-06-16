@@ -304,7 +304,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         product?.vendorName ?? 'Unknown Origin',
                                   ),
                                   SizedBox(height: 15.h),
-                                  if (!widget.isVendor) const AddToCartButton(),
+                                  if (!widget.isVendor) AddToCartButton(
+                                    productId: widget.productId,
+                                    quantity:  _quantity,
+                                    variationId: 6,),
+                                  
                                   SizedBox(height: 15.h),
                                   ProductDescriptionSection(
                                     description: product?.description ??
@@ -358,13 +362,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                   onFavoriteToggle: () {},
                                                   onActionTap: () {},
                                                   onCardTap: () {
-                                                    navigateTo(
-                                                        context,
-                                                        ProductDetailPage(
-                                                            isVendor:
-                                                                widget.isVendor,
-                                                            productId: 22));
-                                                  },
+                                                  //   navigateTo(
+                                                  //       context,
+                                                  //       ProductDetailPage(
+                                                  //           isVendor:
+                                                  //               widget.isVendor,
+                                                  //           productId: 22));
+                                                   },
                                                 );
                                               },
                                             ),

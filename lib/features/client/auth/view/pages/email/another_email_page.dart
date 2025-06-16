@@ -12,7 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AnotherEmailPage extends StatefulWidget {
   final VoidCallback onPreviousStep;
-  final VoidCallback? onNextStep;
+  final VoidCallback onNextStep;
   const AnotherEmailPage({
     super.key,
     required this.onPreviousStep,
@@ -46,9 +46,8 @@ class _AnotherEmailPageState extends State<AnotherEmailPage> {
               message: 'registration_successful'.tr(context),
               state: ToastStates.success,
             );
-            if (widget.onNextStep != null) {
-              widget.onNextStep!();
-            }
+              widget.onNextStep();
+            
             // navigateTo(
             //   context,
             //   BlocProvider(

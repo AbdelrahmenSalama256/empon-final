@@ -107,7 +107,11 @@ class _LoginPageState extends State<LoginPage>
                   context,
                   BlocProvider(
                     create: (context) => RegisterCubit(sl<RegisterRepo>()),
-                    child: const VerificationPage(
+                    child: VerificationPage(onNextStep: () {  
+                      navigateAndFinish(context, const BaseScreen());
+                    }, onPreviousStep: () {
+                      Navigator.pop(context);
+                      },
                         // phone:
                         // c.valueController.text,
                         ),

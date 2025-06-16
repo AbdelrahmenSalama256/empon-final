@@ -26,11 +26,13 @@ class CartCubit extends Cubit<CartState> {
   Future<void> addProductToCart({
     required int productId,
     required int variationId,
+    required int quantity,
   }) async {
     emit(CartLoading());
     final result = await cartRepo.addProductToCart(
       productId: productId,
       variationId: variationId,
+      quantity:quantity
     );
     result.fold(
       (error) => emit(CartError(error)),

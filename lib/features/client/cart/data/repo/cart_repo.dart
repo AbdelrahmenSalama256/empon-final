@@ -26,6 +26,7 @@ class CartRepo {
   Future<Either<String, AddToCartResponseModel>> addProductToCart({
     required int productId,
     required int variationId,
+    required int quantity, // Default quantity is 1
   }) async {
     try {
       final response = await api.post(
@@ -33,6 +34,7 @@ class CartRepo {
         data: {
           'product_id': productId,
           'variation_id': variationId,
+          'quantity': quantity,
         },
       );
       final addToCartData = AddToCartResponseModel.fromJson(response.data);
@@ -51,10 +53,9 @@ class CartRepo {
     required int quantity,
   }) async {
     try {
-      final response = await api.post(
+      final response = await api.patch(
         "${EndPoints.updateCartItemQuantity}/$cartItemId",
         data: {
-          '_method': 'PUT',
           'quantity': quantity,
         },
       );

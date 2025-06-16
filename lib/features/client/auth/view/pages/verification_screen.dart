@@ -13,9 +13,9 @@ import 'dart:async';
 import 'package:pinput/pinput.dart';
 
 class VerificationPage extends StatefulWidget {
-  final VoidCallback? onNextStep;
-  final VoidCallback? onPreviousStep;
-  const VerificationPage({super.key, this.onNextStep, this.onPreviousStep});
+  final VoidCallback onNextStep;
+  final VoidCallback onPreviousStep;
+  const VerificationPage({super.key, required this.onNextStep, required this.onPreviousStep});
 
   @override
   State<VerificationPage> createState() => _VerificationPageState();
@@ -79,7 +79,7 @@ class _VerificationPageState extends State<VerificationPage> {
                   message: 'verification_successful'.tr(context),
                   state: ToastStates.success,
                 );
-                widget.onNextStep!();
+                widget.onNextStep();
                 // navigateAndFinish()
                     // Navigator.pushAndRemoveUntil(
                     //   context,
@@ -97,7 +97,7 @@ class _VerificationPageState extends State<VerificationPage> {
                     showBackButton: true,
                     showLogo: true,
                     onBackPressed: () =>
-                        widget.onPreviousStep!(),
+                        widget.onPreviousStep(),
                     title: 'verification'.tr(context),
                   ),
                   Expanded(

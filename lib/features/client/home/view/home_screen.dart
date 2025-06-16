@@ -246,11 +246,9 @@ class HomeScreen extends StatelessWidget {
                                                                       () {
                                                                     cartCubit
                                                                         .addProductToCart(
-                                                                      productId:
-                                                                          product
-                                                                              .id,
-                                                                      variationId:
-                                                                          6,
+                                                                      productId:product.id,
+                                                                      variationId:6,
+                                                                      quantity:1,
                                                                     );
                                                                   },
                                                                   onCardTap:
