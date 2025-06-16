@@ -67,7 +67,7 @@ class User {
       fcmToken: json['fcm_token'] as String?,
       wsToken: json['ws_token'] as String?,
       lastSeen: json['last_seen'] as String?,
-      isOnline: json['is_online'] as bool?,
+      isOnline: json['is_online'] != null ? json['is_online'] == 1 : null,
       token: json['token'] as String?,
       createdAt: json['created_at'] as String?,
       addresses: (json['addresses'] as List<dynamic>?)

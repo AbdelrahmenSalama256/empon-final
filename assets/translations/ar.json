@@ -707,8 +707,23 @@
   "friends": "الأصدقاء",
   "add_friends": "إضافة أصدقاء",
   "no_friends": "ليس لديك أصدقاء بعد.",
-  "Please_select_a_valid_birth_date":"الرجاء تحديد تاريخ ميلاد صحيح",
-  "You_must_be_at_least_5_years_old_to_continue":"يجب أن يكون عمرك 5 سنوات على الأقل للاستمرار.",
-  "guest_login":"الاستمرار كزائر"
-
+  "Please_select_a_valid_birth_date": "الرجاء تحديد تاريخ ميلاد صحيح",
+  "You_must_be_at_least_5_years_old_to_continue": "يجب أن يكون عمرك 5 سنوات على الأقل للاستمرار.",
+  "guest_login": "الاستمرار كزائر",
+  "replying_to": "ردًا على",
+  "now": "الآن",
+  "hours_ago": "منذ {hours} ساعة",
+  "minutes_ago": "منذ {minutes} دقيقة",
+  "date_format": "{day}/{month}",
+  "voice_message_duration": "0:20",
+  "no_messages_yet": "لا توجد رسائل بعد",
+  "error_loading_messages": "خطأ في تحميل الرسائل",
+  "receiver_id_required": "معرف المستلم مطلوب",
+  "monday": "الإثنين",
+  "tuesday": "الثلاثاء",
+  "wednesday": "الأربعاء",
+  "thursday": "الخميس",
+  "friday": "الجمعة",
+  "saturday": "السبت",
+  "sunday": "الأحد"
 }

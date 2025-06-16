@@ -10,7 +10,7 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
-import 'package:embone/features/client/contacts/view/contact_tree/followers._screen.dart';
+import 'package:embone/features/client/contacts/view/contact_tree/followers_screen.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
 import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/accounts_bottom_sheet.dart';

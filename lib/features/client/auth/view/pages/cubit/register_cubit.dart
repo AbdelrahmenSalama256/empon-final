@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
@@ -16,8 +17,8 @@ import 'package:embone/features/client/locations/data/repo/locations_repo.dart';
 import 'package:fast_contacts/fast_contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as path;
+import 'package:permission_handler/permission_handler.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
   final RegisterRepo registerRepo;
@@ -277,7 +278,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       lat: lat!,
       lng: lng!,
       address: detailedAddress,
-      image: profileImage??null,
+      image: profileImage,
     );
 
     response.fold(
@@ -329,93 +330,110 @@ class RegisterCubit extends Cubit<RegisterState> {
     emit(RegisterInitial());
   }
 
-  Future<void> fetchContacts(BuildContext context) async {
-    if (hasFetchedContacts) return; // منع التنفيذ لو تم من قبل
-    isFetchingContacts = true;
-    emit(ContactsLoading());
-
-    final permissionStatus = await Permission.contacts.request();
-    if (permissionStatus.isGranted) {
-      try {
-        final deviceContacts = await FastContacts.getAllContacts();
-        contacts = deviceContacts
-            .asMap()
-            .entries
-            .map((entry) {
-              final contact = entry.value;
-              String phone = contact.phones.isNotEmpty
-                  ? contact.phones.first.number
-                      .replaceAll(RegExp(r'[^\d+]'), '')
-                  : 'no_phone'.tr(context);
-              if (phone.length < 10 || phone.contains(RegExp(r'[a-zA-Z*]'))) {
-                return null;
-              }
-              String cleanedName =
-                  contact.displayName.replaceAll(RegExp(r'[^\w\s]'), '');
-              if (cleanedName.isEmpty) {
-                cleanedName = 'Unknown';
-              }
-              final nameParts = cleanedName.split(' ');
-              String initials = '';
-              if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
-                initials = nameParts[0][0];
-                if (nameParts.length > 1 && nameParts[1].isNotEmpty) {
-                  initials += ' ${nameParts[1][0]}';
-                }
-              }
-              return ContactModel(
-                id: entry.key.toString(),
-                name: cleanedName,
-                phone: phone,
-                isSelected: false,
-                initial: initials,
-              );
-            })
-            .whereType<ContactModel>()
-            .toList();
-
-        final seenPhones = <String>{};
-        contacts = contacts.where((contact) {
-          if (seenPhones.contains(contact.phone)) {
-            return false;
-          }
-          seenPhones.add(contact.phone);
-          return true;
-        }).toList();
-
-        Print.info(
-            "Fetched ${contacts.length} cleaned and deduplicated contacts");
-
-        final allPhoneNumbers =
-            contacts.map((contact) => contact.phone).toList();
-        await checkContacts(context, allPhoneNumbers);
-        hasFetchedContacts = true; // وضع علامة إن التنفيذ تم
-      } catch (e, stackTrace) {
-        Print.error("Error fetching contacts: $e\n$stackTrace");
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('failed_to_load_contacts'.tr(context))),
-        );
-        emit(ContactsError('failed_to_load_contacts'.tr(context)));
-      }
-    } else {
-      Print.info("Contacts permission denied");
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('contacts_permission_denied'.tr(context))),
-      );
-      emit(ContactsError('contacts_permission_denied'.tr(context)));
+  Future<void> data(BuildContext context) async {
+    emit(LoadingContacts());
+    await fetchContacts(context);
+    if (phoneNumbers.isNotEmpty) {
+      await checkContacts(context);
     }
-
-    isFetchingContacts = false;
+    emit(LoaddedContacts());
   }
 
-  Future<void> checkContacts(
-      BuildContext context, List<String> phoneNumbers) async {
-    emit(CheckingContactsLoading());
+  Future<void> fetchContacts(BuildContext context) async {
+    if (hasFetchedContacts) return;
+    isFetchingContacts = true;
 
-    Print.info("Sending all phone numbers to server: $phoneNumbers");
+    final permissionStatus = await Permission.contacts.request();
+    if (!permissionStatus.isGranted) {
+      Print.info("Contacts permission denied");
+      if (context.mounted) {
+        showToast(context,
+            message: 'contacts_permission_denied'.tr(context),
+            state: ToastStates.error);
+      }
+      emit(ContactsError('contacts_permission_denied'.tr(context)));
+      isFetchingContacts = false;
+      return;
+    }
 
+    try {
+      final deviceContacts = await FastContacts.getAllContacts();
+
+      // Process contacts
+      final processedContacts = deviceContacts
+          .asMap()
+          .entries
+          .map((entry) => _processContact(entry, context))
+          .whereType<ContactModel>()
+          .toList();
+
+      // Remove duplicates
+      final seenPhones = <String>{};
+      contacts = processedContacts.where((contact) {
+        final isNew = !seenPhones.contains(contact.phone);
+        if (isNew) seenPhones.add(contact.phone);
+        return isNew;
+      }).toList();
+
+      Print.info("Fetched ${contacts.length} cleaned contacts");
+      phoneNumbers = contacts
+          .map((c) => c.phone)
+          .where((p) => p.isNotEmpty && p != 'no_phone'.tr(context))
+          .toList();
+      hasFetchedContacts = true;
+    } catch (e, stackTrace) {
+      Print.error("Error fetching contacts: $e\n$stackTrace");
+      if (context.mounted) {
+        showToast(context,
+            message: 'failed_to_load_contacts'.tr(context),
+            state: ToastStates.error);
+      }
+      emit(ContactsError('failed_to_load_contacts'.tr(context)));
+    } finally {
+      isFetchingContacts = false;
+    }
+  }
+
+  ContactModel? _processContact(
+      MapEntry<int, Contact> entry, BuildContext context) {
+    final contact = entry.value;
+    String phone = contact.phones.isNotEmpty
+        ? contact.phones.first.number.replaceAll(RegExp(r'[^\d+]'), '')
+        : 'no_phone'.tr(context);
+
+    // Skip invalid phones
+    if (phone.length < 10 || phone.contains(RegExp(r'[a-zA-Z*]'))) {
+      return null;
+    }
+
+    String cleanedName = contact.displayName.replaceAll(RegExp(r'[^\w\s]'), '');
+    if (cleanedName.isEmpty) cleanedName = 'Unknown';
+
+    final nameParts = cleanedName.split(' ');
+    String initials =
+        nameParts.isNotEmpty && nameParts[0].isNotEmpty ? nameParts[0][0] : '';
+    if (nameParts.length > 1 && nameParts[1].isNotEmpty) {
+      initials += nameParts[1][0];
+    }
+
+    return ContactModel(
+      id: entry.key.toString(),
+      name: cleanedName,
+      phone: phone,
+      isSelected: false,
+      initial: initials,
+    );
+  }
+
+  List<String> phoneNumbers = [];
+  Future<void> checkContacts(BuildContext context) async {
+    if (phoneNumbers.isEmpty) {
+      Print.error("No phone numbers to check");
+      emit(CheckingContactsError('no_phone_numbers'.tr(context)));
+      return;
+    }
+
+    Print.info("Checking ${phoneNumbers.length} contacts with server");
     final response = await registerRepo.checkRegisteredContacts(
       phoneNumbers: phoneNumbers,
     );
@@ -427,22 +445,17 @@ class RegisterCubit extends Cubit<RegisterState> {
       },
       (registeredUsersResponse) {
         registeredUsers = registeredUsersResponse;
-        Print.info(
-            "Registered users returned from server: ${registeredUsers.map((user) => user.phone).toList()}");
-
-        final registeredPhoneNumbers = registeredUsersResponse
-            .map((user) => user.phone)
-            .where((phone) => phone != null)
-            .toList()
-            .cast<String>();
-        Print.info("Registered phone numbers: $registeredPhoneNumbers");
+        final registeredPhones = registeredUsersResponse
+            .map((user) => user.phone ?? '')
+            .where((phone) => phone.isNotEmpty)
+            .toList();
 
         nonRegisteredContacts = contacts
-            .where((contact) => !registeredPhoneNumbers.contains(contact.phone))
+            .where((contact) => !registeredPhones.contains(contact.phone))
             .toList();
-        Print.info(
-            "Non-registered contacts: ${nonRegisteredContacts.map((contact) => contact.phone).toList()}");
 
+        Print.info(
+            "Found ${registeredUsers.length} registered and ${nonRegisteredContacts.length} unregistered contacts");
         emit(ContactsChecked(registeredUsers, nonRegisteredContacts));
       },
     );
@@ -476,7 +489,7 @@ class RegisterCubit extends Cubit<RegisterState> {
   void resendOtp({required String phone}) async {
     if (isClosed) return;
 
-    final effectivePhone =  phoneController.text.trim()?? phone;
+    final effectivePhone = phoneController.text.trim();
 
     emit(ResendOtpLoading());
 
@@ -494,22 +507,21 @@ class RegisterCubit extends Cubit<RegisterState> {
     );
   }
 
-  void verifyPhoneNumber(String phone)async {
+  void verifyPhoneNumber(String phone) async {
     if (phone.isEmpty) {
       PrintUtil.error("please_enter_phone");
-      emit(VerifyPhoneNumberError( 'please_enter_phone'));
+      emit(VerifyPhoneNumberError('please_enter_phone'));
       return;
     }
 
     if (!RegExp(r'^\+?[0-9]{10,15}$').hasMatch(phone)) {
       PrintUtil.error("invalid_phone_format");
-      emit(VerifyPhoneNumberError( 'invalid_phone_format'));
+      emit(VerifyPhoneNumberError('invalid_phone_format'));
       return;
     }
     PrintUtil.success("Phone number verified: $phone");
     emit(VerifyPhoneNumberLoading());
-    final response = await registerRepo.verifyPhoneNumber( phone);
-    
+    final response = await registerRepo.verifyPhoneNumber(phone);
 
     if (isClosed) return;
 
@@ -518,13 +530,14 @@ class RegisterCubit extends Cubit<RegisterState> {
         emit(VerifyPhoneNumberError(error));
       },
       (result) {
-        PrintUtil.success("Phone number verification successful: ${result.message}");	
+        PrintUtil.success(
+            "Phone number verification successful: ${result.message}");
         emit(VerifyPhoneNumberSuccess(result.message));
       },
-    ); 
+    );
   }
 
-    void verifyEmail(String email) async {
+  void verifyEmail(String email) async {
     PrintUtil.success("email verified: $email");
     emit(VerifyEmailLoading());
     final response = await registerRepo.verifyEmail(email);
@@ -536,8 +549,7 @@ class RegisterCubit extends Cubit<RegisterState> {
         emit(VerifyEmailError(error));
       },
       (result) {
-        PrintUtil.success(
-            "email verification successful: ${result.message}");
+        PrintUtil.success("email verification successful: ${result.message}");
         emit(VerifyEmailSuccess(result.message));
       },
     );

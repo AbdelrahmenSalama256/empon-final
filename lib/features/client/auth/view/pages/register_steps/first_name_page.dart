@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/custom_toast.dart';

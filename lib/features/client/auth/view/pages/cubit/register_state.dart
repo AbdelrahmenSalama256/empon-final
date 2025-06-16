@@ -159,14 +159,21 @@ class VerifyEmail extends RegisterState {
 
   VerifyEmail(this.email);
 }
+
 class VerifyEmailLoading extends RegisterState {}
+
 class VerifyEmailSuccess extends RegisterState {
   final String message;
 
   VerifyEmailSuccess(this.message);
 }
+
 class VerifyEmailError extends RegisterState {
   final String error;
 
   VerifyEmailError(this.error);
 }
+
+class LoadingContacts extends RegisterState {}
+
+class LoaddedContacts extends RegisterState {}

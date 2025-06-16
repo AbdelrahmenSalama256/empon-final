@@ -1,6 +1,6 @@
 // embone/features/client/menu/view/inner_screens/friend_requests_page.dart
-import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/component/custom_toast.dart';
+import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/contacts/data/repo/friends_repo.dart';
@@ -27,6 +27,7 @@ class FriendRequestsPage extends StatelessWidget {
               if (state is FriendRequestUpdated) {
                 showToast(context,
                     message: state.message, state: ToastStates.success);
+                context.read<FriendsCubit>().fetchFriendRequests();
               } else if (state is FriendsError) {
                 showToast(context,
                     message: state.error, state: ToastStates.error);
@@ -86,9 +87,9 @@ class FriendRequestsPage extends StatelessWidget {
           return FriendRequestItem(
             request: request,
             onAccept: () =>
-                friendsCubit.acceptFriendRequest(request.id.toString()),
+                friendsCubit.acceptFriendRequest(request.senderId.toString()),
             onDecline: () =>
-                friendsCubit.declineFriendRequest(request.id.toString()),
+                friendsCubit.declineFriendRequest(request.senderId.toString()),
           );
         },
       ),

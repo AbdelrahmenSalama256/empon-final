@@ -3,7 +3,6 @@ import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_date_picker.dart';
 import 'package:embone/core/component/widgets/app_step_indicator.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
@@ -89,7 +88,7 @@ class _DateOfBirthPageState extends State<DateOfBirthPage> {
                           return;
                         }
                         final selectedDate =
-                            DateTime.tryParse(cubit.birthDateController.text)??null;
+                            DateTime.tryParse(cubit.birthDateController.text);
 
                         final today = DateTime.now();
                         final age = today.year -

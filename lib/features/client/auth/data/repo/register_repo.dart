@@ -54,9 +54,8 @@ class RegisterRepo {
         "lat": lat,
         "lng": lng,
         "address": address,
-        "image":image != null ? await uploadImageToAPI(image) : null,
+        "image": image != null ? await uploadImageToAPI(image) : null,
       };
-
 
       final response = await api.post(
         EndPoints.userRegister,
@@ -129,10 +128,10 @@ class RegisterRepo {
       );
 
       if (response.data['success'] == true) {
-        final List<User> registeredUsers =
-            (response.data['data'] as List<dynamic>)
-                .map((e) => User.fromJson(e as Map<String, dynamic>))
-                .toList();
+        final List<dynamic> contactsData = response.data['data']['data'] ?? [];
+        final List<User> registeredUsers = contactsData
+            .map((e) => User.fromJson(e as Map<String, dynamic>))
+            .toList();
         return Right(registeredUsers);
       } else {
         return Left(response.data['message'] ?? 'Unknown error');
@@ -143,8 +142,9 @@ class RegisterRepo {
       return Left(e.errorModel.detail);
     }
   }
-  
-  Future<Either<String, VerificationResponse>> verifyPhoneNumber(String phoneNumber) async {
+
+  Future<Either<String, VerificationResponse>> verifyPhoneNumber(
+      String phoneNumber) async {
     try {
       final response = await api.post(
         EndPoints.userVerifyPhone,
@@ -153,15 +153,14 @@ class RegisterRepo {
       if (response.data['success'] != true) {
         return Left(response.data['message'] ?? 'Unknown error');
       }
-        return Right(VerificationResponse.fromJson(response.data));
+      return Right(VerificationResponse.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
-      return Left(e.errorModel.detail);   
-       
+      return Left(e.errorModel.detail);
     }
   }
-  
+
   Future<Either<String, VerificationResponse>> verifyEmail(String email) async {
     try {
       final response = await api.post(

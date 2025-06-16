@@ -59,6 +59,8 @@ class EndPoints {
 
   // ! shop
   static const String shopNearby = '${baseUrl}homeWithLocation';
+  // ! Chat
+  static const String chatMessages = '${baseUrl}chat/messages';
 
   // ! Wishlist
   static const String favorites = '${baseUrl}favourite';

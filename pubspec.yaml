@@ -75,7 +75,7 @@ dependencies:
   mime: ^2.0.0
   http_parser: ^4.1.2
   bloc: ^9.0.0
-  path: 1.9.0
+  path: 1.9.1
   easy_stepper: ^0.8.5+1
   carousel_slider: ^5.0.0
   share_plus: ^11.0.0

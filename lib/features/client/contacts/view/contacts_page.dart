@@ -1,16 +1,12 @@
 import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
-import 'package:embone/features/client/auth/view/pages/email/email_page.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:embone/features/client/contacts/view/invite_contacts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../../../core/services/service_locator.dart';
 
 class ContactsPage extends StatefulWidget {
   final VoidCallback onNextStep;
@@ -72,11 +68,7 @@ class _ContactsPageState extends State<ContactsPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BlocProvider(
-                              create: (_) => RegisterCubit(sl<RegisterRepo>())
-                                ..fetchContacts(context),
-                              child: const InviteContactsPage(),
-                            ),
+                            builder: (context) => const InviteContactsPage(),
                           ),
                         );
                       },
@@ -88,19 +80,19 @@ class _ContactsPageState extends State<ContactsPage> {
                       text: 'skip'.tr(context),
                       onPressed: () {
                         widget.onNextStep();
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => BlocProvider.value(
-                              //       value: cubit,
-                              //       child: EmailPage(
-                              //         onNextStep: widget.onNextStep,
-                              //         onPreviousStep: widget.onPreviousStep,
-                              //       ),
-                              //     ),
-                              //   ),
-                              // );
-                            },
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => BlocProvider.value(
+                        //       value: cubit,
+                        //       child: EmailPage(
+                        //         onNextStep: widget.onNextStep,
+                        //         onPreviousStep: widget.onPreviousStep,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // );
+                      },
                       height: 50.h,
                       type: AppButtonType.text,
                       width: double.infinity,

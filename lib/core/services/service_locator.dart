@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/database/api/dio_consumer.dart';
+import 'package:embone/core/network/local_network.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/category_repo.dart';
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
+import 'package:embone/features/client/chat/data/repo/chat_repo.dart';
 import 'package:embone/features/client/checkout/data/repo/checkout_repo.dart';
 import 'package:embone/features/client/contacts/data/repo/friends_repo.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
@@ -17,9 +21,6 @@ import 'package:embone/features/client/product_Details/data/repo/comment_repo.da
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/shop/data/repo/shop_repo.dart';
 import 'package:get_it/get_it.dart';
-import 'package:embone/core/cubit/global_cubit.dart';
-import 'package:embone/core/database/api/dio_consumer.dart';
-import 'package:embone/core/network/local_network.dart';
 
 final sl = GetIt.instance;
 void initServiceLocator() {
@@ -45,6 +46,7 @@ void initServiceLocator() {
   sl.registerLazySingleton(() => CategoryRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => CheckoutRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => FriendsRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => ChatRepo(sl<DioConsumer>()));
   // sl.registerLazySingleton(() => DataConnectionChecker());
   // sl.registerLazySingleton(() => NetworkInfoImpl(sl<DataConnectionChecker>()));
   //! Repositorys

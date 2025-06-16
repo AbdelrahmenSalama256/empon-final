@@ -4,10 +4,11 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
-import 'package:embone/features/client/chat/view/chat_conversation_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'chat_conversation_screen.dart';
 
 class MassagesScreen extends StatelessWidget {
   const MassagesScreen({super.key});

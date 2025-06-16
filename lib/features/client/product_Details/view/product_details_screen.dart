@@ -8,6 +8,8 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/view/add_product_buisniss_account.dart';
+import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
+import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:embone/features/client/home/view/widgets/product_card.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
 import 'package:embone/features/client/product_Details/view/widgets/contact_us_section.dart';
@@ -124,7 +126,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: BlocBuilder<SearchCubit, SearchState>(
-          builder: (context, state) {
+          builder: (context, searchState) {
             final cubit = context.read<SearchCubit>();
             final product = cubit.productModel?.data;
 
@@ -153,7 +155,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       centerTitle: true,
                       onBackPressed: () => Navigator.pop(context),
                     ),
-                    state is GoToProductLoading
+                    searchState is GoToProductLoading
                         ? const Expanded(
                             child: Center(child: CustomLoadingIndicator()))
                         : Expanded(
@@ -304,11 +306,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         product?.vendorName ?? 'Unknown Origin',
                                   ),
                                   SizedBox(height: 15.h),
-                                  if (!widget.isVendor) AddToCartButton(
-                                    productId: widget.productId,
-                                    quantity:  _quantity,
-                                    variationId: 6,),
-                                  
+                                  if (!widget.isVendor)
+                                    BlocProvider(
+                                      create: (context) =>
+                                          CartCubit(sl<CartRepo>()),
+                                      child: AddToCartButton(
+                                        productId: widget.productId,
+                                        quantity: _quantity,
+                                        variationId: 6,
+                                      ),
+                                    ),
                                   SizedBox(height: 15.h),
                                   ProductDescriptionSection(
                                     description: product?.description ??
@@ -362,13 +369,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                   onFavoriteToggle: () {},
                                                   onActionTap: () {},
                                                   onCardTap: () {
-                                                  //   navigateTo(
-                                                  //       context,
-                                                  //       ProductDetailPage(
-                                                  //           isVendor:
-                                                  //               widget.isVendor,
-                                                  //           productId: 22));
-                                                   },
+                                                    //   navigateTo(
+                                                    //       context,
+                                                    //       ProductDetailPage(
+                                                    //           isVendor:
+                                                    //               widget.isVendor,
+                                                    //           productId: 22));
+                                                  },
                                                 );
                                               },
                                             ),

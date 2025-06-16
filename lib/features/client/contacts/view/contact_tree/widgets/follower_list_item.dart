@@ -1,35 +1,40 @@
 // embone/features/client/contacts/view/contact_tree/widgets/follower_list_item.dart
+import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/contacts/data/model/friends_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:embone/core/component/widgets/app_button.dart';
-import 'package:embone/core/locale/app_loacl.dart';
 
 class FollowerListItem extends StatelessWidget {
   final FriendRequest friend;
   final VoidCallback onDeletePressed;
+  final VoidCallback onTapPressed;
 
   const FollowerListItem({
     super.key,
     required this.friend,
+    required this.onTapPressed,
     required this.onDeletePressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      child: Row(
-        children: [
-          _buildAvatar(),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: _buildUserInfo(context),
-          ),
-          Expanded(child: _buildDeleteButton(context)),
-        ],
+    return GestureDetector(
+      onTap: onTapPressed,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        child: Row(
+          children: [
+            _buildAvatar(),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: _buildUserInfo(context),
+            ),
+            Expanded(child: _buildDeleteButton(context)),
+          ],
+        ),
       ),
     );
   }
@@ -56,11 +61,13 @@ class FollowerListItem extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
-              friend.name,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
+            Flexible(
+              child: Text(
+                friend.name,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             // Uncomment and adjust if online status is needed
