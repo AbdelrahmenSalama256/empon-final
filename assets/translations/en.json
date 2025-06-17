@@ -723,5 +723,22 @@
   "thursday": "Thu",
   "friday": "Fri",
   "saturday": "Sat",
-  "sunday": "Sun"
+  "sunday": "Sun",
+  "sender_name": "Sender",
+  "photo": "Photo",
+  "voice_message": "Voice Message",
+  "message_deleted": "Message deleted",
+  "image_load_error": "Image load error",
+  "slide_up_to_cancel": "Slide up to cancel",
+  "view_contact": "View Contact",
+  "media_links_docs": "Media & Links",
+  "clear_chat": "Clear Chat",
+  "delete_message": "Delete Message",
+  "delete_message_confirmation": "Are you sure you want to delete the message?",
+  "message_selected": "Message Selected",
+  "start_conversation": "Start a conversation",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "message_focused": "Message Focused",
+  "tap_to_close": "Tap to close"
 }

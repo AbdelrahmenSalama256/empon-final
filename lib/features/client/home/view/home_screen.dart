@@ -1,5 +1,6 @@
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
+import 'package:embone/core/component/widgets/skeleton_loader.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
@@ -22,7 +23,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:embone/core/component/widgets/skeleton_loader.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
           builder: (context, state) {
             final cubit = context.read<HomeCubit>();
             final cartCubit = context.read<CartCubit>();
-
+            final isRtl = context.read<GlobalCubit>().language == "ar";
             return BlocListener<GlobalCubit, GlobalState>(
               listener: (context, globalState) {
                 if (globalState is WishlistSuccess) {
@@ -77,12 +77,14 @@ class HomeScreen extends StatelessWidget {
                             title: "menu".tr(context),
                             centerTitle: false,
                             showLogo: true,
-                            leadingPosition: MainAxisAlignment.end,
+                            leadingPosition: isRtl
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.start,
                             alignment: HeaderAlignment.spaceBetween,
                             titleStyle: TextStyle(fontSize: 20.sp),
                             showBackButton: false,
                             style: HeaderStyle.standard,
-                            automaticallyImplyLeading: false,
+                            // automaticallyImplyLeading: false,
                             leading: Row(
                               children: [
                                 IconButton(
@@ -246,9 +248,13 @@ class HomeScreen extends StatelessWidget {
                                                                       () {
                                                                     cartCubit
                                                                         .addProductToCart(
-                                                                      productId:product.id,
-                                                                      variationId:6,
-                                                                      quantity:1,
+                                                                      productId:
+                                                                          product
+                                                                              .id,
+                                                                      variationId:
+                                                                          6,
+                                                                      quantity:
+                                                                          1,
                                                                     );
                                                                   },
                                                                   onCardTap:

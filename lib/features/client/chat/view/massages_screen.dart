@@ -1,11 +1,18 @@
+// embone/features/client/chat/view/massages_screen.dart
+import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
-import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
+import 'package:embone/features/client/chat/data/model/chat_contact_model.dart';
+import 'package:embone/features/client/chat/data/repo/chat_repo.dart';
+import 'package:embone/features/client/chat/view/cubit/chat_cubit.dart';
+import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'chat_conversation_screen.dart';
@@ -17,111 +24,114 @@ class MassagesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
 
-    // Sample contacts data
-    final List<Map<String, dynamic>> contacts = [
-      {
-        'name': 'Mariam Mohamed',
-        'image': 'https://randomuser.me/api/portraits/women/44.jpg',
-        'status': 'offline'.tr(context),
-        'isOnline': false,
-        'lastSeen': null,
-      },
-      {
-        'name': 'Amr Mohamed',
-        'image': 'https://randomuser.me/api/portraits/men/32.jpg',
-        'status': 'online'.tr(context),
-        'isOnline': true,
-        'lastSeen': null,
-      },
-      {
-        'name': 'Amr Mohamed',
-        'image': 'https://randomuser.me/api/portraits/men/33.jpg',
-        'status': 'offline'.tr(context),
-        'isOnline': false,
-        'lastSeen': null,
-      },
-      {
-        'name': 'Amr Mohamed',
-        'image': 'https://randomuser.me/api/portraits/men/34.jpg',
-        'status': 'offline'.tr(context),
-        'isOnline': false,
-        'lastSeen': '3 m',
-      },
-      {
-        'name': 'Amr Mohamed',
-        'image': 'https://randomuser.me/api/portraits/men/35.jpg',
-        'status': 'offline'.tr(context),
-        'isOnline': false,
-        'lastSeen': '3 m',
-      },
-    ];
+    return BlocProvider(
+      create: (context) => ChatCubit(sl<ChatRepo>())..fetchChatContacts(),
+      child: BlocBuilder<ChatCubit, ChatState>(
+        builder: (context, state) {
+          final cubit = context.read<ChatCubit>();
+          final contacts = cubit.contacts;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            AppHeader(
-              title: 'chat'.tr(context),
-              centerTitle: true,
-              showBackButton: true,
-            ),
-            // Add Friends Section
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              child: Align(
-                alignment: isRTL ? Alignment.centerRight : Alignment.centerLeft,
-                child: Text(
-                  'add_friends_to_chat'.tr(context),
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  // Header
+                  AppHeader(
+                    title: 'chat'.tr(context),
+                    centerTitle: true,
+                    showBackButton: true,
                   ),
-                ),
+                  // Add Friends Section
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                    child: Align(
+                      alignment:
+                          isRTL ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Text(
+                        'add_friends_to_chat'.tr(context),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Search Bar
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: AppTextField(
+                      controller: TextEditingController(),
+                      hintText: 'search'.tr(context),
+                      labelText: 'search'.tr(context),
+                      prefixIcon: Icon(
+                        CupertinoIcons.search,
+                        // ignore: deprecated_member_use
+                        color: const Color(0xff8F95AB).withOpacity(0.7),
+                        size: 24.sp,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 16.h),
+
+                  // Contacts List
+                  Expanded(
+                    child: state is ChatContactLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : contacts.isEmpty
+                            ? Center(child: Text('no_contacts'.tr(context)))
+                            : ListView.builder(
+                                itemCount: contacts.length,
+                                itemBuilder: (context, index) {
+                                  final contact = contacts[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      navigatorKey.currentState!.push(
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              ChatConversationScreen(
+                                            receiverId: contact.id,
+                                            name: contact.name,
+                                            online: contact.isOnline == 1
+                                                ? "online".tr(context)
+                                                : "offline".tr(context),
+                                            image: contact.image,
+                                          ),
+                                          transitionsBuilder: (context,
+                                              animation,
+                                              secondaryAnimation,
+                                              child) {
+                                            return FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            );
+                                          },
+                                          transitionDuration:
+                                              const Duration(milliseconds: 300),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildContactItem(
+                                        context, contact, isRTL),
+                                  );
+                                },
+                              ),
+                  ),
+                ],
               ),
             ),
-
-            // Search Bar
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: AppTextField(
-                controller: TextEditingController(),
-                hintText: 'search'.tr(context),
-                labelText: 'search'.tr(context),
-                prefixIcon: Icon(
-                  CupertinoIcons.search,
-                  // ignore: deprecated_member_use
-                  color: const Color(0xff8F95AB).withOpacity(0.7),
-                  size: 24.sp,
-                ),
-              ),
-            ),
-
-            SizedBox(height: 16.h),
-
-            // Contacts List
-            Expanded(
-              child: ListView.builder(
-                itemCount: contacts.length,
-                itemBuilder: (context, index) {
-                  final contact = contacts[index];
-                  return GestureDetector(
-                    onTap: () {
-                      navigateTo(context, const ChatConversationScreen());
-                    },
-                    child: _buildContactItem(contact, isRTL),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildContactItem(Map<String, dynamic> contact, bool isRTL) {
+  Widget _buildContactItem(
+      BuildContext context, ChatContact contact, bool isRTL) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -133,11 +143,25 @@ class MassagesScreen extends StatelessWidget {
           // Profile Picture with Online Indicator
           Stack(
             children: [
-              CircleAvatar(
-                radius: 24.r,
-                backgroundImage: NetworkImage(contact['image']),
-              ),
-              if (contact['isOnline'])
+              contact.image != null
+                  ? CircleAvatar(
+                      radius: 24.r,
+                      backgroundImage: NetworkImage(contact.image!),
+                    )
+                  : Container(
+                      width: 50.w,
+                      height: 50.w,
+                      decoration: const BoxDecoration(
+                        color: AppColors.lightGrey,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.person,
+                        color: AppColors.primary,
+                        size: 30.sp,
+                      ),
+                    ),
+              if (contact.isOnline == 1)
                 Positioned(
                   right: isRTL ? null : 0,
                   left: isRTL ? 0 : null,
@@ -163,7 +187,7 @@ class MassagesScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  contact['name'],
+                  contact.fullName,
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
@@ -171,7 +195,9 @@ class MassagesScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  contact['status'],
+                  contact.isOnline == 1
+                      ? "online".tr(context)
+                      : "offline".tr(context),
                   style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
                 ),
               ],
@@ -179,9 +205,9 @@ class MassagesScreen extends StatelessWidget {
           ),
 
           // Last Seen
-          if (contact['lastSeen'] != null)
+          if (contact.lastSeen != null)
             Text(
-              contact['lastSeen'],
+              contact.lastSeen!.split(' ')[1],
               style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
             ),
         ],

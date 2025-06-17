@@ -1,39 +1,75 @@
-// embone/features/client/chat/data/model/message_model.dart
+import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
+
 class Message {
   final int id;
-  final bool fromMe;
+  bool fromMe;
+  final MessageStatus status;
+
   final int senderId;
   final int receiverId;
   final String message;
   final String? mediaPath;
   final String mediaType;
   final Replay? replay;
+  final String? replayId;
   final String createdAt;
+  final int? voiceDuration;
+  final int? voiceProgress; // 0-100 representing playback progress
 
   Message({
     required this.id,
+    this.replayId,
     required this.fromMe,
     required this.senderId,
+    required this.status,
     required this.receiverId,
     required this.message,
     this.mediaPath,
     required this.mediaType,
     this.replay,
     required this.createdAt,
+    this.voiceDuration,
+    this.voiceProgress,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
-      id: json['id'] ?? 0,
-      fromMe: json['from_me'] ?? false,
-      senderId: json['sender_id'] ?? 0,
-      receiverId: json['receiver_id'] ?? 0,
-      message: json['message'] ?? '',
-      mediaPath: json['media_path'],
-      mediaType: json['media_type'] ?? 'text',
-      replay: json['replay'] != null ? Replay.fromJson(json['replay']) : null,
-      createdAt: json['created_at'] ?? '',
+      id: _parseToInt(json['id']),
+      fromMe: json['from_me'] as bool? ?? false,
+      senderId: _parseToInt(json['sender_id']),
+      receiverId: _parseToInt(json['receiver_id']), // Handle String or int
+      message: json['message'] as String? ?? '',
+      mediaPath: json['media_path'] as String?,
+      status: _parseStatus(json['status']),
+      mediaType: json['media_type'] as String? ?? 'text',
+      replay: json['replay'] != null
+          ? Replay.fromJson(json['replay'] as Map<String, dynamic>)
+          : null,
+      replayId:
+          json['replay_id'] as String? ?? (json['replay']?['id']?.toString()),
+      createdAt: json['created_at'] as String? ?? '',
+      voiceDuration: json['voice_duration'] as int?,
+      voiceProgress: json['voice_progress'] as int?,
     );
+  }
+  static MessageStatus _parseStatus(dynamic status) {
+    if (status == null) return MessageStatus.sending; // Default status
+    switch (status.toString().toLowerCase()) {
+      case 'sending':
+        return MessageStatus.sending;
+      case 'sent':
+        return MessageStatus.sent;
+      case 'failed':
+        return MessageStatus.failed;
+      case 'delivered':
+        return MessageStatus.delivered;
+      case 'read':
+        return MessageStatus.read;
+      case 'deleting':
+        return MessageStatus.deleting;
+      default:
+        return MessageStatus.sending; // Fallback
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -46,8 +82,51 @@ class Message {
       'media_path': mediaPath,
       'media_type': mediaType,
       'replay': replay?.toJson(),
+      'replay_id': replayId,
       'created_at': createdAt,
+      'voice_duration': voiceDuration,
+      'voice_progress': voiceProgress
     };
+  }
+
+  // Helper method to parse dynamic value to int
+  static int _parseToInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0; // Default fallback for unexpected types
+  }
+
+  Message copyWith({
+    int? id,
+    bool? fromMe,
+    MessageStatus? status,
+    int? senderId,
+    int? receiverId,
+    String? message,
+    String? mediaPath,
+    String? mediaType,
+    Replay? replay,
+    String? replayId,
+    String? createdAt,
+    int? voiceDuration,
+    int? voiceProgress,
+  }) {
+    return Message(
+      id: id ?? this.id,
+      fromMe: fromMe ?? this.fromMe,
+      status: status ?? this.status,
+      senderId: senderId ?? this.senderId,
+      receiverId: receiverId ?? this.receiverId,
+      message: message ?? this.message,
+      mediaPath: mediaPath ?? this.mediaPath,
+      mediaType: mediaType ?? this.mediaType,
+      replay: replay ?? this.replay,
+      replayId: replayId ?? this.replayId,
+      createdAt: createdAt ?? this.createdAt,
+      voiceDuration: voiceDuration ?? this.voiceDuration,
+      voiceProgress: voiceProgress ?? this.voiceProgress,
+    );
   }
 }
 
@@ -66,10 +145,10 @@ class Replay {
 
   factory Replay.fromJson(Map<String, dynamic> json) {
     return Replay(
-      id: json['id'] ?? 0,
-      mediaType: json['media_type'] ?? 'text',
-      message: json['message'] ?? '',
-      mediaPath: json['media_path'],
+      id: _parseToInt(json['id']), // Handle String or int
+      mediaType: json['media_type'] as String? ?? 'text',
+      message: json['message'] as String? ?? '',
+      mediaPath: json['media_path'] as String?,
     );
   }
 
@@ -81,4 +160,12 @@ class Replay {
       'media_path': mediaPath,
     };
   }
+
+  static int _parseToInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0; // Default fallback for unexpected types
+  }
 }
+//
