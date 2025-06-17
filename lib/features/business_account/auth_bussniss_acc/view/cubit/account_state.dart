@@ -31,3 +31,12 @@ class LocationsError extends AccountState {
 }
 
 class AccountStepOneCompleted extends AccountState {}
+class StatesLoaded extends AccountState {
+  final List<LocationModel> states;
+  StatesLoaded(this.states);
+}
+
+class CitiesLoaded extends AccountState {
+  final List<LocationModel> cities;
+  CitiesLoaded(this.cities);
+}

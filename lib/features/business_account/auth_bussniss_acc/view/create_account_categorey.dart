@@ -6,6 +6,7 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/category_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/business_account_success_page.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/category_cubit.dart';
@@ -35,7 +36,10 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const BusinessAccountSuccessPage(),
+                  builder: (context) => BlocProvider(
+                    create: (context) => AccountCubit(sl<AccountRepo>()),
+                    child: const BusinessAccountSuccessPage(),
+                  ),
                 ),
               );
             }

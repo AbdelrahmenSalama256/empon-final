@@ -2,8 +2,11 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/client/locations/data/model/location_model.dart';
+import 'package:embone/features/client/locations/data/repo/locations_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -29,6 +32,11 @@ class AccountCubit extends Cubit<AccountState> {
   String? selectedCityId;
   List<String> categoryIds = [];
   List<XFile> files = [];
+
+
+    List<LocationModel> allCountries = [];
+  List<LocationModel> allStates = [];
+  List<LocationModel> allCities = [];
 
   // City ID mapping
   final Map<String, String> cityIdMap = {
@@ -103,57 +111,88 @@ class AccountCubit extends Cubit<AccountState> {
 
   // Location-related methods
   Future<void> fetchAllLocations() async {
-    emit(LocationsLoading());
-    final response = await accountRepo.getAllLocations();
-    response.fold(
-      (error) => emit(LocationsError(error.errMessage)),
-      (locations) {
-        allLocations = locations;
-        emit(CountriesLoaded(
-            locations.where((loc) => loc.countryId == 0).toList()));
+    PrintUtil.info("Fetching all locations...");
+   emit(LocationsLoading());
+
+    final countriesResponse = await sl<LocationRepo>().getCountries();
+    countriesResponse.fold(
+      (error) {
+        Print.error("Failed to fetch countries: $error");
+        emit(LocationsError(error));
+      },
+      (countries) {
+        PrintUtil.info("Fetched $countries ");
+        allCountries = countries;
+        Print.info("Fetched ${allCountries.length} countries");
+      },
+    );
+
+    final statesResponse = await sl<LocationRepo>().getStates();
+    statesResponse.fold(
+      (error) {
+        Print.error("Failed to fetch states: $error");
+        emit(LocationsError(error));
+      },
+      (states) {
+        allStates = states;
+        Print.info("Fetched ${allStates.length} states");
+      },
+    );
+
+    final citiesResponse = await sl<LocationRepo>().getCities();
+    citiesResponse.fold(
+      (error) {
+        Print.error("Failed to fetch cities: $error");
+        emit(LocationsError(error));
+      },
+      (cities) {
+        allCities = cities;
+        Print.info("Fetched ${allCities.length} cities");
+        emit(CountriesLoaded(allCountries));
       },
     );
   }
 
-  List<LocationModel> getFilteredStates() {
+List<LocationModel> getFilteredStates() {
     if (selectedCountry == null) return [];
-    return allLocations
-        .where(
-            (loc) => loc.countryId == selectedCountry!.id && loc.stateId == 0)
+    return allStates
+        .where((state) => state.countryId == selectedCountry!.id)
         .toList();
   }
 
   List<LocationModel> getFilteredCities() {
     if (selectedState == null) return [];
-    return allLocations
-        .where((loc) => loc.stateId == selectedState!.id)
+    return allCities
+        .where((city) => city.stateId == selectedState!.id)
         .toList();
   }
 
-  void setCountry(LocationModel country) {
+  void setCountry(LocationModel? country) {
     selectedCountry = country;
     selectedState = null;
     selectedCity = null;
-    emit(AccountUpdated());
+    Print.info("Set country: ${country?.name} (ID: ${country?.id})");
+    emit(CountriesLoaded(allCountries));
   }
 
-  void setGovernorate(LocationModel state) {
+  void setGovernorate(LocationModel? state) {
     selectedState = state;
     selectedCity = null;
-    emit(AccountUpdated());
+    Print.info("Set governorate: ${state?.name} (ID: ${state?.id})");
+    emit(StatesLoaded(getFilteredStates()));
   }
 
-  void setCity(LocationModel city) {
+  void setCity(LocationModel? city) {
     selectedCity = city;
-    selectedCityId = city.id.toString();
-    emit(AccountUpdated());
-  }
+    Print.info("Set city: ${city?.name} (ID: ${city?.id})");
 
-  void setLocation(String address, String lat, String lng) {
+    emit(CitiesLoaded(getFilteredCities()));
+  }
+    void setLocation(String address, String latitude, String longitude) {
     addressController.text = address;
-    latController.text = lat;
-    lngController.text = lng;
-    emit(AccountUpdated());
+    latController.text = latitude;
+    lngController.text = longitude;
+    Print.info("Set location: Address: $address, Lat: $latController, Lng: $lngController");
   }
 
   Future<void> createAccountStepOne() async {
@@ -174,6 +213,38 @@ class AccountCubit extends Cubit<AccountState> {
         Print.success(
             'Account step one completed successfully: ${r.toString()}');
         emit(AccountStepOneCompleted());
+      },
+    );
+  }
+  Future<void> createAccountStepTwo() async {
+    emit(AccountLoading());
+
+    final response = await accountRepo.createAccountStepTwo(
+      name: nameController.text,
+      description: descriptionController.text,
+      videoUrl: videoUrlController.text,
+  //website: websiteController.text,
+      email: emailController.text,
+      phone: phoneController.text,
+      address: addressController.text,
+      postalCode: postalCodeController.text,
+      lat: latController.text,
+      lng: lngController.text,
+      cityId:selectedCity?.id.toString()  ?? "",
+      logo: files.isNotEmpty ? files[0] : XFile(''),
+      coverImage: files.length > 1 ? files[1] : XFile(''),
+    );
+
+    response.fold(
+      (l) {
+        Print.error('API Error (Step 2): $l');
+        emit(AccountError(massage: l));
+      },
+      (r) {
+        account = r;
+        Print.success(
+            'Account step two completed successfully: ${r.toString()}');
+        emit(AccountSuccess());
       },
     );
   }

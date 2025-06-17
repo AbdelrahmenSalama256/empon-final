@@ -82,9 +82,27 @@ class IntroPage extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
+                  TextButton(
+                    
+                    onPressed: () {
+                      
+                        navigateTo(context, const BaseScreen());
+                      }, 
+                      child: Text(
+                        'guest_login'.tr(context),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(
+                              color: AppColors.grey,
+                              
+                      )
+                      ),
+                  ),
                   AppButton(
                     text: 'guest_login'.tr(context),
                     onPressed: () {
+                     
                       navigateTo(context, const BaseScreen());
                     },
                   ),

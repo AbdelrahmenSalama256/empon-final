@@ -78,6 +78,7 @@ class EndPoints {
   //! Create Account
   static const String createAccount = '${baseUrl}accounts';
   static const String createAccountStepOne = '${baseUrl}accounts/step-one';
+  static const String createAccountStepTwo = '${baseUrl}accounts/step-two';
   static const String category = '${baseUrl}category';
 
   // ! Contacts
