@@ -1,3 +1,4 @@
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_content.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_header.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,9 @@ class HomeStoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<GlobalCubit>();
+    final accountId= cubit.businessId == null ? 0 : cubit.businessId!;
+    PrintUtil.success('Business ID: $accountId');
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -20,8 +24,8 @@ class HomeStoreScreen extends StatelessWidget {
                 context.read<GlobalCubit>().changeBottomNavIndex(0);
               },
             ),
-            const Expanded(
-              child: HomeStoreContent(),
+            Expanded(
+              child: HomeStoreContent(id : accountId),
             ),
           ],
         ),

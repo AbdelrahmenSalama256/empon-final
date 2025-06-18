@@ -478,7 +478,7 @@ class MenuScreen extends StatelessWidget {
                                           },
                                           onSecondaryButtonPressed: () {
                                             // Dismiss the popup if user cancels
-                                            Navigator.of(context).pop();
+                                            Navigator.of(context,rootNavigator: true).pop();
                                           },
                                         );
                                       },

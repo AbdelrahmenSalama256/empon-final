@@ -199,7 +199,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       primaryButtonText: "yes".tr(context),
                                       secondaryButtonText: "no".tr(context),
                                       onPrimaryButtonPressed: () {
-                                        Navigator.of(context).pop();
+                                        Navigator.of(context ,rootNavigator: true).pop();
                                       },
                                     ),
                                     commentCount:
