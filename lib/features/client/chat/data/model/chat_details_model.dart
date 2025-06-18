@@ -2,9 +2,8 @@ import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
 
 class Message {
   final int id;
-  bool fromMe;
+  final bool fromMe;
   final MessageStatus status;
-
   final int senderId;
   final int receiverId;
   final String message;
@@ -14,7 +13,7 @@ class Message {
   final String? replayId;
   final String createdAt;
   final int? voiceDuration;
-  final int? voiceProgress; // 0-100 representing playback progress
+  final int? voiceProgress;
 
   Message({
     required this.id,
@@ -37,10 +36,10 @@ class Message {
       id: _parseToInt(json['id']),
       fromMe: json['from_me'] as bool? ?? false,
       senderId: _parseToInt(json['sender_id']),
-      receiverId: _parseToInt(json['receiver_id']), // Handle String or int
+      receiverId: _parseToInt(json['receiver_id']),
       message: json['message'] as String? ?? '',
       mediaPath: json['media_path'] as String?,
-      status: _parseStatus(json['status']),
+      status: _parseStatus(json['status'], json['from_me'] as bool? ?? false),
       mediaType: json['media_type'] as String? ?? 'text',
       replay: json['replay'] != null
           ? Replay.fromJson(json['replay'] as Map<String, dynamic>)
@@ -52,8 +51,11 @@ class Message {
       voiceProgress: json['voice_progress'] as int?,
     );
   }
-  static MessageStatus _parseStatus(dynamic status) {
-    if (status == null) return MessageStatus.sending; // Default status
+
+  static MessageStatus _parseStatus(dynamic status, bool fromMe) {
+    if (status == null) {
+      return fromMe ? MessageStatus.sent : MessageStatus.delivered;
+    }
     switch (status.toString().toLowerCase()) {
       case 'sending':
         return MessageStatus.sending;
@@ -68,7 +70,7 @@ class Message {
       case 'deleting':
         return MessageStatus.deleting;
       default:
-        return MessageStatus.sending; // Fallback
+        return fromMe ? MessageStatus.sent : MessageStatus.delivered;
     }
   }
 
@@ -84,17 +86,17 @@ class Message {
       'replay': replay?.toJson(),
       'replay_id': replayId,
       'created_at': createdAt,
+      'status': status.toString().split('.').last.toLowerCase(),
       'voice_duration': voiceDuration,
-      'voice_progress': voiceProgress
+      'voice_progress': voiceProgress,
     };
   }
 
-  // Helper method to parse dynamic value to int
   static int _parseToInt(dynamic value) {
     if (value == null) return 0;
     if (value is int) return value;
     if (value is String) return int.tryParse(value) ?? 0;
-    return 0; // Default fallback for unexpected types
+    return 0;
   }
 
   Message copyWith({
@@ -145,7 +147,7 @@ class Replay {
 
   factory Replay.fromJson(Map<String, dynamic> json) {
     return Replay(
-      id: _parseToInt(json['id']), // Handle String or int
+      id: _parseToInt(json['id']),
       mediaType: json['media_type'] as String? ?? 'text',
       message: json['message'] as String? ?? '',
       mediaPath: json['media_path'] as String?,
@@ -165,7 +167,6 @@ class Replay {
     if (value == null) return 0;
     if (value is int) return value;
     if (value is String) return int.tryParse(value) ?? 0;
-    return 0; // Default fallback for unexpected types
+    return 0;
   }
 }
-//

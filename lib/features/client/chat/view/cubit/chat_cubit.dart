@@ -268,10 +268,9 @@ class ChatCubit extends Cubit<ChatState> {
   // Navigate to replied message
   void navigateToReply(Message replyMessage) {
     if (replyMessage.replay != null) {
-      // Find the original message
       final originalMessage = messages.firstWhere(
         (msg) => msg.id.toString() == replyMessage.replayId,
-        orElse: () => replyMessage, // fallback
+        orElse: () => replyMessage,
       );
       focusOnMessage(originalMessage);
     }

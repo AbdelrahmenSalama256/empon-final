@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:embone/core/constants/app_colors.dart';
@@ -7,7 +6,6 @@ import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_cubit.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,11 +27,8 @@ class _MessageInputState extends State<MessageInput>
   final ImagePicker _picker = ImagePicker();
   final List<File> _selectedMedia = [];
 
-  Timer? _recordingTimer;
   late AnimationController _replyAnimationController;
-  late AnimationController _recordingAnimationController;
   late Animation<double> _replySlideAnimation;
-  late Animation<double> _recordingPulseAnimation;
 
   @override
   void initState() {
@@ -48,11 +43,6 @@ class _MessageInputState extends State<MessageInput>
       vsync: this,
     );
 
-    _recordingAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-
     _replySlideAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -60,22 +50,12 @@ class _MessageInputState extends State<MessageInput>
       parent: _replyAnimationController,
       curve: Curves.easeOutCubic,
     ));
-
-    _recordingPulseAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.3,
-    ).animate(CurvedAnimation(
-      parent: _recordingAnimationController,
-      curve: Curves.easeInOut,
-    ));
   }
 
   @override
   void dispose() {
     _replyAnimationController.dispose();
-    _recordingAnimationController.dispose();
     _controller.dispose();
-    _recordingTimer?.cancel();
     super.dispose();
   }
 
@@ -100,38 +80,6 @@ class _MessageInputState extends State<MessageInput>
         _selectedMedia.add(File(pickedFile.path));
       });
     }
-  }
-
-  void _startRecording() {
-    final cubit = context.read<ChatCubit>();
-    cubit.startRecording();
-
-    HapticFeedback.mediumImpact();
-    _recordingAnimationController.repeat(reverse: true);
-
-    _recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      cubit.updateRecordingDuration(timer.tick);
-    });
-  }
-
-  void _stopRecording() {
-    final cubit = context.read<ChatCubit>();
-    cubit.stopRecording();
-
-    _recordingAnimationController.stop();
-    _recordingAnimationController.reset();
-    _recordingTimer?.cancel();
-  }
-
-  void _cancelRecording() {
-    final cubit = context.read<ChatCubit>();
-    cubit.cancelRecording();
-
-    _recordingAnimationController.stop();
-    _recordingAnimationController.reset();
-    _recordingTimer?.cancel();
-
-    HapticFeedback.lightImpact();
   }
 
   void _sendMessage() {
@@ -161,12 +109,6 @@ class _MessageInputState extends State<MessageInput>
     });
   }
 
-  String _formatRecordingDuration(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(1, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ChatCubit, ChatState>(
@@ -183,7 +125,6 @@ class _MessageInputState extends State<MessageInput>
         final cubit = context.read<ChatCubit>();
         final hasText = cubit.inputText.isNotEmpty;
         final hasMedia = _selectedMedia.isNotEmpty;
-        final isRecording = cubit.isRecording;
 
         return Container(
           decoration: BoxDecoration(
@@ -209,12 +150,9 @@ class _MessageInputState extends State<MessageInput>
                     : const SizedBox.shrink(),
               ),
               if (hasMedia) _buildMediaPreview(),
-              if (isRecording) _buildRecordingOverlay(cubit.recordingDuration),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                child: isRecording
-                    ? _buildRecordingBar()
-                    : _buildInputBar(hasText, hasMedia),
+                child: _buildInputBar(hasText, hasMedia),
               ),
             ],
           ),
@@ -253,8 +191,16 @@ class _MessageInputState extends State<MessageInput>
                         color: Colors.grey.shade500,
                         fontSize: 14.sp,
                       ),
+                      contentPadding: EdgeInsets.symmetric(vertical: 20.h),
                       fillColor: Colors.transparent,
-                      border: const UnderlineInputBorder(),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      focusColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
                     ),
                     cursorColor: AppColors.primary,
                     onSubmitted: (_) => _sendMessage(),
@@ -275,9 +221,6 @@ class _MessageInputState extends State<MessageInput>
         SizedBox(width: 8.w),
         GestureDetector(
           onTap: hasText || hasMedia ? _sendMessage : null,
-          onLongPressStart:
-              hasText || hasMedia ? null : (_) => _startRecording(),
-          onLongPressEnd: hasText || hasMedia ? null : (_) => _stopRecording(),
           child: Container(
             width: 40.w,
             height: 40.h,
@@ -286,119 +229,13 @@ class _MessageInputState extends State<MessageInput>
               shape: BoxShape.circle,
             ),
             child: Icon(
-              hasText || hasMedia ? Icons.send : Icons.mic,
+              Icons.send,
               color: Colors.white,
               size: 20.sp,
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildRecordingBar() {
-    return Row(
-      children: [
-        IconButton(
-          icon: Icon(
-            Icons.delete_outline,
-            color: Colors.red,
-            size: 24.sp,
-          ),
-          onPressed: _cancelRecording,
-        ),
-        Expanded(
-          child: Row(
-            children: [
-              ScaleTransition(
-                scale: _recordingPulseAnimation,
-                child: Container(
-                  width: 8.w,
-                  height: 8.h,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.w),
-              BlocBuilder<ChatCubit, ChatState>(
-                builder: (context, state) {
-                  final cubit = context.read<ChatCubit>();
-                  return Text(
-                    _formatRecordingDuration(cubit.recordingDuration),
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
-                  );
-                },
-              ),
-              SizedBox(width: 16.w),
-              Expanded(child: _buildRecordingWaveform()),
-            ],
-          ),
-        ),
-        Container(
-          width: 40.w,
-          height: 40.h,
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.send,
-            color: Colors.white,
-            size: 20.sp,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRecordingWaveform() {
-    return SizedBox(
-      height: 30.h,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: List.generate(15, (index) {
-          return AnimatedContainer(
-            duration: Duration(milliseconds: 200 + (index * 50)),
-            width: 3.w,
-            height: (8 + (index % 3) * 4).h,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(1.5.r),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildRecordingOverlay(int duration) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-      color: Colors.black.withOpacity(0.8),
-      child: Row(
-        children: [
-          Icon(
-            Icons.keyboard_arrow_up,
-            color: Colors.white,
-            size: 20.sp,
-          ),
-          SizedBox(width: 8.w),
-          Text(
-            'slide_up_to_cancel'.tr(context),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12.sp,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
