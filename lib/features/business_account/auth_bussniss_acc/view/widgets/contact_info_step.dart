@@ -29,8 +29,8 @@ class ContactInfoStep extends StatelessWidget {
             children: [
               _buildContactSection(context, cubit),
               SizedBox(height: 30.h),
-              _buildLocationSection(context, cubit),
-              SizedBox(height: 24.h),
+              // _buildLocationSection(context, cubit),
+              // SizedBox(height: 24.h),
             ],
           ),
         ),
@@ -51,18 +51,18 @@ class ContactInfoStep extends StatelessWidget {
           ),
         ),
         SizedBox(height: 16.h),
-        AppTextField(
-          controller: cubit.websiteController,
-          labelText: 'website'.tr(context),
-          hintText: 'enter_website'.tr(context),
-          prefixIcon: Padding(
-            padding: EdgeInsets.all(13.w),
-            child: SvgPicture.asset("assets/images/svg/www.svg", width: 20.w),
-          ),
-          validator: (value) => Validators.validateRequired(
-              value, 'website'.tr(context), context),
-        ),
-        SizedBox(height: 16.h),
+        // AppTextField(
+        //   controller: cubit.websiteController,
+        //   labelText: 'website'.tr(context),
+        //   hintText: 'enter_website'.tr(context),
+        //   prefixIcon: Padding(
+        //     padding: EdgeInsets.all(13.w),
+        //     child: SvgPicture.asset("assets/images/svg/www.svg", width: 20.w),
+        //   ),
+        //   validator: (value) => Validators.validateRequired(
+        //       value, 'website'.tr(context), context),
+        // ),
+        // SizedBox(height: 16.h),
         AppTextField(
           controller: cubit.emailController,
           labelText: 'email'.tr(context),
@@ -88,58 +88,59 @@ class ContactInfoStep extends StatelessWidget {
           keyboardType: TextInputType.phone,
           validator: (value) => Validators.validatePhone(value, context),
         ),
+
       ],
     );
   }
 
-  Widget _buildLocationSection(BuildContext context, AccountCubit cubit) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'location'.tr(context),
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w400,
-            color: AppColors.black,
-          ),
-        ),
-        SizedBox(height: 16.h),
-        AppDropdownFormField(
-          hint: 'city_region'.tr(context),
-          items: cubit.cityIdMap.keys.toList(),
-          initialValue: cubit.cityIdMap.entries
-              .firstWhere((e) => e.value == cubit.selectedCityId,
-                  orElse: () => const MapEntry('', ''))
-              .key,
-          validator: (value) => value == null || value.isEmpty
-              ? 'field_required'.tr(context)
-              : null,
-          onSaved: (value) => cubit.updateCityId(value),
-        ),
-        SizedBox(height: 16.h),
-        AppTextField(
-          controller: cubit.addressController,
-          labelText: 'address'.tr(context),
-          hintText: 'enter_address'.tr(context),
-          prefixIcon: Icon(
-            CupertinoIcons.location_solid,
-            size: 20.sp,
-            color: const Color(0xff8F95AB),
-          ),
-          validator: (value) => Validators.validateRequired(
-              value, 'address'.tr(context), context),
-        ),
-        SizedBox(height: 16.h),
-        AppTextField(
-          controller: cubit.postalCodeController,
-          labelText: 'postal_code'.tr(context),
-          hintText: 'enter_postal_code'.tr(context),
-          keyboardType: TextInputType.number,
-          validator: (value) => Validators.validateRequired(
-              value, 'postal_code'.tr(context), context),
-        ),
-      ],
-    );
-  }
+  // Widget _buildLocationSection(BuildContext context, AccountCubit cubit) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         'location'.tr(context),
+  //         style: TextStyle(
+  //           fontSize: 16.sp,
+  //           fontWeight: FontWeight.w400,
+  //           color: AppColors.black,
+  //         ),
+  //       ),
+  //       SizedBox(height: 16.h),
+  //       // AppDropdownFormField(
+  //       //   hint: 'city_region'.tr(context),
+  //       //   items: cubit.cityIdMap.keys.toList(),
+  //       //   initialValue: cubit.cityIdMap.entries
+  //       //       .firstWhere((e) => e.value == cubit.selectedCityId,
+  //       //           orElse: () => const MapEntry('', ''))
+  //       //       .key,
+  //       //   validator: (value) => value == null || value.isEmpty
+  //       //       ? 'field_required'.tr(context)
+  //       //       : null,
+  //       //   onSaved: (value) => cubit.updateCityId(value),
+  //       // ),
+  //       // SizedBox(height: 16.h),
+  //       // AppTextField(
+  //       //   controller: cubit.addressController,
+  //       //   labelText: 'address'.tr(context),
+  //       //   hintText: 'enter_address'.tr(context),
+  //       //   prefixIcon: Icon(
+  //       //     CupertinoIcons.location_solid,
+  //       //     size: 20.sp,
+  //       //     color: const Color(0xff8F95AB),
+  //       //   ),
+  //       //   validator: (value) => Validators.validateRequired(
+  //       //       value, 'address'.tr(context), context),
+  //       // ),
+  //       // SizedBox(height: 16.h),
+  //       AppTextField(
+  //         controller: cubit.postalCodeController,
+  //         labelText: 'postal_code'.tr(context),
+  //         hintText: 'enter_postal_code'.tr(context),
+  //         keyboardType: TextInputType.number,
+  //         validator: (value) => Validators.validateRequired(
+  //             value, 'postal_code'.tr(context), context),
+  //       ),
+  //     ],
+  //   );
+  // }
 }

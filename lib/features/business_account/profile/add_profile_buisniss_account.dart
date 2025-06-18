@@ -4,7 +4,7 @@ import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/business_account/auth_bussniss_acc/view/business_account_success_page.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/view/congrates_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:flutter/cupertino.dart';
@@ -112,7 +112,7 @@ class _AddProfilePhotoForBuisnissAccountPageState
       });
 
       // Call createAccount
-      // widget.cubit.createAccount();
+      widget.cubit.createAccountStepTwo();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('please_select_both_images'.tr(context))),
@@ -133,7 +133,7 @@ class _AddProfilePhotoForBuisnissAccountPageState
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => const BusinessAccountSuccessPage(),
+                builder: (context) => const CongratesScreen(),
               ),
             );
           } else if (state is AccountError) {
@@ -334,13 +334,14 @@ class _AddProfilePhotoForBuisnissAccountPageState
                                   ),
                                   SizedBox(height: 24.h),
                                   // Buttons
-                                  AppButton(
-                                    text: 'confirm_and_create'.tr(context),
-                                    isLoading: _isLoading,
-                                    onPressed: _continueWithPhotos,
-                                    height: 50.h,
-                                    width: double.infinity,
-                                  ),
+                                AppButton(
+                                      text: 'confirm_and_create'.tr(context),
+                                      isLoading: _isLoading,
+                                      onPressed: _continueWithPhotos,
+                                      height: 50.h,
+                                      width: double.infinity,
+                                    ),
+                                
                                 ],
                               ),
                             ],

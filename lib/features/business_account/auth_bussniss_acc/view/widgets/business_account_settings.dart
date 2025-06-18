@@ -4,6 +4,7 @@ import 'package:embone/core/component/widgets/app_dropdown.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/utils/validator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/select_locaiton_map.dart';
@@ -18,6 +19,7 @@ import '../cubit/account_state.dart';
 
 class BusinessAccountSettings extends StatefulWidget {
   final AccountCubit cubit;
+  
 
   const BusinessAccountSettings({super.key, required this.cubit});
 
@@ -58,8 +60,8 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
         },
         builder: (context, state) {
           final cubit = widget.cubit;
-          List<LocationModel> countries =
-              state is CountriesLoaded ? state.countries : [];
+          // Ensure cubit is initialized
+          List<LocationModel> countries = cubit.allCountries;
           List<LocationModel> states = cubit.getFilteredStates();
           List<LocationModel> cities = cubit.getFilteredCities();
 
@@ -280,6 +282,16 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                           ],
                         ),
                       ),
+                    ),
+                    
+                            SizedBox(height: 16.h),
+                    AppTextField(
+                      controller: cubit.postalCodeController,
+                      labelText: 'postal_code'.tr(context),
+                      hintText: 'enter_postal_code'.tr(context),
+                      keyboardType: TextInputType.number,
+                      validator: (value) => Validators.validateRequired(
+                          value, 'postal_code'.tr(context), context),
                     ),
                     SizedBox(height: 32.h),
                   ],

@@ -81,6 +81,7 @@ class EndPoints {
   //! Create Account
   static const String createAccount = '${baseUrl}accounts';
   static const String createAccountStepOne = '${baseUrl}accounts/step-one';
+  static const String createAccountStepTwo = '${baseUrl}accounts/step-two';
   static const String category = '${baseUrl}category';
 
   // ! Contacts
@@ -90,6 +91,11 @@ class EndPoints {
   static const String acceptFriendRequest = '${baseUrl}friend-request';
   static const String declineFriendRequest = '${baseUrl}friend-request';
   static const String myFriends = '${baseUrl}friends';
+
+//! product
+static const String addProduct = '${baseUrl}product';
+static const String updateProduct = '${baseUrl}product/';
+static const String deleteProduct = '${baseUrl}product/';
 }
 
 class ApiKey {
