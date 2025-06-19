@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:flutter/foundation.dart';
-import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import 'api_consumer.dart';
@@ -48,6 +48,25 @@ class DioConsumer extends ApiConsumer {
     }
   }
 
+// Add this method inside the DioConsumer class
+  Future<dynamic> sendFormData(
+    String path, {
+    required FormData formData,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      var res = await dio.post(
+        path,
+        data: formData,
+        queryParameters: queryParameters,
+        options: Options(contentType: 'multipart/form-data'),
+      );
+      return res.data;
+    } on DioException catch (e) {
+      handleDioException(e);
+    }
+  }
+
   @override
   Future get(
     String path, {
@@ -56,7 +75,6 @@ class DioConsumer extends ApiConsumer {
     bool isFormData = false,
   }) async {
     try {
-      
       var res = await dio.get(
         path,
         data: isFormData ? FormData.fromMap(data) : data,

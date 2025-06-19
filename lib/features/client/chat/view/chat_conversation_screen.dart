@@ -1,179 +1,262 @@
-// embone/features/client/chat/view/chat_conversation_screen.dart
-import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
 import 'package:embone/features/client/chat/data/repo/chat_repo.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_cubit.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
-import 'package:embone/features/client/chat/view/widgets/massage_bubble.dart';
+import 'package:embone/features/client/chat/view/widgets/chat_app_bar.dart';
+import 'package:embone/features/client/chat/view/widgets/chat_dialogs.dart';
+import 'package:embone/features/client/chat/view/widgets/chat_messages_list.dart';
 import 'package:embone/features/client/chat/view/widgets/massage_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ChatConversationScreen extends StatelessWidget {
+class ChatConversationScreen extends StatefulWidget {
   final int? receiverId;
-  const ChatConversationScreen({super.key, this.receiverId});
+  final String? name;
+  final String? image;
+  final String? online;
+
+  const ChatConversationScreen({
+    super.key,
+    this.receiverId,
+    this.name,
+    this.image,
+    this.online,
+  });
+
+  @override
+  State<ChatConversationScreen> createState() => _ChatConversationScreenState();
+}
+
+class _ChatConversationScreenState extends State<ChatConversationScreen> {
+  final ScrollController _scrollController = ScrollController();
+  late ChatCubit _chatCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatCubit = ChatCubit(sl<ChatRepo>());
+    if (widget.receiverId != null) {
+      _chatCubit.fetchMessages(widget.receiverId!);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _chatCubit.close();
+    super.dispose();
+  }
+
+  void _scrollToBottom({bool animate = true}) {
+    if (!_scrollController.hasClients) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        if (animate) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        } else {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
+      }
+    });
+  }
+
+  void _scrollToBottomDelayed() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _scrollToBottom();
+    });
+  }
+
+  void _scrollToMessage(Message message) {
+    final index = _chatCubit.messages.indexWhere((msg) => msg.id == message.id);
+    if (index != -1 && _scrollController.hasClients) {
+      final position = index * 100.0; // Approximate message height
+      _scrollController.animateTo(
+        position,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _showDeleteDialog(Message message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'delete_message'.tr(context),
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          'delete_message_confirmation'.tr(context),
+          style: TextStyle(fontSize: 14.sp),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'cancel'.tr(context),
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14.sp,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _chatCubit.deleteMessage(message.id);
+            },
+            child: Text(
+              'delete'.tr(context),
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showClearChatDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'clear_chat'.tr(context),
+          style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          'clear_chat_confirmation'.tr(context),
+          style: TextStyle(fontSize: 14.sp),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'cancel'.tr(context),
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14.sp,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _chatCubit.clearChat();
+            },
+            child: Text(
+              'clear'.tr(context),
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (receiverId == null) {
+    if (widget.receiverId == null) {
       return Scaffold(
         body: Center(child: Text('receiver_id_required'.tr(context))),
       );
     }
 
-    return BlocProvider(
-      create: (context) =>
-          ChatCubit(sl<ChatRepo>())..fetchMessages(receiverId!),
-      child: BlocBuilder<ChatCubit, ChatState>(
-        builder: (context, state) {
-          final cubit = context.read<ChatCubit>();
-          return Scaffold(
-            backgroundColor: Colors.white,
-            resizeToAvoidBottomInset: false,
-            body: SafeArea(
-              child: Column(
+    return BlocProvider.value(
+      value: _chatCubit,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        body: SafeArea(
+          child: BlocConsumer<ChatCubit, ChatState>(
+            listener: (context, state) {
+              if (state is ChatLoaded) {
+                _scrollToBottomDelayed();
+              } else if (state is MassageSentLoaded) {
+                _scrollToBottomDelayed();
+              } else if (state is ChatScrollToLatest) {
+                _scrollToBottom();
+              } else if (state is ChatMessageFocused) {
+                _scrollToMessage(state.message);
+                Future.delayed(const Duration(seconds: 3), () {
+                  _chatCubit.clearFocus();
+                });
+              } else if (state is ChatMessageDeleted) {
+                _scrollToBottomDelayed();
+              }
+            },
+            builder: (context, state) {
+              final cubit = context.read<ChatCubit>();
+              final hasSelection = cubit.selectedMessage != null;
+              final hasFocus = cubit.focusedMessage != null;
+
+              return Stack(
                 children: [
-                  // Header
-                  AppHeader(
-                    title: '',
-                    centerTitle: false,
-                    titleWidget: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Amr Mohamed', // Replace with dynamic name if available
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400,
-                          ),
+                  Column(
+                    children: [
+                      ChatAppBar(
+                        name: widget.name,
+                        image: widget.image,
+                        online: widget.online,
+                        hasSelection: hasSelection,
+                        onClearSelection: cubit.clearSelection,
+                        onDeleteSelected: _showDeleteDialog,
+                        onClearChat: _showClearChatDialog,
+                      ),
+                      if (hasSelection)
+                        SelectionIndicator(
+                          onClear: cubit.clearSelection,
                         ),
-                        Text(
-                          'online'.tr(context), // Translated status
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: const Color(0xff909090),
-                            fontWeight: FontWeight.w400,
-                          ),
+                      Expanded(
+                        child: ChatMessagesList(
+                          scrollController: _scrollController,
+                          messages: cubit.messages,
+                          selectedMessage: cubit.selectedMessage,
+                          focusedMessage: cubit.focusedMessage,
+                          state: state,
                         ),
-                      ],
-                    ),
-                    showBackButton: true,
+                      ),
+                      if (!hasFocus)
+                        MessageInput(
+                          receiverId: widget.receiverId!,
+                          onMessageSent: _scrollToBottomDelayed,
+                        ),
+                    ],
                   ),
-
-                  // Chat Messages
-                  Expanded(
-                    child: Builder(
-                      builder: (context) {
-                        if (state is ChatLoading) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (state is ChatError) {
-                          return Center(
-                              child: Text(state.massage ??
-                                  'error_loading_messages'.tr(context)));
-                        }
-                        if (state is ChatLoaded) {
-                          final messages = cubit.messages;
-                          if (messages.isEmpty) {
-                            return Center(
-                                child: Text('no_messages_yet'.tr(context)));
-                          }
-                          return ListView.builder(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 16.h),
-                            itemCount: messages.length,
-                            itemBuilder: (context, index) {
-                              final message = messages[index];
-                              final previousMessage =
-                                  index > 0 ? messages[index - 1] : null;
-                              final showDate = previousMessage == null ||
-                                  _shouldShowDate(previousMessage.createdAt,
-                                      message.createdAt);
-
-                              return Column(
-                                children: [
-                                  if (showDate)
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8.h),
-                                      child: Text(
-                                        _formatDate(context, message.createdAt),
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          color: Colors.grey[600],
-                                        ),
-                                      ),
-                                    ),
-                                  MessageBubble(
-                                    message: message,
-                                    context: context,
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
+                  if (hasFocus)
+                    FocusOverlay(
+                      onTap: cubit.clearFocus,
                     ),
-                  ),
-
-                  // Message Input
-                  const MessageInput(),
-                  SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
                 ],
-              ),
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
-
-  // Helper methods to determine date display
-  bool _shouldShowDate(String? previousDate, String? currentDate) {
-    if (previousDate == null || currentDate == null) return true;
-    final prev = DateTime.parse(previousDate);
-    final curr = DateTime.parse(currentDate);
-    return prev.day != curr.day ||
-        prev.month != curr.month ||
-        prev.year != curr.year;
-  }
-
-  String _formatDate(BuildContext context, String? dateTimeStr) {
-    if (dateTimeStr == null) return '';
-    final date = DateTime.parse(dateTimeStr);
-    return '${_getDayName(date.weekday).tr(context)}, ${date.day}/${date.month}/${date.year % 100}';
-  }
-
-  String _formatTime(String? dateTimeStr) {
-    if (dateTimeStr == null) return '';
-    final date = DateTime.parse(dateTimeStr);
-    return '${date.hour}:${date.minute.toString().padLeft(2, '0')}';
-  }
-
-  String _getDayName(int weekday) {
-    const dayKeys = [
-      'monday',
-      'tuesday',
-      'wednesday',
-      'thursday',
-      'friday',
-      'saturday',
-      'sunday'
-    ];
-    return dayKeys[weekday - 1];
-  }
-}
-
-// Placeholder ReplayData class for MessageBubble (adjust based on actual implementation)
-class ReplayData {
-  final String text;
-  final bool isVoice;
-
-  ReplayData({required this.text, required this.isVoice});
 }

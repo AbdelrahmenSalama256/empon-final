@@ -1,19 +1,26 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
+import 'package:embone/features/client/chat/view/cubit/chat_cubit.dart';
+import 'package:embone/features/client/chat/view/widgets/message_animations.dart';
+import 'package:embone/features/client/chat/view/widgets/message_content.dart';
+import 'package:embone/features/client/chat/view/widgets/message_reply.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MessageBubble extends StatefulWidget {
   final Message message;
-  final BuildContext context;
+  final bool isSelected;
+  final bool isFocused;
+  final bool isBlurred;
 
   const MessageBubble({
     super.key,
     required this.message,
-    required this.context,
+    this.isSelected = false,
+    this.isFocused = false,
+    this.isBlurred = false,
   });
 
   @override
@@ -21,431 +28,250 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
+    with TickerProviderStateMixin {
+  late MessageAnimations animations;
+  double _swipeOffset = 0.0;
+  bool _isSwipingToReply = false;
   bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
+    animations = MessageAnimations(this);
+    animations.initialize();
+  }
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.elasticOut,
-    ));
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-
-    _animationController.forward();
+  @override
+  void didUpdateWidget(MessageBubble oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isSelected != oldWidget.isSelected) {
+      if (widget.isSelected) {
+        animations.selectionController.forward();
+      } else {
+        animations.selectionController.reverse();
+      }
+    }
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    animations.dispose();
     super.dispose();
+  }
+
+  void _handleLongPress() {
+    HapticFeedback.mediumImpact();
+    context.read<ChatCubit>().selectMessage(widget.message);
+  }
+
+  void _handleTap() {
+    final cubit = context.read<ChatCubit>();
+
+    if (cubit.selectedMessage != null) {
+      cubit.clearSelection();
+    } else if (widget.message.replayId != null) {
+      cubit.navigateToReply(widget.message);
+    }
+  }
+
+  void _handleSwipeStart(DragStartDetails details) {
+    if (widget.isBlurred) return;
+
+    setState(() {
+      _isSwipingToReply = true;
+    });
+    animations.swipeController.forward();
+  }
+
+  void _handleSwipeUpdate(DragUpdateDetails details) {
+    if (widget.isBlurred) return;
+
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
+    final isMe = widget.message.fromMe;
+
+    double newOffset =
+        _swipeOffset + (isRTL ? -details.delta.dx : details.delta.dx);
+
+    if (isMe) {
+      newOffset = newOffset.clamp(0.0, 60.0);
+    } else {
+      newOffset = newOffset.clamp(-60.0, 0.0);
+    }
+
+    setState(() {
+      _swipeOffset = newOffset;
+    });
+  }
+
+  void _handleSwipeEnd(DragEndDetails details) {
+    if (widget.isBlurred) return;
+
+    if (_swipeOffset.abs() > 30.0) {
+      HapticFeedback.mediumImpact();
+      context.read<ChatCubit>().setReplyMessage(widget.message);
+    }
+
+    animations.swipeController.reverse().then((_) {
+      setState(() {
+        _swipeOffset = 0.0;
+        _isSwipingToReply = false;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = Directionality.of(widget.context) == TextDirection.rtl;
     final isMe = widget.message.fromMe;
-    final isVoice = widget.message.mediaType == 'voice';
 
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: 0.w,
-            vertical: 4.h,
-          ),
-          child: Column(
-            crossAxisAlignment:
-                isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-            children: [
-              if (widget.message.replay != null)
-                _buildReplyMessage(isMe, isRTL),
-              Row(
-                textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-                mainAxisAlignment:
-                    isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // if (!isMe && !isRTL) _buildAvatar(),
-                  // if (isMe && isRTL) _buildAvatar(),
-                  SizedBox(
-                      width: ((!isMe && !isRTL) || (isMe && isRTL)) ? 8.w : 0),
-                  Flexible(
-                    child: Container(
-                      constraints: BoxConstraints(
-                        maxWidth:
-                            MediaQuery.of(widget.context).size.width * 0.75,
-                        minWidth: 60.w,
+    return AnimatedOpacity(
+      opacity: widget.isBlurred ? 0.3 : 1.0,
+      duration: const Duration(milliseconds: 300),
+      child: FadeTransition(
+        opacity: animations.fadeAnimation,
+        child: ScaleTransition(
+          scale: widget.isFocused
+              ? const AlwaysStoppedAnimation(1.1)
+              : (widget.isSelected
+                  ? animations.selectionAnimation
+                  : animations.scaleAnimation),
+          child: GestureDetector(
+            onTap: _handleTap,
+            onLongPress: _handleLongPress,
+            onHorizontalDragStart: _handleSwipeStart,
+            onHorizontalDragUpdate: _handleSwipeUpdate,
+            onHorizontalDragEnd: _handleSwipeEnd,
+            child: Stack(
+              children: [
+                if (_isSwipingToReply && !widget.isBlurred)
+                  Positioned(
+                    left: isMe ? null : 20.w,
+                    right: isMe ? 20.w : null,
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: AnimatedOpacity(
+                        opacity: (_swipeOffset.abs() / 60.0).clamp(0.0, 1.0),
+                        duration: const Duration(milliseconds: 100),
+                        child: Container(
+                          width: 36.w,
+                          height: 36.h,
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.reply_rounded,
+                            color: Colors.white,
+                            size: 18.sp,
+                          ),
+                        ),
                       ),
-                      child: isVoice
-                          ? _buildVoiceMessage(isMe, isRTL)
-                          : _buildTextMessage(isMe, isRTL),
                     ),
                   ),
-                  SizedBox(
-                      width: ((isMe && !isRTL) || (!isMe && isRTL)) ? 8.w : 0),
-                  if (isMe && !isRTL) _buildAvatar(),
-                  if (!isMe && isRTL) _buildAvatar(),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAvatar() {
-    final isMe = widget.message.fromMe;
-    return Container(
-      width: 32.w,
-      height: 32.h,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isMe
-              ? [
-                  AppColors.primary,
-                  AppColors.primary.withOpacity(0.8),
-                ]
-              : [
-                  Colors.grey.shade400,
-                  Colors.grey.shade300,
-                ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: (isMe ? AppColors.primary : Colors.grey.shade400)
-                .withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Icon(
-        Icons.person_rounded,
-        color: Colors.white,
-        size: 18.r,
-      ),
-    );
-  }
-
-  Widget _buildReplyMessage(bool isMe, bool isRTL) {
-    return Container(
-      margin: EdgeInsets.only(
-        bottom: 8.h,
-        right: isMe ? (isRTL ? 0 : 40.w) : 0,
-        left: !isMe ? (isRTL ? 40.w : 0) : 0,
-      ),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: isMe ? AppColors.primary.withOpacity(0.1) : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border(
-          left: isRTL
-              ? BorderSide(
-                  color: isMe ? AppColors.primary : Colors.grey.shade400,
-                  width: 3.w,
-                )
-              : const BorderSide(width: 0),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'replying_to'.tr(widget.context),
-            style: TextStyle(
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey.shade600,
-            ),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            widget.message.replay!.message,
-            style: TextStyle(
-              fontSize: 13.sp,
-              color: isMe ? AppColors.primary : Colors.black87,
-              fontWeight: FontWeight.w400,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextMessage(bool isMe, bool isRTL) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        gradient: isMe
-            ? LinearGradient(
-                colors: [
-                  AppColors.primary,
-                  AppColors.primary.withOpacity(0.8),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
-        color: !isMe ? Colors.white : null,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.r),
-          topRight: Radius.circular(20.r),
-          bottomLeft: Radius.circular(isMe ? 20.r : 4.r),
-          bottomRight: Radius.circular(isMe ? 4.r : 20.r),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isMe
-                ? AppColors.primary.withOpacity(0.3)
-                : Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: !isMe
-            ? Border.all(
-                color: Colors.grey.shade200,
-                width: 1,
-              )
-            : null,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.message.message,
-            textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w400,
-              color: isMe ? Colors.white : Colors.black87,
-              height: 1.4,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                _formatTime(widget.message.createdAt),
-                style: TextStyle(
-                  fontSize: 11.sp,
-                  fontWeight: FontWeight.w500,
-                  color: isMe
-                      ? Colors.white.withOpacity(0.8)
-                      : Colors.grey.shade500,
-                ),
-              ),
-              if (isMe) ...[
-                SizedBox(width: 4.w),
-                Icon(
-                  Icons.done_all_rounded,
-                  size: 14.r,
-                  color: Colors.white.withOpacity(0.8),
+                if (widget.isSelected)
+                  Positioned(
+                    left: isMe ? null : 0,
+                    right: isMe ? 0 : null,
+                    top: 0,
+                    child: Container(
+                      width: 24.w,
+                      height: 24.h,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2.w),
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 14.sp,
+                      ),
+                    ),
+                  ),
+                if (widget.isFocused)
+                  Positioned.fill(
+                    child: Container(
+                      margin: EdgeInsets.all(4.w),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(
+                          color: AppColors.primary,
+                          width: 2.w,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 8.r,
+                            spreadRadius: 2.r,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                AnimatedContainer(
+                  duration: widget.isBlurred
+                      ? Duration.zero
+                      : const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                  transform: Matrix4.translationValues(_swipeOffset, 0, 0),
+                  margin: EdgeInsets.only(
+                    left: 8.w,
+                    right: 8.w,
+                    top: 2.h,
+                    bottom: 2.h,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal:
+                              widget.message.replay != null ? 10.w : 0.w,
+                          vertical: widget.message.replay != null ? 10.h : 0.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: widget.message.replay != null
+                              ? AppColors.lightGrey.withOpacity(0.5)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(
+                              widget.message.replay != null ? 12.r : 0.r),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: isMe
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (widget.message.replay != null) ...[
+                              MessageReply(
+                                replay: widget.message.replay!,
+                                isMe: isMe,
+                                recivereId: widget.message.receiverId,
+                              ),
+                              SizedBox(height: 10.h),
+                            ],
+                            MessageContent(
+                              message: widget.message,
+                              isMe: isMe,
+                              isPlaying: _isPlaying,
+                              onTogglePlay: () => setState(() {
+                                _isPlaying = !_isPlaying;
+                              }),
+                            ),
+                            if (widget.message.replay != null)
+                              SizedBox(height: 10.h),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ],
+            ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVoiceMessage(bool isMe, bool isRTL) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        gradient: isMe
-            ? LinearGradient(
-                colors: [
-                  AppColors.primary,
-                  AppColors.primary.withOpacity(0.8),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
-        color: !isMe ? Colors.white : null,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: isMe
-                ? AppColors.primary.withOpacity(0.3)
-                : Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: !isMe
-            ? Border.all(
-                color: Colors.grey.shade200,
-                width: 1,
-              )
-            : null,
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isPlaying = !_isPlaying;
-                  });
-                },
-                child: Container(
-                  width: 36.w,
-                  height: 36.h,
-                  decoration: BoxDecoration(
-                    color: isMe
-                        ? Colors.white.withOpacity(0.2)
-                        : AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(18.r),
-                  ),
-                  child: Icon(
-                    _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                    color: isMe ? Colors.white : AppColors.primary,
-                    size: 20.r,
-                  ),
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(child: _buildModernWaveform(isMe)),
-              SizedBox(width: 12.w),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: isMe
-                      ? Colors.white.withOpacity(0.2)
-                      : Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Text(
-                  'voice_message_duration'.tr(widget.context),
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: isMe ? Colors.white : Colors.grey.shade700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                _formatTime(widget.message.createdAt),
-                style: TextStyle(
-                  fontSize: 11.sp,
-                  fontWeight: FontWeight.w500,
-                  color: isMe
-                      ? Colors.white.withOpacity(0.8)
-                      : Colors.grey.shade500,
-                ),
-              ),
-              if (isMe) ...[
-                SizedBox(width: 4.w),
-                Icon(
-                  Icons.done_all_rounded,
-                  size: 14.r,
-                  color: Colors.white.withOpacity(0.8),
-                ),
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernWaveform(bool isMe) {
-    return SizedBox(
-      height: 32.h,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: List.generate(
-          25,
-          (index) {
-            final heights = [8.h, 16.h, 12.h, 20.h, 14.h, 18.h, 10.h];
-            final height = heights[index % heights.length];
-            final isActive = _isPlaying && index < 12;
-
-            return AnimatedContainer(
-              duration: Duration(milliseconds: 100 + (index * 50)),
-              width: 3.w,
-              height: height,
-              decoration: BoxDecoration(
-                color: isActive
-                    ? (isMe ? Colors.white : AppColors.primary)
-                    : (isMe
-                        ? Colors.white.withOpacity(0.5)
-                        : Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(1.5.r),
-              ),
-            );
-          },
         ),
       ),
     );
-  }
-
-  String _formatTime(String? dateTimeStr) {
-    if (dateTimeStr == null) return 'now'.tr(widget.context);
-    try {
-      final date = DateTime.parse(dateTimeStr);
-      final now = DateTime.now();
-      final difference = now.difference(date);
-
-      if (difference.inDays > 0) {
-        return 'date_format'
-            .tr(widget.context)
-            .replaceAll('{day}', date.day.toString())
-            .replaceAll('{month}', date.month.toString());
-      } else if (difference.inHours > 0) {
-        return 'hours_ago'
-            .tr(widget.context)
-            .replaceAll('{hours}', difference.inHours.toString());
-      } else if (difference.inMinutes > 5) {
-        return 'minutes_ago'
-            .tr(widget.context)
-            .replaceAll('{minutes}', difference.inMinutes.toString());
-      } else {
-        return 'now'.tr(widget.context);
-      }
-    } catch (e) {
-      return 'now'.tr(widget.context);
-    }
   }
 }

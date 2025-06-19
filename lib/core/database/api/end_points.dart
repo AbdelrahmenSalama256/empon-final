@@ -61,6 +61,9 @@ class EndPoints {
   static const String shopNearby = '${baseUrl}homeWithLocation';
   // ! Chat
   static const String chatMessages = '${baseUrl}chat/messages';
+  static const String deleteMessage = '${baseUrl}chat/delete-message';
+  static const String chatWith = '${baseUrl}chat-with';
+  static const String sendMessage = '${baseUrl}send-message';
 
   // ! Wishlist
   static const String favorites = '${baseUrl}favourite';

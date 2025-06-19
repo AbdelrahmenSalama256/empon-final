@@ -732,6 +732,22 @@
   "active": "نشط",
   "inactive": "غير نشط",
   "products": "منتج",
-  "about": "عن "
-  
+  "about": "عن ",
+  "sender_name": "المرسل",
+  "photo": "صورة",
+  "voice_message": "رسالة صوتية",
+  "message_deleted": "تم حذف الرسالة",
+  "image_load_error": "خطأ في تحميل الصورة",
+  "slide_up_to_cancel": "اسحب لأعلى للإلغاء",
+  "view_contact": "عرض الاتصال",
+  "media_links_docs": "الوسائط والروابط",
+  "clear_chat": "مسح الدردشة",
+  "delete_message": "حذف الرسالة",
+  "delete_message_confirmation": "هل أنت متأكد أنك تريد حذف الرسالة؟",
+  "message_selected": "تم اختيار رسالة",
+  "start_conversation": "ابدأ المحادثة",
+  "today": "اليوم",
+  "yesterday": "أمس",
+  "message_focused": "الرسالة محددة",
+  "tap_to_close": "اضغط للإغلاق"
 }
