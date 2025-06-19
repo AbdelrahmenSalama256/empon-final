@@ -1,10 +1,13 @@
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_name_section.dart'
     show HomeStoreNameSection;
 import 'package:embone/features/business_account/home/view/widgets/home_videos.dart';
 import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
+import 'package:embone/features/client/search/data/repo/search_repo.dart';
+import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,15 +17,16 @@ import 'home_store_products.dart';
 import 'home_store_description.dart';
 
 class HomeStoreContent extends StatelessWidget {
-  int id;
-  HomeStoreContent({super.key,required this.id});
+  final int id;
+  const HomeStoreContent({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<GlobalCubit>();
-  int index =cubit.userAccount?.indexWhere((element) => element.id == id) ?? -1;
+    int index =
+        cubit.userAccount?.indexWhere((element) => element.id == id) ?? -1;
 
-   final accountData = index != -1 ? cubit.userAccount![index] : null;
+    final accountData = index != -1 ? cubit.userAccount![index] : null;
     //! todo :hanle this case account id not cashed
     PrintUtil.success(accountData!.name ?? 'No account data found');
     return SingleChildScrollView(
@@ -30,27 +34,42 @@ class HomeStoreContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const HomeStoreHero(),
+          HomeStoreHero(
+              storeLogo: accountData.logo, storeCover: accountData.cover),
           SizedBox(height: 16.h),
-          const HomeStoreNameSection(),
+          HomeStoreNameSection(name: accountData.name!, isVerified: accountData.verified ?? false),
           SizedBox(height: 16.h),
-          const HomeStoreFollowers(),
+          HomeStoreFollowers(
+              followersCount: accountData.totalFollowers ?? 0,
+              logo: accountData.logo ?? 'https://example.com/logo.png'),
           SizedBox(height: 16.h),
-          const HomeStoreProducts(),
+          HomeStoreProducts(
+            totalProduct: accountData.totalProducts ?? 0,
+          ),
           SizedBox(height: 16.h),
-          const HomeStoreDescription(),
+          HomeStoreDescription(
+            description: accountData.description!,
+            name: accountData.name!,
+          ),
           SizedBox(height: 20.h),
           SizedBox(
             height: 500.h,
             child: SingleChildScrollView(
               child: HomeVideoGridImages(
-                videoUrl: 'https://example.com/custom-video.mp4',
+                videoUrl: accountData.videoUrl ??
+                    'https://www.youtube.com/watch?v=HdEzeiSR5eU',
+                gridItemCount: accountData.totalProducts ?? 0,
+                images: accountData.products ?? [],
                 // ignore: avoid_print
-                onProductTap: (index) => navigateTo(
-                  context,
-                  const ProductDetailPage(
-                    isVendor: true,
-                    productId: 0,
+                onProductTap: (index) =>  navigateTo(
+                    context,
+                    BlocProvider(
+                    create: (context) => SearchCubit(sl<SearchRepo>()),
+                    child:
+                    ProductDetailPage(
+                      isVendor: true,
+                      productId: accountData.products?[index].id ?? 0,
+                    ),
                   ),
                 ),
               ),

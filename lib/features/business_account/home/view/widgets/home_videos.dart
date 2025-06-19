@@ -8,12 +8,15 @@ class HomeVideoGridImages extends StatefulWidget {
   final int gridItemCount; // Number of items if using default grid
   final void Function(int)? onProductTap; // Callback for grid item taps
   final double aspectRatio; // Customizable video aspect ratio
+  final List images;
 
-  const HomeVideoGridImages({
+  const HomeVideoGridImages(
+    {
     super.key,
     this.videoUrl =
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+        'https://www.youtube.com/watch?v=HdEzeiSR5eU',
     this.gridItems,
+    this.images =const[],
     this.gridItemCount = 12,
     this.onProductTap,
     this.aspectRatio = 16 / 9,
@@ -218,6 +221,12 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
+                          widget.images.isNotEmpty
+                              ? Image.network(
+                                  widget.images[index].image,
+                                  fit: BoxFit.cover,
+                                )
+                              : // Fallback image if no images are provided
                           Image.asset(
                             'assets/images/test-product-1.png',
                             fit: BoxFit.cover,

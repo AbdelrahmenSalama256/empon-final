@@ -730,6 +730,8 @@
   "inactive_account_title": "حساب غير نشط",
   "inactive_account_message": "حسابك التجاري قيد المراجعة. يُرجى الانتظار.",
   "active": "نشط",
-  "inactive": "غير نشط"
+  "inactive": "غير نشط",
+  "products": "منتج",
+  "about": "عن "
   
 }

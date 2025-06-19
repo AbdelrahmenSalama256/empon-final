@@ -1,4 +1,7 @@
+import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_content.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_header.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +13,7 @@ class HomeStoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<GlobalCubit>();
-    final accountId= cubit.businessId == null ? 0 : cubit.businessId!;
+    final accountId= int.parse(sl<CacheHelper>().getData(key: AppConstants.businessAccountId));
     PrintUtil.success('Business ID: $accountId');
     return Scaffold(
       backgroundColor: Colors.white,

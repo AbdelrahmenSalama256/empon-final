@@ -728,5 +728,7 @@
   "inactive_account_title": "Inactive Account",
   "inactive_account_message": "Your business account under review. Please wait",
   "active": "Active",
-  "inactive": "Inactive"
+  "inactive": "Inactive",
+  "products": "Product",
+  "about": "About "
 }

@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -136,23 +141,32 @@ class _AccountsBottomSheetContentState
                   });
                   if (accounts[index].status == true) {
                     cubit.setUserType(UserType.business);
-                    cubit.businessId = accounts[index].id;
-                    Navigator.pop(context);
+
+                    sl<CacheHelper>().setData( AppConstants.businessAccountId, accounts[index].id.toString());
+                    
+                    log(index.toString());
+                    setState(() {
+                       Navigator.pop(context);
+                    });
+                   
+                  
                   } else {
                    CustomPopup.show(
-                    barrierDismissible: false,
                     context: context,
                     title: 'inactive_account_title'.tr(context),
                     message: 'inactive_account_message'.tr(context),
                     type: PopupType.alert,
                     primaryButtonText: 'ok'.tr(context),
                     onPrimaryButtonPressed: () {
-                     Navigator.of(context, rootNavigator: true).pop() ;// Close the popup
                       cubit.setUserType(UserType.client);
+                     Navigator.of(context, rootNavigator: true)
+                            .pop() ;// Close the popup
+                      Navigator.pop(context);
                     },
                    );
                   
                   }
+                   // Close the bottom sheet
                 },
               ),
             ),

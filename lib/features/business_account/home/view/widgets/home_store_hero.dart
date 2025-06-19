@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeStoreHero extends StatelessWidget {
-  const HomeStoreHero({super.key});
+  final String? storeLogo;
+  final String? storeCover;
+  const HomeStoreHero({super.key, required this.storeLogo, required this.storeCover});
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +18,19 @@ class HomeStoreHero extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(20.r)),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(16.r),
-              bottomRight: Radius.circular(16.r),
+            borderRadius: BorderRadius.all(
+              Radius.circular(20.r),
             ),
-            child: Image.asset(
-              'assets/images/profile_store.png',
-              fit: BoxFit.fill,
-            ),
+            child: storeCover!.startsWith('http')
+                ? Image.network(
+                    storeCover!,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    'assets/images/profile_store.png',
+                    fit: BoxFit.cover,
+                  ),
+           
           ),
         ),
         Positioned(
@@ -42,7 +49,15 @@ class HomeStoreHero extends StatelessWidget {
                 border: Border.all(color: Colors.white, width: 2),
               ),
               child: Center(
-                child: Image.asset('assets/images/brand-logo.png'),
+                child: storeLogo!.startsWith('http')
+                    ? Image.network(
+                        storeLogo!,
+                        width: 75.w,
+                        height: 75.w,
+                        fit: BoxFit.cover,
+                      )
+                    :
+                Image.asset('assets/images/brand-logo.png'),
               ),
             ),
           ),

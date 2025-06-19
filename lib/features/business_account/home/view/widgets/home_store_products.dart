@@ -5,7 +5,8 @@ import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 
 class HomeStoreProducts extends StatelessWidget {
-  const HomeStoreProducts({super.key});
+ final int totalProduct;
+   const HomeStoreProducts({super.key, required this.totalProduct});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class HomeStoreProducts extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            '321 منتج',
+            '$totalProduct ${"products".tr(context)}',
             style: TextStyle(
               fontSize: 11.sp,
               fontWeight: FontWeight.w400,
@@ -30,7 +31,10 @@ class HomeStoreProducts extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 12.w),
             height: 40.h,
             borderRadius: BorderRadius.circular(10.r),
-            onPressed: () {},
+            onPressed: () {
+              
+
+            },
             prefixIcon: Icon(
               CupertinoIcons.add,
               size: 20.sp,
