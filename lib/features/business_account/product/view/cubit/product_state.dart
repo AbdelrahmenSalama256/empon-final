@@ -1,20 +1,21 @@
 part of 'product_cubit.dart';
 
-sealed class ProductState  {
-  const ProductState();
+abstract class ProductState {}
 
+class ProductInitial extends ProductState {}
+
+class ProductLoading extends ProductState {}
+
+class ProductSuccess extends ProductState {
+  final ProductModel product;
+  ProductSuccess(this.product);
 }
 
-final class ProductInitial extends ProductState {}
-final class ProductLoading extends ProductState {}
-final class ProductError extends ProductState {
-  final String message;
-  const ProductError({required this.message});
-  
-}
-final class ProductSuccess extends ProductState {
-  final String message;
-  const ProductSuccess(this.message);
- 
+class ProductError extends ProductState {
+  final String error;
+  ProductError(this.error);
 }
 
+class ProductImagePicked extends ProductState {}
+
+class ProductImagesPicked extends ProductState {}

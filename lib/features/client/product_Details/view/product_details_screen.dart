@@ -1,5 +1,6 @@
 import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
+import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
@@ -187,7 +188,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     likeCount: product?.likes ?? 0,
                                     onEdit: () {
                                       navigateTo(
-                                          context, const AddProductPage());
+                                          context,  AddProductPage(
+                                              businessAccountId: int.parse(
+                                                  sl<CacheHelper>().getData(
+                                                      key: AppConstants
+                                                          .businessAccountId))));
                                     },
                                     onDelete: () => CustomPopup.show(
                                       context: context,
@@ -199,7 +204,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       primaryButtonText: "yes".tr(context),
                                       secondaryButtonText: "no".tr(context),
                                       onPrimaryButtonPressed: () {
-                                        Navigator.of(context).pop();
+                                        Navigator.of(context ,rootNavigator: true).pop();
                                       },
                                     ),
                                     commentCount:

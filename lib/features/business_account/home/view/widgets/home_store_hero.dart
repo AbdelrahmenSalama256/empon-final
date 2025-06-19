@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeStoreHero extends StatelessWidget {
-  const HomeStoreHero({super.key});
+  final String? storeLogo;
+  final String? storeCover;
+  const HomeStoreHero({super.key, required this.storeLogo, required this.storeCover});
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +18,19 @@ class HomeStoreHero extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(20.r)),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(16.r),
-              bottomRight: Radius.circular(16.r),
+            borderRadius: BorderRadius.all(
+              Radius.circular(20.r),
             ),
-            child: Image.asset(
-              'assets/images/profile_store.png',
-              fit: BoxFit.fill,
-            ),
+            child: storeCover!.startsWith('http')
+                ? Image.network(
+                    storeCover!,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    'assets/images/profile_store.png',
+                    fit: BoxFit.cover,
+                  ),
+           
           ),
         ),
         Positioned(
@@ -40,10 +47,14 @@ class HomeStoreHero extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
+                image: DecorationImage(
+                  image: storeLogo!.startsWith('http')
+                      ? NetworkImage(storeLogo!)
+                      : const AssetImage('assets/images/brand-logo.png') as ImageProvider,
+                  fit: BoxFit.cover,
+                ),
               ),
-              child: Center(
-                child: Image.asset('assets/images/brand-logo.png'),
-              ),
+              
             ),
           ),
         ),

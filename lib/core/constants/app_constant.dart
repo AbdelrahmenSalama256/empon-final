@@ -12,6 +12,7 @@ class AppConstants {
   static const String isOnboardingVisited = "isOnboardingVisited";
   static const String baseUrl = "https://maxliss.evyx.lol/api/v2";
   static const String signUpEndpoint = "$baseUrl/auth/signup";
+  static const String businessAccountId = '1';
 
   // guest user constants
   static const String guestId = "guest_id";

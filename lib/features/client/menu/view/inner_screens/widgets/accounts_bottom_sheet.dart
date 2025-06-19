@@ -1,7 +1,13 @@
+import 'dart:developer';
+
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/app_constant.dart';
+import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -123,14 +129,44 @@ class _AccountsBottomSheetContentState
               (index) => BusinessAccountOption(
                 name: accounts[index].name ?? 'Business Account',
                 imagePath:
-                    accounts[index].logo ?? 'assets/images/brand-logo.png',
+                    accounts[index].logo!= null ? accounts[index].logo! : 'assets/images/logo.png',
+                labelText: (accounts[index].status ?? false) ? 'active'.tr(context) : 'inactive'.tr(context),
+                labelColor: (accounts[index].status ?? false)
+                    ? AppColors.secondary
+                    : AppColors.red,
                 isSelected: _selectedAccountIndex == index,
                 onTap: () {
                   setState(() {
                     _selectedAccountIndex = index;
                   });
-                  cubit.setUserType(UserType.business);
-                  Navigator.pop(context);
+                  if (accounts[index].status == true) {
+                    cubit.setUserType(UserType.business);
+
+                    sl<CacheHelper>().setData( AppConstants.businessAccountId, accounts[index].id.toString());
+                    
+                    log(index.toString());
+                    setState(() {
+                       Navigator.pop(context);
+                    });
+                   
+                  
+                  } else {
+                   CustomPopup.show(
+                    context: context,
+                    title: 'inactive_account_title'.tr(context),
+                    message: 'inactive_account_message'.tr(context),
+                    type: PopupType.alert,
+                    primaryButtonText: 'ok'.tr(context),
+                    onPrimaryButtonPressed: () {
+                      cubit.setUserType(UserType.client);
+                     Navigator.of(context, rootNavigator: true)
+                            .pop() ;// Close the popup
+                      Navigator.pop(context);
+                    },
+                   );
+                  
+                  }
+                   // Close the bottom sheet
                 },
               ),
             ),
@@ -155,6 +191,8 @@ class BusinessAccountOption extends StatelessWidget {
   final String name;
   final String imagePath;
   final bool isSelected;
+  final String  labelText;
+  final Color labelColor;
   final VoidCallback onTap;
 
   const BusinessAccountOption({
@@ -162,6 +200,8 @@ class BusinessAccountOption extends StatelessWidget {
     required this.name,
     required this.imagePath,
     required this.isSelected,
+    required this.labelText,
+    required this.labelColor,
     required this.onTap,
   });
 
@@ -186,12 +226,16 @@ class BusinessAccountOption extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             // Store logo
-            CircleAvatar(
-              radius: 30.r,
-              backgroundImage: imagePath.startsWith('http')
-                  ? NetworkImage(imagePath)
-                  : AssetImage(imagePath) as ImageProvider,
-            ),
+            imagePath.startsWith('http')
+                ? CircleAvatar(
+                    radius: 30.r,
+                    backgroundImage: NetworkImage(imagePath),
+                  )
+                : CircleAvatar(
+                    radius: 30.r,
+                    backgroundImage: const AssetImage('assets/images/logo.png')
+                            as ImageProvider,
+                  ),
             SizedBox(width: 12.w),
             // Store name
             Text(
@@ -202,6 +246,29 @@ class BusinessAccountOption extends StatelessWidget {
               ),
             ),
             const Spacer(),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+              width: 70.w,
+              height: 30.w,
+              decoration: BoxDecoration(
+                color: labelColor,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : Colors.grey[300]!,
+                  width: 1.5,
+                ),
+              ),
+              child: Center(
+                child: Text(labelText,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 12.w),
             // Selection indicator
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),

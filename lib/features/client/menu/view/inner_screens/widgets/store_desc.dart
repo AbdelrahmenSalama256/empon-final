@@ -1,8 +1,11 @@
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StoreDescription extends StatelessWidget {
-  const StoreDescription({super.key});
+  final String description ;
+  final String name;
+  const StoreDescription({super.key , required this.description, required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +16,7 @@ class StoreDescription extends StatelessWidget {
         children: [
           // Store name
           Text(
-            'عن كومفرت شورا',
+            '${'about'.tr(context)}$name',
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
@@ -24,7 +27,7 @@ class StoreDescription extends StatelessWidget {
 
           // Store description
           Text(
-            'أديداس هي شركة ماليس رياضية مقرها ألمانيا، ونعد جزءاً من مجموعة أديداس التي تتألف من شركة ريبوك للماليس الرياضية وشركة تابلورميد لمنتجات الجواف. وشركة روكبورت للأحدية الرياضية التي باعتها أديداس سنة 2015 لشركة نيو بالانس.',
+            description,
             style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
           ),
         ],
