@@ -1,6 +1,8 @@
+import 'package:embone/features/business_account/product/view/cubit/product_cubit.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -9,11 +11,12 @@ class ProductBasicInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller =context.read<ProductCubit>().productNameController;
     return Column(
       children: [
         // Product Name Field
         AppTextField(
-          controller: TextEditingController(),
+            controller: controller ,
           hintText: 'product_name_hint'.tr(context),
           prefixIcon: Padding(
             padding: EdgeInsets.all(13.w),

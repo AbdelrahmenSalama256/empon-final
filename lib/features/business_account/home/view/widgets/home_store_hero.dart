@@ -47,18 +47,14 @@ class HomeStoreHero extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
+                image: DecorationImage(
+                  image: storeLogo!.startsWith('http')
+                      ? NetworkImage(storeLogo!)
+                      : const AssetImage('assets/images/brand-logo.png') as ImageProvider,
+                  fit: BoxFit.cover,
+                ),
               ),
-              child: Center(
-                child: storeLogo!.startsWith('http')
-                    ? Image.network(
-                        storeLogo!,
-                        width: 75.w,
-                        height: 75.w,
-                        fit: BoxFit.cover,
-                      )
-                    :
-                Image.asset('assets/images/brand-logo.png'),
-              ),
+              
             ),
           ),
         ),

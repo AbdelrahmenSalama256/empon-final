@@ -6,7 +6,8 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'widgets/add_product_form.dart';
 
 class AddProductPage extends StatelessWidget {
-  const AddProductPage({super.key});
+  final int businessAccountId;
+  const AddProductPage({super.key, required this.businessAccountId});
 
   @override
   Widget build(BuildContext context) {

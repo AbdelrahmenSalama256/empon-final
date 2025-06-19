@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/features/business_account/product/view/cubit/product_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,8 +17,9 @@ class ImageUploadSection extends StatefulWidget {
 }
 
 class _ImageUploadSectionState extends State<ImageUploadSection> {
-  File? _mainImage;
-  final List<File> _additionalImages = [];
+  
+  XFile? _mainImage;
+  final List<XFile> _additionalImages = [];
   final ImagePicker _picker = ImagePicker();
   final int _maxImages = 10;
 
@@ -25,7 +27,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
-        _mainImage = File(image.path);
+        _mainImage = XFile(image.path);
       });
     }
   }
@@ -38,7 +40,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
     if (images.isNotEmpty) {
       setState(() {
         _additionalImages.addAll(
-            images.take(availableSlots).map((image) => File(image.path)));
+            images.take(availableSlots));
       });
     }
   }
@@ -57,6 +59,16 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
 
   @override
   Widget build(BuildContext context) {
+    if (_mainImage != null){
+      setState(() {
+        context.read<ProductCubit>().productImage= _mainImage;
+      });
+    }
+    if (_additionalImages.isNotEmpty) {
+      setState(() {
+        context.read<ProductCubit>().productImages= _additionalImages;
+      });
+    }
     return Column(
       children: [
         // Main Image Upload
@@ -128,7 +140,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
     );
   }
 
-  Widget _buildImageThumbnail(File image, int index, {bool isMain = false}) {
+  Widget _buildImageThumbnail(dynamic image, int index, {bool isMain = false}) {
     return Padding(
       padding: EdgeInsets.only(right: 8.w),
       child: Stack(
@@ -139,7 +151,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(13.r),
               child: Image.file(
-                image,
+                image is XFile ? File(image.path) : image,
                 fit: BoxFit.cover,
                 width: 40.w,
                 height: 40.h,

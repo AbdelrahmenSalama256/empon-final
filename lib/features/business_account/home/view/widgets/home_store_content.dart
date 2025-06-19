@@ -44,6 +44,7 @@ class HomeStoreContent extends StatelessWidget {
               logo: accountData.logo ?? 'https://example.com/logo.png'),
           SizedBox(height: 16.h),
           HomeStoreProducts(
+            id:accountData.id ?? 0,
             totalProduct: accountData.totalProducts ?? 0,
           ),
           SizedBox(height: 16.h),
@@ -57,7 +58,7 @@ class HomeStoreContent extends StatelessWidget {
             child: SingleChildScrollView(
               child: HomeVideoGridImages(
                 videoUrl: accountData.videoUrl ??
-                    'https://www.youtube.com/watch?v=HdEzeiSR5eU',
+                    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
                 gridItemCount: accountData.totalProducts ?? 0,
                 images: accountData.products ?? [],
                 // ignore: avoid_print
