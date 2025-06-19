@@ -1,5 +1,11 @@
+import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/features/client/order/data/model/order_model.dart';
+import 'package:embone/features/client/order/view/cubit/orders_cubit.dart';
+import 'package:embone/features/client/order/view/cubit/orders_state.dart';
 import 'package:embone/features/client/order/view/widgets/order_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OrdersList extends StatelessWidget {
@@ -16,32 +22,36 @@ class OrdersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sample orders data
-    final List<Map<String, dynamic>> orders = [
-      {
-        'orderNumber': '1947034',
-        'date': '05-12-2019',
-        'quantity': 3,
-        'totalPrice': 2500.00,
-      },
-      {
-        'orderNumber': '1947034',
-        'date': '05-12-2019',
-        'quantity': 3,
-        'totalPrice': 2500.00,
-      },
-    ];
+    return BlocBuilder<OrdersCubit, OrdersState>(
+      builder: (context, state) {
+        PrintUtil.debug('OrdersList rebuild: status=$status, state=$state');
+        List<OrderModel> orders = [];
+        if (state is OrderLoaded || state is OrderCanceled) {
+          orders = context.read<OrdersCubit>().getOrdersByStatus(status);
+        }
 
-    return ListView.builder(
-      padding: EdgeInsets.all(16.w),
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        final order = orders[index];
-        return OrderCard(
-          order: order,
-          status: status,
-          statusColor: statusColor,
-          showCancelButton: showCancelButton,
+        if (orders.isEmpty) {
+          return Center(child: Text('no_orders'.tr(context)));
+        }
+
+        return ListView.builder(
+          padding: EdgeInsets.all(16.w),
+          itemCount: orders.length,
+          itemBuilder: (context, index) {
+            final order = orders[index];
+            return OrderCard(
+              order: {
+                'id': order.id,
+                'orderNumber': order.orderNumber,
+                'date': order.date,
+                'quantity': order.quantity,
+                'totalPrice': order.totalPrice,
+              },
+              status: status,
+              statusColor: statusColor,
+              showCancelButton: showCancelButton,
+            );
+          },
         );
       },
     );

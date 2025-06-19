@@ -16,6 +16,7 @@
 	<string>We need access to your contacts to invite them.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	
 	<key>CFBundleDisplayName</key>
 	<string>Embone</string>
 	<key>CFBundleExecutable</key>

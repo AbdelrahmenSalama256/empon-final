@@ -421,7 +421,7 @@ class GlobalCubit extends Cubit<GlobalState> {
       },
       (r) {
         userAddresses = r;
-        emit(GetAddressSuccess());
+        emit(GetAddressSuccess(r));
       },
     );
   }

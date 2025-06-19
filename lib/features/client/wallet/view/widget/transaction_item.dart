@@ -72,17 +72,13 @@ class TransactionItem extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(
-            width: 80.w,
-            child: Text(
-              '${isDeposit ? '' : '-'}$amount ${'egp'.tr(context)}',
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w400,
-                color: isDeposit
-                    ? const Color(0xff64B95C)
-                    : const Color(0xffD20101),
-              ),
+          Text(
+            '${isDeposit ? '' : ''}$amount ${'egp'.tr(context)}',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+              color:
+                  isDeposit ? const Color(0xff64B95C) : const Color(0xffD20101),
             ),
           ),
         ],

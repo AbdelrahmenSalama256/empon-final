@@ -77,6 +77,13 @@ class EndPoints {
   static const String removeCartItem = '${baseUrl}carts';
   static const String cartInfo = '${baseUrl}cart-info';
 
+  // ! Wallet
+  static const String walletBalance = '${baseUrl}wallet-balance';
+  static const String walletHistory = '${baseUrl}wallet-history';
+  // ! Orders
+  static const String orders = '${baseUrl}orders';
+  static const String cancelOrder = '${baseUrl}orders';
+  static const String topUp = '${baseUrl}top-up';
   //// Buissniss Account Case
   //! Create Account
   static const String createAccount = '${baseUrl}accounts';
@@ -93,9 +100,9 @@ class EndPoints {
   static const String myFriends = '${baseUrl}friends';
 
 //! product
-static const String addProduct = '${baseUrl}product';
-static const String updateProduct = '${baseUrl}product/';
-static const String deleteProduct = '${baseUrl}product/';
+  static const String addProduct = '${baseUrl}product';
+  static const String updateProduct = '${baseUrl}product/';
+  static const String deleteProduct = '${baseUrl}product/';
 }
 
 class ApiKey {

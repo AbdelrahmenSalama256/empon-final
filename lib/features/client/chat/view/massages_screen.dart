@@ -25,7 +25,7 @@ class MassagesScreen extends StatelessWidget {
     final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
 
     return BlocProvider(
-      create: (context) => ChatCubit(sl<ChatRepo>())..fetchChatContacts(),
+      create: (context) => ChatCubit(sl<ChatRepo>(), 0)..fetchChatContacts(),
       child: BlocBuilder<ChatCubit, ChatState>(
         builder: (context, state) {
           final cubit = context.read<ChatCubit>();

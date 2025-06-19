@@ -29,7 +29,7 @@ class BalanceCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'current_balance'.tr(context),
+            'current_balance_in_wallet'.tr(context),
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w700,

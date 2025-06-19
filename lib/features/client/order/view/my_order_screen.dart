@@ -1,11 +1,17 @@
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/order/data/repo/orders_repo.dart';
+import 'package:embone/features/client/order/view/cubit/orders_cubit.dart';
+import 'package:embone/features/client/order/view/cubit/orders_state.dart';
 import 'package:embone/features/client/order/view/widgets/order_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({super.key});
@@ -32,109 +38,145 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            AppHeader(
-              title: 'my_orders'.tr(context),
-              centerTitle: true,
-              showBackButton: true,
-            ),
-            // Tab Bar
-            Container(
-              height: 50.h,
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(15.r),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                labelColor: AppColors.white,
-                unselectedLabelColor: const Color(0xff152354),
-                indicator: BoxDecoration(
-                  color: AppColors.primaryColor,
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-                dividerColor: Colors.transparent,
-                dividerHeight: 0,
-                padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 7.h),
-                tabs: [
-                  Tab(
-                    child: Text(
-                      "delivered".tr(context),
-                      style: TextStyle(
-                        fontFamily: context.read<GlobalCubit>().language == "ar"
-                            ? 'Beiruti'
-                            : "Poppins",
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      "canceled".tr(context),
-                      style: TextStyle(
-                        fontFamily: context.read<GlobalCubit>().language == "ar"
-                            ? 'Beiruti'
-                            : "Poppins",
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Tab(
-                    child: Text(
-                      "in_delivery".tr(context),
-                      style: TextStyle(
-                        fontFamily: context.read<GlobalCubit>().language == "ar"
-                            ? 'Beiruti'
-                            : "Poppins",
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Tab Content
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
+    return BlocProvider(
+      create: (context) => OrdersCubit(sl<OrderRepo>())..fetchOrders(),
+      child: BlocConsumer<OrdersCubit, OrdersState>(
+        listener: (context, state) {
+          if (state is OrderCanceled) {
+            showToast(
+              context,
+              message: state.message.tr(context),
+              state: ToastStates.success,
+            );
+          } else if (state is OrderError) {
+            showToast(
+              context,
+              message: state.message.tr(context),
+              state: ToastStates.error,
+            );
+          }
+        },
+        builder: (context, state) {
+          debugPrint(
+              'MyOrdersScreen rebuilt with state: $state'); // Debug rebuild
+          final cubit = context.read<OrdersCubit>();
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: Column(
                 children: [
-                  // Delivered Orders Tab
-                  OrdersList(
-                    status: "delivered".tr(context),
-                    statusColor: const Color(0xff64B95C),
-                    showCancelButton: false,
+                  AppHeader(
+                    title: 'my_orders'.tr(context),
+                    centerTitle: true,
+                    showBackButton: true,
+                    onBackPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-
-                  // Canceled Orders Tab
-                  OrdersList(
-                    status: "canceled".tr(context),
-                    statusColor: const Color(0xffEC4B4B),
-                    showCancelButton: false,
+                  Container(
+                    height: 50.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(15.r),
+                    ),
+                    child: TabBar(
+                      controller: _tabController,
+                      labelColor: AppColors.white,
+                      unselectedLabelColor: const Color(0xff152354),
+                      indicator: BoxDecoration(
+                        color: AppColors.primaryColor,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelStyle: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      dividerColor: Colors.transparent,
+                      dividerHeight: 0,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 7.w, vertical: 7.h),
+                      tabs: [
+                        Tab(
+                          child: Text(
+                            "delivered".tr(context),
+                            style: TextStyle(
+                              fontFamily:
+                                  context.read<GlobalCubit>().language == "ar"
+                                      ? 'Beiruti'
+                                      : "Poppins",
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            "canceled".tr(context),
+                            style: TextStyle(
+                              fontFamily:
+                                  context.read<GlobalCubit>().language == "ar"
+                                      ? 'Beiruti'
+                                      : "Poppins",
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            "in_delivery".tr(context),
+                            style: TextStyle(
+                              fontFamily:
+                                  context.read<GlobalCubit>().language == "ar"
+                                      ? 'Beiruti'
+                                      : "Poppins",
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-
-                  // In Delivery Orders Tab
-                  OrdersList(
-                    status: "in_delivery".tr(context),
-                    statusColor: AppColors.primary,
-                    showCancelButton: true,
+                  Expanded(
+                    child: ModalProgressHUD(
+                      inAsyncCall: state is OrderLoading,
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          cubit.fetchOrders();
+                        },
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: const [
+                            OrdersList(
+                              key: ValueKey('delivered'),
+                              status: "delivered",
+                              statusColor: Color(0xff64B95C),
+                              showCancelButton: false,
+                            ),
+                            OrdersList(
+                              key: ValueKey('canceled'),
+                              status: "canceled",
+                              statusColor: Color(0xffEC4B4B),
+                              showCancelButton: false,
+                            ),
+                            OrdersList(
+                              key: ValueKey('in_delivery'),
+                              status: "in_delivery",
+                              statusColor: AppColors.primary,
+                              showCancelButton: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

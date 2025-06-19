@@ -1,10 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:embone/core/common/common.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
-import 'package:embone/core/constants/widgets/errors/failure.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
-import 'package:embone/features/client/locations/data/model/location_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../model/account_model.dart';
@@ -63,7 +61,7 @@ class AccountRepo {
         "address": address,
         "postal_code": postalCode,
         "logo": await uploadImageToAPI(logo),
-        "cover":  await uploadImageToAPI(coverImage) ,
+        "cover": await uploadImageToAPI(coverImage),
         "lat": lat,
         "lng": lng,
       };

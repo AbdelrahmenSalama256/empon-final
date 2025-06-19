@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PaymentMethod extends StatelessWidget {
-  const PaymentMethod({super.key});
+  final String type;
+
+  const PaymentMethod({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class PaymentMethod extends StatelessWidget {
               ),
               SizedBox(width: 12.w),
               Text(
-                'cash_on_delivery'.tr(context),
+                type.tr(context),
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
               ),
             ],

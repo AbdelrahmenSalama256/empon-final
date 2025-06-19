@@ -1,5 +1,5 @@
-import 'package:embone/features/client/wallet/view/wallet_details_screen.dart';
 import 'package:embone/features/client/wallet/view/add_funds_screen.dart';
+import 'package:embone/features/client/wallet/view/wallet_details_screen.dart';
 import 'package:embone/features/client/wallet/view/wallet_summary_screen.dart';
 import 'package:flutter/material.dart';
 

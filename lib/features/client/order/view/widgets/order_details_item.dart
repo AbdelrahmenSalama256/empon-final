@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../../core/component/custom_loading_indicator.dart';
 
 class OrderItem extends StatelessWidget {
   final String name;
@@ -30,11 +33,24 @@ class OrderItem extends StatelessWidget {
           // Product Image
           ClipRRect(
             borderRadius: BorderRadius.circular(8.r),
-            child: Image.network(
-              image,
+            child: CachedNetworkImage(
+              imageUrl: image,
               width: 119.w,
               height: 95.h,
               fit: BoxFit.cover,
+              placeholder: (context, url) => const Center(
+                child: CustomLoadingIndicator(),
+              ),
+              errorWidget: (context, url, error) => Container(
+                width: 119.w,
+                height: 95.h,
+                color: Colors.grey[200],
+                child: Icon(
+                  Icons.broken_image,
+                  color: Colors.grey[400],
+                  size: 40.w,
+                ),
+              ),
             ),
           ),
 
@@ -52,9 +68,7 @@ class OrderItem extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-
                 SizedBox(height: 4.h),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.min,
@@ -102,9 +116,7 @@ class OrderItem extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 SizedBox(height: 8.h),
-
                 Text(
                   '\$${price.toStringAsFixed(2)}',
                   style: TextStyle(

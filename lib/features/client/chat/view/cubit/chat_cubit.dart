@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/features/client/chat/data/model/chat_contact_model.dart';
 import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
 import 'package:embone/features/client/chat/data/repo/chat_repo.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
+import 'package:flutter/foundation.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as ws_status;
 
 class ChatCubit extends Cubit<ChatState> {
   final ChatRepo chatRepo;
@@ -15,7 +21,57 @@ class ChatCubit extends Cubit<ChatState> {
   Message? selectedMessage;
   Message? focusedMessage;
   Set<int> selectedMessageIds = {};
-  ChatCubit(this.chatRepo) : super(ChatInitial());
+  late IOWebSocketChannel? _channel;
+  final int? receiverId;
+  ChatCubit(this.chatRepo, this.receiverId) : super(ChatInitial()) {
+    initializeWebSocket();
+  }
+  void initializeWebSocket() {
+    if (receiverId != null) {
+      _channel =
+          IOWebSocketChannel.connect('wss://empon.evyx.lol/comm/$receiverId');
+      _channel!.stream.listen(
+        (dynamic message) {
+          final Map<String, dynamic> data = _parseWebSocketMessage(message);
+          if (data['type'] == 'new_message') {
+            final newMessage = Message.fromJson(data['message']);
+            messages.add(newMessage);
+            emit(MassageSentLoaded(newMessage));
+            PrintUtil.debug('New message received: $newMessage');
+          }
+        },
+        onError: (error) {
+          emit(MassageSentError('WebSocket error: $error'));
+          PrintUtil.error('WebSocket error: $error');
+        },
+        onDone: () {
+          emit(MassageSentError('WebSocket connection closed'));
+          PrintUtil.error('WebSocket connection closed');
+
+          initializeWebSocket();
+        },
+      );
+    }
+  }
+
+  Map<String, dynamic> _parseWebSocketMessage(dynamic message) {
+    try {
+      return message is String
+          ? Map<String, dynamic>.from(jsonDecode(message))
+          : message as Map<String, dynamic>;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to parse WebSocket message: $e');
+      }
+      return {};
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _channel?.sink.close(ws_status.normalClosure);
+    return super.close();
+  }
 
   void updateInputText(String text) {
     inputText = text;
@@ -92,8 +148,15 @@ class ChatCubit extends Cubit<ChatState> {
     );
 
     messages.add(tempMessage);
-    emit(MassageSentLoading(tempMessage));
+    _channel?.sink.add(jsonEncode({
+      'type': 'new_message',
+      'receiver_id': receiverId.toString(),
+      'message': message,
+      'media_type': 'text',
+      'replay_id': replyMessage?.id.toString(),
+    }));
 
+    emit(MassageSentLoading(tempMessage));
     final response = await chatRepo.sendMessage(
       receiverId: receiverId,
       message: message,
@@ -111,9 +174,14 @@ class ChatCubit extends Cubit<ChatState> {
             sentMessage.copyWith(
               status: MessageStatus.sent,
             ));
+
         emit(MassageSentLoaded(sentMessage));
       },
     );
+    await Future.delayed(const Duration(seconds: 1));
+    _replaceMessage(
+        tempMessage.id, tempMessage.copyWith(status: MessageStatus.sent));
+    emit(MassageSentLoaded(tempMessage));
 
     _clearInputState();
   }

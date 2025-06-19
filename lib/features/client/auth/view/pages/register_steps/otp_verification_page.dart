@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
@@ -14,7 +16,6 @@ import 'package:embone/features/client/menu/view/inner_screens/widgets/profile_s
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'dart:async';
 import 'package:pinput/pinput.dart';
 
 class OtpVerificationPage extends StatefulWidget {
@@ -206,8 +207,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                             message: 'otp_resent'.tr(context),
                                             state: ToastStates.success,
                                           );
-                                          // TODO: Call cubit.resendOtp if implemented
-                                           cubit.resendOtp(phone: cubit.phoneController.text); 
+                                          cubit.resendOtp(
+                                              phone:
+                                                  cubit.phoneController.text);
                                         },
                                   child: Text(
                                     cubit.resendSeconds > 0

@@ -1,3 +1,5 @@
+import '../../features/client/auth/data/models/user_data_model.dart';
+
 class GlobalState {}
 
 final class GlobalInitial extends GlobalState {}
@@ -62,7 +64,11 @@ class WishlistError extends GlobalState {
 
 class GetAddressLoading extends GlobalState {}
 
-class GetAddressSuccess extends GlobalState {}
+class GetAddressSuccess extends GlobalState {
+  final List<Address> addresses;
+
+  GetAddressSuccess(this.addresses);
+}
 
 class GetAddressError extends GlobalState {
   final String message;

@@ -37,9 +37,16 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   @override
   void initState() {
     super.initState();
-    _chatCubit = ChatCubit(sl<ChatRepo>());
+    _chatCubit = ChatCubit(sl<ChatRepo>(), widget.receiverId);
+
     if (widget.receiverId != null) {
       _chatCubit.fetchMessages(widget.receiverId!);
+      _chatCubit.initializeWebSocket();
+    } else {
+      // Handle case where receiverId is null
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('receiver_id_required'.tr(context))),
+      );
     }
   }
 

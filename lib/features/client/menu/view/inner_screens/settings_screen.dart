@@ -7,6 +7,7 @@ import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
 import 'package:embone/features/client/menu/view/inner_screens/edit_profile.dart';
@@ -17,6 +18,8 @@ import 'package:embone/features/client/menu/view/inner_screens/widgets/notificat
 import 'package:embone/features/client/menu/view/inner_screens/widgets/settings_header.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/wallet.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
+import 'package:embone/features/client/order/data/repo/orders_repo.dart';
+import 'package:embone/features/client/order/view/cubit/orders_cubit.dart';
 import 'package:embone/features/client/order/view/my_order_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -148,7 +151,14 @@ class SettingsScreen extends StatelessWidget {
                                       title: "orders".tr(context),
                                       onTap: () {
                                         navigateTo(
-                                            context, const MyOrdersScreen());
+                                          context,
+                                          BlocProvider(
+                                            create: (context) =>
+                                                OrdersCubit(sl<OrderRepo>())
+                                                  ..fetchOrders(),
+                                            child: const MyOrdersScreen(),
+                                          ),
+                                        );
                                       },
                                     ),
                                     Divider(
