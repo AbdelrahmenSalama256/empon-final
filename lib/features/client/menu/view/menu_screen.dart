@@ -2,14 +2,17 @@ import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
+import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/followers_screen.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
 import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
@@ -40,6 +43,11 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+        final cubit = context.read<GlobalCubit>();
+    int index =
+        cubit.userAccount?.indexWhere((element) => element.id == int.parse(sl<CacheHelper>().getData(key: AppConstants.businessAccountId)??"0")) ?? -1;
+
+    final accountData = index != -1 ? cubit.userAccount![index] : null;
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocBuilder<GlobalCubit, GlobalState>(
@@ -174,7 +182,22 @@ class MenuScreen extends StatelessWidget {
                                       child: ClipRRect(
                                         borderRadius:
                                             BorderRadius.circular(200.r),
-                                        child: Image.asset(
+                                        child: accountData != null
+                                            ? accountData.logo!.startsWith(
+                                                    'http')
+                                                ? Image.network(
+                                                    accountData.logo!,
+                                                    width: 74.w,
+                                                    height: 74.w,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Image.asset(
+                                                    'assets/images/brand-logo.png',
+                                                    width: 74.w,
+                                                    height: 74.w,
+                                                  )
+                                            :
+                                        Image.asset(
                                           'assets/images/brand-logo.png',
                                           width: 74.w,
                                           height: 74.w,
@@ -183,7 +206,7 @@ class MenuScreen extends StatelessWidget {
                                     ),
                                     SizedBox(height: 4.h),
                                     Text(
-                                      'كومفورت شوز',
+                                      accountData?.name ?? '',
                                       style: TextStyle(
                                         fontSize: 14.sp,
                                         fontWeight: FontWeight.w500,
@@ -244,8 +267,9 @@ class MenuScreen extends StatelessWidget {
                                         ),
                                         SizedBox(width: 15.w),
                                         ProfileSection(
-                                          userName: 'كومفرت شوز',
-                                          userImageUrl:
+                                          userName: accountData?.name ??
+                                              'business_account'.tr(context),
+                                          userImageUrl:accountData?.logo ??
                                               'assets/images/brand-logo.png',
                                           isVendor: true,
                                           subtitle:
@@ -253,7 +277,7 @@ class MenuScreen extends StatelessWidget {
                                           borderColor: Colors.green,
                                           onTap: () {
                                             navigateTo(context,
-                                                const SettingsScreen());
+                                                const HomeStoreScreen());
                                           },
                                         ),
                                         SizedBox(width: 15.w),
@@ -478,7 +502,7 @@ class MenuScreen extends StatelessWidget {
                                           },
                                           onSecondaryButtonPressed: () {
                                             // Dismiss the popup if user cancels
-                                            Navigator.of(context).pop();
+                                            Navigator.of(context,rootNavigator: true).pop();
                                           },
                                         );
                                       },

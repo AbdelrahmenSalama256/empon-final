@@ -224,7 +224,7 @@ class SettingsScreen extends StatelessWidget {
                                       );
                                     },
                                     onSecondaryButtonPressed: () {
-                                      Navigator.of(context).pop();
+                                      Navigator.of(context,rootNavigator: true).pop();
                                     },
                                   );
                                 },

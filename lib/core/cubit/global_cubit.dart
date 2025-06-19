@@ -174,7 +174,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   String? userFcmToken, userWsToken, userLastSeen, userCreatedAt;
   List<Address>? userAddresses;
   List<Account>? userAccount;
-
+  int? businessId;
   Future<void> getUserProfile({bool forceRefresh = false}) async {
     emit(ProfileLoading());
 

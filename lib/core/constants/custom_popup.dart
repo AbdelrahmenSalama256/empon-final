@@ -285,7 +285,7 @@ class CustomPopup extends StatelessWidget {
 
     // Use default ElevatedButton
     return AppButton(
-      onPressed: onPrimaryButtonPressed ?? () => Navigator.of(context).pop(),
+      onPressed: onPrimaryButtonPressed ?? () => Navigator.of(context, rootNavigator: true).pop(),
       text: primaryButtonText ?? 'ok'.tr(context),
       height: buttonHeight,
       backgroundColor: buttonColor,
@@ -314,7 +314,7 @@ class CustomPopup extends StatelessWidget {
       return AppButton(
         text: secondaryButtonText ?? 'Cancel',
         onPressed:
-            onSecondaryButtonPressed ?? () => Navigator.of(context).pop(),
+            onSecondaryButtonPressed ?? () => Navigator.of(context ,rootNavigator: true).pop(),
         type: AppButtonType.secondary,
         height: buttonHeight,
         borderColor: buttonColor,

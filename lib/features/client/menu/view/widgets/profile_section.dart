@@ -154,7 +154,7 @@ class ProfileSection extends StatelessWidget {
             ? Border.all(color: borderColor!, width: 2.w)
             : null,
         image: DecorationImage(
-          image: AssetImage(userImageUrl),
+          image:userImageUrl.startsWith('http') ? NetworkImage(userImageUrl):AssetImage(userImageUrl) as ImageProvider,
           fit: BoxFit.cover,
         ),
       ),

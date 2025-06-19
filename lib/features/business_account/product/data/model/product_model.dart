@@ -19,6 +19,19 @@ class ProductModel {
       data['data'] = this.data!.toJson();
     }
     return data;
+}
+}
+
+class Details{
+  String? key;
+  String? value;
+
+  Details({this.key, this.value});
+
+  Details.fromJson(Map<String, dynamic> json) {
+    key = json['quality'];
+    value = json['material'];
+
   }
 }
 
@@ -34,6 +47,7 @@ class Data {
   String? discountValue;
   String? updatedAt;
   String? createdAt;
+  Details? details;
   int? id;
 
   Data(
@@ -46,6 +60,7 @@ class Data {
       this.code,
       this.discountType,
       this.discountValue,
+      this.details,
       this.updatedAt,
       this.createdAt,
       this.id});
@@ -60,10 +75,12 @@ class Data {
     code = json['code'];
     discountType = json['discount_type'];
     discountValue = json['discount_value'];
+    details = Details.fromJson(json['details']);
     updatedAt = json['updated_at'];
     createdAt = json['created_at'];
     id = json['id'];
   }
+
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -82,3 +99,5 @@ class Data {
     return data;
   }
 }
+
+

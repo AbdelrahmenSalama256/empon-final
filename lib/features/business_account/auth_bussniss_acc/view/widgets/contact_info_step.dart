@@ -1,11 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/utils/validator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ContactInfoStep extends StatelessWidget {
   final AccountCubit cubit;

@@ -22,7 +22,7 @@ class ProductRepo {
     int priceVariations,
     int stockVariation,
     int attributeValueId,
-    int colorId,
+    List<String> colorId,
   ) async {
     try {
       final response = await api.post(
@@ -64,7 +64,7 @@ class ProductRepo {
     int? priceVariations,
     int? stockVariation,
     int? attributeValueId,
-    int? colorId,}
+    List<String>? colorId,}
   ) async {
     try {
       final data = {
