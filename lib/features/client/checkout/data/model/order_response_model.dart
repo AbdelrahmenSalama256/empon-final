@@ -36,7 +36,7 @@ class OrderData {
   factory OrderData.fromJson(Map<String, dynamic> json) {
     return OrderData(
       userId: json['user_id'] as int,
-      grandTotal: json['grand_total'] as String,
+      grandTotal: double.parse(json['grand_total'].toString()).toString(),
       updatedAt: json['updated_at'] as String,
       createdAt: json['created_at'] as String,
       id: json['id'] as int,

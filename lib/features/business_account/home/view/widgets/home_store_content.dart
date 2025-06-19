@@ -11,10 +11,11 @@ import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'home_store_hero.dart';
-import 'home_store_followers.dart';
-import 'home_store_products.dart';
+
 import 'home_store_description.dart';
+import 'home_store_followers.dart';
+import 'home_store_hero.dart';
+import 'home_store_products.dart';
 
 class HomeStoreContent extends StatelessWidget {
   final int id;
@@ -37,14 +38,16 @@ class HomeStoreContent extends StatelessWidget {
           HomeStoreHero(
               storeLogo: accountData.logo, storeCover: accountData.cover),
           SizedBox(height: 16.h),
-          HomeStoreNameSection(name: accountData.name!, isVerified: accountData.verified ?? false),
+          HomeStoreNameSection(
+              name: accountData.name!,
+              isVerified: accountData.verified ?? false),
           SizedBox(height: 16.h),
           HomeStoreFollowers(
               followersCount: accountData.totalFollowers ?? 0,
-              logo: accountData.logo ?? 'https://example.com/logo.png'),
+              logo: "${accountData.logo}"),
           SizedBox(height: 16.h),
           HomeStoreProducts(
-            id:accountData.id ?? 0,
+            id: accountData.id ?? 0,
             totalProduct: accountData.totalProducts ?? 0,
           ),
           SizedBox(height: 16.h),
@@ -62,12 +65,11 @@ class HomeStoreContent extends StatelessWidget {
                 gridItemCount: accountData.totalProducts ?? 0,
                 images: accountData.products ?? [],
                 // ignore: avoid_print
-                onProductTap: (index) =>  navigateTo(
-                    context,
-                    BlocProvider(
+                onProductTap: (index) => navigateTo(
+                  context,
+                  BlocProvider(
                     create: (context) => SearchCubit(sl<SearchRepo>()),
-                    child:
-                    ProductDetailPage(
+                    child: ProductDetailPage(
                       isVendor: true,
                       productId: accountData.products?[index].id ?? 0,
                     ),

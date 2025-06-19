@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 
 class ProductRepo {
   final ApiConsumer api;
+
   ProductRepo(this.api);
   // Define methods for interacting with store products here
   Future<Either<String, ProductModel>> addProduct(
@@ -25,25 +26,22 @@ class ProductRepo {
     List<String> colorId,
   ) async {
     try {
-      final response = await api.post(
-        EndPoints.addProduct,
-        data: {
-          "account_id": accountId,
-          "name": name,
-          "description": description,
-          "price": price,
-          "category_id": categoryId,
-          "is_sale": isSale,
-          "product_image": await uploadImageToAPI(productImage),
-          "product_images": await Future.wait(productImages.map((img) => uploadImageToAPI(img))),
-          "variations[][price]": priceVariations,
-          "variations[][stock]": stockVariation,
-          "variations[][attribute_value_id]": attributeValueId,
-          "variations[][color_id]": colorId,
-
-          }
-      );
-      return Right(ProductModel.fromJson(response) );
+      final response = await api.post(EndPoints.addProduct, data: {
+        "account_id": accountId,
+        "name": name,
+        "description": description,
+        "price": price,
+        "category_id": categoryId,
+        "is_sale": isSale,
+        "product_image": await uploadImageToAPI(productImage),
+        "product_images": await Future.wait(
+            productImages.map((img) => uploadImageToAPI(img))),
+        "variations[][price]": priceVariations,
+        "variations[][stock]": stockVariation,
+        "variations[][attribute_value_id]": attributeValueId,
+        "variations[][color_id]": colorId,
+      });
+      return Right(ProductModel.fromJson(response));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
@@ -52,8 +50,8 @@ class ProductRepo {
   }
 
   Future<Either<String, ProductModel>> updateProduct(
-    int productId,
-    {int? accountId,
+    int productId, {
+    int? accountId,
     String? name,
     String? description,
     String? price,
@@ -64,8 +62,8 @@ class ProductRepo {
     int? priceVariations,
     int? stockVariation,
     int? attributeValueId,
-    List<String>? colorId,}
-  ) async {
+    List<String>? colorId,
+  }) async {
     try {
       final data = {
         "account_id": accountId,
@@ -74,27 +72,30 @@ class ProductRepo {
         "price": price,
         "category_id": categoryId,
         "is_sale": isSale,
-        "product_image": productImage != null ? await uploadImageToAPI(productImage): null,
-        "product_images": productImages != null ? await Future.wait(productImages.map((img) => uploadImageToAPI(img))): null,
+        "product_image":
+            productImage != null ? await uploadImageToAPI(productImage) : null,
+        "product_images": productImages != null
+            ? await Future.wait(
+                productImages.map((img) => uploadImageToAPI(img)))
+            : null,
         "variations[][price]": priceVariations,
         "variations[][stock]": stockVariation,
         "variations[][attribute_value_id]": attributeValueId,
         "variations[][color_id]": colorId,
-        
-        };
-        final response = await api.put(
-          "${EndPoints.updateProduct}$productId",
-          data: data,
-          isFormData: true,
-        );
-        return Right(ProductModel.fromJson(response));
-
-        } on ServerException catch (e) {
+      };
+      final response = await api.put(
+        "${EndPoints.updateProduct}$productId",
+        data: data,
+        isFormData: true,
+      );
+      return Right(ProductModel.fromJson(response));
+    } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
       return Left(e.errorModel.detail);
     }
-      }
+  }
+
   Future<Either<String, ProductModel>> deleteProduct(int productId) async {
     try {
       final response = await api.delete(
@@ -107,5 +108,4 @@ class ProductRepo {
       return Left(e.errorModel.detail);
     }
   }
-  
 }

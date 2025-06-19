@@ -1,13 +1,15 @@
+import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:embone/core/cubit/global_cubit.dart';
 
 class HomeStoreFollowers extends StatelessWidget {
- final int followersCount;
- final String logo;
- const HomeStoreFollowers({super.key, required this.followersCount , required this.logo});
+  final int followersCount;
+  final String logo;
+  const HomeStoreFollowers(
+      {super.key, required this.followersCount, required this.logo});
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +20,26 @@ class HomeStoreFollowers extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              
-              logo.startsWith('http')?
-              Image.network(
-                logo,
-                width: 36.w,
-                height: 36.h,
-                fit: BoxFit.cover,
-              )
-              :Image.asset(
-                'assets/images/profile.png',
-                width: 36.w,
-                height: 36.h,
-              ),
+              logo.startsWith('http')
+                  ? Image.network(
+                      logo,
+                      width: 36.w,
+                      height: 36.h,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      width: 40.w,
+                      height: 40.h,
+                      decoration: const BoxDecoration(
+                        color: AppColors.lightGrey,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.person,
+                        color: AppColors.primary,
+                        size: 24.sp,
+                      ),
+                    ),
               for (int i = 0; i < 3; i++)
                 Positioned.directional(
                   start: i * 20.w,
@@ -44,8 +53,7 @@ class HomeStoreFollowers extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 2.w),
                       image: const DecorationImage(
-                        image: 
-                        AssetImage('assets/images/brand-logo.png'),
+                        image: AssetImage('assets/images/brand-logo.png'),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -54,9 +62,7 @@ class HomeStoreFollowers extends StatelessWidget {
             ],
           ),
         ),
-        Visibility(
-          visible: followersCount > 0,
-          child: SizedBox(width: 50.w)),
+        Visibility(visible: followersCount > 0, child: SizedBox(width: 50.w)),
         Text(
           'followers_count'.tr(context),
           style: TextStyle(
@@ -70,7 +76,7 @@ class HomeStoreFollowers extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text:" $followersCount " ,
+                text: " $followersCount ",
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
