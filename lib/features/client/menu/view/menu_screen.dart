@@ -27,6 +27,7 @@ import 'package:embone/features/client/menu/view/widgets/most_visited.dart';
 import 'package:embone/features/client/menu/view/widgets/quick_access.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
 import 'package:embone/features/client/order/view/my_order_screen.dart';
+import 'package:embone/features/client/product_Details/view/service_detailes_secreen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/search_page.dart';
@@ -43,9 +44,13 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        final cubit = context.read<GlobalCubit>();
-    int index =
-        cubit.userAccount?.indexWhere((element) => element.id == int.parse(sl<CacheHelper>().getData(key: AppConstants.businessAccountId)??"0")) ?? -1;
+    final cubit = context.read<GlobalCubit>();
+    int index = cubit.userAccount?.indexWhere((element) =>
+            element.id ==
+            int.parse(sl<CacheHelper>()
+                    .getData(key: AppConstants.businessAccountId) ??
+                "0")) ??
+        -1;
 
     final accountData = index != -1 ? cubit.userAccount![index] : null;
     return Scaffold(
@@ -183,8 +188,8 @@ class MenuScreen extends StatelessWidget {
                                         borderRadius:
                                             BorderRadius.circular(200.r),
                                         child: accountData != null
-                                            ? accountData.logo!.startsWith(
-                                                    'http')
+                                            ? accountData.logo!
+                                                    .startsWith('http')
                                                 ? Image.network(
                                                     accountData.logo!,
                                                     width: 74.w,
@@ -196,12 +201,11 @@ class MenuScreen extends StatelessWidget {
                                                     width: 74.w,
                                                     height: 74.w,
                                                   )
-                                            :
-                                        Image.asset(
-                                          'assets/images/brand-logo.png',
-                                          width: 74.w,
-                                          height: 74.w,
-                                        ),
+                                            : Image.asset(
+                                                'assets/images/brand-logo.png',
+                                                width: 74.w,
+                                                height: 74.w,
+                                              ),
                                       ),
                                     ),
                                     SizedBox(height: 4.h),
@@ -269,7 +273,7 @@ class MenuScreen extends StatelessWidget {
                                         ProfileSection(
                                           userName: accountData?.name ??
                                               'business_account'.tr(context),
-                                          userImageUrl:accountData?.logo ??
+                                          userImageUrl: accountData?.logo ??
                                               'assets/images/brand-logo.png',
                                           isVendor: true,
                                           subtitle:
@@ -317,8 +321,18 @@ class MenuScreen extends StatelessWidget {
                                                 imageUrl:
                                                     "assets/images/brand-two.png",
                                                 onTap: () {
-                                                  navigateTo(context,
-                                                      const MyOrdersScreen());
+                                                  navigateTo(
+                                                      context,
+                                                      BlocProvider(
+                                                        create: (context) =>
+                                                            SearchCubit(sl<SearchRepo>()),
+                                                              
+                                                        child:
+                                                            const ServiceDetailPage(
+                                                          isVendor: false,
+                                                          productId: 1,
+                                                        ),
+                                                      ));
                                                 },
                                               ),
                                               SizedBox(width: 16.w),
@@ -502,7 +516,9 @@ class MenuScreen extends StatelessWidget {
                                           },
                                           onSecondaryButtonPressed: () {
                                             // Dismiss the popup if user cancels
-                                            Navigator.of(context,rootNavigator: true).pop();
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop();
                                           },
                                         );
                                       },

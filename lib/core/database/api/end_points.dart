@@ -104,6 +104,7 @@ class EndPoints {
   static const String updateProduct = '${baseUrl}product/';
   static const String deleteProduct = '${baseUrl}product/';
   static const String addService = "${baseUrl}services";
+  static const String getService = "${baseUrl}services/";
   static const String getServicesCategores = "${baseUrl}service-categories";
 }
 

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/business_account/product/data/model/service_model.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
 import 'package:embone/features/client/product_Details/data/repo/comment_repo.dart';
 import 'package:embone/features/client/search/data/model/search_history_model.dart';
@@ -16,6 +17,7 @@ import '../../../product_Details/data/model/product_model.dart';
 class SearchCubit extends Cubit<SearchState> {
   final SearchRepo searchRepo;
   ProductModel? productModel;
+  ServiceModel? serviceModel;
   CommentResponseModel? commentResponse;
   TextEditingController commentController = TextEditingController();
   List<CommentModel> comments = [];
@@ -98,6 +100,24 @@ class SearchCubit extends Cubit<SearchState> {
       },
       (r) async {
         productModel = r;
+        Print.success('You are going to product ========> successfully');
+        getRecentView();
+        await fetchParentComments(productId: id);
+        if (!isClosed) emit(GoToProductSuccess());
+      },
+    );
+  }
+
+  Future<void> goToService({required int id}) async {
+    if (!isClosed) emit(GoToProductLoading());
+    final response = await searchRepo.goToService(id: id);
+    response.fold(
+      (l) {
+        Print.error(l);
+        if (!isClosed) emit(GoToProductError(message: l));
+      },
+      (r) async {
+        serviceModel = r;
         Print.success('You are going to product ========> successfully');
         getRecentView();
         await fetchParentComments(productId: id);
