@@ -321,8 +321,18 @@ class MenuScreen extends StatelessWidget {
                                                 imageUrl:
                                                     "assets/images/brand-two.png",
                                                 onTap: () {
-                                                  navigateTo(context,
-                                                      const MyOrdersScreen());
+                                                  navigateTo(
+                                                      context,
+                                                      BlocProvider(
+                                                        create: (context) =>
+                                                            SearchCubit(sl<SearchRepo>()),
+                                                              
+                                                        child:
+                                                            const ServiceDetailPage(
+                                                          isVendor: false,
+                                                          serviceId: 1,//!todo: replace with actual service id
+                                                        ),
+                                                      ));
                                                 },
                                               ),
                                               SizedBox(width: 16.w),

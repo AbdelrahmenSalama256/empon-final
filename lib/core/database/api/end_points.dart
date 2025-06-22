@@ -48,12 +48,17 @@ class EndPoints {
   static const String searchHistory = '${baseUrl}history-search';
   static const String goToProduct = '${baseUrl}go-to-product';
   static const String commentParent = '${baseUrl}comment/parent';
+  static const String serviceCommentParent = '${baseUrl}service-comment/parent';
   static const String commentChild = '${baseUrl}comment/child';
+  static const String serviceCommentChild = '${baseUrl}service-comment/child';
   static const String comment = '${baseUrl}comment';
+  static const String serviceComment = '${baseUrl}service-comment';
   static const String commentLike = '${baseUrl}comment/ilke';
+  static const String serviceCommentLike = '${baseUrl}service-comment/ilke';
   static const String recentView = '${baseUrl}recent-view';
   static const String clearHistory = '${baseUrl}history-searches';
   static const String productLike = '${baseUrl}product/ilke';
+  static const String serviceLike = '${baseUrl}services/like';
 
   // ! Notifications
   static const String notifications = '${baseUrl}notifications';

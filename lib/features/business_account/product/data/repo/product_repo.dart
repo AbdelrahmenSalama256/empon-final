@@ -108,4 +108,5 @@ class ProductRepo {
       return Left(e.errorModel.detail);
     }
   }
+
 }
