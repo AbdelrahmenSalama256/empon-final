@@ -26,7 +26,7 @@ class _AddProductFormState extends State<AddProductForm> {
           const ProductBasicInfoSection(),
 
           // Image upload sections
-          const ImageUploadSection(),
+          const ImageUploadSection(cubit: true),
 
           // Product details
           const ProductDetailsSection(),

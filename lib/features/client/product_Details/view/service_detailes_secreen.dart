@@ -81,24 +81,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
     final ScrollController scrollController = ScrollController();
     final GlobalKey reviewSectionKey = GlobalKey();
 
-    final List<Map<String, dynamic>> products = [
-      {
-        'imageUrl': 'assets/images/test-product.png',
-        'title': 'حذاء رياضي',
-        'price': 900.00,
-        'badge': 'best_seller'.tr(context),
-        'actionText': 'shop_now'.tr(context),
-        'isFavorite': false,
-      },
-      {
-        'imageUrl': 'assets/images/test-product-1.png',
-        'title': 'حذاء رياضي',
-        'price': 850.00,
-        'badge': 'new'.tr(context),
-        'actionText': 'shop_now'.tr(context),
-        'isFavorite': false,
-      },
-    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -243,6 +225,15 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     sizes: const ['10'],
                                   ),
                                   SizedBox(height: 15.h),
+                                  BlocBuilder<SearchCubit, SearchState>(
+  builder: (context, state) {
+    final cubit = context.read<SearchCubit>();
+
+    if (state is CommentLoading) {
+      return const Center(child: CustomLoadingIndicator());
+    }
+
+    return
                                   ServiceReviewsSection(
                                     key: reviewSectionKey,
                                     reviews: cubit.comments,
@@ -250,7 +241,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     isVendor: widget.isVendor,
                                     cubit: cubit,
                                     serviceId: widget.serviceId,
-                                  ),
+                                  );}),
                                   SizedBox(height: 15.h),
 
                                   ProductDescriptionSection(

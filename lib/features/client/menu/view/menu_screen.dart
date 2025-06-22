@@ -28,6 +28,7 @@ import 'package:embone/features/client/menu/view/widgets/most_visited.dart';
 import 'package:embone/features/client/menu/view/widgets/quick_access.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
 import 'package:embone/features/client/order/view/my_order_screen.dart';
+import 'package:embone/features/client/product_Details/view/service_detailes_secreen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/search_page.dart';

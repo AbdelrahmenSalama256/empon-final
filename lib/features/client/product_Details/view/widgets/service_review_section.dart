@@ -48,7 +48,7 @@ class _ServiceReviewsSectionState extends State<ServiceReviewsSection> {
 
   void _addComment() {
     if (widget.commentController.text.isNotEmpty) {
-      widget.cubit.serviceAddComment(serviceId: widget.serviceId);
+      widget.cubit.serviceAddComment(serviceId: widget.serviceId,);
     }
   }
 

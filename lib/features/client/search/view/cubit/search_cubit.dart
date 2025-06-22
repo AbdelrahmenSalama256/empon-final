@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/business_account/product/data/model/service_model.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
 import 'package:embone/features/client/product_Details/data/repo/comment_repo.dart';
 import 'package:embone/features/client/search/data/model/search_history_model.dart';
@@ -16,6 +17,7 @@ import '../../../product_Details/data/model/product_model.dart';
 class SearchCubit extends Cubit<SearchState> {
   final SearchRepo searchRepo;
   ProductModel? productModel;
+  ServiceModel? serviceModel;
   CommentResponseModel? commentResponse;
   TextEditingController commentController = TextEditingController();
   List<CommentModel> comments = [];
@@ -118,7 +120,7 @@ class SearchCubit extends Cubit<SearchState> {
         serviceModel = r;
         Print.success('You are going to product ========> successfully');
         getRecentView();
-        await servicefetchParentComments(parentId: id);
+        await servicefetchParentComments(ser: id);
         if (!isClosed) emit(GoToProductSuccess());
       },
     );
@@ -431,13 +433,10 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-
-
-
-  Future<void> servicefetchParentComments({required int parentId}) async {
+  Future<void> servicefetchParentComments({required int ser}) async {
     if (!isClosed) emit(CommentLoading());
     final response =
-        await sl<CommentRepo>().serviceFetchChildComments(parentId: parentId);
+        await sl<CommentRepo>().serviceFetchParentComments(serviceId: ser);
     response.fold(
       (l) {
         Print.error(l);
@@ -460,7 +459,7 @@ class SearchCubit extends Cubit<SearchState> {
     currentParentId = parentId;
     if (!isClosed) emit(CommentLoading());
     final response =
-        await sl<CommentRepo>().fetchChildComments(parentId: parentId);
+        await sl<CommentRepo>().serviceFetchChildComments(parentId: parentId);
     response.fold(
       (l) {
         currentParentId = null;
@@ -481,7 +480,8 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-  Future<void> serviceAddComment({required int serviceId, int? parentId}) async {
+  Future<void> serviceAddComment(
+      {required int serviceId,  int? parentId}) async {
     if (!isClosed) emit(CommentLoading());
     final response = await sl<CommentRepo>().serviceAddComment(
       serviceId: serviceId,
@@ -628,7 +628,8 @@ class SearchCubit extends Cubit<SearchState> {
       return;
     }
 
-    final response = await sl<CommentRepo>().serviceToggleLike(commentId: commentId);
+    final response =
+        await sl<CommentRepo>().serviceToggleLike(commentId: commentId);
     response.fold(
       (l) {
         // Revert optimistic update on failure
