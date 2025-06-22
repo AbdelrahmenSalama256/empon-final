@@ -15,11 +15,12 @@ import 'package:embone/features/business_account/auth_bussniss_acc/view/create_b
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/followers_screen.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
-import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
-import 'package:embone/features/client/menu/view/inner_screens/widgets/accounts_bottom_sheet.dart';
 import 'package:embone/features/client/menu/view/inner_screens/help_support.dart';
-import 'package:embone/features/client/menu/view/inner_screens/wishlist_screen.dart';
+import 'package:embone/features/client/menu/view/inner_screens/offers_screen.dart';
+import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/store_screen.dart';
+import 'package:embone/features/client/menu/view/inner_screens/widgets/accounts_bottom_sheet.dart';
+import 'package:embone/features/client/menu/view/inner_screens/wishlist_screen.dart';
 import 'package:embone/features/client/menu/view/widgets/approval_item.dart';
 import 'package:embone/features/client/menu/view/widgets/buisniss_account.dart';
 import 'package:embone/features/client/menu/view/widgets/menu_item.dart';
@@ -27,7 +28,6 @@ import 'package:embone/features/client/menu/view/widgets/most_visited.dart';
 import 'package:embone/features/client/menu/view/widgets/quick_access.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
 import 'package:embone/features/client/order/view/my_order_screen.dart';
-import 'package:embone/features/client/product_Details/view/service_detailes_secreen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/search_page.dart';
@@ -240,7 +240,7 @@ class MenuScreen extends StatelessWidget {
                                   ? ProfileSection(
                                       userName: cubit.userName ?? '',
                                       userImageUrl: cubit.userAvatar ??
-                                          'assets/images/profile.png',
+                                          'assets/images/logo.png',
                                       subtitle: 'user_account'.tr(context),
                                       isVendor: isVendor!,
                                       onTap: () {
@@ -260,7 +260,7 @@ class MenuScreen extends StatelessWidget {
                                         ProfileSection(
                                           userName: cubit.userName ?? '',
                                           userImageUrl: cubit.userAvatar ??
-                                              'assets/images/profile.png',
+                                              'assets/images/logo.png',
                                           subtitle: 'user_account'.tr(context),
                                           isVendor: isVendor!,
                                           onTap: () {
@@ -321,18 +321,8 @@ class MenuScreen extends StatelessWidget {
                                                 imageUrl:
                                                     "assets/images/brand-two.png",
                                                 onTap: () {
-                                                  navigateTo(
-                                                      context,
-                                                      BlocProvider(
-                                                        create: (context) =>
-                                                            SearchCubit(sl<SearchRepo>()),
-                                                              
-                                                        child:
-                                                            const ServiceDetailPage(
-                                                          isVendor: false,
-                                                          productId: 1,
-                                                        ),
-                                                      ));
+                                                  navigateTo(context,
+                                                      const MyOrdersScreen());
                                                 },
                                               ),
                                               SizedBox(width: 16.w),
@@ -394,28 +384,71 @@ class MenuScreen extends StatelessWidget {
                                         ),
                                       ],
                                     )
-                                  : Row(
+                                  : Column(
                                       children: [
-                                        Expanded(
-                                          child: QuickAccessButton(
-                                            onTap: () {},
-                                            title: "offers".tr(context),
-                                            icon: "assets/images/discount.png",
-                                            color: Colors.red.shade100,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: QuickAccessButton(
+                                                onTap: () {
+                                                  navigateTo(context,
+                                                      const OffersScreen());
+                                                },
+                                                title: "offers".tr(context),
+                                                icon:
+                                                    "assets/images/discount.png",
+                                                color: Colors.red.shade100,
+                                              ),
+                                            ),
+                                            SizedBox(width: 16.w),
+                                            Expanded(
+                                              child: QuickAccessButton(
+                                                onTap: () {
+                                                  navigateTo(context,
+                                                      const FollowersPage());
+                                                },
+                                                title: "friends".tr(context),
+                                                icon:
+                                                    "assets/images/leadership.png",
+                                                color: Colors.blue.shade100,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        SizedBox(width: 16.w),
-                                        Expanded(
-                                          child: QuickAccessButton(
-                                            onTap: () {
-                                              navigateTo(context,
-                                                  const FollowersPage());
-                                            },
-                                            title: "friends".tr(context),
-                                            icon:
-                                                "assets/images/leadership.png",
-                                            color: Colors.blue.shade100,
-                                          ),
+                                        SizedBox(height: 16.h),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: QuickAccessButton(
+                                                onTap: () {
+                                                  navigateTo(
+                                                      context,
+                                                      SettingsScreen(
+                                                        isVendor: isVendor,
+                                                      ));
+                                                },
+                                                title: "settings_privacy"
+                                                    .tr(context),
+                                                icon:
+                                                    "assets/images/settings.png",
+                                                color: Colors.red.shade100,
+                                              ),
+                                            ),
+
+                                            // SizedBox(width: 16.w),
+                                            // Expanded(
+                                            //   child: QuickAccessButton(
+                                            //     onTap: () {
+                                            //       navigateTo(context,
+                                            //           const FollowersPage());
+                                            //     },
+                                            //     title: "friends".tr(context),
+                                            //     icon:
+                                            //         "assets/images/leadership.png",
+                                            //     color: Colors.blue.shade100,
+                                            //   ),
+                                            // ),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -474,19 +507,7 @@ class MenuScreen extends StatelessWidget {
                                 icon: "assets/images/help.png",
                                 iconColor: Colors.transparent,
                               ),
-                              SizedBox(height: 16.h),
-                              MenuItem(
-                                ontap: () {
-                                  navigateTo(
-                                      context,
-                                      SettingsScreen(
-                                        isVendor: isVendor,
-                                      ));
-                                },
-                                title: "settings_privacy".tr(context),
-                                icon: "assets/images/settings.png",
-                                iconColor: Colors.transparent,
-                              ),
+
                               SizedBox(height: 16.h),
 
                               // const Spacer(),

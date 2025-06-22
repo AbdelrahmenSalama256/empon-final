@@ -1,9 +1,9 @@
 // ignore: file_names
 import 'dart:math';
 
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:embone/core/constants/app_colors.dart';
 
 class FavoriteButton extends StatefulWidget {
   final bool isFavorited;
@@ -128,7 +128,7 @@ class _FavoriteButtonState extends State<FavoriteButton>
                   isFavorited
                       ? CupertinoIcons.heart_fill
                       : CupertinoIcons.heart,
-                  color: isFavorited ? AppColors.primaryColor : Colors.grey,
+                  color: isFavorited ? AppColors.red : Colors.grey,
                   size: widget.size,
                 ),
               );

@@ -76,7 +76,7 @@ class _AccountsBottomSheetContentState
                         radius: 16.r,
                         backgroundImage: cubit.userAvatar != null
                             ? NetworkImage(cubit.userAvatar!)
-                            : const AssetImage('assets/images/profile.png')
+                            : const AssetImage('assets/images/logo.png')
                                 as ImageProvider,
                       ),
                       SizedBox(width: 8.w),
@@ -128,9 +128,12 @@ class _AccountsBottomSheetContentState
               accounts.length,
               (index) => BusinessAccountOption(
                 name: accounts[index].name ?? 'Business Account',
-                imagePath:
-                    accounts[index].logo!= null ? accounts[index].logo! : 'assets/images/logo.png',
-                labelText: (accounts[index].status ?? false) ? 'active'.tr(context) : 'inactive'.tr(context),
+                imagePath: accounts[index].logo != null
+                    ? accounts[index].logo!
+                    : 'assets/images/logo.png',
+                labelText: (accounts[index].status ?? false)
+                    ? 'active'.tr(context)
+                    : 'inactive'.tr(context),
                 labelColor: (accounts[index].status ?? false)
                     ? AppColors.secondary
                     : AppColors.red,
@@ -142,31 +145,29 @@ class _AccountsBottomSheetContentState
                   if (accounts[index].status == true) {
                     cubit.setUserType(UserType.business);
 
-                    sl<CacheHelper>().setData( AppConstants.businessAccountId, accounts[index].id.toString());
-                    
+                    sl<CacheHelper>().setData(AppConstants.businessAccountId,
+                        accounts[index].id.toString());
+
                     log(index.toString());
                     setState(() {
-                       Navigator.pop(context);
-                    });
-                   
-                  
-                  } else {
-                   CustomPopup.show(
-                    context: context,
-                    title: 'inactive_account_title'.tr(context),
-                    message: 'inactive_account_message'.tr(context),
-                    type: PopupType.alert,
-                    primaryButtonText: 'ok'.tr(context),
-                    onPrimaryButtonPressed: () {
-                      cubit.setUserType(UserType.client);
-                     Navigator.of(context, rootNavigator: true)
-                            .pop() ;// Close the popup
                       Navigator.pop(context);
-                    },
-                   );
-                  
+                    });
+                  } else {
+                    CustomPopup.show(
+                      context: context,
+                      title: 'inactive_account_title'.tr(context),
+                      message: 'inactive_account_message'.tr(context),
+                      type: PopupType.alert,
+                      primaryButtonText: 'ok'.tr(context),
+                      onPrimaryButtonPressed: () {
+                        cubit.setUserType(UserType.client);
+                        Navigator.of(context, rootNavigator: true)
+                            .pop(); // Close the popup
+                        Navigator.pop(context);
+                      },
+                    );
                   }
-                   // Close the bottom sheet
+                  // Close the bottom sheet
                 },
               ),
             ),
@@ -191,7 +192,7 @@ class BusinessAccountOption extends StatelessWidget {
   final String name;
   final String imagePath;
   final bool isSelected;
-  final String  labelText;
+  final String labelText;
   final Color labelColor;
   final VoidCallback onTap;
 
@@ -234,7 +235,7 @@ class BusinessAccountOption extends StatelessWidget {
                 : CircleAvatar(
                     radius: 30.r,
                     backgroundImage: const AssetImage('assets/images/logo.png')
-                            as ImageProvider,
+                        as ImageProvider,
                   ),
             SizedBox(width: 12.w),
             // Store name
@@ -259,7 +260,8 @@ class BusinessAccountOption extends StatelessWidget {
                 ),
               ),
               child: Center(
-                child: Text(labelText,
+                child: Text(
+                  labelText,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12.sp,

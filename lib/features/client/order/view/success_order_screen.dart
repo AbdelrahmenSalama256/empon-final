@@ -49,28 +49,28 @@ class SuccessOrderScreen extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 16.h),
-                    Row(
+                    SizedBox(height: 0.h),
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          'success_order_number_label'.tr(context),
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        SizedBox(width: 4.h),
-                        Text(
-                          '1947034', // Hardcoded for now; can be dynamic
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.primary,
-                          ),
-                        ),
+                        // Text(
+                        //   'success_order_number_label'.tr(context),
+                        //   style: TextStyle(
+                        //     fontSize: 16.sp,
+                        //     fontWeight: FontWeight.w400,
+                        //     color: AppColors.primary,
+                        //   ),
+                        // ),
+                        // SizedBox(width: 4.h),
+                        // Text(
+                        //   '1947034', // Hardcoded for now; can be dynamic
+                        //   style: TextStyle(
+                        //     fontSize: 16.sp,
+                        //     fontWeight: FontWeight.w400,
+                        //     color: AppColors.primary,
+                        //   ),
+                        // ),
                       ],
                     ),
                     SizedBox(height: 10.h),

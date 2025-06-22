@@ -39,7 +39,7 @@ class CommentItem extends StatelessWidget {
           index: index,
           data: review,
           onTap: onTap,
-          showTrash: true,
+          showTrash: false,
           onReply: () => onReply(review.commentId),
           productId: productId,
         ),

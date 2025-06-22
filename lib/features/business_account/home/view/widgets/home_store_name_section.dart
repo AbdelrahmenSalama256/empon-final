@@ -17,21 +17,23 @@ class HomeStoreNameSection extends StatelessWidget {
         Center(
           child: StoreNameWithVerification(
             storeName: name,
-            isVervied: isVerified, // Pass the verification status
           ),
         ),
         const Spacer(),
-        Container(
-          width: 33.w,
-          height: 28.w,
-          decoration: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: Icon(
-            Icons.location_on,
-            size: 16.sp,
-            color: Colors.white,
+        Visibility(
+          visible:isVerified,
+          child: Container(
+            width: 33.w,
+            height: 28.w,
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Icon(
+              Icons.location_on,
+              size: 16.sp,
+              color: Colors.white,
+            ),
           ),
         ),
       ],

@@ -23,9 +23,13 @@ class ChatCubit extends Cubit<ChatState> {
   Set<int> selectedMessageIds = {};
   late IOWebSocketChannel? _channel;
   final int? receiverId;
-  ChatCubit(this.chatRepo, this.receiverId) : super(ChatInitial()) {
+  final int currentUserId; // Current user's ID
+
+  ChatCubit(this.chatRepo, this.receiverId, this.currentUserId)
+      : super(ChatInitial()) {
     initializeWebSocket();
   }
+
   void initializeWebSocket() {
     if (receiverId != null) {
       _channel =
@@ -35,9 +39,13 @@ class ChatCubit extends Cubit<ChatState> {
           final Map<String, dynamic> data = _parseWebSocketMessage(message);
           if (data['type'] == 'new_message') {
             final newMessage = Message.fromJson(data['message']);
-            messages.add(newMessage);
-            emit(MassageSentLoaded(newMessage));
-            PrintUtil.debug('New message received: $newMessage');
+            // Only add if not from current user to avoid echo
+            if (newMessage.senderId != currentUserId) {
+              newMessage.fromMe = newMessage.senderId == currentUserId;
+              messages.add(newMessage);
+              emit(MassageSentLoaded(newMessage));
+              PrintUtil.debug('New message received: $newMessage');
+            }
           }
         },
         onError: (error) {
@@ -47,7 +55,6 @@ class ChatCubit extends Cubit<ChatState> {
         onDone: () {
           emit(MassageSentError('WebSocket connection closed'));
           PrintUtil.error('WebSocket connection closed');
-
           initializeWebSocket();
         },
       );
@@ -144,10 +151,10 @@ class ChatCubit extends Cubit<ChatState> {
       receiverId: receiverId,
       message: message,
       mediaType: 'text',
-      // status: MessageStatus.sending,
     );
 
     messages.add(tempMessage);
+    emit(MassageSentLoading(tempMessage));
     _channel?.sink.add(jsonEncode({
       'type': 'new_message',
       'receiver_id': receiverId.toString(),
@@ -156,7 +163,6 @@ class ChatCubit extends Cubit<ChatState> {
       'replay_id': replyMessage?.id.toString(),
     }));
 
-    emit(MassageSentLoading(tempMessage));
     final response = await chatRepo.sendMessage(
       receiverId: receiverId,
       message: message,
@@ -169,19 +175,14 @@ class ChatCubit extends Cubit<ChatState> {
         emit(MassageSentError(error));
       },
       (sentMessage) {
-        _replaceMessage(
-            tempMessage.id,
-            sentMessage.copyWith(
-              status: MessageStatus.sent,
-            ));
-
+        sentMessage = sentMessage.copyWith(
+          fromMe: sentMessage.senderId == currentUserId,
+          status: MessageStatus.sent,
+        );
+        _replaceMessage(tempMessage.id, sentMessage);
         emit(MassageSentLoaded(sentMessage));
       },
     );
-    await Future.delayed(const Duration(seconds: 1));
-    _replaceMessage(
-        tempMessage.id, tempMessage.copyWith(status: MessageStatus.sent));
-    emit(MassageSentLoaded(tempMessage));
 
     _clearInputState();
   }
@@ -212,6 +213,10 @@ class ChatCubit extends Cubit<ChatState> {
         emit(MassageSentError(error));
       },
       (sentMessage) {
+        sentMessage = sentMessage.copyWith(
+          fromMe: sentMessage.senderId == currentUserId,
+          status: MessageStatus.sent,
+        );
         _replaceMessage(tempMessage.id, sentMessage);
         emit(MassageSentLoaded(sentMessage));
       },
@@ -230,7 +235,6 @@ class ChatCubit extends Cubit<ChatState> {
     messages.add(tempMessage);
     emit(ChatLoaded());
 
-    // Simulate voice message sending
     await Future.delayed(const Duration(seconds: 2));
     _updateMessageStatus(tempMessage.id, MessageStatus.sent);
     emit(ChatLoaded());
@@ -245,14 +249,14 @@ class ChatCubit extends Cubit<ChatState> {
     return Message(
       id: DateTime.now().millisecondsSinceEpoch,
       fromMe: true,
-      senderId: 0,
+      senderId: currentUserId,
+      status: MessageStatus.sending,
       receiverId: receiverId,
       message: message,
       mediaPath: mediaPath,
       mediaType: mediaType,
       replayId: replyMessage?.id.toString(),
       createdAt: DateTime.now().toIso8601String(),
-      status: MessageStatus.sending,
     );
   }
 
@@ -266,7 +270,7 @@ class ChatCubit extends Cubit<ChatState> {
   void _replaceMessage(int tempId, Message newMessage) {
     final index = messages.indexWhere((m) => m.id == tempId);
     if (index != -1) {
-      messages[index] = newMessage.copyWith(status: MessageStatus.sent);
+      messages[index] = newMessage;
     }
   }
 
@@ -304,7 +308,6 @@ class ChatCubit extends Cubit<ChatState> {
     final messageIndex = messages.indexWhere((m) => m.id == messageId);
     if (messageIndex == -1) return;
 
-    // Show deleting state
     messages[messageIndex] = messages[messageIndex].copyWith(
       status: MessageStatus.deleting,
     );
@@ -313,7 +316,6 @@ class ChatCubit extends Cubit<ChatState> {
     final result = await chatRepo.deleteMessage(messageId: messageId);
     result.fold(
       (error) {
-        // Restore message if delete failed
         messages[messageIndex] = messages[messageIndex].copyWith(
           status: MessageStatus.sent,
         );
@@ -329,11 +331,8 @@ class ChatCubit extends Cubit<ChatState> {
   Future<void> clearChat() async {
     messages.clear();
     emit(ChatCleared());
-
-    // final response = await chatRepo.clearChat(receiverId);
   }
 
-  // Navigate to replied message
   void navigateToReply(Message replyMessage) {
     if (replyMessage.replay != null) {
       final originalMessage = messages.firstWhere(

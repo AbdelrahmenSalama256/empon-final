@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CommentInput extends StatelessWidget {
   final TextEditingController controller;
@@ -60,21 +60,21 @@ class CommentInput extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   // Emoji button
-                  IconButton(
-                    icon: Icon(
-                      Icons.emoji_emotions_outlined,
-                      color: Colors.grey.shade600,
-                      size: 24.w,
-                    ),
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(
-                      minWidth: 24.w,
-                      minHeight: 24.h,
-                    ),
-                    onPressed: () {
-                      // TODO: Implement emoji picker
-                    },
-                  ),
+                  // IconButton(
+                  //   icon: Icon(
+                  //     Icons.emoji_emotions_outlined,
+                  //     color: Colors.grey.shade600,
+                  //     size: 24.w,
+                  //   ),
+                  //   padding: EdgeInsets.zero,
+                  //   constraints: BoxConstraints(
+                  //     minWidth: 24.w,
+                  //     minHeight: 24.h,
+                  //   ),
+                  //   onPressed: () {
+                  //     // TODO: Implement emoji picker
+                  //   },
+                  // ),
                   SizedBox(width: 15.w),
                   // Send button
                   SizedBox(

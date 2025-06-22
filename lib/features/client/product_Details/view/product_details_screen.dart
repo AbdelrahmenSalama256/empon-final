@@ -13,7 +13,6 @@ import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
 import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:embone/features/client/home/view/widgets/product_card.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
-import 'package:embone/features/client/product_Details/view/widgets/contact_us_section.dart';
 import 'package:embone/features/client/product_Details/view/widgets/inventory_button.dart';
 import 'package:embone/features/client/product_Details/view/widgets/price_display.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_addtocart.dart';
@@ -188,7 +187,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     likeCount: product?.likes ?? 0,
                                     onEdit: () {
                                       navigateTo(
-                                          context,  AddProductPage(
+                                          context,
+                                          AddProductPage(
                                               businessAccountId: int.parse(
                                                   sl<CacheHelper>().getData(
                                                       key: AppConstants
@@ -204,7 +204,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       primaryButtonText: "yes".tr(context),
                                       secondaryButtonText: "no".tr(context),
                                       onPrimaryButtonPressed: () {
-                                        Navigator.of(context ,rootNavigator: true).pop();
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop();
                                       },
                                     ),
                                     commentCount:
@@ -304,9 +306,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   ),
                                   SizedBox(height: 15.h),
                                   ShippingInfoSection(
-                                    startDate: "1 مارس",
-                                    endDate: "3 مارس",
-                                    price: "2500",
+                                    startDate:
+                                        product?.shippingStartDate ?? 'N/A',
+                                    endDate: product?.shippingEndDate ?? 'N/A',
+                                    price: product?.shippingPrice ?? 'N/A',
                                     origin:
                                         product?.vendorName ?? 'Unknown Origin',
                                   ),
@@ -327,18 +330,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         'No description available.',
                                   ),
                                   SizedBox(height: 15.h),
-                                  if (!widget.isVendor)
-                                    ContactForm(
-                                      onSubmit: (email) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Email submitted: $email')),
-                                        );
-                                      },
-                                    ),
-                                  SizedBox(height: 15.h),
+                                  // if (!widget.isVendor)
+                                  //   ContactForm(
+                                  //     onSubmit: (email) {
+                                  //       ScaffoldMessenger.of(context)
+                                  //           .showSnackBar(
+                                  //         SnackBar(
+                                  //             content: Text(
+                                  //                 'Email submitted: $email')),
+                                  //       );
+                                  //     },
+                                  //   ),
+                                  // SizedBox(height: 15.h),
                                   if (!widget.isVendor)
                                     Container(
                                       decoration: const BoxDecoration(

@@ -93,13 +93,13 @@ class ResetPasswordPage extends StatelessWidget {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(60.r),
                                 child: Image.network(
-                                  imageUrl ?? 'assets/images/profile.png',
+                                  imageUrl ?? 'assets/images/logo.png',
                                   width: 120.w,
                                   height: 120.w,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) =>
                                       Image.asset(
-                                    "assets/images/profile.png",
+                                    "assets/images/logo.png",
                                     width: 120.w,
                                     height: 120.w,
                                     fit: BoxFit.cover,

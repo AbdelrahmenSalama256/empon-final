@@ -1,7 +1,6 @@
+import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/custom_toast.dart';
-import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
-import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
@@ -18,7 +17,6 @@ import 'package:embone/features/client/checkout/view/widgets/change_address_shee
 import 'package:embone/features/client/checkout/view/widgets/order_summary_section.dart';
 import 'package:embone/features/client/checkout/view/widgets/payment_method_section.dart';
 import 'package:embone/features/client/checkout/view/widgets/shipping_address_section.dart';
-import 'package:embone/features/client/order/view/success_order_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,27 +31,7 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  int _selectedPaymentMethod = 0;
   Address? _selectedAddress;
-
-  final List<Map<String, dynamic>> _paymentMethods = [
-    {
-      'id': 0,
-      'title': 'Cash on Delivery',
-      'icon': "assets/images/svg/cash-on-delivery.svg",
-      'color': Colors.green,
-      'logo': "assets/images/svg/cash-on-delivery.svg",
-      'details': '',
-    },
-    {
-      'id': 1,
-      'title': 'Mastercard',
-      'icon': "assets/images/svg/mastercard.svg",
-      'color': Colors.orange,
-      'logo': "assets/images/svg/mastercard.svg",
-      'details': '****3947',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -117,17 +95,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       },
                                     ),
                                     SizedBox(height: 16.h),
-                                    PaymentMethodSection(
-                                      paymentMethods: _paymentMethods,
-                                      selectedPaymentMethod:
-                                          _selectedPaymentMethod,
-                                      onMethodSelected: (id) {
-                                        setState(() {
-                                          _selectedPaymentMethod = id;
-                                        });
-                                      },
-                                      onChange: () {},
-                                    ),
+                                    const PaymentMethodSection(),
                                     SizedBox(height: 16.h),
                                     OrderSummarySection(
                                       cartCubit: context.read<CartCubit>(),
@@ -138,43 +106,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 ),
                               ),
                             ),
-                            Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(16.w),
-                              child: AppButton(
-                                onPressed: isLoading
-                                    ? null
-                                    : () async {
-                                        if (_selectedAddress == null) {
-                                          showToast(context,
-                                              message:
-                                                  'please_select_shipping_address'
-                                                      .tr(context),
-                                              state: ToastStates.error);
-                                          return;
-                                        }
-                                        navigateReplac(context,
-                                            const SuccessOrderScreen());
-                                      },
-                                text:
-                                    'checkout_submit_order_button'.tr(context),
-                                textStyle: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
                             SizedBox(height: 30.h),
                           ],
                         ),
                       ),
                     ),
                     if (isLoading)
-                      Container(
-                        color: Colors.black.withOpacity(0.5),
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                      const Center(
+                        child: CustomLoadingIndicator(),
                       ),
                   ],
                 );

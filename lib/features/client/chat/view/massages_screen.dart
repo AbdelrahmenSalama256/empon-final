@@ -2,6 +2,7 @@
 import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -25,7 +26,9 @@ class MassagesScreen extends StatelessWidget {
     final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
 
     return BlocProvider(
-      create: (context) => ChatCubit(sl<ChatRepo>(), 0)..fetchChatContacts(),
+      create: (context) => ChatCubit(sl<ChatRepo>(), 0,
+          int.parse(context.read<GlobalCubit>().userId.toString()))
+        ..fetchChatContacts(),
       child: BlocBuilder<ChatCubit, ChatState>(
         builder: (context, state) {
           final cubit = context.read<ChatCubit>();
@@ -82,7 +85,7 @@ class MassagesScreen extends StatelessWidget {
                     child: state is ChatContactLoading
                         ? const Center(child: CircularProgressIndicator())
                         : contacts.isEmpty
-                            ? Center(child: Text('no_contacts'.tr(context)))
+                            ? Center(child: Text('no_friends'.tr(context)))
                             : ListView.builder(
                                 itemCount: contacts.length,
                                 itemBuilder: (context, index) {

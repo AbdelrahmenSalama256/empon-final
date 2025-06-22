@@ -1,14 +1,17 @@
+import 'package:embone/core/component/fav_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/store/view/product_inventory_screen.dart';
+import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
+import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-// Main InteractionBar widget
 class InteractionBar extends StatefulWidget {
   final bool isVendor;
   final Function()? onShare;
@@ -21,43 +24,30 @@ class InteractionBar extends StatefulWidget {
   final List<String> avatarUrls;
   final int likeCount;
   final int commentCount;
+  // isLoved bool
   final IconData shareIcon;
   final IconData likeIcon;
   final IconData likedIcon;
   final IconData commentIcon;
   final IconData thumbsUpIcon;
   final IconData thumbsUpSelectedIcon;
-  final IconData
-      vendorThumbsUpIcon; // New: Configurable thumbs up icon for vendor view
-  final IconData
-      vendorCommentIcon; // New: Configurable comment icon for vendor view
-  final IconData editIcon; // New: Configurable edit icon for vendor view
-  final IconData
-      deleteIcon; // New: Configurable delete icon for vendor view (if using an icon instead of image)
+  final IconData vendorThumbsUpIcon;
+  final IconData vendorCommentIcon;
+  final IconData editIcon;
+  final IconData deleteIcon;
   final Color likeColor;
   final Color? thumbsUpColor;
-  final Color?
-      vendorThumbsUpColor; // New: Configurable thumbs up color for vendor view
-  final Color?
-      vendorCommentColor; // New: Configurable comment color for vendor view
-  final Color?
-      editButtonColor; // New: Configurable edit button background color
-  final Color?
-      deleteButtonColor; // New: Configurable delete button background color
-  final Color?
-      editButtonBorderColor; // New: Configurable edit button border color
-  final Color?
-      deleteButtonBorderColor; // New: Configurable delete button border color
-  final Color?
-      toggleActiveColor; // New: Configurable toggle switch active color
-  final TextStyle?
-      availableTextStyle; // New: Configurable style for "Available" text
-  final TextStyle?
-      likeCountTextStyle; // New: Configurable style for like count text
-  final TextStyle?
-      commentCountTextStyle; // New: Configurable style for comment count text
-  final EdgeInsets?
-      padding; // New: Configurable padding (default remains the same)
+  final Color? vendorThumbsUpColor;
+  final Color? vendorCommentColor;
+  final Color? editButtonColor;
+  final Color? deleteButtonColor;
+  final Color? editButtonBorderColor;
+  final Color? deleteButtonBorderColor;
+  final Color? toggleActiveColor;
+  final TextStyle? availableTextStyle;
+  final TextStyle? likeCountTextStyle;
+  final TextStyle? commentCountTextStyle;
+  final EdgeInsets? padding;
 
   const InteractionBar({
     super.key,
@@ -81,8 +71,7 @@ class InteractionBar extends StatefulWidget {
     this.vendorThumbsUpIcon = CupertinoIcons.hand_thumbsup,
     this.vendorCommentIcon = CupertinoIcons.chat_bubble,
     this.editIcon = CupertinoIcons.pencil,
-    this.deleteIcon =
-        Icons.delete, // Default icon if using an icon instead of image
+    this.deleteIcon = Icons.delete,
     this.likeColor = Colors.red,
     this.thumbsUpColor,
     this.vendorThumbsUpColor = Colors.black,
@@ -106,9 +95,6 @@ class _InteractionBarState extends State<InteractionBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-
-  bool _isLiked = false;
-  bool _isLoved = false;
   bool _isThumbsUp = false;
 
   @override
@@ -139,29 +125,12 @@ class _InteractionBarState extends State<InteractionBar>
 
   void _animateIcon(int index) {
     switch (index) {
-      case 1: // Like
-        setState(() {
-          if (_isLoved) {
-            _isLoved = false;
-          } else {
-            _isLiked = !_isLiked;
-          }
-        });
-        break;
       case 3: // Thumbs up
         setState(() {
           _isThumbsUp = !_isThumbsUp;
         });
         break;
     }
-    _controller.forward();
-  }
-
-  void _onDoubleTap() {
-    setState(() {
-      _isLoved = true;
-      _isLiked = false;
-    });
     _controller.forward();
   }
 
@@ -191,38 +160,46 @@ class _InteractionBarState extends State<InteractionBar>
             commentCountTextStyle: widget.commentCountTextStyle,
             padding: widget.padding,
           )
-        : NonVendorInteractionView(
-            likeCount: widget.likeCount,
-            commentCount: widget.commentCount,
-            avatarUrls: widget.avatarUrls,
-            onShare: widget.onShare,
-            onLike: widget.onLike,
-            onComment: widget.onComment,
-            onThumbsUp: widget.onThumbsUp,
-            shareIcon: widget.shareIcon,
-            likeIcon: widget.likeIcon,
-            likedIcon: widget.likedIcon,
-            commentIcon: widget.commentIcon,
-            thumbsUpIcon: widget.thumbsUpIcon,
-            thumbsUpSelectedIcon: widget.thumbsUpSelectedIcon,
-            likeColor: widget.likeColor,
-            thumbsUpColor:
-                widget.thumbsUpColor ?? Theme.of(context).primaryColor,
-            isLiked: _isLiked,
-            isLoved: _isLoved,
-            isThumbsUp: _isThumbsUp,
-            onDoubleTap: _onDoubleTap,
-            animateIcon: _animateIcon,
-            controller: _controller,
-            scaleAnimation: _scaleAnimation,
-            likeCountTextStyle: widget.likeCountTextStyle,
-            commentCountTextStyle: widget.commentCountTextStyle,
-            padding: widget.padding,
+        : BlocBuilder<SearchCubit, SearchState>(
+            builder: (context, state) {
+              final cubit = context.read<SearchCubit>();
+              final isLoved = cubit.productModel?.data?.isLoved ?? false;
+
+              return NonVendorInteractionView(
+                likeCount: widget.likeCount,
+                commentCount: widget.commentCount,
+                avatarUrls: widget.avatarUrls,
+                onShare: widget.onShare,
+                onLike: () {
+                  cubit.toggleProductLike(
+                    productId: cubit.productModel?.data?.id ?? 0,
+                  );
+                },
+                onComment: widget.onComment,
+                onThumbsUp: widget.onThumbsUp,
+                shareIcon: widget.shareIcon,
+                likeIcon: widget.likeIcon,
+                likedIcon: widget.likedIcon,
+                commentIcon: widget.commentIcon,
+                thumbsUpIcon: widget.thumbsUpIcon,
+                thumbsUpSelectedIcon: widget.thumbsUpSelectedIcon,
+                likeColor: widget.likeColor,
+                thumbsUpColor:
+                    widget.thumbsUpColor ?? Theme.of(context).primaryColor,
+                isLoved: isLoved,
+                isThumbsUp: _isThumbsUp,
+                animateIcon: _animateIcon,
+                controller: _controller,
+                scaleAnimation: _scaleAnimation,
+                likeCountTextStyle: widget.likeCountTextStyle,
+                commentCountTextStyle: widget.commentCountTextStyle,
+                padding: widget.padding,
+              );
+            },
           );
   }
 }
 
-// Vendor Interaction View
 class VendorInteractionView extends StatefulWidget {
   final int likeCount;
   final int commentCount;
@@ -424,7 +401,6 @@ class _VendorInteractionViewState extends State<VendorInteractionView> {
   }
 }
 
-// Non-Vendor Interaction View
 class NonVendorInteractionView extends StatelessWidget {
   final int likeCount;
   final int commentCount;
@@ -441,10 +417,8 @@ class NonVendorInteractionView extends StatelessWidget {
   final IconData thumbsUpSelectedIcon;
   final Color likeColor;
   final Color thumbsUpColor;
-  final bool isLiked;
   final bool isLoved;
   final bool isThumbsUp;
-  final Function() onDoubleTap;
   final Function(int) animateIcon;
   final AnimationController controller;
   final Animation<double> scaleAnimation;
@@ -469,10 +443,8 @@ class NonVendorInteractionView extends StatelessWidget {
     required this.thumbsUpSelectedIcon,
     required this.likeColor,
     required this.thumbsUpColor,
-    required this.isLiked,
     required this.isLoved,
     required this.isThumbsUp,
-    required this.onDoubleTap,
     required this.animateIcon,
     required this.controller,
     required this.scaleAnimation,
@@ -528,25 +500,9 @@ class NonVendorInteractionView extends StatelessWidget {
                     index: 0,
                   ),
                   const SizedBox(width: 24),
-                  GestureDetector(
-                    onDoubleTap: onDoubleTap,
-                    child: _buildAnimatedIcon(
-                      icon: isLoved
-                          ? likedIcon
-                          : isLiked
-                              ? likeIcon
-                              : likeIcon,
-                      onTap: () {
-                        animateIcon(1);
-                        if (onLike != null) onLike!();
-                      },
-                      index: 1,
-                      color: isLoved
-                          ? likeColor
-                          : isLiked
-                              ? likeColor
-                              : null,
-                    ),
+                  FavoriteButton(
+                    isFavorited: isLoved,
+                    onFavoriteToggle: () => onLike,
                   ),
                   const SizedBox(width: 24),
                   _buildAnimatedIcon(
@@ -643,9 +599,7 @@ class NonVendorInteractionView extends StatelessWidget {
         builder: (context, child) {
           return Transform.scale(
             scale: controller.status == AnimationStatus.forward &&
-                    (isLiked && index == 1 ||
-                        isLoved && index == 1 ||
-                        isThumbsUp && index == 3)
+                    (isThumbsUp && index == 3)
                 ? scaleAnimation.value
                 : 1.0,
             child: Icon(icon, size: 24, color: color ?? Colors.black54),

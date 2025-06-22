@@ -17,3 +17,5 @@ class HomeActionTapped extends HomeState {
 
   HomeActionTapped({required this.productId});
 }
+
+class HomeLoadingMore extends HomeState {}

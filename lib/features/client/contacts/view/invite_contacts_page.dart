@@ -143,15 +143,27 @@ class InviteContactsPage extends StatelessWidget {
                                                               ?.substring(
                                                                   0, 1) ??
                                                           '',
+                                                      isFriend: user.isFriend ??
+                                                          false,
                                                     ),
                                                     onTap: () {
                                                       if (!friendsCubit
                                                               .isClosed &&
                                                           context.mounted) {
-                                                        friendsCubit
-                                                            .toggleFriendRequest(
-                                                                user.id
-                                                                    .toString());
+                                                        if (user.isFriend ==
+                                                            true) {
+                                                          context
+                                                              .read<
+                                                                  FriendsCubit>()
+                                                              .declineFriendRequest(
+                                                                  user.id
+                                                                      .toString());
+                                                        } else {
+                                                          friendsCubit
+                                                              .toggleFriendRequest(
+                                                                  user.id
+                                                                      .toString());
+                                                        }
                                                       }
                                                     },
                                                     isRegistered: true,

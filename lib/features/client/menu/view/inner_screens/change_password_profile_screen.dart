@@ -86,7 +86,7 @@ class ChangePasswordProfileScreen extends StatelessWidget {
                                     "${cubit.firstNameController.text} ${cubit.lastNameController.text}"
                                         .trim(),
                                 userImageUrl: cubit.userAvatar ??
-                                    'assets/images/profile.png',
+                                    'assets/images/logo.png',
                                 subtitle: '',
                                 isVendor: false,
                                 onTap: () {

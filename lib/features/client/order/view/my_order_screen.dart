@@ -27,7 +27,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -81,6 +81,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                     ),
                     child: TabBar(
                       controller: _tabController,
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
                       labelColor: AppColors.white,
                       unselectedLabelColor: const Color(0xff152354),
                       indicator: BoxDecoration(
@@ -99,6 +101,19 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                       tabs: [
                         Tab(
                           child: Text(
+                            "pending".tr(context),
+                            style: TextStyle(
+                              fontFamily:
+                                  context.read<GlobalCubit>().language == "ar"
+                                      ? 'Beiruti'
+                                      : "Poppins",
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
                             "delivered".tr(context),
                             style: TextStyle(
                               fontFamily:
@@ -112,7 +127,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                         ),
                         Tab(
                           child: Text(
-                            "canceled".tr(context),
+                            "in_delivery".tr(context),
                             style: TextStyle(
                               fontFamily:
                                   context.read<GlobalCubit>().language == "ar"
@@ -125,7 +140,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                         ),
                         Tab(
                           child: Text(
-                            "in_delivery".tr(context),
+                            "canceled".tr(context),
                             style: TextStyle(
                               fontFamily:
                                   context.read<GlobalCubit>().language == "ar"
@@ -150,15 +165,15 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                           controller: _tabController,
                           children: const [
                             OrdersList(
-                              key: ValueKey('delivered'),
-                              status: "delivered",
-                              statusColor: Color(0xff64B95C),
+                              key: ValueKey('pending'),
+                              status: "pending",
+                              statusColor: Color(0xffFFA500),
                               showCancelButton: false,
                             ),
                             OrdersList(
-                              key: ValueKey('canceled'),
-                              status: "canceled",
-                              statusColor: Color(0xffEC4B4B),
+                              key: ValueKey('delivered'),
+                              status: "delivered",
+                              statusColor: Color(0xff64B95C),
                               showCancelButton: false,
                             ),
                             OrdersList(
@@ -166,6 +181,12 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                               status: "in_delivery",
                               statusColor: AppColors.primary,
                               showCancelButton: true,
+                            ),
+                            OrdersList(
+                              key: ValueKey('cancelled'),
+                              status: "cancelled",
+                              statusColor: Color(0xffEC4B4B),
+                              showCancelButton: false,
                             ),
                           ],
                         ),

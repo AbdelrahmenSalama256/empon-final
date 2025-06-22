@@ -10,6 +10,7 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
+import 'package:embone/features/client/chat/view/massages_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/addresses_section.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/edit_profile.dart';
@@ -73,7 +74,7 @@ class SettingsScreen extends StatelessWidget {
                                       "${cubit.userName ?? ''} ${cubit.userLastName ?? ''}"
                                           .trim(),
                                   userImageUrl: cubit.userAvatar ??
-                                      'assets/images/profile.png',
+                                      'assets/images/logo.png',
                                   subtitle: cubit.userEmail ?? '',
                                   isVendor: isVendor ?? false,
                                   onTap: () {},
@@ -166,16 +167,24 @@ class SettingsScreen extends StatelessWidget {
                                         color: const Color(0xffE3E3E3)),
                                     MenuItem(
                                       icon: "assets/images/chatting.png",
+                                      onTap: () {
+                                        navigateTo(
+                                          context,
+                                          const MassagesScreen(),
+                                        );
+                                      },
                                       title: "chat_with_friends".tr(context),
                                     ),
-                                    Divider(
-                                        height: 1.h,
-                                        color: const Color(0xffE3E3E3)),
-                                    MenuItem(
-                                      icon: "assets/images/mony_bag.png",
-                                      title: "total_sales".tr(context),
-                                      onTap: () {},
-                                    ),
+                                    if (isVendor == true) ...[
+                                      Divider(
+                                          height: 1.h,
+                                          color: const Color(0xffE3E3E3)),
+                                      MenuItem(
+                                        icon: "assets/images/mony_bag.png",
+                                        title: "total_sales".tr(context),
+                                        onTap: () {},
+                                      ),
+                                    ],
                                     Divider(
                                         height: 1.h,
                                         color: const Color(0xffE3E3E3)),
@@ -224,7 +233,8 @@ class SettingsScreen extends StatelessWidget {
                                       );
                                     },
                                     onSecondaryButtonPressed: () {
-                                      Navigator.of(context,rootNavigator: true).pop();
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop();
                                     },
                                   );
                                 },

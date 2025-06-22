@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
-import 'package:embone/features/business_account/product/data/model/service_model.dart';
 import 'package:embone/features/client/search/data/model/search_history_model.dart';
 import 'package:embone/features/client/search/data/model/search_model.dart';
 import 'package:embone/features/client/search/data/model/search_recent_view.dart';
@@ -64,20 +63,6 @@ class SearchRepo {
     try {
       final response = await api.get("${EndPoints.goToProduct}/$id");
       return Right(ProductModel.fromJson(response.data));
-    } on ServerException catch (e) {
-      return Left(e.errorModel.detail);
-    } on NoInternetException catch (e) {
-      return Left(e.errorModel.detail);
-    } catch (e) {
-      return Left('Failed to fetch product: $e');
-    }
-  }
-
-    Future<Either<String, ServiceModel>> goToService(
-      {required final int id}) async {
-    try {
-      final response = await api.get("${EndPoints.getService}$id");
-      return Right(ServiceModel.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {

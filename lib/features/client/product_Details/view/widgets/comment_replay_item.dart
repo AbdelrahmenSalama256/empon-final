@@ -46,7 +46,7 @@ class ReplyItem extends StatelessWidget {
               index: -1,
               data: reply,
               onTap: () {},
-              showTrash: true,
+              showTrash: false,
               onReply: () {
                 showDialog(
                   context: context,

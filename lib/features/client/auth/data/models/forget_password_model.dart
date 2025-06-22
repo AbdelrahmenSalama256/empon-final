@@ -35,7 +35,7 @@ class ForgotPasswordData {
   final bool? emailVerifiedAt;
   final bool? anotherEmailVerifiedAt;
   final bool? phoneVerifiedAt;
-  final int? balance;
+  final dynamic balance;
   final String? fcmToken;
   final String? wsToken;
   final dynamic lastSeen;
@@ -87,7 +87,7 @@ class ForgotPasswordData {
       emailVerifiedAt: json['email_verified_at'] as bool?,
       anotherEmailVerifiedAt: json['another_email_verified_at'] as bool?,
       phoneVerifiedAt: json['phone_verified_at'] as bool?,
-      balance: json['balance'] as int?,
+      balance: json['balance'], // Changed from String? to int?
       fcmToken: json['fcm_token'] as String?,
       wsToken: json['ws_token'] as String?,
       lastSeen: json['last_seen'],

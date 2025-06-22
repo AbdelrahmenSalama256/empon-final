@@ -20,7 +20,6 @@ class _SplashPageState extends State<SplashPage>
   late Animation<double> _scaleAnimation;
   final GlobalKey _logoKey = GlobalKey();
 
-  // Store the logo position and size for the animation
   Offset? _logoPosition;
   Size? _logoSize;
 
@@ -29,7 +28,6 @@ class _SplashPageState extends State<SplashPage>
     super.initState();
     _initializeAnimations();
 
-    // Get the logo position after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _captureLogoPosition();
     });
@@ -60,14 +58,15 @@ class _SplashPageState extends State<SplashPage>
     // Check token and navigate after the animation completes
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        Print.info("${sl<CacheHelper>().getData(key: AppConstants.token)}");
-        String? isLoggedIn = sl<CacheHelper>().getData(key: AppConstants.token);
+        final String? token =
+            sl<CacheHelper>().getData(key: AppConstants.token);
+        Print.info("Token: $token");
 
         Widget destination;
-        if (isLoggedIn != null) {
-          destination = const BaseScreen();
+        if (token != null && token.isNotEmpty) {
+          destination = const BaseScreen(); // Logged in
         } else {
-          destination = const IntroPage();
+          destination = const IntroPage(); // Not logged in
         }
 
         Navigator.of(context)
@@ -76,25 +75,20 @@ class _SplashPageState extends State<SplashPage>
     });
   }
 
-  // Custom route with logo animation
   Route _createLogoAnimationRoute(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionDuration: const Duration(milliseconds: 800),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        // Calculate the logo's position during animation
         final double value = animation.value;
 
         return Stack(
           children: [
-            // Fade in the destination page
             Opacity(opacity: value, child: child),
-
-            // Animate the logo moving upward
             if (_logoPosition != null && value < 0.99)
               Positioned(
                 left: _logoPosition!.dx,
-                top: _logoPosition!.dy - (value * 150), // Move upward
+                top: _logoPosition!.dy - (value * 150),
                 child: Opacity(
                   opacity: 1.0 - value,
                   child: Image.asset(
@@ -129,7 +123,6 @@ class _SplashPageState extends State<SplashPage>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // EMPON logo with a key to track its position
                   Image.asset(
                     'assets/images/logo.png',
                     key: _logoKey,

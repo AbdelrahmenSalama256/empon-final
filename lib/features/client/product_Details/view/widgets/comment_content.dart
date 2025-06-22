@@ -34,6 +34,7 @@ class CommentContent extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade200),
         ),

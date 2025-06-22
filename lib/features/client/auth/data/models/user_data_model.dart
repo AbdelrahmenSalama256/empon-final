@@ -16,6 +16,7 @@ class User {
   final String? wsToken;
   final String? lastSeen;
   final bool? isOnline;
+  final bool? isFriend;
   final String? token;
   final String? createdAt;
   final List<Address>? addresses;
@@ -27,6 +28,7 @@ class User {
     this.id,
     this.firstName,
     this.lastName,
+    this.isFriend = false,
     this.birthDate,
     this.gender,
     this.phone,
@@ -61,6 +63,7 @@ class User {
       anotherEmail: json['another_email'] as String?,
       image: json['image'] as String?,
       emailVerifiedAt: json['email_verified_at'] as bool?,
+      isFriend: json['is_friend'] as bool?,
       anotherEmailVerifiedAt: json['another_email_verified_at'] as bool?,
       phoneVerifiedAt: json['phone_verified_at'] as bool?,
       balance: json['balance']?.toString(), // Convert int to String
@@ -93,6 +96,7 @@ class User {
         'another_email': anotherEmail,
         'image': image,
         'email_verified_at': emailVerifiedAt,
+        'is_friend': isFriend,
         'another_email_verified_at': anotherEmailVerifiedAt,
         'phone_verified_at': phoneVerifiedAt,
         'balance': balance,
@@ -120,6 +124,7 @@ class User {
     bool? emailVerifiedAt,
     bool? anotherEmailVerifiedAt,
     bool? phoneVerifiedAt,
+    bool? isFriend,
     String? balance,
     String? fcmToken,
     String? wsToken,
@@ -152,6 +157,7 @@ class User {
       lastSeen: lastSeen ?? this.lastSeen,
       isOnline: isOnline ?? this.isOnline,
       token: token ?? this.token,
+      isFriend: isFriend ?? this.isFriend,
       createdAt: createdAt ?? this.createdAt,
       addresses: addresses ?? this.addresses,
       account: account ?? this.account,

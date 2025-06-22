@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
@@ -96,6 +98,7 @@ class MessageContent extends StatelessWidget {
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.65,
       ),
+      margin: EdgeInsets.symmetric(vertical: 12.h),
       decoration: BoxDecoration(
         color: isMe ? AppColors.primary : AppColors.lightGrey.withOpacity(0.5),
         borderRadius: BorderRadius.circular(12.r),
@@ -120,12 +123,13 @@ class MessageContent extends StatelessWidget {
             child: Image.network(
               message.mediaPath!,
               width: MediaQuery.of(context).size.width * 0.65,
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.cover,
+              height: 200.h,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Container(
                   width: MediaQuery.of(context).size.width * 0.65,
-                  height: 200.h,
+                  height: 100.h,
                   color: isMe
                       ? AppColors.primary.withOpacity(0.2)
                       : Colors.grey.shade100,
@@ -141,31 +145,41 @@ class MessageContent extends StatelessWidget {
                   ),
                 );
               },
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: MediaQuery.of(context).size.width * 0.65,
-                height: 200.h,
-                color: isMe
-                    ? AppColors.primary.withOpacity(0.2)
-                    : Colors.grey.shade100,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.broken_image_rounded,
-                        size: 40.sp,
-                        color:
-                            isMe ? Colors.white.withOpacity(0.7) : Colors.grey),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'image_load_error'.tr(context),
-                      style: TextStyle(
-                          fontSize: 12.sp,
-                          color: isMe
-                              ? Colors.white.withOpacity(0.7)
-                              : Colors.grey),
+              errorBuilder: (context, error, stackTrace) {
+                // Attempt to load local file if mediaPath is a valid file path
+                final file = File(message.mediaPath!);
+                if (file.existsSync()) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.r),
+                      topRight: Radius.circular(12.r),
+                      bottomLeft:
+                          Radius.circular(message.message.isEmpty ? 12.r : 0),
+                      bottomRight:
+                          Radius.circular(message.message.isEmpty ? 12.r : 0),
                     ),
-                  ],
-                ),
-              ),
+                    child: Image.file(
+                      file,
+                      width: MediaQuery.of(context).size.width * 0.65,
+                      height: 100.h,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  );
+                }
+                // Fallback to asset if local file is not valid
+                return Container(
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  height: 100.h,
+                  color: isMe
+                      ? AppColors.primary.withOpacity(0.2)
+                      : Colors.grey.shade100,
+                  child: Image.asset(
+                    "assets/images/placholder.jpg",
+                    width: MediaQuery.of(context).size.width * 0.65,
+                    fit: BoxFit.fitWidth,
+                  ),
+                );
+              },
             ),
           ),
           if (message.message.isNotEmpty)

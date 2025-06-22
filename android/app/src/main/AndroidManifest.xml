@@ -21,7 +21,8 @@
         android:label="embone"
         android:requestLegacyExternalStorage="true"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyByGILjqDwyW9fMzjnXSCcPB11K8qboJEI"/>
         <activity

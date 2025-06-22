@@ -44,7 +44,7 @@ class FriendRequestItem extends StatelessWidget {
                 radius: 24.r,
                 backgroundImage: request.image != null
                     ? NetworkImage(request.image!)
-                    : const AssetImage('assets/images/profile.png')
+                    : const AssetImage('assets/images/logo.png')
                         as ImageProvider,
               ),
               SizedBox(width: 12.w),
@@ -53,7 +53,7 @@ class FriendRequestItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      request.name,
+                      "${request.name}",
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w500,
@@ -61,7 +61,7 @@ class FriendRequestItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      request.createdAt,
+                      "${request.createdAt}",
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: Colors.grey,

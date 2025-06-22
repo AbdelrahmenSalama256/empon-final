@@ -40,6 +40,11 @@ class _FollowersPageState extends State<FollowersPage> {
                 showToast(context,
                     message: state.error, state: ToastStates.error);
               }
+              if (state is FriendRequestUpdated) {
+                showToast(context,
+                    message: state.message, state: ToastStates.success);
+                context.read<FriendsCubit>().fetchMyFriends();
+              }
             },
             builder: (context, state) {
               // final cubit = context.read<FriendsCubit>();
@@ -128,6 +133,8 @@ class _FollowersPageState extends State<FollowersPage> {
                   context,
                   ChatConversationScreen(
                     receiverId: friend.id,
+                    image: friend.image,
+                    name: friend.name,
                   ));
             },
           );

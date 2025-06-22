@@ -36,7 +36,7 @@ class _BaseScreenState extends State<BaseScreen> {
       case UserType.client:
         return [
           BlocProvider(
-            create: (context) => HomeCubit(sl<HomeRepo>()),
+            create: (context) => HomeCubit(sl<HomeRepo>())..init(),
             child: const HomeScreen(),
           ),
           BlocProvider(

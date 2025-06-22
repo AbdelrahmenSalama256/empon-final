@@ -31,7 +31,6 @@ class ContactListItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
-        // box-shadow: 0px 10px 70px 0px #1D22610F; in Flutter
         boxShadow: [
           BoxShadow(
             color: const Color(0x1D22610F),
@@ -41,30 +40,20 @@ class ContactListItem extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 12.w,
-          vertical: 12.h,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Row(
                 children: [
-                  // Avatar
                   _buildAvatar(),
                   SizedBox(width: 12.w),
-
-                  Flexible(
-                    child: _buildContactInfo(isRTL),
-                  ),
+                  Flexible(child: _buildContactInfo(isRTL)),
                 ],
               ),
             ),
             _buildActionButton(context, isRTL),
-
-            // SizedBox(width: 12.w),
-            // const Spacer(),
           ],
         ),
       ),
@@ -81,7 +70,8 @@ class ContactListItem extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: Text(
-        contact.initial ?? contact.name.substring(0, 1),
+        contact.initial ??
+            (contact.name.isNotEmpty ? contact.name.substring(0, 1) : ''),
         style: TextStyle(
           fontSize: 16.sp,
           fontWeight: FontWeight.bold,
@@ -96,7 +86,7 @@ class ContactListItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          contact.name,
+          contact.name.isNotEmpty ? contact.name : 'Unknown',
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
@@ -104,6 +94,7 @@ class ContactListItem extends StatelessWidget {
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
         ),
         SizedBox(height: 4.h),
         Text(
@@ -114,84 +105,100 @@ class ContactListItem extends StatelessWidget {
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
         ),
       ],
     );
   }
 
   Widget _buildActionButton(BuildContext context, bool isRTL) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final availableWidth = constraints.maxWidth;
-        String buttonText;
-        IconData icon;
-        Color color;
+    final double buttonWidth = isRegistered ? 100.w : 80.w;
 
-        if (isRegistered) {
-          final status =
-              context.read<FriendsCubit>().getFriendRequestStatus(contact.id);
-          if (status == "pending") {
-            buttonText = 'added';
-            icon = CupertinoIcons.hourglass;
-            color = AppColors.green;
-          } else if (status == "accepted") {
-            buttonText = 'added';
-            icon = CupertinoIcons.person_crop_circle_fill_badge_checkmark;
-            color = AppColors.green;
-          } else {
-            buttonText = 'add';
-            icon = CupertinoIcons.person_add_solid;
-            color = AppColors.primary;
-          }
-        } else {
-          buttonText = 'invite';
-          icon = CupertinoIcons.share;
-          color = AppColors.gradientFour;
-        }
+    return SizedBox(
+      width: buttonWidth,
+      child: _ButtonContent(
+        contact: contact,
+        isRegistered: isRegistered,
+        onTap: onTap,
+      ),
+    );
+  }
+}
 
-        return GestureDetector(
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            constraints: BoxConstraints(
-              minWidth: 80.w,
-              maxWidth: availableWidth * 0.3,
+class _ButtonContent extends StatelessWidget {
+  final ContactModel contact;
+  final bool isRegistered;
+  final VoidCallback onTap;
+
+  const _ButtonContent({
+    required this.contact,
+    required this.isRegistered,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final friendsCubit = context.read<FriendsCubit>();
+    final status = friendsCubit.getFriendRequestStatus(contact.id);
+
+    // Determine button state based on API response
+    final isFriend = contact.isFriend == true;
+    final isPending = status == "pending";
+    final isAccepted = status == "accepted";
+
+    String buttonText;
+    IconData icon;
+    Color color;
+
+    if (isRegistered) {
+      if (isFriend) {
+        buttonText = 'delete';
+        icon = CupertinoIcons.trash;
+        color = AppColors.red;
+      } else if (isPending) {
+        buttonText = 'pending';
+        icon = CupertinoIcons.hourglass;
+        color = AppColors.orange;
+      } else if (isAccepted) {
+        buttonText = 'added';
+        icon = CupertinoIcons.person_crop_circle_fill_badge_checkmark;
+        color = AppColors.green;
+      } else {
+        buttonText = 'add';
+        icon = CupertinoIcons.person_add_solid;
+        color = AppColors.primary;
+      }
+    } else {
+      buttonText = 'invite';
+      icon = CupertinoIcons.share;
+      color = AppColors.gradientFour;
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 36.h,
+        padding: EdgeInsets.symmetric(horizontal: 8.w),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 16.w),
+            SizedBox(width: 4.w),
+            Text(
+              buttonText.tr(context),
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 8.w),
-            height: 36.h,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 20.w,
-                  ),
-                ),
-                SizedBox(width: 4.w),
-                Flexible(
-                  child: Text(
-                    buttonText.tr(context),
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

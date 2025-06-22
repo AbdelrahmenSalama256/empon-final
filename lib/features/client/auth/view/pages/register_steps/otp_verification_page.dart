@@ -116,7 +116,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                       userImageUrl: context
                                               .read<GlobalCubit>()
                                               .userAvatar ??
-                                          'assets/images/profile.png',
+                                          'assets/images/logo.png',
                                       subtitle: '',
                                       isVendor: false,
                                       onTap: () {

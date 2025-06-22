@@ -11,7 +11,7 @@ class FriendsCubit extends Cubit<FriendsState> {
   List<ContactModel> nonRegisteredContacts = [];
   Map<String, FriendRequest?> friendRequests = {};
   List<FriendRequest> pendingFriendRequests = [];
-  List<FriendRequest> acceptedFriends = [];
+  List<Friend> acceptedFriends = [];
   FriendsCubit(this.friendsRepo) : super(FriendsInitial());
   void initializeContacts(List<User> users, List<ContactModel> nonRegistered) {
     registeredUsers = users;

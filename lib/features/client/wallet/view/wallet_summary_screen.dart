@@ -45,10 +45,10 @@ class WalletSummaryScreen extends StatelessWidget {
         child: BlocBuilder<WalletCubit, WalletState>(
           builder: (context, state) {
             final cubit = context.read<WalletCubit>();
-            return SafeArea(
-              child: Scaffold(
-                backgroundColor: Colors.white,
-                body: Column(
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: SafeArea(
+                child: Column(
                   children: [
                     AppHeader(
                       title: 'wallet'.tr(context),

@@ -16,12 +16,21 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   ForgetPasswordCubit(this.forgetPasswordRepo) : super(ForgetPasswordInitial());
+
   Future<void> forgotPassword() async {
     emit(ForgotPasswordLoading());
     final value = valueController.text.trim();
 
-    if (!formKey.currentState!.validate()) {
+    // Skip validation if formKey.currentState is null (e.g., in FindingAccountsPage)
+    if (formKey.currentState != null && !formKey.currentState!.validate()) {
       emit(ForgotPasswordValidationFailed());
+      return;
+    }
+
+    // Additional validation for empty value
+    if (value.isEmpty) {
+      Print.error('Value is empty');
+      emit(ForgotPasswordFailure(message: 'phone_or_email_required'));
       return;
     }
 
@@ -65,7 +74,8 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
 
-    if (!formKey.currentState!.validate() || password != confirmPassword) {
+    if (formKey.currentState != null && !formKey.currentState!.validate() ||
+        password != confirmPassword) {
       emit(ResetPasswordValidationFailed(message: 'Passwords do not match'));
       return;
     }
@@ -95,7 +105,6 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
 
   void updateResendSeconds(int seconds) {
     resendSeconds = seconds;
-
     emit(ForgetPasswordInitial());
   }
 }

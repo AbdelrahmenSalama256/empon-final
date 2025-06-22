@@ -10,17 +10,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 class PaymentMethodSection extends StatelessWidget {
-  final List<Map<String, dynamic>> paymentMethods;
-  final int selectedPaymentMethod;
-  final ValueChanged<int> onMethodSelected;
-  final VoidCallback onChange;
-
   const PaymentMethodSection({
     super.key,
-    required this.paymentMethods,
-    required this.selectedPaymentMethod,
-    required this.onMethodSelected,
-    required this.onChange,
   });
 
   @override
@@ -36,7 +27,7 @@ class PaymentMethodSection extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => EmponWalletScreen(

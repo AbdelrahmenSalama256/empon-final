@@ -1,8 +1,9 @@
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
 
 class Message {
   final int id;
-  final bool fromMe;
+  bool fromMe;
   final MessageStatus status;
   final int senderId;
   final int receiverId;
@@ -32,6 +33,7 @@ class Message {
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
+    PrintUtil.debug('Parsing message: from_me=${json['from_me']}');
     return Message(
       id: _parseToInt(json['id']),
       fromMe: json['from_me'] as bool? ?? false,

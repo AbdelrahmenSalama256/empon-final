@@ -37,12 +37,17 @@ class ProductData {
   final String? vendorName;
   final int? isSale;
   final bool isLiked;
+  final bool isLoved;
   final String? discountType;
   final String? discountValue;
   final List<Variation>? variations;
   final int? likes;
   final String? image;
   final List<ImageData>? images;
+  final String? shippingStartDate;
+  final String? shippingEndDate;
+  final String? shippingPrice;
+
   final String? createdAt;
   final String? updatedAt;
 
@@ -53,7 +58,11 @@ class ProductData {
     this.isLiked = false,
     this.code,
     this.category,
+    this.isLoved = false,
     this.price,
+    this.shippingStartDate,
+    this.shippingEndDate,
+    this.shippingPrice,
     this.vendorId,
     this.vendorName,
     this.isSale,
@@ -91,6 +100,9 @@ class ProductData {
           .toList(),
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      shippingStartDate: json['shipping_start_date'],
+      shippingEndDate: json['shipping_end_date'],
+      shippingPrice: json['shipping_price'],
     );
   }
 

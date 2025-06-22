@@ -1,3 +1,4 @@
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
@@ -37,11 +38,12 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
   @override
   void initState() {
     super.initState();
-    _chatCubit = ChatCubit(sl<ChatRepo>(), widget.receiverId);
+    _chatCubit = ChatCubit(sl<ChatRepo>(), widget.receiverId,
+        int.parse(context.read<GlobalCubit>().userId.toString()));
 
     if (widget.receiverId != null) {
       _chatCubit.fetchMessages(widget.receiverId!);
-      _chatCubit.initializeWebSocket();
+      // _chatCubit.initializeWebSocket();
     } else {
       // Handle case where receiverId is null
       ScaffoldMessenger.of(context).showSnackBar(

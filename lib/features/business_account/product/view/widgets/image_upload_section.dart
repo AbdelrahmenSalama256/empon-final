@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/product/view/cubit/product_cubit.dart';
-import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,15 +10,14 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUploadSection extends StatefulWidget {
+  const ImageUploadSection({super.key});
 
-  const ImageUploadSection({super.key ,required this.cubit});
-  final bool cubit;
   @override
   State<ImageUploadSection> createState() => _ImageUploadSectionState();
 }
 
 class _ImageUploadSectionState extends State<ImageUploadSection> {
-
+  
   XFile? _mainImage;
   final List<XFile> _additionalImages = [];
   final ImagePicker _picker = ImagePicker();
@@ -62,30 +60,21 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
   @override
   Widget build(BuildContext context) {
     if (_mainImage != null){
-      if (widget.cubit) {
-              setState(() {
-          context.read<ProductCubit>().productImage = _mainImage;
-        });
-      } else {
-        context.read<ServiceCubit>().mainImage = _mainImage;
-      }
-
+      setState(() {
+        context.read<ProductCubit>().productImage= _mainImage;
+      });
     }
     if (_additionalImages.isNotEmpty) {
-      if (widget.cubit) {
-        setState(() {
-          context.read<ProductCubit>().productImages = _additionalImages;
-        });
-      } else {
-        context.read<ServiceCubit>().sliderImages = _additionalImages;
-      }
+      setState(() {
+        context.read<ProductCubit>().productImages= _additionalImages;
+      });
     }
     return Column(
       children: [
         // Main Image Upload
         _buildImageUploadField(
           context,
-          label: widget.cubit==true?'main_product_image_placeholder'.tr(context):'main_service_image'.tr(context),
+          label: 'main_product_image_placeholder'.tr(context),
           images: _mainImage != null
               ? Padding(
                   padding: EdgeInsets.symmetric(vertical: 5.h),
@@ -105,7 +94,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
         // Additional Images Upload
         _buildImageUploadField(
           context,
-          label: widget.cubit==true?'product_image_placeholder'.tr(context):'service_image_placeholder'.tr(context),
+          label: 'product_image_placeholder'.tr(context),
           images: _additionalImages.isNotEmpty
               ? Padding(
                   padding: EdgeInsets.symmetric(vertical: 5.h),

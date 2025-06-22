@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
@@ -14,7 +16,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'dart:async';
 import 'package:pinput/pinput.dart';
 
 class ForgotPasswordVerificationPage extends StatefulWidget {
@@ -135,15 +136,14 @@ class _ForgotPasswordVerificationPageState
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(60.r),
                                   child: Image.network(
-                                    widget.imageUrl ??
-                                        'assets/images/profile.png',
+                                    "${widget.imageUrl}",
                                     width: 120.w,
                                     height: 120.w,
                                     fit: BoxFit.cover,
                                     errorBuilder:
                                         (context, error, stackTrace) =>
                                             Image.asset(
-                                      "assets/images/profile.png",
+                                      "assets/images/logo.png",
                                       width: 120.w,
                                       height: 120.w,
                                       fit: BoxFit.cover,
@@ -208,7 +208,7 @@ class _ForgotPasswordVerificationPageState
                                     return;
                                   } else {
                                     cubit.verifyOtp(
-                                      value: widget.phoneNumber ?? "",
+                                      value: "${widget.phoneNumber}",
                                     );
                                   }
                                 },

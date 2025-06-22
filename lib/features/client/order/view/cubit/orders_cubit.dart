@@ -11,6 +11,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   List<OrderModel> deliveredOrders = [];
   List<OrderModel> inDeliveryOrders = [];
   List<OrderModel> canceledOrders = [];
+  List<OrderModel> pendingOrders = [];
   OrderDetailsModel? currentOrderDetails;
 
   Future<void> fetchOrders() async {
@@ -23,10 +24,11 @@ class OrdersCubit extends Cubit<OrdersState> {
             .where((order) => order.status == 'delivered')
             .toList();
         inDeliveryOrders = orderResponse.data
-            .where((order) => order.status == 'in_delivery')
-            .toList();
+            .where((order) =>
+                order.status == 'in_delivery' || order.status == 'pending')
+            .toList(); // Include pending orders
         canceledOrders = orderResponse.data
-            .where((order) => order.status == 'canceled')
+            .where((order) => order.status == 'cancelled')
             .toList();
         PrintUtil.debug('Delivered orders: $deliveredOrders');
         PrintUtil.debug('In delivery orders: $inDeliveryOrders');
@@ -43,40 +45,61 @@ class OrdersCubit extends Cubit<OrdersState> {
       (error) => emit(OrderError(error)),
       (message) {
         OrderModel? canceledOrder;
-        final inDeliveryIndex =
-            inDeliveryOrders.indexWhere((order) => order.id == orderId);
-        if (inDeliveryIndex != -1) {
+        // Check pendingOrders first
+        final pendingIndex =
+            pendingOrders.indexWhere((order) => order.id == orderId);
+        if (pendingIndex != -1) {
           canceledOrder = OrderModel(
-            id: inDeliveryOrders[inDeliveryIndex].id,
-            orderNumber: inDeliveryOrders[inDeliveryIndex].orderNumber,
-            date: inDeliveryOrders[inDeliveryIndex].date,
-            quantity: inDeliveryOrders[inDeliveryIndex].quantity,
-            totalPrice: inDeliveryOrders[inDeliveryIndex].totalPrice,
-            status: 'canceled',
+            id: pendingOrders[pendingIndex].id,
+            orderNumber: pendingOrders[pendingIndex].orderNumber,
+            date: pendingOrders[pendingIndex].date,
+            quantity: pendingOrders[pendingIndex].quantity,
+            totalPrice: pendingOrders[pendingIndex].totalPrice,
+            status: 'cancelled',
           );
-          inDeliveryOrders.removeAt(inDeliveryIndex);
+          pendingOrders.removeAt(pendingIndex);
         } else {
-          final deliveredIndex =
-              deliveredOrders.indexWhere((order) => order.id == orderId);
-          if (deliveredIndex != -1) {
+          // Check inDeliveryOrders
+          final inDeliveryIndex =
+              inDeliveryOrders.indexWhere((order) => order.id == orderId);
+          if (inDeliveryIndex != -1) {
             canceledOrder = OrderModel(
-              id: deliveredOrders[deliveredIndex].id,
-              orderNumber: deliveredOrders[deliveredIndex].orderNumber,
-              date: deliveredOrders[deliveredIndex].date,
-              quantity: deliveredOrders[deliveredIndex].quantity,
-              totalPrice: deliveredOrders[deliveredIndex].totalPrice,
-              status: 'canceled',
+              id: inDeliveryOrders[inDeliveryIndex].id,
+              orderNumber: inDeliveryOrders[inDeliveryIndex].orderNumber,
+              date: inDeliveryOrders[inDeliveryIndex].date,
+              quantity: inDeliveryOrders[inDeliveryIndex].quantity,
+              totalPrice: inDeliveryOrders[inDeliveryIndex].totalPrice,
+              status: 'cancelled',
             );
-            deliveredOrders.removeAt(deliveredIndex);
+            inDeliveryOrders.removeAt(inDeliveryIndex);
+          } else {
+            // Check deliveredOrders
+            final deliveredIndex =
+                deliveredOrders.indexWhere((order) => order.id == orderId);
+            if (deliveredIndex != -1) {
+              canceledOrder = OrderModel(
+                id: deliveredOrders[deliveredIndex].id,
+                orderNumber: deliveredOrders[deliveredIndex].orderNumber,
+                date: deliveredOrders[deliveredIndex].date,
+                quantity: deliveredOrders[deliveredIndex].quantity,
+                totalPrice: deliveredOrders[deliveredIndex].totalPrice,
+                status: 'cancelled',
+              );
+              deliveredOrders.removeAt(deliveredIndex);
+            }
           }
         }
+
+        // Only add to canceledOrders if the order was found and not already canceled
         if (canceledOrder != null &&
             !canceledOrders.any((order) => order.id == canceledOrder!.id)) {
           canceledOrders.add(canceledOrder);
         }
+
         PrintUtil.debug('Delivered orders: $deliveredOrders');
         PrintUtil.debug('In delivery orders: $inDeliveryOrders');
         PrintUtil.debug('Canceled orders: $canceledOrders');
+        PrintUtil.debug('Pending orders: $pendingOrders');
         emit(OrderCanceled(message));
       },
     );
@@ -88,8 +111,10 @@ class OrdersCubit extends Cubit<OrdersState> {
         return deliveredOrders;
       case 'in_delivery':
         return inDeliveryOrders;
-      case 'canceled':
+      case 'cancelled':
         return canceledOrders;
+      case 'pending':
+        return pendingOrders; // Handle pending status
       default:
         return [];
     }

@@ -1,31 +1,37 @@
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:embone/core/constants/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProductCard extends StatefulWidget {
   final String imageUrl;
   final String title;
   final double price;
+  final double? originalPrice;
   final String? badge;
   final String? actionText;
   final bool isFavorite;
+  final int? discountPercentage;
   final VoidCallback? onFavoriteToggle;
   final VoidCallback? onActionTap;
   final VoidCallback? onCardTap;
+  final bool isOffer; // New parameter to determine layout
 
   const ProductCard({
     super.key,
     required this.imageUrl,
     required this.title,
     required this.price,
+    this.originalPrice,
     this.badge,
     this.actionText,
     this.isFavorite = false,
+    this.discountPercentage,
     this.onFavoriteToggle,
     this.onActionTap,
     this.onCardTap,
+    this.isOffer = false, // Default to regular layout
   });
 
   @override
@@ -174,12 +180,12 @@ class _AnimatedProductCardState extends State<ProductCard>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Product image with favorite button
+              // Product image with favorite button and conditional offer badge
               SizedBox(
-                height: 225.h, // Fixed height to match image size
+                height: 225.h,
                 child: Stack(
                   children: [
-                    // Updated image widget to handle network/asset images
+                    // Product Image
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12.r),
                       child: widget.imageUrl.startsWith('http')
@@ -214,125 +220,319 @@ class _AnimatedProductCardState extends State<ProductCard>
                                   _buildImageErrorWidget(),
                             ),
                     ),
-                    // Favorite button
-                    PositionedDirectional(
-                      top: 20.h,
-                      start: 15.w,
-                      child: GestureDetector(
-                        onTap: _toggleFavorite,
-                        child: ScaleTransition(
-                          scale: _favoriteScaleAnimation,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            width: 29.w,
-                            height: 29.w,
-                            decoration: BoxDecoration(
+
+                    // Conditional Offer Badge (Top Right) - Only for offers
+                    if (widget.isOffer && widget.discountPercentage != null)
+                      PositionedDirectional(
+                        top: 12.h,
+                        end: 12.w,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Text(
+                            '-${widget.discountPercentage}%',
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w600,
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                            child: Center(
-                              child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                transitionBuilder: (Widget child,
-                                    Animation<double> animation) {
-                                  return ScaleTransition(
-                                    scale: animation,
-                                    child: child,
-                                  );
-                                },
-                                child: SvgPicture.asset(
-                                  _isFavorite
-                                      ? "assets/images/svg/heart-active.svg"
-                                      : "assets/images/svg/heart.svg",
-                                  width: _isFavorite ? 24.w : 20.w,
-                                  height: _isFavorite ? 24.h : 20.h,
-                                ),
-                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+
+                    // Favorite button - Different styles for offer vs regular
+                    widget.isOffer
+                        ? _buildOfferFavoriteButton()
+                        : _buildRegularFavoriteButton(),
                   ],
                 ),
               ),
-              // Product details with flexible height
+
+              // Product details - Different layouts for offer vs regular
               Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: 8.h), // Reduced spacing
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            widget.title,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.black,
-                            ),
-                          ),
-                          Text(
-                            '${widget.price.toStringAsFixed(2)} ${"currency".tr(context)}',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8.h), // Reduced spacing
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (widget.badge != null)
-                            Text(
-                              widget.badge!,
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.black,
-                              ),
-                            ),
-                          if (widget.actionText != null)
-                            GestureDetector(
-                              onTap: _onCartTap,
-                              child: ScaleTransition(
-                                scale: _cartScaleAnimation,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16.w,
-                                    vertical: 8.h,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xffDFE0E5),
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  child: Text(
-                                    widget.actionText!,
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColors.black,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                child: widget.isOffer
+                    ? _buildOfferDetails()
+                    : _buildRegularDetails(),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // Offer layout favorite button (enhanced with shadow)
+  Widget _buildOfferFavoriteButton() {
+    return PositionedDirectional(
+      top: 12.h,
+      start: 12.w,
+      child: GestureDetector(
+        onTap: _toggleFavorite,
+        child: ScaleTransition(
+          scale: _favoriteScaleAnimation,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: 32.w,
+            height: 32.w,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4.r,
+                  offset: Offset(0, 2.h),
+                ),
+              ],
+            ),
+            child: Center(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  );
+                },
+                child: Icon(
+                  _isFavorite ? Icons.favorite : Icons.favorite_border,
+                  key: ValueKey(_isFavorite),
+                  size: 18.w,
+                  color: _isFavorite ? Colors.red : Colors.grey.shade600,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Regular layout favorite button (original style with SVG)
+  Widget _buildRegularFavoriteButton() {
+    return PositionedDirectional(
+      top: 20.h,
+      start: 15.w,
+      child: GestureDetector(
+        onTap: _toggleFavorite,
+        child: ScaleTransition(
+          scale: _favoriteScaleAnimation,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: 29.w,
+            height: 29.w,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Center(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  );
+                },
+                child: SvgPicture.asset(
+                  _isFavorite
+                      ? "assets/images/svg/heart-active.svg"
+                      : "assets/images/svg/heart.svg",
+                  width: _isFavorite ? 24.w : 20.w,
+                  height: _isFavorite ? 24.h : 20.h,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Offer layout details (enhanced styling)
+  Widget _buildOfferDetails() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(height: 12.h),
+
+          // Product Title
+          Text(
+            widget.title,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+              color: AppColors.black,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          SizedBox(height: 8.h),
+
+          // Price Row with original price
+          Row(
+            children: [
+              Text(
+                '${widget.price.toStringAsFixed(2)} ${"currency".tr(context)}',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+              ),
+              if (widget.originalPrice != null) ...[
+                SizedBox(width: 8.w),
+                Text(
+                  '${widget.originalPrice!.toStringAsFixed(2)} ${"currency".tr(context)}',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey.shade500,
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+              ],
+            ],
+          ),
+
+          SizedBox(height: 8.h),
+
+          // Badge and Action Button Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (widget.badge != null)
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8.w,
+                    vertical: 4.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
+                  child: Text(
+                    widget.badge!,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              if (widget.actionText != null)
+                GestureDetector(
+                  onTap: _onCartTap,
+                  child: ScaleTransition(
+                    scale: _cartScaleAnimation,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        widget.actionText!,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Regular layout details (original simple styling)
+  Widget _buildRegularDetails() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(height: 8.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.title,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.black,
+                ),
+              ),
+              Text(
+                '${widget.price.toStringAsFixed(2)} ${"currency".tr(context)}',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.black,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (widget.badge != null)
+                Text(
+                  widget.badge!,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.black,
+                  ),
+                ),
+              if (widget.actionText != null)
+                GestureDetector(
+                  onTap: _onCartTap,
+                  child: ScaleTransition(
+                    scale: _cartScaleAnimation,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffDFE0E5),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        widget.actionText!,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }

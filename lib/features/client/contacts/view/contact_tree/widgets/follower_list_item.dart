@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FollowerListItem extends StatelessWidget {
-  final FriendRequest friend;
+  final Friend friend;
   final VoidCallback onDeletePressed;
   final VoidCallback onTapPressed;
 
@@ -63,7 +63,7 @@ class FollowerListItem extends StatelessWidget {
           children: [
             Flexible(
               child: Text(
-                friend.name,
+                "${friend.name}",
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.bold,

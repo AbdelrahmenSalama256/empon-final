@@ -42,6 +42,7 @@ class EndPoints {
       "${baseUrl}verify-otp-forgot-password";
   static const String resetPassword = "${baseUrl}reset-password";
   static const String home = "${baseUrl}home";
+  static const String homeService = "${baseUrl}random-services";
   // ! Search
   static const String search = "${baseUrl}search";
   static const String searchHistory = '${baseUrl}history-search';
@@ -82,7 +83,10 @@ class EndPoints {
   static const String walletHistory = '${baseUrl}wallet-history';
   // ! Orders
   static const String orders = '${baseUrl}orders';
-  static const String cancelOrder = '${baseUrl}orders';
+  static const String userOrders = '${baseUrl}user-orders';
+  static const String cancelOrder = '${baseUrl}user-order';
+  static const String orderDetails = '${baseUrl}user-order';
+
   static const String topUp = '${baseUrl}top-up';
   //// Buissniss Account Case
   //! Create Account
@@ -103,9 +107,6 @@ class EndPoints {
   static const String addProduct = '${baseUrl}product';
   static const String updateProduct = '${baseUrl}product/';
   static const String deleteProduct = '${baseUrl}product/';
-  static const String addService = "${baseUrl}services";
-  static const String getService = "${baseUrl}services/";
-  static const String getServicesCategores = "${baseUrl}service-categories";
 }
 
 class ApiKey {
