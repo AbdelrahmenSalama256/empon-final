@@ -16,10 +16,29 @@ class ServiceDetailsSection extends StatefulWidget {
 }
 
 class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
+  List<Map<String, TextEditingController>> serviceDetailsControllers = [];
+
+  void addServiceDetail() {
+    serviceDetailsControllers.add({
+      'price': TextEditingController(),
+      'description': TextEditingController(),
+    });
+    setState(() {});
+  }
+
   @override
   void initState() {
     context.read<ServiceCubit>().getServiceCategories();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    for (var item in serviceDetailsControllers) {
+      item['price']?.dispose();
+      item['description']?.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -60,27 +79,25 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
             SizedBox(height: 20.h),
 
             /// Category Dropdown
-            if (state is ServiceCategoriesLoaded)
+            if (cubit.categories.isNotEmpty)
               AppDropdownField(
                 hint: 'category'.tr(context),
                 value: cubit.categoryServiceId != null
-                    ? state.categories
+                    ? cubit.categories
                         .firstWhere((c) => c.id == cubit.categoryServiceId)
                         .name
                     : null,
                 isMultiSelect: false,
-                items: state.categories.map((c) => c.name).toList(),
-                selectedValues: state.categories
+                items: cubit.categories.map((c) => c.name).toList(),
+                selectedValues: cubit.categories
                     .where((c) => cubit.selectedCategoryIds.contains(c.id))
                     .map((c) => c.name)
                     .toList(),
                 onChanged: (value) {
                   final selected =
-                      state.categories.firstWhere((c) => c.name == value);
+                      cubit.categories.firstWhere((c) => c.name == value);
                   cubit.categoryServiceId = selected.id;
-                  setState(() {
-                    
-                  });
+                  setState(() {});
                 },
                 validator: (value) {
                   if (cubit.categoryServiceId == null) {
@@ -90,6 +107,87 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
                 },
                 showErrorBorder: true,
               ),
+
+            SizedBox(height: 20.h),
+                Text("additional_service_Details".tr(context),
+                style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold)), //todo: make localized
+            SizedBox(height: 10.h),
+            Column(
+              children: [
+                ...List.generate(serviceDetailsControllers.length, (index) {
+                  final item = serviceDetailsControllers[index];
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 12.h),
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: AppTextField(
+                              controller: item['price']!,
+                              hintText: 'price_hint'.tr(context),
+                              keyboardType: TextInputType.number,
+                              validator: (value) => Validators.validateRequired(
+                                  value, 'price_hint'.tr(context), context),
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: AppTextField(
+                              controller: item['description']!,
+                              hintText: 'description_hint'.tr(context),
+                              keyboardType: TextInputType.text,
+                              validator: (value) => Validators.validateRequired(
+                                  value,
+                                  'description_hint'.tr(context),
+                                  context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+
+                // "+" Button
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: addServiceDetail,
+                        icon: const Icon(Icons.add),
+                        label: Text('add_section'.tr(context)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green),
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    if (serviceDetailsControllers.isNotEmpty)
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            serviceDetailsControllers.last['price']!.dispose();
+                            serviceDetailsControllers.last['description']!
+                                .dispose();
+                            serviceDetailsControllers.removeLast();
+                            setState(() {});
+                          },
+                          icon: const Icon(Icons.undo),
+                          label: Text('undo'.tr(context)),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
 
             SizedBox(height: 20.h),
           ],

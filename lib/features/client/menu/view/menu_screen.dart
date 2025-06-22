@@ -330,7 +330,7 @@ class MenuScreen extends StatelessWidget {
                                                         child:
                                                             const ServiceDetailPage(
                                                           isVendor: false,
-                                                          productId: 1,
+                                                          serviceId: 1,//!todo: replace with actual service id
                                                         ),
                                                       ));
                                                 },

@@ -130,4 +130,21 @@ class SearchRepo {
       return Left(e.errorModel.detail);
     }
   }
+
+    Future<Either<String, String>> toggleServiceLike({
+    required int serviceId,
+  }) async {
+    try {
+      await api.post(
+        EndPoints.serviceLike,
+        data: {'service_id': serviceId},
+        isFormData: true,
+      );
+      return const Right('Like toggled successfully');
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
 }

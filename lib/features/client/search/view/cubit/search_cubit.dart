@@ -120,7 +120,7 @@ class SearchCubit extends Cubit<SearchState> {
         serviceModel = r;
         Print.success('You are going to product ========> successfully');
         getRecentView();
-        await fetchParentComments(productId: id);
+        await servicefetchParentComments(parentId: id);
         if (!isClosed) emit(GoToProductSuccess());
       },
     );
@@ -429,6 +429,282 @@ class SearchCubit extends Cubit<SearchState> {
       },
       (_) {
         if (!isClosed) emit(LikeProductLoaded(productModel!));
+      },
+    );
+  }
+
+
+
+
+  Future<void> servicefetchParentComments({required int parentId}) async {
+    if (!isClosed) emit(CommentLoading());
+    final response =
+        await sl<CommentRepo>().serviceFetchChildComments(parentId: parentId);
+    response.fold(
+      (l) {
+        Print.error(l);
+        if (!isClosed) emit(CommentError(message: l));
+      },
+      (r) {
+        comments = r.data.comments;
+        Print.success('Parent comments fetched successfully');
+        if (kDebugMode) {
+          print('Set comments: $comments');
+        }
+        if (!isClosed) emit(CommentsLoaded(comments));
+      },
+    );
+  }
+
+  int? servicecurrentParentId;
+
+  Future<void> servicefetchChildComments({required int parentId}) async {
+    currentParentId = parentId;
+    if (!isClosed) emit(CommentLoading());
+    final response =
+        await sl<CommentRepo>().fetchChildComments(parentId: parentId);
+    response.fold(
+      (l) {
+        currentParentId = null;
+        Print.error(l);
+        if (!isClosed) emit(CommentError(message: l));
+      },
+      (r) {
+        currentParentId = null;
+        comments = comments.map((comment) {
+          if (comment.commentId == parentId) {
+            return comment.copyWith(replies: r.data.comments);
+          }
+          return comment;
+        }).toList();
+        Print.success('Child comments fetched successfully');
+        if (!isClosed) emit(CommentsLoaded(comments));
+      },
+    );
+  }
+
+  Future<void> serviceAddComment({required int serviceId, int? parentId}) async {
+    if (!isClosed) emit(CommentLoading());
+    final response = await sl<CommentRepo>().serviceAddComment(
+      serviceId: serviceId,
+      comment: commentController.text,
+      parentId: parentId,
+    );
+    response.fold(
+      (l) {
+        Print.error(l);
+        if (!isClosed) emit(CommentError(message: l));
+      },
+      (r) {
+        comments = [...comments, ...r.data.comments];
+        Print.success('Comment added successfully');
+        if (!isClosed) emit(CommentsLoaded(comments));
+        commentController.clear();
+      },
+    );
+  }
+
+  Future<void> serviceaddReply({
+    required int serviceId,
+    required int parentId,
+    required String comment,
+  }) async {
+    if (!isClosed) emit(CommentLoading());
+    final response = await sl<CommentRepo>().serviceAddComment(
+      serviceId: serviceId,
+      comment: comment,
+      parentId: parentId,
+    );
+    response.fold(
+      (l) {
+        Print.error(l);
+        if (!isClosed) emit(CommentError(message: l));
+      },
+      (r) {
+        comments = comments.map((c) {
+          if (c.commentId == parentId) {
+            // Explicitly type as List<CommentModel>
+            final updatedReplies = <CommentModel>[
+              ...(c.replies ?? []),
+              ...r.data.comments,
+            ];
+            return c.copyWith(replies: updatedReplies);
+          }
+          return c;
+        }).toList();
+        Print.success('Reply added successfully');
+        if (!isClosed) emit(CommentsLoaded(comments));
+      },
+    );
+  }
+
+  Future<void> serviceupdateComment({
+    required int commentId,
+    required String comment,
+  }) async {
+    if (!isClosed) emit(CommentLoading());
+    final response = await sl<CommentRepo>().serviceUpdateComment(
+      commentId: commentId,
+      comment: comment,
+    );
+    response.fold(
+      (l) {
+        Print.error(l);
+        if (!isClosed) emit(CommentError(message: l));
+      },
+      (r) {
+        final updated = r.data.comments.first;
+        comments = comments.map((c) {
+          if (c.commentId == commentId) {
+            return updated;
+          }
+          final updatedReplies = c.replies?.map((r) {
+            if (r.commentId == commentId) {
+              return updated;
+            }
+            return r;
+          }).toList();
+          return c.copyWith(replies: updatedReplies);
+        }).toList();
+        Print.success('Comment updated successfully');
+        if (!isClosed) emit(CommentsLoaded(comments));
+      },
+    );
+  }
+
+  Future<void> servicedeleteComment({required int commentId}) async {
+    if (!isClosed) emit(CommentLoading());
+    final response =
+        await sl<CommentRepo>().serviceDeleteComment(commentId: commentId);
+    response.fold(
+      (l) {
+        Print.error(l);
+        if (!isClosed) emit(CommentError(message: l));
+      },
+      (r) {
+        comments = comments.where((c) => c.commentId != commentId).map((c) {
+          final newReplies =
+              c.replies?.where((r) => r.commentId != commentId).toList();
+          return c.copyWith(replies: newReplies);
+        }).toList();
+        Print.success('Comment deleted successfully');
+        if (!isClosed) emit(CommentsLoaded(comments));
+      },
+    );
+  }
+
+  Future<void> servicetoggleLike({required int commentId}) async {
+    if (!isClosed) emit(CommentLoading());
+
+    bool found = false;
+    comments = comments.map((comment) {
+      if (comment.commentId == commentId) {
+        found = true;
+        return comment.copyWith(
+          isLiked: !comment.isLiked,
+          likesCount: !comment.isLiked
+              ? comment.likesCount + 1
+              : comment.likesCount - 1,
+        );
+      }
+      if (comment.replies != null && comment.replies!.isNotEmpty) {
+        final updatedReplies = comment.replies!.map((reply) {
+          if (reply.commentId == commentId) {
+            found = true;
+            return reply.copyWith(
+              isLiked: !reply.isLiked,
+              likesCount:
+                  !reply.isLiked ? reply.likesCount + 1 : reply.likesCount - 1,
+            );
+          }
+          return reply;
+        }).toList();
+        return comment.copyWith(replies: updatedReplies);
+      }
+      return comment;
+    }).toList();
+
+    if (!found) {
+      PrintUtil.error('Comment with ID $commentId not found');
+      if (!isClosed) emit(CommentError(message: 'Comment not found'));
+      return;
+    }
+
+    final response = await sl<CommentRepo>().serviceToggleLike(commentId: commentId);
+    response.fold(
+      (l) {
+        // Revert optimistic update on failure
+        comments = comments.map((comment) {
+          if (comment.commentId == commentId) {
+            return comment.copyWith(
+              isLiked: !comment.isLiked,
+              likesCount: !comment.isLiked
+                  ? comment.likesCount + 1
+                  : comment.likesCount - 1,
+            );
+          }
+          if (comment.replies != null && comment.replies!.isNotEmpty) {
+            final updatedReplies = comment.replies!.map((reply) {
+              if (reply.commentId == commentId) {
+                return reply.copyWith(
+                  isLiked: !reply.isLiked,
+                  likesCount: !reply.isLiked
+                      ? reply.likesCount + 1
+                      : reply.likesCount - 1,
+                );
+              }
+              return reply;
+            }).toList();
+            return comment.copyWith(replies: updatedReplies);
+          }
+          return comment;
+        }).toList();
+        PrintUtil.error(l);
+        if (!isClosed) emit(CommentError(message: l));
+      },
+      (success) {
+        PrintUtil.success(
+            'Like toggled successfully for commentId: $commentId');
+        if (!isClosed) emit(CommentsLoaded(comments));
+      },
+    );
+  }
+
+  Future<void> toggleServiceLike({required int serviceId}) async {
+    if (!isClosed) emit(LikeServiceLoading());
+
+    if (serviceModel?.data?.id != serviceId) {
+      if (!isClosed) emit(LikeServiceError(message: 'service not found'));
+      return;
+    }
+
+    final service = serviceModel!.data!;
+    serviceModel = ServiceModel(
+      success: serviceModel!.success,
+      message: serviceModel!.message,
+      data: service.copyWith(
+        likes: (service.likes ?? 0) + (service.isLiked ? -1 : 1),
+        isLiked: !service.isLiked,
+      ),
+    );
+
+    if (!isClosed) emit(LikeServiceLoaded(serviceModel!));
+
+    final response = await searchRepo.toggleServiceLike(serviceId: serviceId);
+    response.fold(
+      (l) {
+        serviceModel = ServiceModel(
+          success: serviceModel!.success,
+          message: serviceModel!.message,
+          data: service.copyWith(
+            likes: (service.likes ?? 0),
+            isLiked: service.isLiked,
+          ),
+        );
+        if (!isClosed) emit(LikeServiceError(message: l));
+      },
+      (_) {
+        if (!isClosed) emit(LikeServiceLoaded(serviceModel!));
       },
     );
   }

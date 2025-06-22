@@ -1,3 +1,4 @@
+import 'package:embone/features/business_account/product/data/model/service_model.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
 import 'package:embone/features/client/product_Details/data/model/product_model.dart';
 
@@ -92,4 +93,17 @@ class LikeProductError extends SearchState {
   final String message;
 
   LikeProductError({required this.message});
+}
+
+class LikeServiceLoading extends SearchState {}
+
+class LikeServiceError extends SearchState {
+  final String message;
+
+  LikeServiceError({required this.message});
+}
+class LikeServiceLoaded extends SearchState {
+  final ServiceModel? serviceModel;
+
+  LikeServiceLoaded(this.serviceModel);
 }

@@ -9,17 +9,14 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/view/add_product_buisniss_account.dart';
-import 'package:embone/features/client/home/view/widgets/product_card.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
-import 'package:embone/features/client/product_Details/view/widgets/contact_us_section.dart';
 import 'package:embone/features/client/product_Details/view/widgets/inventory_button.dart';
 import 'package:embone/features/client/product_Details/view/widgets/price_display.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_description.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_image.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_info.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_share_bar.dart';
-import 'package:embone/features/client/product_Details/view/widgets/review_section.dart';
-import 'package:embone/features/client/product_Details/view/widgets/section_title.dart';
+import 'package:embone/features/client/product_Details/view/widgets/service_review_section.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +26,12 @@ import 'package:share_plus/share_plus.dart';
 
 class ServiceDetailPage extends StatefulWidget {
   final bool isVendor;
-  final int productId;
+  final int serviceId;
 
   const ServiceDetailPage({
     super.key,
     this.isVendor = false,
-    required this.productId,
+    required this.serviceId,
   });
 
   @override
@@ -46,7 +43,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
   @override
   void initState() {
     super.initState();
-    context.read<SearchCubit>().goToService(id: widget.productId);
+    context.read<SearchCubit>().goToService(id: widget.serviceId);
   }
 
   List<Map<String, dynamic>> _convertCommentsToMap(
@@ -175,26 +172,26 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     commentCount:
                                         cubit.commentResponse?.total ?? 0,
                                     onShare: () {
-                                      final productId =
-                                          cubit.productModel?.data?.id ?? 0;
-                                      final productName =
-                                          cubit.productModel?.data?.name ??
+                                      final serviceId =
+                                          cubit.serviceModel?.data?.id ?? 0;
+                                      final serviceName =
+                                          cubit.serviceModel?.data?.name ??
                                               "Product";
                                       final deepLink =
-                                          "myapp://product/$productId";
+                                          "myapp://product/$serviceId";
 
                                       Share.share(
-                                        "Check out this product: $productName\n$deepLink",
+                                        "Check out this product: $serviceName\n$deepLink",
                                         subject: "Awesome Product on Our App",
                                       );
                                     },
-                                    onLike: () {
-                                      context
-                                          .read<GlobalCubit>()
-                                          .addProductToWishlist(
-                                              cubit.productModel?.data?.id ??
-                                                  0);
-                                    },
+                                    // onLike: () {
+                                    //   context
+                                    //       .read<GlobalCubit>()
+                                    //       .addProductToWishlist(
+                                    //           cubit.productModel?.data?.id ??
+                                    //               0);
+                                    // },
                                     onComment: () {
                                       final context =
                                           reviewSectionKey.currentContext;
@@ -208,9 +205,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                       }
                                     },
                                     onThumbsUp: () {
-                                      cubit.toggleProductLike(
-                                        productId:
-                                            cubit.productModel?.data?.id ?? 0,
+                                      cubit.toggleServiceLike(
+                                        serviceId:
+                                            cubit.serviceModel?.data?.id ?? 0,
                                       );
                                     },
                                   ),
@@ -246,13 +243,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     sizes: const ['10'],
                                   ),
                                   SizedBox(height: 15.h),
-                                  ReviewsSection(
+                                  ServiceReviewsSection(
                                     key: reviewSectionKey,
                                     reviews: cubit.comments,
                                     commentController: cubit.commentController,
                                     isVendor: widget.isVendor,
                                     cubit: cubit,
-                                    productId: widget.productId,
+                                    serviceId: widget.serviceId,
                                   ),
                                   SizedBox(height: 15.h),
 
@@ -261,68 +258,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                         'No description available.',
                                   ),
                                   SizedBox(height: 15.h),
-                                  if (!widget.isVendor)
-                                    ContactForm(
-                                      onSubmit: (email) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Email submitted: $email')),
-                                        );
-                                      },
-                                    ),
-                                  SizedBox(height: 15.h),
-                                  if (!widget.isVendor)
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                          color: Color(0xffF6F6F6)),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SectionTitle(
-                                            title:
-                                                'related_products'.tr(context),
-                                            titleSize: 16.sp,
-                                            verticalPadding: 15.h,
-                                          ),
-                                          SizedBox(height: 8.h),
-                                          SizedBox(
-                                            height: 350.h,
-                                            child: ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              reverse: isRTL,
-                                              itemCount: products.length,
-                                              itemBuilder: (context, index) {
-                                                final product = products[index];
-                                                return ProductCard(
-                                                  imageUrl: product['imageUrl'],
-                                                  title: product['title'],
-                                                  price: product['price'],
-                                                  badge: product['badge'],
-                                                  actionText:
-                                                      product['actionText'],
-                                                  isFavorite:
-                                                      product['isFavorite'],
-                                                  onFavoriteToggle: () {},
-                                                  onActionTap: () {},
-                                                  onCardTap: () {
-                                                    //   navigateTo(
-                                                    //       context,
-                                                    //       ServiceDetailPage(
-                                                    //           isVendor:
-                                                    //               widget.isVendor,
-                                                    //           productId: 22));
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  SizedBox(height: 10.h),
+
                                 ],
                               ),
                             ),
