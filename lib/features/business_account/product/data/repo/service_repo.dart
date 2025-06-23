@@ -21,6 +21,7 @@ class ServiceRepo {
     required int accountId,
     required XFile mainImage,
     required List<XFile> listImages,
+    required List<String> about,
   }) async {
     try {
       final response = await api.post(
@@ -32,9 +33,9 @@ class ServiceRepo {
           "price": price,
           "category_service_id": categoryServiceId,
           "account_id": accountId,
-          "logo": await uploadImageToAPI(mainImage),
           "main_image": await uploadImageToAPI(mainImage),
           "list_images[]": await Future.wait(listImages.map((img) => uploadImageToAPI(img))),
+          "features[]": about
         },
       );
       return Right(ServiceModel.fromJson(response));
@@ -45,6 +46,70 @@ class ServiceRepo {
     }
 
     
+  }
+  // Future<Either<String, ServiceModel>> updateService({
+  //   required int serviceId,
+  //   required String name,
+  //   required String details,
+  //   required String price,
+  //   required int categoryServiceId,
+  //   required XFile? mainImage,
+  //   required List<XFile>? listImages,
+  // }) async {
+  //   try {
+  //     final data = {
+  //       "name": name,
+  //       "details": details,
+  //       "price": price,
+  //       "category_service_id": categoryServiceId,
+  //     };
+
+  //     if (mainImage != null) {
+  //       data["main_image"] = await uploadImageToAPI(mainImage);
+  //     }
+
+  //     if (listImages != null && listImages.isNotEmpty) {
+  //       data["list_images[]"] = await Future.wait(listImages.map((img) => uploadImageToAPI(img)));
+  //     }
+
+  //     final response = await api.put(
+  //       //'${EndPoints.updateService}/$serviceId',
+  //       isFormData: true,
+  //       data: data,
+  //     );
+
+  //     return Right(ServiceModel.fromJson(response));
+  //   } on ServerException catch (e) {
+  //     return Left(e.errorModel.detail);
+  //   } on NoInternetException catch (e) {
+  //     return Left(e.errorModel.detail);
+  //   }
+  // }
+
+  Future<Either<String, ServiceModel>> fetchServiceById(int serviceId) async {
+    try {
+      final response = await api.get(
+        '${EndPoints.getService}/$serviceId',
+      );
+      return Right(ServiceModel.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, ServicesResponse>> fetchServicesByAccountId() async {
+    try {
+      final response = await api.get(
+        EndPoints.addService
+      );
+      return Right(ServicesResponse.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
   }
   
   Future<Either<String, ServiceCategoryModel>> fetchServiceCategories() async {

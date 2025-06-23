@@ -109,4 +109,18 @@ class ProductRepo {
     }
   }
 
+  Future<Either<String, ProductResponse>> fetchAccountProductsById(
+      int accountId) async {
+    try {
+      final response = await api
+          .get('${EndPoints.getProducts}$accountId'); // Replace with correct endpoint
+      return Right(ProductResponse.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left('Unexpected error: $e');
+    }
+  }
 }

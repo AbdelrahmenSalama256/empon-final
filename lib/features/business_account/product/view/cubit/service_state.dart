@@ -1,6 +1,8 @@
-part of 'service_cubit.dart';
 
-abstract class ServiceState {}
+import 'package:embone/features/business_account/product/data/model/service_category_model.dart';
+import 'package:embone/features/business_account/product/data/model/service_model.dart';
+
+class ServiceState {}
 
 class ServiceInitial extends ServiceState {}
 
@@ -23,3 +25,8 @@ class ServiceCategoriesLoaded extends ServiceState {
   ServiceCategoriesLoaded(this.categories);
 }
 
+class ServiceLoaded extends ServiceState {
+  final List<Service> services;
+
+  ServiceLoaded(this.services);
+}

@@ -19,3 +19,8 @@ class ProductError extends ProductState {
 class ProductImagePicked extends ProductState {}
 
 class ProductImagesPicked extends ProductState {}
+class ProductLoaded extends ProductState {
+  final List<Product> products;
+  ProductLoaded(this.products);
+}
+

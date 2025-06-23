@@ -247,8 +247,11 @@
   "add_section": "Add Section",
   "undo": "Undo",
   "additional_Product_Details": "Additional Product Details",
+  "add_product_or_service": "Add Product or Service",
   "additional_service_Details": "Additional Service Details",
   "selected_color": "Selected Color",
+  "services": "Services",
+  
   "sports_shoe": "Sports Shoe",
   "currency": "EGP",
   "size": "Size",

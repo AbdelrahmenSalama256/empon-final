@@ -39,7 +39,6 @@ class ServiceDetailPage extends StatefulWidget {
 }
 
 class _ServiceDetailPageState extends State<ServiceDetailPage> {
-
   @override
   void initState() {
     super.initState();
@@ -77,10 +76,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
+    //final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
     final ScrollController scrollController = ScrollController();
     final GlobalKey reviewSectionKey = GlobalKey();
-
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -117,7 +115,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     images: [
                                       service?.mainImage ?? '',
                                       ...?(service?.listImages
-                                                  .map((img) => img))
+                                          .map((img) => img))
                                     ],
                                     autoPlay: true,
                                     autoPlayInterval:
@@ -126,7 +124,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                   SizedBox(height: 15.h),
                                   InteractionBar(
                                     isVendor: widget.isVendor,
-                                   // likeCount: service?.price ?? 0,
+                                    // likeCount: service?.price ?? 0,
                                     onEdit: () {
                                       navigateTo(
                                           context,
@@ -199,18 +197,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                       onPressed: () {},
                                     ),
                                   SizedBox(height: 15.h),
-
                                   PriceDisplay(
                                     currency: "",
                                     currentPrice: double.tryParse(
                                             service?.price ?? '0') ??
                                         0.0,
                                     //originalPrice: service?. == 1.0
-                                        // ? (double.tryParse(
-                                        //             product?.price ?? '0') ??
-                                        //         0.0) *
-                                        //     1.5
-                                        // : null,
+                                    // ? (double.tryParse(
+                                    //             product?.price ?? '0') ??
+                                    //         0.0) *
+                                    //     1.5
+                                    // : null,
                                   ),
                                   SizedBox(height: 15.h),
                                   ProductInfoSection(
@@ -226,30 +223,25 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                   ),
                                   SizedBox(height: 15.h),
                                   BlocBuilder<SearchCubit, SearchState>(
-  builder: (context, state) {
-    final cubit = context.read<SearchCubit>();
+                                      builder: (context, state) {
+                                    final cubit = context.read<SearchCubit>();
 
-    if (state is CommentLoading) {
-      return const Center(child: CustomLoadingIndicator());
-    }
-
-    return
-                                  ServiceReviewsSection(
-                                    key: reviewSectionKey,
-                                    reviews: cubit.comments,
-                                    commentController: cubit.commentController,
-                                    isVendor: widget.isVendor,
-                                    cubit: cubit,
-                                    serviceId: widget.serviceId,
-                                  );}),
+                                    return ServiceReviewsSection(
+                                      key: reviewSectionKey,
+                                      reviews: cubit.comments,
+                                      commentController:
+                                          cubit.commentController,
+                                      isVendor: widget.isVendor,
+                                      cubit: cubit,
+                                      serviceId: widget.serviceId,
+                                    );
+                                  }),
                                   SizedBox(height: 15.h),
-
                                   ProductDescriptionSection(
                                     description: service?.details ??
                                         'No description available.',
                                   ),
                                   SizedBox(height: 15.h),
-
                                 ],
                               ),
                             ),
