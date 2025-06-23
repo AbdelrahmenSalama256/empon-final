@@ -17,29 +17,6 @@ class ServiceDetailsSection extends StatefulWidget {
 }
 
 class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
-  List<Map<String, TextEditingController>> serviceDetailsControllers = [];
-
-  void addServiceDetail() {
-    serviceDetailsControllers.add({
-
-    });
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    context.read<ServiceCubit>().getServiceCategories();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    for (var item in serviceDetailsControllers) {
-      item['price']?.dispose();
-      item['description']?.dispose();
-    }
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,37 +91,25 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold)), //todo: make localized
             SizedBox(height: 10.h),
-            Column(
+           Column(
               children: [
-                ...List.generate(serviceDetailsControllers.length, (index) {
-                  final item = serviceDetailsControllers[index];
+                ...List.generate(cubit.featureControllers.length, (index) {
                   return Padding(
                     padding: EdgeInsets.only(bottom: 12.h),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                      ),
-                      child: Expanded(
-                        child: AppTextField(
-                          controller: item['price']!,
-                          hintText: 'price_hint'.tr(context),
-                          keyboardType: TextInputType.number,
-                          validator: (value) => Validators.validateRequired(
-                              value, 'price_hint'.tr(context), context),
-                        ),
-                      ),
+                    child: AppTextField(
+                      controller: cubit.featureControllers[index],
+                      hintText: '${'feature_hint'.tr(context)} ${index + 1}',
+                      keyboardType: TextInputType.text,
+                      validator: (value) => Validators.validateRequired(
+                          value, 'feature_hint'.tr(context), context),
                     ),
                   );
                 }),
-
-                // "+" Button
                 Row(
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: addServiceDetail,
+                        onPressed: cubit.addFeature,
                         icon: const Icon(Icons.add),
                         label: Text('add_section'.tr(context)),
                         style: ElevatedButton.styleFrom(
@@ -152,14 +117,12 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
                       ),
                     ),
                     SizedBox(width: 10.w),
-                    if (serviceDetailsControllers.isNotEmpty)
+                    if (cubit.featureControllers.isNotEmpty)
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            serviceDetailsControllers.last['price']!.dispose();
-                            serviceDetailsControllers.last['description']!
-                                .dispose();
-                            serviceDetailsControllers.removeLast();
+                            cubit.featureControllers.last.dispose();
+                            cubit.featureControllers.removeLast();
                             setState(() {});
                           },
                           icon: const Icon(Icons.undo),
@@ -172,7 +135,6 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
                 ),
               ],
             ),
-
             SizedBox(height: 20.h),
           ],
         );

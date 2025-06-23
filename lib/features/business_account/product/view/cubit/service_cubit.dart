@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/features/business_account/product/data/model/service_category_model.dart';
@@ -25,7 +27,18 @@ class ServiceCubit extends Cubit<ServiceState> {
   List<XFile> sliderImages = [];
   List<int> selectedCategoryIds = [];
   List<Service> services = [];
-  List<String> about =[];
+
+  List<TextEditingController> featureControllers = [TextEditingController()];
+
+  void addFeature() {
+    featureControllers.add(TextEditingController());
+  }
+
+  void disposeController() {
+    for (var controller in featureControllers) {
+      controller.dispose();
+  }
+  }
 
   // Setters
 
@@ -62,7 +75,7 @@ class ServiceCubit extends Cubit<ServiceState> {
       accountId: accountId!,
       mainImage: mainImage!,
       listImages: sliderImages,
-      about: about,
+      about: featureControllers.map((e) => e.text).toList(),
     );
 
     result.fold(
