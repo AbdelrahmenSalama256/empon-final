@@ -2,6 +2,7 @@ class User {
   final String? id;
   final String? firstName;
   final String? lastName;
+  final String? name;
   final String? birthDate;
   final String? gender;
   final String? phone;
@@ -18,6 +19,7 @@ class User {
   final bool? isOnline;
   final bool? isFriend;
   final String? token;
+  final String? status;
   final String? createdAt;
   final List<Address>? addresses;
   final List<Account>? account;
@@ -30,11 +32,13 @@ class User {
     this.lastName,
     this.isFriend = false,
     this.birthDate,
+    this.name,
     this.gender,
     this.phone,
     this.email,
     this.anotherEmail,
     this.image,
+    this.status,
     this.emailVerifiedAt,
     this.anotherEmailVerifiedAt,
     this.phoneVerifiedAt,
@@ -53,8 +57,9 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id']?.toString(), // Convert int to String
+      id: json['id']?.toString(),
       firstName: json['first_name'] as String?,
+      name: json['name'] as String?,
       lastName: json['last_name'] as String?,
       birthDate: json['birth_date'] as String?,
       gender: json['gender'] as String?,
@@ -69,6 +74,7 @@ class User {
       balance: json['balance']?.toString(), // Convert int to String
       fcmToken: json['fcm_token'] as String?,
       wsToken: json['ws_token'] as String?,
+      status: json['status'] as String?,
       lastSeen: json['last_seen'] as String?,
       isOnline: json['is_online'] != null ? json['is_online'] == 1 : null,
       token: json['token'] as String?,

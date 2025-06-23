@@ -26,3 +26,5 @@ final class FriendRequestUpdated extends FriendsState {
 
   const FriendRequestUpdated(this.message, this.friendRequest);
 }
+
+class FriendsLoadingMore extends FriendsState {} // New state

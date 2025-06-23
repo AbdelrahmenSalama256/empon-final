@@ -43,10 +43,10 @@ class InviteContactsPage extends StatelessWidget {
               listener: (context, state) {
                 if (state is ContactsError) {
                   showToast(context,
-                      message: (state).message, state: ToastStates.error);
+                      message: state.message, state: ToastStates.error);
                 } else if (state is CheckingContactsError) {
                   showToast(context,
-                      message: (state).message, state: ToastStates.error);
+                      message: state.message, state: ToastStates.error);
                 } else if (state is ContactsChecked) {
                   context.read<FriendsCubit>().initializeContacts(
                         state.registeredUsers,
@@ -87,9 +87,7 @@ class InviteContactsPage extends StatelessWidget {
                         ),
                         Expanded(
                           child: state is LoadingContacts
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
+                              ? const Center(child: CircularProgressIndicator())
                               : friendsCubit.registeredUsers.isEmpty &&
                                       friendsCubit.nonRegisteredContacts.isEmpty
                                   ? Center(
@@ -133,16 +131,14 @@ class InviteContactsPage extends StatelessWidget {
                                                   child: ContactListItem(
                                                     contact: ContactModel(
                                                       id: user.id.toString(),
-                                                      name:
-                                                          '${user.firstName ?? ''} ${user.lastName ?? ''}',
+                                                      name: user.name ?? "",
                                                       phone: user.phone ?? '',
                                                       isSelected:
                                                           requestStatus ==
                                                               "pending",
-                                                      initial: user.firstName
-                                                              ?.substring(
-                                                                  0, 1) ??
-                                                          '',
+                                                      status: user.status,
+                                                      initial:
+                                                          user.firstName ?? '',
                                                       isFriend: user.isFriend ??
                                                           false,
                                                     ),
@@ -150,20 +146,10 @@ class InviteContactsPage extends StatelessWidget {
                                                       if (!friendsCubit
                                                               .isClosed &&
                                                           context.mounted) {
-                                                        if (user.isFriend ==
-                                                            true) {
-                                                          context
-                                                              .read<
-                                                                  FriendsCubit>()
-                                                              .declineFriendRequest(
-                                                                  user.id
-                                                                      .toString());
-                                                        } else {
-                                                          friendsCubit
-                                                              .toggleFriendRequest(
-                                                                  user.id
-                                                                      .toString());
-                                                        }
+                                                        friendsCubit
+                                                            .toggleFriendRequest(
+                                                          user.id.toString(),
+                                                        );
                                                       }
                                                     },
                                                     isRegistered: true,
@@ -185,13 +171,30 @@ class InviteContactsPage extends StatelessWidget {
                                             ),
                                             SizedBox(height: 12.h),
                                             ListView.builder(
-                                              padding: EdgeInsets.zero,
+                                              controller:
+                                                  friendsCubit.scrollController,
                                               shrinkWrap: true,
+                                              padding: EdgeInsets.zero,
                                               physics:
                                                   const NeverScrollableScrollPhysics(),
                                               itemCount: friendsCubit
-                                                  .nonRegisteredContacts.length,
+                                                      .nonRegisteredContacts
+                                                      .length +
+                                                  (friendsState
+                                                          is FriendsLoadingMore
+                                                      ? 1
+                                                      : 0),
                                               itemBuilder: (context, index) {
+                                                if (friendsState
+                                                        is FriendsLoadingMore &&
+                                                    index ==
+                                                        friendsCubit
+                                                            .nonRegisteredContacts
+                                                            .length) {
+                                                  return const Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                                }
                                                 final contact = friendsCubit
                                                         .nonRegisteredContacts[
                                                     index];
@@ -201,27 +204,31 @@ class InviteContactsPage extends StatelessWidget {
                                                   return const SizedBox
                                                       .shrink();
                                                 }
-                                                return ContactListItem(
-                                                  contact: contact,
-                                                  onTap: () async {
-                                                    if (!friendsCubit
-                                                            .isClosed &&
-                                                        context.mounted) {
-                                                      const appLink =
-                                                          'https://your-app-link.com';
-                                                      await Share.share(
-                                                        'Check out this awesome app! Download it here: $appLink',
-                                                        subject:
-                                                            'Invite to My App',
-                                                      );
-                                                      showToast(context,
-                                                          message:
-                                                              'App link shared!',
-                                                          state: ToastStates
-                                                              .success);
-                                                    }
-                                                  },
-                                                  isRegistered: false,
+                                                return Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 12.h),
+                                                  child: ContactListItem(
+                                                    contact: contact,
+                                                    onTap: () async {
+                                                      if (!friendsCubit
+                                                              .isClosed &&
+                                                          context.mounted) {
+                                                        const appLink =
+                                                            'https://your-app-link.com';
+                                                        await Share.share(
+                                                          'Check out this awesome app! Download it here: $appLink',
+                                                          subject:
+                                                              'Invite to My App',
+                                                        );
+                                                        showToast(context,
+                                                            message:
+                                                                'App link shared!',
+                                                            state: ToastStates
+                                                                .success);
+                                                      }
+                                                    },
+                                                    isRegistered: false,
+                                                  ),
                                                 );
                                               },
                                             ),

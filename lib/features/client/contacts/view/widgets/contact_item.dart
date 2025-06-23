@@ -86,7 +86,7 @@ class ContactListItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          contact.name.isNotEmpty ? contact.name : 'Unknown',
+          contact.name,
           style: TextStyle(
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
@@ -143,7 +143,7 @@ class _ButtonContent extends StatelessWidget {
 
     // Determine button state based on API response
     final isFriend = contact.isFriend == true;
-    final isPending = status == "pending";
+    final isPending = friendsCubit.nonRegisteredContacts == "pending";
     final isAccepted = status == "accepted";
 
     String buttonText;
@@ -155,11 +155,11 @@ class _ButtonContent extends StatelessWidget {
         buttonText = 'delete';
         icon = CupertinoIcons.trash;
         color = AppColors.red;
-      } else if (isPending) {
+      } else if (contact.status == 'pending' || isPending) {
         buttonText = 'pending';
         icon = CupertinoIcons.hourglass;
         color = AppColors.orange;
-      } else if (isAccepted) {
+      } else if (contact.status == 'accepted' || isAccepted) {
         buttonText = 'added';
         icon = CupertinoIcons.person_crop_circle_fill_badge_checkmark;
         color = AppColors.green;

@@ -1,8 +1,18 @@
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
+import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
+import 'package:embone/features/client/cart/view/cubit/cart_state.dart';
 import 'package:embone/features/client/home/view/widgets/product_card.dart';
+import 'package:embone/features/client/menu/data/repo/offer_repo.dart';
+import 'package:embone/features/client/menu/view/cubit/offers_cubit.dart';
+import 'package:embone/features/client/menu/view/cubit/offers_state.dart';
+import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/search_page.dart';
@@ -19,196 +29,210 @@ class OffersScreen extends StatefulWidget {
 }
 
 class _OffersScreenState extends State<OffersScreen> {
+  final ScrollController _scrollController = ScrollController();
+  late OffersCubit _offersCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _offersCubit = OffersCubit(sl<OfferRepo>())..init();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _offersCubit.close();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.7) {
+      if (!_offersCubit.isLoadingMore && _offersCubit.hasMoreOffers) {
+        _offersCubit.fetchOffers(loadMore: true);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      body: SafeArea(
-        child: Column(
-          children: [
-            AppHeader(
-              title: "special_offers".tr(context),
-              onBackPressed: () => Navigator.pop(context),
-              centerTitle: true,
-              actions: [
-                IconButton(
-                  icon: SvgPicture.asset(
-                    "assets/images/svg/search.svg",
-                    width: 24.w,
-                    height: 24.h,
-                  ),
-                  onPressed: () {
-                    navigateTo(
-                      context,
-                      BlocProvider(
-                        create: (context) =>
-                            SearchCubit(sl<SearchRepo>())..init(),
-                        child: const SearchPage(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _offersCubit),
+        BlocProvider(create: (context) => GlobalCubit()),
+        BlocProvider(create: (context) => CartCubit(sl<CartRepo>())),
+      ],
+      child: BlocListener<GlobalCubit, GlobalState>(
+        listener: (context, globalState) {
+          if (globalState is WishlistSuccess) {
+            showToast(
+              context,
+              message: globalState.message,
+              state: ToastStates.success,
+            );
+          }
+          if (globalState is WishlistError) {
+            showToast(
+              context,
+              message: globalState.message,
+              state: ToastStates.error,
+            );
+          }
+        },
+        child: BlocListener<CartCubit, CartState>(
+          listener: (context, cartState) {
+            if (cartState is AddToCartSuccess) {
+              showToast(
+                context,
+                message: cartState.message.tr(context),
+                state: ToastStates.success,
+              );
+            } else if (cartState is CartError) {
+              showToast(
+                context,
+                message: cartState.error.tr(context),
+                state: ToastStates.error,
+              );
+            }
+          },
+          child: Scaffold(
+            backgroundColor: Colors.grey.shade50,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  AppHeader(
+                    title: "special_offers".tr(context),
+                    onBackPressed: () => Navigator.pop(context),
+                    centerTitle: true,
+                    actions: [
+                      IconButton(
+                        icon: SvgPicture.asset(
+                          "assets/images/svg/search.svg",
+                          width: 24.w,
+                          height: 24.h,
+                        ),
+                        onPressed: () {
+                          navigateTo(
+                            context,
+                            BlocProvider(
+                              create: (context) =>
+                                  SearchCubit(sl<SearchRepo>())..init(),
+                              child: const SearchPage(),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              ],
+                    ],
+                  ),
+                  Expanded(
+                    child: _buildOffersList(),
+                  ),
+                ],
+              ),
             ),
-            Expanded(
-              child: _buildOffersGrid(),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildOffersGrid() {
-    final offers = _getAllOffers();
-
-    return GridView.builder(
-      padding: EdgeInsets.all(16.w),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: _getCrossAxisCount(),
-        childAspectRatio: _getChildAspectRatio(),
-        crossAxisSpacing: 12.w,
-        mainAxisSpacing: 12.h,
-      ),
-      itemCount: offers.length,
-      itemBuilder: (context, index) {
-        final offer = offers[index];
-        return ProductCard(
-          imageUrl: offer['imageUrl'],
-          title: offer['title'],
-          isOffer: true,
-          price: offer['price'],
-          originalPrice: offer['originalPrice'],
-          badge: offer['badge'],
-          actionText: offer['actionText'],
-          isFavorite: offer['isFavorite'],
-          discountPercentage: offer['discount'],
-          onFavoriteToggle: () {
-            setState(() {
-              offers[index]['isFavorite'] = !offers[index]['isFavorite'];
-            });
-          },
-          onActionTap: () {
-            _handleAddToCart(offer);
-          },
-          onCardTap: () {
-            _handleProductTap(offer);
-          },
+  Widget _buildOffersList() {
+    return BlocBuilder<OffersCubit, OffersState>(
+      builder: (context, state) {
+        final cubit = context.read<OffersCubit>();
+        if (state is OfferLoading && cubit.offers.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is OfferError) {
+          return Center(
+            child: Text(
+              state.message,
+              style: TextStyle(color: Colors.red, fontSize: 14.sp),
+            ),
+          );
+        }
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 0.w),
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: cubit.offers.length +
+                (cubit.hasMoreOffers && state is OfferLoadingMore ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == cubit.offers.length &&
+                  cubit.hasMoreOffers &&
+                  state is OfferLoadingMore) {
+                return const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              final offer = cubit.offers[index];
+              final offerable = offer.offerable;
+              return Column(
+                children: [
+                  ProductCard(
+                    imageUrl: offerable.image.isNotEmpty
+                        ? offerable.image
+                        : (offer.account.logo),
+                    title: offerable.name,
+                    isOffer: true,
+                    price: double.tryParse(offer.offerPrice) ?? 0.0,
+                    originalPrice: double.tryParse(offer.originalPrice),
+                    badge: offer.status == 'pending' ? 'Pending' : offer.status,
+                    actionText: 'add_to_cart'.tr(context),
+                    isFavorite: GlobalState is WishlistError
+                        ? false
+                        : GlobalState is WishlistSuccess
+                            ? true
+                            : false,
+                    discountPercentage:
+                        offer.originalPrice != null && offer.offerPrice != null
+                            ? ((double.parse(offer.originalPrice) -
+                                        double.parse(offer.offerPrice)) /
+                                    double.parse(offer.originalPrice) *
+                                    100)
+                                .round()
+                            : null,
+                    onFavoriteToggle: () {
+                      context.read<GlobalCubit>().addProductToWishlist(
+                            offer.id,
+                          );
+                    },
+                    onActionTap: () {
+                      context.read<CartCubit>().addProductToCart(
+                            productId: offer.id,
+                            variationId: 6,
+                            quantity: 1,
+                          );
+                    },
+                    onCardTap: () {
+                      navigateTo(
+                        context,
+                        BlocProvider(
+                          create: (context) => SearchCubit(sl<SearchRepo>()),
+                          child: ProductDetailPage(productId: offer.id),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildDivider(),
+                ],
+              );
+            },
+          ),
         );
       },
     );
   }
 
-  int _getCrossAxisCount() {
-    final screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 600) {
-      return 3; // Tablet
-    } else if (screenWidth > 400) {
-      return 2; // Large phone
-    } else {
-      return 1; // Small phone
-    }
-  }
-
-  double _getChildAspectRatio() {
-    final screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 600) {
-      return 0.75;
-    } else if (screenWidth > 400) {
-      return 0.8;
-    } else {
-      return 0.85;
-    }
-  }
-
-  List<Map<String, dynamic>> _getAllOffers() {
-    return [
-      {
-        'id': '1',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-        'title': 'nike_air_max_270'.tr(context),
-        'price': 89.99,
-        'originalPrice': 129.99,
-        'badge': 'flash_sale'.tr(context),
-        'actionText': 'add_to_cart'.tr(context),
-        'isFavorite': false,
-        'discount': 30,
-      },
-      {
-        'id': '2',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400',
-        'title': 'adidas_ultraboost'.tr(context),
-        'price': 119.99,
-        'originalPrice': 159.99,
-        'badge': 'limited_offer'.tr(context),
-        'actionText': 'add_to_cart'.tr(context),
-        'isFavorite': true,
-        'discount': 25,
-      },
-      {
-        'id': '3',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400',
-        'title': 'puma_rs_x'.tr(context),
-        'price': 79.99,
-        'originalPrice': 99.99,
-        'badge': 'new_arrival'.tr(context),
-        'actionText': 'add_to_cart'.tr(context),
-        'isFavorite': false,
-        'discount': 20,
-      },
-      {
-        'id': '4',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
-        'title': 'converse_chuck_taylor'.tr(context),
-        'price': 49.99,
-        'originalPrice': 69.99,
-        'badge': 'best_seller'.tr(context),
-        'actionText': 'add_to_cart'.tr(context),
-        'isFavorite': false,
-        'discount': 28,
-      },
-      {
-        'id': '5',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400',
-        'title': 'vans_old_skool'.tr(context),
-        'price': 54.99,
-        'originalPrice': 74.99,
-        'badge': 'hot_deal'.tr(context),
-        'actionText': 'add_to_cart'.tr(context),
-        'isFavorite': true,
-        'discount': 27,
-      },
-      {
-        'id': '6',
-        'imageUrl':
-            'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
-        'title': 'jordan_air_1'.tr(context),
-        'price': 139.99,
-        'originalPrice': 179.99,
-        'badge': 'exclusive'.tr(context),
-        'actionText': 'add_to_cart'.tr(context),
-        'isFavorite': false,
-        'discount': 22,
-      },
-    ];
-  }
-
-  void _handleAddToCart(Map<String, dynamic> offer) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${offer['title']} ${"added_to_cart".tr(context)}'),
-        duration: const Duration(seconds: 2),
-      ),
+  Widget _buildDivider() {
+    return Column(
+      children: [
+        SizedBox(height: 16.h),
+        Divider(height: 1, color: Colors.grey[300]),
+        SizedBox(height: 16.h),
+      ],
     );
-  }
-
-  void _handleProductTap(Map<String, dynamic> offer) {
-    // Navigate to product details
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailsScreen(productId: offer['id'])));
   }
 }

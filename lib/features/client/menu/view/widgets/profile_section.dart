@@ -41,12 +41,26 @@ class ProfileSection extends StatelessWidget {
       child: isVendor != true
           ? Row(
               children: [
-                CircleAvatar(
-                    radius: 24.r,
-                    backgroundColor: AppColors.textPrimary,
-                    backgroundImage: NetworkImage(userImageUrl == ""
-                        ? "https://static-00.iconduck.com/assets.00/avatar-default-icon-1024x1024-dvpl2mz1.png"
-                        : userImageUrl)),
+                Container(
+                  width: 48.r,
+                  height: 48.r,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.textPrimary,
+                  ),
+                  child: ClipOval(
+                    child: Image.network(
+                      userImageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/images/placholder.jpg',
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
+                  ),
+                ),
                 SizedBox(width: 12.w),
                 Text(
                   userName,
@@ -154,7 +168,9 @@ class ProfileSection extends StatelessWidget {
             ? Border.all(color: borderColor!, width: 2.w)
             : null,
         image: DecorationImage(
-          image:userImageUrl.startsWith('http') ? NetworkImage(userImageUrl):AssetImage(userImageUrl) as ImageProvider,
+          image: userImageUrl.startsWith('http')
+              ? NetworkImage(userImageUrl)
+              : AssetImage(userImageUrl) as ImageProvider,
           fit: BoxFit.cover,
         ),
       ),

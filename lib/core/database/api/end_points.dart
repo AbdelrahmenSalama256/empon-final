@@ -73,7 +73,8 @@ class EndPoints {
   static const String deleteMessage = '${baseUrl}chat/delete-message';
   static const String chatWith = '${baseUrl}chat-with';
   static const String sendMessage = '${baseUrl}send-message';
-
+  // ! accounts
+  static const String accounts = '${baseUrl}account';
   // ! Wishlist
   static const String favorites = '${baseUrl}favourite';
   static const String addProductToWishlist = '${baseUrl}favourite/product';
@@ -85,7 +86,12 @@ class EndPoints {
   static const String updateCartItemQuantity = '${baseUrl}carts';
   static const String removeCartItem = '${baseUrl}carts';
   static const String cartInfo = '${baseUrl}orders';
+  // ! Faq
+  static const String faqs = '${baseUrl}faqs';
 
+// !Recent View Brands
+  static const String recentViewBrands = '${baseUrl}recent-account-view';
+  static const String offers = '${baseUrl}offers';
   // ! Wallet
   static const String walletBalance = '${baseUrl}wallet-balance';
   static const String walletHistory = '${baseUrl}wallet-history';

@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/contacts/data/model/contact_model.dart';
 import 'package:embone/features/client/contacts/data/model/friends_model.dart';
 import 'package:embone/features/client/contacts/data/repo/friends_repo.dart';
 import 'package:embone/features/client/contacts/view/cubit/friends_state.dart';
+import 'package:flutter/material.dart';
 
 class FriendsCubit extends Cubit<FriendsState> {
   final FriendsRepo friendsRepo;
@@ -12,7 +18,55 @@ class FriendsCubit extends Cubit<FriendsState> {
   Map<String, FriendRequest?> friendRequests = {};
   List<FriendRequest> pendingFriendRequests = [];
   List<Friend> acceptedFriends = [];
+  final ScrollController scrollController = ScrollController();
+
+  // Pagination state
+  int _nonRegisteredOffset = 0;
+  final int _pageSize = 20;
+  bool _hasMoreNonRegistered = true;
+  bool _isLoadingMore = false;
+  Timer? _debounceTimer;
+
   FriendsCubit(this.friendsRepo) : super(FriendsInitial());
+
+  void loadMoreNonRegisteredContacts() async {
+    if (_isLoadingMore || !_hasMoreNonRegistered) return;
+
+    _isLoadingMore = true;
+    emit(FriendsLoadingMore());
+
+    // Simulate fetching more contacts (replace with actual logic if needed)
+    final allContacts = sl<RegisterCubit>().contacts;
+    final nextBatch = allContacts
+        .skip(_nonRegisteredOffset)
+        .take(_pageSize)
+        .where((contact) =>
+            !registeredUsers.any((user) => user.phone == contact.phone))
+        .toList();
+
+    await Future.delayed(
+        const Duration(milliseconds: 500)); // Simulate network delay
+
+    if (nextBatch.isEmpty) {
+      _hasMoreNonRegistered = false;
+    } else {
+      nonRegisteredContacts.addAll(nextBatch);
+      _nonRegisteredOffset += nextBatch.length;
+    }
+
+    _isLoadingMore = false;
+    PrintUtil.info(
+        "Loaded ${nextBatch.length} more non-registered contacts, total: ${nonRegisteredContacts.length}");
+    emit(FriendsLoaded());
+  }
+
+  @override
+  Future<void> close() {
+    _debounceTimer?.cancel();
+    scrollController.dispose();
+    return super.close();
+  }
+
   void initializeContacts(List<User> users, List<ContactModel> nonRegistered) {
     registeredUsers = users;
     nonRegisteredContacts = nonRegistered;

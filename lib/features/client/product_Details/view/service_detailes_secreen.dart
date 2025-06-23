@@ -76,7 +76,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    //final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
     final ScrollController scrollController = ScrollController();
     final GlobalKey reviewSectionKey = GlobalKey();
 
@@ -226,6 +225,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                       builder: (context, state) {
                                     final cubit = context.read<SearchCubit>();
 
+                                    if (state is CommentLoading) {
+                                      return const Center(
+                                          child: CustomLoadingIndicator());
+                                    }
+
                                     return ServiceReviewsSection(
                                       key: reviewSectionKey,
                                       reviews: cubit.comments,
@@ -237,11 +241,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     );
                                   }),
                                   SizedBox(height: 15.h),
+
                                   ProductDescriptionSection(
                                     description: service?.details ??
                                         'No description available.',
                                   ),
                                   SizedBox(height: 15.h),
+
                                 ],
                               ),
                             ),
