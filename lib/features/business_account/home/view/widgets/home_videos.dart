@@ -220,53 +220,63 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
               SizedBox(height: 10.h),
 
               // Tabs
-              TabBar(
-                controller: _tabController,
-                labelColor: AppColors.white,
-                unselectedLabelColor: const Color(0xff152354),
-                padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 7.h),
-                indicator: BoxDecoration(
-                  color: AppColors.primaryColor,
-                  borderRadius: BorderRadius.circular(10.r),
+              Container(
+                height: 50.h,
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(15.r),
                 ),
-                labelStyle: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-                tabs: [
-                  Tab(
-                    child: Center(
-                      widthFactor: 15.w,
-                      child: Text(
-                        "products".tr(context),
-                        style: TextStyle(
-                          fontFamily:
-                              context.read<GlobalCubit>().language == "ar"
-                                  ? 'Beiruti'
-                                  : "Poppins",
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w700,
+                child: TabBar(
+                  controller: _tabController,
+                  labelColor: AppColors.white,
+                  unselectedLabelColor: const Color(0xff152354),
+                  indicator: BoxDecoration(
+                    color: AppColors.primaryColor,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  dividerColor: Colors.transparent,
+                  dividerHeight: 0,
+                  padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 7.h),
+                  tabs: [
+                    Tab(
+                      child: Center(
+                        widthFactor: 15.w,
+                        child: Text(
+                          "products".tr(context),
+                          style: TextStyle(
+                            fontFamily:
+                                context.read<GlobalCubit>().language == "ar"
+                                    ? 'Beiruti'
+                                    : "Poppins",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Tab(
-                    child: Center(
-                      widthFactor: 15.w,
-                      child: Text(
-                        "services".tr(context),
-                        style: TextStyle(
-                          fontFamily:
-                              context.read<GlobalCubit>().language == "ar"
-                                  ? 'Beiruti'
-                                  : "Poppins",
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w700,
+                    Tab(
+                      child: Center(
+                        widthFactor: 15.w,
+                        child: Text(
+                          "services".tr(context),
+                          style: TextStyle(
+                            fontFamily:
+                                context.read<GlobalCubit>().language == "ar"
+                                    ? 'Beiruti'
+                                    : "Poppins",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               // Tab Content
