@@ -1,5 +1,6 @@
 import 'package:embone/core/utils/validator.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
+import 'package:embone/features/business_account/product/view/cubit/service_state.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,8 +21,7 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
 
   void addServiceDetail() {
     serviceDetailsControllers.add({
-      'price': TextEditingController(),
-      'description': TextEditingController(),
+
     });
     setState(() {});
   }
@@ -126,30 +126,14 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
                       decoration: const BoxDecoration(
                         color: Colors.white,
                       ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: AppTextField(
-                              controller: item['price']!,
-                              hintText: 'price_hint'.tr(context),
-                              keyboardType: TextInputType.number,
-                              validator: (value) => Validators.validateRequired(
-                                  value, 'price_hint'.tr(context), context),
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          Expanded(
-                            child: AppTextField(
-                              controller: item['description']!,
-                              hintText: 'description_hint'.tr(context),
-                              keyboardType: TextInputType.text,
-                              validator: (value) => Validators.validateRequired(
-                                  value,
-                                  'description_hint'.tr(context),
-                                  context),
-                            ),
-                          ),
-                        ],
+                      child: Expanded(
+                        child: AppTextField(
+                          controller: item['price']!,
+                          hintText: 'price_hint'.tr(context),
+                          keyboardType: TextInputType.number,
+                          validator: (value) => Validators.validateRequired(
+                              value, 'price_hint'.tr(context), context),
+                        ),
                       ),
                     ),
                   );

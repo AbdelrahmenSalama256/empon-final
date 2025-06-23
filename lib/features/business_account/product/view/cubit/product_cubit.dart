@@ -17,6 +17,7 @@ class ProductCubit extends Cubit<ProductState> {
 
   XFile? productImage;
   List<XFile> productImages = [];
+  List<Product> products = [];
 
   int? productCategoryId;
   int isSale = 0;
@@ -45,6 +46,17 @@ class ProductCubit extends Cubit<ProductState> {
     result.fold(
       (failure) => emit(ProductError(failure)),
       (productModel) => emit(ProductSuccess(productModel)),
+    );
+  }
+    Future<void> getProductsByAccountId(int accountId) async {
+    emit(ProductLoading());
+    final result = await productRepo.fetchAccountProductsById(accountId);
+    result.fold(
+      (error) => emit(ProductError(error)),
+      (model) {
+        products = model.data;
+        emit(ProductLoaded(products));
+      },
     );
   }
 

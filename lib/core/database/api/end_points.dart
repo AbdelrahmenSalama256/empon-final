@@ -17,6 +17,7 @@ class EndPoints {
   static const String userResendCode = "${baseUrl}auth/password/resend_code";
   static const String userVerifyEmail = "${baseUrl}check-email";
   static const String userVerifyPhone = "${baseUrl}check-phone";
+  static const String account = "${baseUrl}account/";
   //! Logout
   static const String userLogout = "${baseUrl}logout";
   static const String deleteAccount = "${baseUrl}auth/account-deletion";
@@ -121,6 +122,7 @@ class EndPoints {
   static const String getService = "${baseUrl}services/";
   static const String addService = "${baseUrl}services";
   static const String getServicesCategores = "${baseUrl}service-categories";
+  static const String getProducts = "${baseUrl}account-products/";
 }
 
 class ApiKey {

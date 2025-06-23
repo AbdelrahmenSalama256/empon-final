@@ -101,3 +101,182 @@ class Data {
 }
 
 
+class ProductResponse {
+  final bool success;
+  final String message;
+  final List<Product> data;
+
+  ProductResponse({
+    required this.success,
+    required this.message,
+    required this.data,
+  });
+
+  factory ProductResponse.fromJson(Map<String, dynamic> json) {
+    return ProductResponse(
+      success: json['success'],
+      message: json['message'],
+      data: List<Product>.from(json['data'].map((x) => Product.fromJson(x))),
+    );
+  }
+}
+class Product {
+  final int id;
+  final String name;
+  final String description;
+  final ProductDetails details;
+  final String code;
+  final String category;
+  final String price;
+  final int vendorId;
+  final String vendorName;
+  final bool isSale;
+  final String discountType;
+  final String discountValue;
+  final List<Variation> variations;
+  final bool isLiked;
+  final int likes;
+  final String image;
+  final List<ProductImage> images;
+  final String createdAt;
+  final String updatedAt;
+
+  Product({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.details,
+    required this.code,
+    required this.category,
+    required this.price,
+    required this.vendorId,
+    required this.vendorName,
+    required this.isSale,
+    required this.discountType,
+    required this.discountValue,
+    required this.variations,
+    required this.isLiked,
+    required this.likes,
+    required this.image,
+    required this.images,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      details: ProductDetails.fromJson(json['details']),
+      code: json['code'],
+      category: json['category'],
+      price: json['price'],
+      vendorId: json['vendor_id'],
+      vendorName: json['vendor_name'],
+      isSale: json['is_sale'] == 1,
+      discountType: json['discount_type'],
+      discountValue: json['discount_value'],
+      variations: List<Variation>.from(
+          json['variations'].map((x) => Variation.fromJson(x))),
+      isLiked: json['is_liked'],
+      likes: json['likes'],
+      image: json['image'],
+      images: List<ProductImage>.from(
+          json['images'].map((x) => ProductImage.fromJson(x))),
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+    );
+  }
+}
+class ProductDetails {
+  final String quality;
+  final String material;
+
+  ProductDetails({
+    required this.quality,
+    required this.material,
+  });
+
+  factory ProductDetails.fromJson(Map<String, dynamic> json) {
+    return ProductDetails(
+      quality: json['quality'],
+      material: json['material'],
+    );
+  }
+}
+class Variation {
+  final String name;
+  final int stock;
+  final String price;
+  final AttributeValue attributeValue;
+  final ColorModel color;
+
+  Variation({
+    required this.name,
+    required this.stock,
+    required this.price,
+    required this.attributeValue,
+    required this.color,
+  });
+
+  factory Variation.fromJson(Map<String, dynamic> json) {
+    return Variation(
+      name: json['name'],
+      stock: json['stock'],
+      price: json['price'],
+      attributeValue: AttributeValue.fromJson(json['attribute_value']),
+      color: ColorModel.fromJson(json['color']),
+    );
+  }
+}
+class AttributeValue {
+  final int id;
+  final String name;
+  final String attribute;
+
+  AttributeValue({
+    required this.id,
+    required this.name,
+    required this.attribute,
+  });
+
+  factory AttributeValue.fromJson(Map<String, dynamic> json) {
+    return AttributeValue(
+      id: json['id'],
+      name: json['name'],
+      attribute: json['attribute'],
+    );
+  }
+}
+
+class ColorModel {
+  final int id;
+  final String name;
+  final String code;
+
+  ColorModel({
+    required this.id,
+    required this.name,
+    required this.code,
+  });
+
+  factory ColorModel.fromJson(Map<String, dynamic> json) {
+    return ColorModel(
+      id: json['id'],
+      name: json['name'],
+      code: json['code'],
+    );
+  }
+}
+class ProductImage {
+  final String url;
+
+  ProductImage({required this.url});
+
+  factory ProductImage.fromJson(Map<String, dynamic> json) {
+    return ProductImage(
+      url: json['url'],
+    );
+  }
+}

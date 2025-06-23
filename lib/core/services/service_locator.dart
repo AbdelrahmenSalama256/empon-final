@@ -4,6 +4,7 @@ import 'package:embone/core/database/api/dio_consumer.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/category_repo.dart';
+import 'package:embone/features/business_account/home/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/product/data/repo/product_repo.dart';
 import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
@@ -59,6 +60,7 @@ void initServiceLocator() {
   sl.registerLazySingleton(() => WalletRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => ProductRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => ServiceRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => BusinessAccountRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => FaqRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => BusinessRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => OfferRepo(sl<DioConsumer>()));

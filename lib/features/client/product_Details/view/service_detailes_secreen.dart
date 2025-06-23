@@ -241,11 +241,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     );
                                   }),
                                   SizedBox(height: 15.h),
+
                                   ProductDescriptionSection(
                                     description: service?.details ??
                                         'No description available.',
                                   ),
                                   SizedBox(height: 15.h),
+
                                 ],
                               ),
                             ),

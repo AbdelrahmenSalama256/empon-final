@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/features/business_account/product/data/model/service_category_model.dart';
 import 'package:embone/features/business_account/product/data/model/service_model.dart';
 import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
+import 'package:embone/features/business_account/product/view/cubit/service_state.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
-part 'service_state.dart';
 
 class ServiceCubit extends Cubit<ServiceState> {
   final ServiceRepo repo;
@@ -21,16 +21,13 @@ class ServiceCubit extends Cubit<ServiceState> {
   int? categoryServiceId;
   int? accountId;
   List<ServiceCategoryData> categories = [];
-  XFile? logoImage;
   XFile? mainImage;
   List<XFile> sliderImages = [];
   List<int> selectedCategoryIds = [];
+  List<Service> services = [];
+  List<String> about =[];
 
   // Setters
-  void pickLogo(XFile file) {
-    logoImage = file;
-    emit(ServiceImagePicked());
-  }
 
   void pickMainImage(XFile file) {
     mainImage = file;
@@ -65,6 +62,7 @@ class ServiceCubit extends Cubit<ServiceState> {
       accountId: accountId!,
       mainImage: mainImage!,
       listImages: sliderImages,
+      about: about,
     );
 
     result.fold(
@@ -78,7 +76,6 @@ class ServiceCubit extends Cubit<ServiceState> {
     detailsController.clear();
     priceController.clear();
     categoryServiceId = null;
-    logoImage = null;
     mainImage = null;
     sliderImages.clear();
     emit(ServiceInitial());
@@ -97,6 +94,20 @@ class ServiceCubit extends Cubit<ServiceState> {
     );
   }
 
+Future<void> getServicesByAccountId() async {
+    emit(ServiceLoading());
+
+    final result = await repo.fetchServicesByAccountId();
+
+    result.fold(
+      (error) => emit(ServiceError(error)),
+      (response) {
+        services = response.data;
+        PrintUtil.info("Fetched services: ${services}");
+        emit(ServiceLoaded(services));
+      },
+    );
+  }
 
 
 
