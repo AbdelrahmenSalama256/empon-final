@@ -22,7 +22,9 @@ class ProductDetailsSection extends StatefulWidget {
 class _ProductDetailsSectionState extends State<ProductDetailsSection> {
   int _selectedColorIndex = 0;
   Color _customColor = Colors.blue;
-  
+  String colorToHexString(Color color) {
+    return '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+  }
 
   // Color options
   final List<Color> _colorOptions = [
@@ -46,7 +48,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
         setState(() {
           _colorOptions.add(_customColor);
           _selectedColorIndex = _colorOptions.length - 1;
-         context.read<ProductCubit>().variations[index]['color'] = _customColor;
+         context.read<ProductCubit>().variations[index]['color'] = colorToHexString(_customColor);
         });
       },
     );
@@ -121,7 +123,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                         children: [
                           Expanded(
                             child: AppTextField(
-                              controller: cubit.variations[index]['size'] ??=
+                              controller: cubit.variations[index]['attribute_value_id'] ??=
                                   TextEditingController(text: variation['size']),
                               hintText: 'size_hint'.tr(context),
                               prefixIcon: Padding(
@@ -222,12 +224,12 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
 
         // Product Details Field
         AppTextField(
-          controller: TextEditingController(),
+          controller: cubit.productDescriptionController,
           hintText: 'product_details'.tr(context),
           // maxLength: 5,
           maxLines: 5,
 
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.text,
           // prefixIcon: SizedBox(
           //   width: 20.w,
           //   height: 20.h,
@@ -300,7 +302,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                         child: AppTextField(
                           controller: cubit.serviceDetailsControllers[index]['quality']!,
                           hintText: 'price_hint'.tr(context),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                           validator: (value) => Validators.validateRequired(
                               value, 'price_hint'.tr(context), context),
                         ),
@@ -408,7 +410,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                       onTap: () {
                         setState(() {
                           _selectedColorIndex = i;
-                          cubit.variations[index]['color'] = _colorOptions[i];
+                          cubit.variations[index]['color'] = colorToHexString(_colorOptions[i]);
                         });
                       },
                       child: Container(

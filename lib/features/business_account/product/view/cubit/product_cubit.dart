@@ -29,12 +29,12 @@ class ProductCubit extends Cubit<ProductState> {
   int? attributeValueId;
   List<String>? colorId; 
   
-  List<Map<String, TextEditingController>> serviceDetailsControllers = [];
+  List<Map<String, dynamic>> serviceDetailsControllers = [];
 
   void addParoductDetail() {
     serviceDetailsControllers.add({
-      'quality': TextEditingController(),
-      'material': TextEditingController(),
+      'quality': TextEditingController().text.trim(),
+      'material': TextEditingController().text.trim(),
     });
     emit(ProductInitial());
   }
@@ -49,10 +49,10 @@ class ProductCubit extends Cubit<ProductState> {
 
   void addVariation() {
     variations.add({
-      "color_code": null, // will be a Color object
-      "attribute_value_id": TextEditingController(),
-      "price": TextEditingController(),
-      "stock": TextEditingController(),
+      "color": null, // will be a Color object
+      "attribute_value_id": TextEditingController().text.trim(),
+      "price": TextEditingController().text.trim(),
+      "stock": TextEditingController().text.trim(),
     });
     emit(ProductInitial());
   }
@@ -70,7 +70,7 @@ class ProductCubit extends Cubit<ProductState> {
     emit(ProductLoading());
       final formattedVariations = variations
         .map((v) => {
-              "color_code": v['color_code'] != null
+              "color": v['color_code'] != null
                   ? '#${(v['color_code'] as Color).value.toRadixString(16).padLeft(8, '0').toUpperCase()}'
                   : null,
               "attribute_value_id": v['attribute_value_id']?.text ?? '',
