@@ -15,6 +15,7 @@ analyzer:
     library_private_types_in_public_api: ignore
     use_full_hex_values_for_flutter_colors: ignore
     must_be_immutable: ignore
+    unnecessary_null_comparison: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

@@ -15,7 +15,11 @@ import 'package:embone/features/client/checkout/data/repo/checkout_repo.dart';
 import 'package:embone/features/client/contacts/data/repo/friends_repo.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
 import 'package:embone/features/client/locations/data/repo/locations_repo.dart';
+import 'package:embone/features/client/menu/data/repo/account_repo.dart';
 import 'package:embone/features/client/menu/data/repo/address_repo.dart';
+import 'package:embone/features/client/menu/data/repo/business_repo.dart';
+import 'package:embone/features/client/menu/data/repo/faq_repo.dart';
+import 'package:embone/features/client/menu/data/repo/offer_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wallet_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wishlist_repo.dart';
@@ -55,6 +59,10 @@ void initServiceLocator() {
   sl.registerLazySingleton(() => WalletRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => ProductRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => ServiceRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => FaqRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => BusinessRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => OfferRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => AccountsRepo(sl<DioConsumer>()));
 
   // sl.registerLazySingleton(() => DataConnectionChecker());
   // sl.registerLazySingleton(() => NetworkInfoImpl(sl<DataConnectionChecker>()));

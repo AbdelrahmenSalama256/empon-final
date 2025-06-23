@@ -16,7 +16,7 @@ class ProductCard extends StatefulWidget {
   final VoidCallback? onFavoriteToggle;
   final VoidCallback? onActionTap;
   final VoidCallback? onCardTap;
-  final bool isOffer; // New parameter to determine layout
+  final bool isOffer;
 
   const ProductCard({
     super.key,
@@ -31,7 +31,7 @@ class ProductCard extends StatefulWidget {
     this.onFavoriteToggle,
     this.onActionTap,
     this.onCardTap,
-    this.isOffer = false, // Default to regular layout
+    this.isOffer = false,
   });
 
   @override
@@ -45,11 +45,9 @@ class _AnimatedProductCardState extends State<ProductCard>
   late Animation<double> _opacityAnimation;
   bool _isFavorite = false;
 
-  // Animation for the favorite button
   late AnimationController _favoriteController;
   late Animation<double> _favoriteScaleAnimation;
 
-  // Animation for the add to cart button
   late AnimationController _cartController;
   late Animation<double> _cartScaleAnimation;
 
@@ -58,50 +56,31 @@ class _AnimatedProductCardState extends State<ProductCard>
     super.initState();
     _isFavorite = widget.isFavorite;
 
-    // Main card animations
     _controller = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-
     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
-
     _opacityAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    // Favorite button animations
     _favoriteController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-
     _favoriteScaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
-      CurvedAnimation(
-        parent: _favoriteController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _favoriteController, curve: Curves.easeInOut),
     );
 
-    // Add to cart button animations
     _cartController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-
     _cartScaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
-      CurvedAnimation(
-        parent: _cartController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _cartController, curve: Curves.easeInOut),
     );
   }
 
@@ -113,38 +92,21 @@ class _AnimatedProductCardState extends State<ProductCard>
     super.dispose();
   }
 
-  void _onTapDown(TapDownDetails details) {
-    _controller.forward();
-    setState(() {});
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    _controller.reverse();
-    setState(() {});
-  }
-
-  void _onTapCancel() {
-    _controller.reverse();
-    setState(() {});
-  }
+  void _onTapDown(TapDownDetails details) => _controller.forward();
+  void _onTapUp(TapUpDetails details) => _controller.reverse();
+  void _onTapCancel() => _controller.reverse();
 
   void _toggleFavorite() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
+    setState(() => _isFavorite = !_isFavorite);
     if (_isFavorite) {
       _favoriteController.forward().then((_) => _favoriteController.reverse());
     }
-    if (widget.onFavoriteToggle != null) {
-      widget.onFavoriteToggle!();
-    }
+    widget.onFavoriteToggle?.call();
   }
 
   void _onCartTap() {
     _cartController.forward().then((_) => _cartController.reverse());
-    if (widget.onActionTap != null) {
-      widget.onActionTap!();
-    }
+    widget.onActionTap?.call();
   }
 
   @override
@@ -166,7 +128,10 @@ class _AnimatedProductCardState extends State<ProductCard>
           );
         },
         child: Container(
-          width: 280.w,
+          constraints: BoxConstraints(
+            minHeight: 300.h, // Minimum height to ensure layout
+            maxWidth: 280.w,
+          ),
           margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           decoration: BoxDecoration(
@@ -179,13 +144,13 @@ class _AnimatedProductCardState extends State<ProductCard>
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize:
+                MainAxisSize.min, // Use min to avoid unbounded expansion
             children: [
-              // Product image with favorite button and conditional offer badge
               SizedBox(
                 height: 225.h,
                 child: Stack(
                   children: [
-                    // Product Image
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12.r),
                       child: widget.imageUrl.startsWith('http')
@@ -220,8 +185,6 @@ class _AnimatedProductCardState extends State<ProductCard>
                                   _buildImageErrorWidget(),
                             ),
                     ),
-
-                    // Conditional Offer Badge (Top Right) - Only for offers
                     if (widget.isOffer && widget.discountPercentage != null)
                       PositionedDirectional(
                         top: 12.h,
@@ -245,21 +208,14 @@ class _AnimatedProductCardState extends State<ProductCard>
                           ),
                         ),
                       ),
-
-                    // Favorite button - Different styles for offer vs regular
                     widget.isOffer
                         ? _buildOfferFavoriteButton()
                         : _buildRegularFavoriteButton(),
                   ],
                 ),
               ),
-
-              // Product details - Different layouts for offer vs regular
-              Expanded(
-                child: widget.isOffer
-                    ? _buildOfferDetails()
-                    : _buildRegularDetails(),
-              ),
+              SizedBox(height: 12.h), // Spacer instead of Expanded
+              widget.isOffer ? _buildOfferDetails() : _buildRegularDetails(),
             ],
           ),
         ),
@@ -267,7 +223,6 @@ class _AnimatedProductCardState extends State<ProductCard>
     );
   }
 
-  // Offer layout favorite button (enhanced with shadow)
   Widget _buildOfferFavoriteButton() {
     return PositionedDirectional(
       top: 12.h,
@@ -294,11 +249,8 @@ class _AnimatedProductCardState extends State<ProductCard>
             child: Center(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(
-                    scale: animation,
-                    child: child,
-                  );
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(scale: animation, child: child);
                 },
                 child: Icon(
                   _isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -314,7 +266,6 @@ class _AnimatedProductCardState extends State<ProductCard>
     );
   }
 
-  // Regular layout favorite button (original style with SVG)
   Widget _buildRegularFavoriteButton() {
     return PositionedDirectional(
       top: 20.h,
@@ -334,11 +285,8 @@ class _AnimatedProductCardState extends State<ProductCard>
             child: Center(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(
-                    scale: animation,
-                    child: child,
-                  );
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(scale: animation, child: child);
                 },
                 child: SvgPicture.asset(
                   _isFavorite
@@ -355,7 +303,6 @@ class _AnimatedProductCardState extends State<ProductCard>
     );
   }
 
-  // Offer layout details (enhanced styling)
   Widget _buildOfferDetails() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.0.w),
@@ -363,9 +310,6 @@ class _AnimatedProductCardState extends State<ProductCard>
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: 12.h),
-
-          // Product Title
           Text(
             widget.title,
             style: TextStyle(
@@ -376,10 +320,7 @@ class _AnimatedProductCardState extends State<ProductCard>
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-
           SizedBox(height: 8.h),
-
-          // Price Row with original price
           Row(
             children: [
               Text(
@@ -404,19 +345,13 @@ class _AnimatedProductCardState extends State<ProductCard>
               ],
             ],
           ),
-
           SizedBox(height: 8.h),
-
-          // Badge and Action Button Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               if (widget.badge != null)
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 8.w,
-                    vertical: 4.h,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6.r),
@@ -436,10 +371,8 @@ class _AnimatedProductCardState extends State<ProductCard>
                   child: ScaleTransition(
                     scale: _cartScaleAnimation,
                     child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 8.h,
-                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                       decoration: BoxDecoration(
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(8.r),
@@ -462,7 +395,6 @@ class _AnimatedProductCardState extends State<ProductCard>
     );
   }
 
-  // Regular layout details (original simple styling)
   Widget _buildRegularDetails() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.0.w),
@@ -470,7 +402,6 @@ class _AnimatedProductCardState extends State<ProductCard>
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: 8.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -511,10 +442,8 @@ class _AnimatedProductCardState extends State<ProductCard>
                   child: ScaleTransition(
                     scale: _cartScaleAnimation,
                     child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 8.h,
-                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                       decoration: BoxDecoration(
                         color: const Color(0xffDFE0E5),
                         borderRadius: BorderRadius.circular(8.r),
@@ -538,9 +467,11 @@ class _AnimatedProductCardState extends State<ProductCard>
   }
 
   Widget _buildImageErrorWidget() {
-    return Center(
-      child: Container(
-        color: Colors.grey.shade200,
+    return Container(
+      height: 225.h,
+      width: double.infinity,
+      color: Colors.grey.shade200,
+      child: Center(
         child: Icon(
           Icons.image_not_supported_outlined,
           size: 40.w,

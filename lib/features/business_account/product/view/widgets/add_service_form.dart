@@ -2,7 +2,7 @@
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
-import 'package:embone/features/business_account/product/view/widgets/Service_submit_buttons.dart';
+import 'package:embone/features/business_account/product/view/widgets/service_submit_buttons.dart';
 import 'package:embone/features/business_account/product/view/widgets/image_upload_section.dart';
 import 'package:embone/features/business_account/product/view/widgets/service_basic_info_section.dart';
 import 'package:embone/features/business_account/product/view/widgets/service_details_section.dart';

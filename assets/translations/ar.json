@@ -776,5 +776,12 @@
   "limited_offer": "عرض محدود",
   "new_arrival": "وصل حديثاً",
   "hot_deal": "عرض ساخن",
-  "exclusive": "حصري"
+  "exclusive": "حصري",
+  "no_phone_numbers": "لا توجد أرقام هواتف صالحة للتحقق",
+  "app_link_shared": "تم مشاركة رابط التطبيق!",
+  "no_brands_found": "لا توجد مراكات تجارية",
+  "follow": "متابعة",
+  "services": "الخدمات",
+  "no_products": "لا توجد منتجات متاحة",
+  "no_services": "لا توجد خدمات متاحة"
 }
