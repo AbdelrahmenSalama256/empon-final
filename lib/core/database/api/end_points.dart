@@ -86,6 +86,8 @@ class EndPoints {
   static const String cartInfo = '${baseUrl}orders';
   // ! Faq
   static const String faqs = '${baseUrl}faqs';
+  static const String contactInfo = '${baseUrl}contact-info';
+  static const String privacyPolicy = '${baseUrl}privacy-policy';
 
 // !Recent View Brands
   static const String recentViewBrands = '${baseUrl}recent-account-view';

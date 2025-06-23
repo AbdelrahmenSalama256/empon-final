@@ -15,16 +15,12 @@ import 'package:embone/features/business_account/auth_bussniss_acc/view/create_b
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/followers_screen.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
-import 'package:embone/features/client/menu/data/repo/account_repo.dart';
 import 'package:embone/features/client/menu/data/repo/business_repo.dart';
-import 'package:embone/features/client/menu/view/cubit/accounts_cubit.dart';
-import 'package:embone/features/client/menu/view/cubit/accounts_state.dart';
 import 'package:embone/features/client/menu/view/cubit/business_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/business_state.dart';
 import 'package:embone/features/client/menu/view/inner_screens/help_support.dart';
 import 'package:embone/features/client/menu/view/inner_screens/offers_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
-import 'package:embone/features/client/menu/view/inner_screens/store_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/accounts_bottom_sheet.dart';
 import 'package:embone/features/client/menu/view/inner_screens/wishlist_screen.dart';
 import 'package:embone/features/client/menu/view/widgets/approval_item.dart';
@@ -382,17 +378,11 @@ class MenuScreen extends StatelessWidget {
                                                                   onTap: () {
                                                                     navigateTo(
                                                                       context,
-                                                                      BlocProvider(
-                                                                        create: (context) =>
-                                                                            AccountsCubit(sl<AccountsRepo>()),
-                                                                        child: BlocBuilder<
-                                                                            AccountsCubit,
-                                                                            AccountsState>(
-                                                                          builder:
-                                                                              (context, state) {
-                                                                            return StoreProfileScreen(accountId: business.id);
-                                                                          },
-                                                                        ),
+                                                                      HomeStoreScreen(
+                                                                        businessAccountId:
+                                                                            business.id,
+                                                                        isVendor:
+                                                                            false,
                                                                       ),
                                                                     );
                                                                   },

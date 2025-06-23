@@ -12,6 +12,7 @@ import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
 import 'package:embone/features/client/chat/view/massages_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/edit_profile.dart';
+import 'package:embone/features/client/menu/view/inner_screens/privacy_policy_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/addresses_section.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/language_selector.dart';
@@ -191,6 +192,16 @@ class SettingsScreen extends StatelessWidget {
                                     MenuItem(
                                       icon: "assets/images/terms.png",
                                       title: "terms_conditions".tr(context),
+                                      onTap: () {
+                                        showToast(
+                                          context,
+                                          message:
+                                              "terms_conditions".tr(context),
+                                          state: ToastStates.success,
+                                        );
+                                        navigateTo(context,
+                                            const PrivacyPolicyScreen());
+                                      },
                                     ),
                                   ],
                                 ),

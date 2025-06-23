@@ -1,66 +1,62 @@
-import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/app_constant.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
-import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/home/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/home/view/cubit/account_cubit.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_content.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_header.dart';
-import 'package:embone/features/business_account/product/data/repo/product_repo.dart';
-import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
-import 'package:embone/features/business_account/product/view/cubit/product_cubit.dart';
-import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeStoreScreen extends StatelessWidget {
-  const HomeStoreScreen({super.key});
+  final int? businessAccountId;
+  final bool? isVendor;
+  const HomeStoreScreen(
+      {super.key, this.businessAccountId, this.isVendor = false});
 
   @override
   Widget build(BuildContext context) {
-    final accountId = int.parse(
-        sl<CacheHelper>().getData(key: AppConstants.businessAccountId));
-    PrintUtil.success('Business ID: $accountId');
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            HomeStoreHeader(
-              onBackPressed: () {
-                // context.read<GlobalCubit>().setUserType(UserType.client);
-                // context.read<GlobalCubit>().changeBottomNavIndex(0);
-              },
-            ),
-            Expanded(
-              child: MultiBlocProvider(
-                providers: [
-                  BlocProvider(
-                    create: (context) => ServiceCubit(sl<ServiceRepo>())
-                      ..getServicesByAccountId(),
+      body: BlocProvider(
+        create: (context) => BusinessAccountCubit(sl<BusinessAccountRepo>())
+          ..fetchBusinessAccount(
+            businessAccountId ?? context.read<GlobalCubit>().businessId ?? 0,
+          ),
+        child: BlocBuilder<BusinessAccountCubit, BusinessAccountState>(
+          builder: (context, state) {
+            final accountCubit = context.read<BusinessAccountCubit>();
+            return SafeArea(
+              child: Column(
+                children: [
+                  HomeStoreHeader(
+                    isVendor: isVendor ?? false,
+                    name: accountCubit.accountData?.name,
+                    onBackPressed: () {
+                      // context.read<GlobalCubit>().setUserType(UserType.client);
+                      // context.read<GlobalCubit>().changeBottomNavIndex(0);
+                      isVendor == true ? Navigator.pop(context) : null;
+                    },
                   ),
-                  BlocProvider(
-                    create: (context) => ProductCubit(sl<ProductRepo>())
-                      ..getProductsByAccountId(accountId),
+                  Expanded(
+                    child: state is BusinessAccountError
+                        ? Center(
+                            child: Text(
+                              state.message,
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 16),
+                            ),
+                          )
+                        : HomeStoreContent(
+                            businessAccountCubit: accountCubit,
+                            isVendor: isVendor,
+                            id: businessAccountId ??
+                                context.read<GlobalCubit>().businessId ??
+                                0),
                   ),
-                  BlocProvider(
-                    create: (context) => BusinessAccountCubit(sl<BusinessAccountRepo>())
-                      ..fetchBusinessAccount(accountId),
-                    )
                 ],
-                child:BlocBuilder<BusinessAccountCubit, BusinessAccountState>(
-      builder: (context, state) {
-        return state is BusinessAccountLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
-                ),
-              )
-            : HomeStoreContent(id: accountId);})
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
