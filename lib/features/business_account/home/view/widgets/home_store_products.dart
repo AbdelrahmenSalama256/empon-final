@@ -48,7 +48,8 @@ class HomeStoreProducts extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          AddProductPage(businessAccountId: id)));
+                         AddProductPage(businessAccountId: id)
+                          ));
             },
             prefixIcon: Icon(
               CupertinoIcons.add,

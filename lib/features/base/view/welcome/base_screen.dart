@@ -2,6 +2,8 @@ import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/widgets/nav_bar_item.dart';
+import 'package:embone/features/business_account/dashboard/data/repo/statistics_repo.dart';
+import 'package:embone/features/business_account/dashboard/view/cubit/statistics_cubit.dart';
 import 'package:embone/features/business_account/dashboard/view/dashboard_screen.dart';
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
@@ -70,9 +72,16 @@ class _BaseScreenState extends State<BaseScreen> {
             businessAccountId: context.read<GlobalCubit>().businessId,
             isVendor: true,
           ),
-          const DashboardScreen(),
+          BlocProvider(
+            create: (context) => StatisticsCubit(sl<StatisticsRepo>())
+              ..fetchStatistics(context.read<GlobalCubit>().businessId),
+            child: const DashboardScreen(),
+          ),
           const SizedBox(),
-          const NotificationsPage(),
+          BlocProvider(
+            create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
+            child: const NotificationsPage(),
+          ),
           const MenuScreen(
             isVendor: true,
           ),

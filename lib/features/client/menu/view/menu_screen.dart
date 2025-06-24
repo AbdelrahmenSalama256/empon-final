@@ -27,6 +27,7 @@ import 'package:embone/features/client/menu/view/widgets/approval_item.dart';
 import 'package:embone/features/client/menu/view/widgets/buisniss_account.dart';
 import 'package:embone/features/client/menu/view/widgets/menu_item.dart';
 import 'package:embone/features/client/menu/view/widgets/most_visited.dart';
+import 'package:embone/features/client/menu/view/widgets/plan_screen.dart';
 import 'package:embone/features/client/menu/view/widgets/quick_access.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
@@ -539,13 +540,12 @@ class MenuScreen extends StatelessWidget {
                                                   onApprove: () =>
                                                       CustomPopup.show(
                                                     context: context,
-                                                    type: PopupType.success,
-                                                    title:
-                                                        "request_sent_successfully"
-                                                            .tr(context),
-                                                    message:
-                                                        "request_under_review"
-                                                            .tr(context),
+                                                    type:PopupType.custom,
+                                                    title:'',
+                                                    // message:
+                                                    //     "request_under_review"
+                                                    //         .tr(context),
+                                                    customContent:const PlanSection()
                                                   ),
                                                 ),
 

@@ -810,5 +810,14 @@
   "children_privacy_content": "لا نجمع بيانات الأطفال دون موافقة الوالدين.",
   "policy_changes": "تغييرات السياسة",
   "policy_changes_content": "سنعلن عن أي تغييرات في سياسة الخصوصية هنا.",
-  "privacy_contact_info": "يمكنك التواصل معنا عبر البريد الإلكتروني أو الهاتف."
+  "privacy_contact_info": "يمكنك التواصل معنا عبر البريد الإلكتروني أو الهاتف.",
+  "number_of_users":"عدد الزوار على الموقع لسنة",
+  "Sponsored_ads":"الاعلانات المموله",
+  "number_of_sales":"عدد المبيعات",
+  "number_of_interactions": "عدد التفاعلات",
+  "watch":"مشاهدة",
+  "number_of_views":"عدد المشاهدات",
+  "average_order_value":"متوسط قيمة الطلب",
+  "total_revenue":"إجمالي الإيرادات",
+  "best_selling_product":"المنتج الأكثر مبيعًا"
 }
