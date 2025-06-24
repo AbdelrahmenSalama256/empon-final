@@ -4,6 +4,7 @@ import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/home/view/cubit/home_state.dart';
@@ -212,6 +213,15 @@ class ProductTabContent extends StatelessWidget {
                           backgroundColor: const Color(0xffF6F6F6),
                           title: account.name,
                           imageUrl: account.image,
+                          onTap: () {
+                            PrintUtil.debug("Account tapped: ${account.name}");
+                            navigateTo(
+                                context,
+                                HomeStoreScreen(
+                                  businessAccountId: account.id,
+                                  isVendor: false,
+                                ));
+                          },
                           isNetworkImage: true,
                           subtitle: "sponsored".tr(context),
                           showCloseButton: true,

@@ -142,14 +142,16 @@ class AppButton extends StatelessWidget {
       children: [
         if (prefixIcon != null) ...[prefixIcon!, SizedBox(width: 8.w)],
         Expanded(
-          child: Text(
-            text,
-            style: textStyle ??
-                TextStyle(
-                  color: textColor,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                ),
+          child: Center(
+            child: Text(
+              text,
+              style: textStyle ??
+                  TextStyle(
+                    color: textColor,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
           ),
         ),
         if (suffixIcon != null) ...[SizedBox(width: 8.w), suffixIcon!],

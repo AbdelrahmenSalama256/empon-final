@@ -66,99 +66,103 @@ class HomeScreen extends StatelessWidget {
                   },
                   child: Scaffold(
                     backgroundColor: Colors.white,
-                    body: RefreshIndicator(
-                      onRefresh: () async {
-                        cubit.init();
-                      },
-                      child: SafeArea(
-                        child: Column(
-                          children: [
-                            AppHeader(
-                              title: "menu".tr(context),
-                              centerTitle: false,
-                              showLogo: true,
-                              leadingPosition: isRtl
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
-                              alignment: HeaderAlignment.spaceBetween,
-                              titleStyle: TextStyle(fontSize: 20.sp),
-                              showBackButton: false,
-                              style: HeaderStyle.standard,
-                              leading: Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      CupertinoIcons.chat_bubble_text,
-                                      size: 28.h,
-                                      color: const Color(0xff000000),
-                                    ),
-                                    onPressed: () {
-                                      navigateTo(
-                                          context, const MassagesScreen());
-                                    },
+                    body: SafeArea(
+                      child: Column(
+                        children: [
+                          AppHeader(
+                            title: "menu".tr(context),
+                            centerTitle: false,
+                            showLogo: true,
+                            leadingPosition: isRtl
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.start,
+                            alignment: HeaderAlignment.spaceBetween,
+                            titleStyle: TextStyle(fontSize: 20.sp),
+                            showBackButton: false,
+                            style: HeaderStyle.standard,
+                            leading: Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    CupertinoIcons.chat_bubble_text,
+                                    size: 28.h,
+                                    color: const Color(0xff000000),
                                   ),
-                                  IconButton(
-                                    icon: Icon(
-                                      CupertinoIcons.search,
-                                      size: 28.h,
-                                      color: const Color(0xff000000),
-                                    ),
-                                    onPressed: () {
-                                      navigateTo(
-                                        context,
-                                        BlocProvider(
-                                          create: (context) =>
-                                              SearchCubit(sl<SearchRepo>())
-                                                ..init(),
-                                          child: const SearchPage(),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 10.h),
-                            Container(
-                              height: 60.h,
-                              padding: EdgeInsets.all(0.w),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                              ),
-                              child: TabBar(
-                                tabs: [
-                                  Tab(
-                                      child: Text("service".tr(context),
-                                          style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600))),
-                                  Tab(
-                                      child: Text("product".tr(context),
-                                          style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600))),
-                                ],
-                                labelColor: Colors.white,
-                                unselectedLabelColor: Colors.black87,
-                                indicator: BoxDecoration(
-                                  color: const Color(0xFF2F76DB),
-                                  borderRadius: BorderRadius.circular(0.r),
+                                  onPressed: () {
+                                    navigateTo(context, const MassagesScreen());
+                                  },
                                 ),
-                                indicatorSize: TabBarIndicatorSize.tab,
-                                dividerColor: Colors.transparent,
-                              ),
+                                IconButton(
+                                  icon: Icon(
+                                    CupertinoIcons.search,
+                                    size: 28.h,
+                                    color: const Color(0xff000000),
+                                  ),
+                                  onPressed: () {
+                                    navigateTo(
+                                      context,
+                                      BlocProvider(
+                                        create: (context) =>
+                                            SearchCubit(sl<SearchRepo>())
+                                              ..init(),
+                                        child: const SearchPage(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 10.h),
-                            Expanded(
-                              child: TabBarView(
-                                children: [
-                                  ServiceTabContent(cubit: cubit, state: state),
-                                  ProductTabContent(cubit: cubit, state: state),
-                                ],
-                              ),
+                          ),
+                          SizedBox(height: 10.h),
+                          Container(
+                            height: 60.h,
+                            padding: EdgeInsets.all(0.w),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
                             ),
-                          ],
-                        ),
+                            child: TabBar(
+                              tabs: [
+                                Tab(
+                                    child: Text("service".tr(context),
+                                        style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w600))),
+                                Tab(
+                                    child: Text("product".tr(context),
+                                        style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w600))),
+                              ],
+                              labelColor: Colors.white,
+                              unselectedLabelColor: Colors.black87,
+                              indicator: BoxDecoration(
+                                color: const Color(0xFF2F76DB),
+                                borderRadius: BorderRadius.circular(0.r),
+                              ),
+                              indicatorSize: TabBarIndicatorSize.tab,
+                              dividerColor: Colors.transparent,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                RefreshIndicator(
+                                    onRefresh: () async {
+                                      cubit.fetchServices();
+                                    },
+                                    child: ServiceTabContent(
+                                        cubit: cubit, state: state)),
+                                RefreshIndicator(
+                                    onRefresh: () async {
+                                      cubit.fetchHomeData();
+                                    },
+                                    child: ProductTabContent(
+                                        cubit: cubit, state: state)),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
