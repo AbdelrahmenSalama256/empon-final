@@ -34,24 +34,31 @@ class HomeStoreScreen extends StatelessWidget {
                     onBackPressed: () {
                       // context.read<GlobalCubit>().setUserType(UserType.client);
                       // context.read<GlobalCubit>().changeBottomNavIndex(0);
-                      isVendor == true ? Navigator.pop(context) : null;
+                      isVendor != true ? Navigator.pop(context) : null;
                     },
                   ),
                   Expanded(
-                    child: state is BusinessAccountError
-                        ? Center(
-                            child: Text(
-                              state.message,
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 16),
-                            ),
-                          )
-                        : HomeStoreContent(
-                            businessAccountCubit: accountCubit,
-                            isVendor: isVendor,
-                            id: businessAccountId ??
-                                context.read<GlobalCubit>().businessId ??
-                                0),
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        accountCubit.fetchBusinessAccount(businessAccountId ??
+                            context.read<GlobalCubit>().businessId ??
+                            0);
+                      },
+                      child: state is BusinessAccountError
+                          ? Center(
+                              child: Text(
+                                state.message,
+                                style: const TextStyle(
+                                    color: Colors.red, fontSize: 16),
+                              ),
+                            )
+                          : HomeStoreContent(
+                              businessAccountCubit: accountCubit,
+                              isVendor: isVendor ?? false,
+                              id: businessAccountId ??
+                                  context.read<GlobalCubit>().businessId ??
+                                  0),
+                    ),
                   ),
                 ],
               ),
