@@ -807,5 +807,9 @@
   "children_privacy_content": "لا نجمع بيانات الأطفال دون موافقة الوالدين.",
   "policy_changes": "تغييرات السياسة",
   "policy_changes_content": "سنعلن عن أي تغييرات في سياسة الخصوصية هنا.",
-  "privacy_contact_info": "يمكنك التواصل معنا عبر البريد الإلكتروني أو الهاتف."
+  "privacy_contact_info": "يمكنك التواصل معنا عبر البريد الإلكتروني أو الهاتف.",
+  "no_sizes_available": "لا توجد مقاسات متاحة لهذا المنتج",
+  "product_not_found": "المنتج غير موجود",
+  "no_data_found": "لا توجد بيانات",
+  "no_sizes_available_for_this_service": "لا توجد مقاسات متاحة لهذه الخدمة"
 }

@@ -18,9 +18,6 @@ class ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Check the text direction of the current locale
-    final bool isRTL = Directionality.of(context) == TextDirection.rtl;
-
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: 4.w,
@@ -36,43 +33,24 @@ class ActionButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: isRTL
-                ? [
-                    // RTL Layout: Text first, then icon
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    SizedBox(width: 5.w),
-                    SvgPicture.asset(
-                      icon,
-                      color: Colors.white,
-                      width: 15.w,
-                      height: 15.h,
-                    ),
-                  ]
-                : [
-                    // LTR Layout: Icon first, then text
-                    SvgPicture.asset(
-                      icon,
-                      color: Colors.white,
-                      width: 15.w,
-                      height: 15.h,
-                    ),
-                    SizedBox(width: 5.w),
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
+            children: [
+              // RTL Layout: Text first, then icon
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              SizedBox(width: 5.w),
+              SvgPicture.asset(
+                icon,
+                color: Colors.white,
+                width: 15.w,
+                height: 15.h,
+              ),
+            ],
           ),
         ),
       ),

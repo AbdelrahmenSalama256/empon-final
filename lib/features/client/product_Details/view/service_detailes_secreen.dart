@@ -101,157 +101,161 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                     searchState is GoToProductLoading
                         ? const Expanded(
                             child: Center(child: CustomLoadingIndicator()))
-                        : Expanded(
-                            child: SingleChildScrollView(
-                              controller: scrollController,
-                              physics: const BouncingScrollPhysics(),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w, vertical: 16.h),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  ProductImageSection(
-                                    images: [
-                                      service?.mainImage ?? '',
-                                      ...?(service?.listImages
-                                          .map((img) => img))
+                        : service?.id == null
+                            ? Expanded(
+                                child: Center(
+                                  child: Text(
+                                    'no_service'.tr(context),
+                                    style: TextStyle(
+                                        fontSize: 30.sp, color: Colors.grey),
+                                  ),
+                                ),
+                              )
+                            : Expanded(
+                                child: SingleChildScrollView(
+                                  controller: scrollController,
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 16.w, vertical: 16.h),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      ProductImageSection(
+                                        images: [
+                                          service?.mainImage ?? '',
+                                          ...?(service?.listImages
+                                              .map((img) => img))
+                                        ],
+                                        autoPlay: true,
+                                        autoPlayInterval:
+                                            const Duration(seconds: 4),
+                                      ),
+                                      SizedBox(height: 15.h),
+                                      InteractionBar(
+                                        isVendor: widget.isVendor,
+                                        // likeCount: service?.price ?? 0,
+                                        onEdit: () {
+                                          navigateTo(
+                                              context,
+                                              AddProductPage(
+                                                  businessAccountId: int.parse(
+                                                      sl<CacheHelper>().getData(
+                                                          key: AppConstants
+                                                              .businessAccountId))));
+                                        },
+                                        onDelete: () => CustomPopup.show(
+                                          context: context,
+                                          type: PopupType.alert,
+                                          title: 'delete_product'.tr(context),
+                                          titleColor: const Color(0xffEC4B4B),
+                                          message: 'confirmation_message'
+                                              .tr(context),
+                                          primaryButtonText: "yes".tr(context),
+                                          secondaryButtonText: "no".tr(context),
+                                          onPrimaryButtonPressed: () {
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop();
+                                          },
+                                        ),
+                                        commentCount:
+                                            cubit.commentResponse?.total ?? 0,
+                                        onShare: () {
+                                          final serviceId =
+                                              cubit.serviceModel?.data?.id ?? 0;
+                                          final serviceName =
+                                              cubit.serviceModel?.data?.name ??
+                                                  "Product";
+                                          final deepLink =
+                                              "myapp://product/$serviceId";
+
+                                          Share.share(
+                                            "Check out this product: $serviceName\n$deepLink",
+                                            subject:
+                                                "Awesome Product on Our App",
+                                          );
+                                        },
+                                        // onLike: () {
+                                        //   context
+                                        //       .read<GlobalCubit>()
+                                        //       .addProductToWishlist(
+                                        //           cubit.productModel?.data?.id ??
+                                        //               0);
+                                        // },
+                                        onComment: () {
+                                          final context =
+                                              reviewSectionKey.currentContext;
+                                          if (context != null) {
+                                            Scrollable.ensureVisible(
+                                              context,
+                                              duration: const Duration(
+                                                  milliseconds: 500),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          }
+                                        },
+                                        onThumbsUp: () {
+                                          cubit.toggleServiceLike(
+                                            serviceId:
+                                                cubit.serviceModel?.data?.id ??
+                                                    0,
+                                          );
+                                        },
+                                      ),
+                                      SizedBox(height: 15.h),
+                                      if (widget.isVendor)
+                                        InventoryButton(
+                                          onPressed: () {},
+                                        ),
+                                      SizedBox(height: 15.h),
+                                      PriceDisplay(
+                                        currency: "currency".tr(context),
+                                        currentPrice: double.tryParse(
+                                                service?.price ?? '0') ??
+                                            0.0,
+                                        //originalPrice: service?. == 1.0
+                                        // ? (double.tryParse(
+                                        //             product?.price ?? '0') ??
+                                        //         0.0) *
+                                        //     1.5
+                                        // : null,
+                                      ),
+                                      SizedBox(height: 15.h),
+                                      ProductInfoSection(
+                                        name:
+                                            service?.name ?? 'Unknown Product',
+                                        price: double.tryParse(
+                                                service?.price ?? '0') ??
+                                            0.0,
+                                        currency: "currency".tr(context),
+                                        sellerName:
+                                            service?.name ?? 'Unknown Seller',
+                                        productId:
+                                            service?.id.toString() ?? 'N/A',
+                                        sizes: const ['0'],
+                                        type: "services",
+                                      ),
+                                      SizedBox(height: 15.h),
+                                      ServiceReviewsSection(
+                                        key: reviewSectionKey,
+                                        reviews: cubit.comments,
+                                        commentController:
+                                            cubit.commentController,
+                                        isVendor: widget.isVendor,
+                                        cubit: cubit,
+                                        serviceId: widget.serviceId,
+                                      ),
+                                      SizedBox(height: 15.h),
+                                      ProductDescriptionSection(
+                                        description: service?.details ??
+                                            'No description available.',
+                                      ),
+                                      SizedBox(height: 15.h),
                                     ],
-                                    autoPlay: true,
-                                    autoPlayInterval:
-                                        const Duration(seconds: 4),
                                   ),
-                                  SizedBox(height: 15.h),
-                                  InteractionBar(
-                                    isVendor: widget.isVendor,
-                                    // likeCount: service?.price ?? 0,
-                                    onEdit: () {
-                                      navigateTo(
-                                          context,
-                                          AddProductPage(
-                                              businessAccountId: int.parse(
-                                                  sl<CacheHelper>().getData(
-                                                      key: AppConstants
-                                                          .businessAccountId))));
-                                    },
-                                    onDelete: () => CustomPopup.show(
-                                      context: context,
-                                      type: PopupType.alert,
-                                      title: 'delete_product'.tr(context),
-                                      titleColor: const Color(0xffEC4B4B),
-                                      message:
-                                          'confirmation_message'.tr(context),
-                                      primaryButtonText: "yes".tr(context),
-                                      secondaryButtonText: "no".tr(context),
-                                      onPrimaryButtonPressed: () {
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop();
-                                      },
-                                    ),
-                                    commentCount:
-                                        cubit.commentResponse?.total ?? 0,
-                                    onShare: () {
-                                      final serviceId =
-                                          cubit.serviceModel?.data?.id ?? 0;
-                                      final serviceName =
-                                          cubit.serviceModel?.data?.name ??
-                                              "Product";
-                                      final deepLink =
-                                          "myapp://product/$serviceId";
-
-                                      Share.share(
-                                        "Check out this product: $serviceName\n$deepLink",
-                                        subject: "Awesome Product on Our App",
-                                      );
-                                    },
-                                    // onLike: () {
-                                    //   context
-                                    //       .read<GlobalCubit>()
-                                    //       .addProductToWishlist(
-                                    //           cubit.productModel?.data?.id ??
-                                    //               0);
-                                    // },
-                                    onComment: () {
-                                      final context =
-                                          reviewSectionKey.currentContext;
-                                      if (context != null) {
-                                        Scrollable.ensureVisible(
-                                          context,
-                                          duration:
-                                              const Duration(milliseconds: 500),
-                                          curve: Curves.easeInOut,
-                                        );
-                                      }
-                                    },
-                                    onThumbsUp: () {
-                                      cubit.toggleServiceLike(
-                                        serviceId:
-                                            cubit.serviceModel?.data?.id ?? 0,
-                                      );
-                                    },
-                                  ),
-                                  SizedBox(height: 15.h),
-                                  if (widget.isVendor)
-                                    InventoryButton(
-                                      onPressed: () {},
-                                    ),
-                                  SizedBox(height: 15.h),
-                                  PriceDisplay(
-                                    currency: "",
-                                    currentPrice: double.tryParse(
-                                            service?.price ?? '0') ??
-                                        0.0,
-                                    //originalPrice: service?. == 1.0
-                                    // ? (double.tryParse(
-                                    //             product?.price ?? '0') ??
-                                    //         0.0) *
-                                    //     1.5
-                                    // : null,
-                                  ),
-                                  SizedBox(height: 15.h),
-                                  ProductInfoSection(
-                                    name: service?.name ?? 'Unknown Product',
-                                    price: double.tryParse(
-                                            service?.price ?? '0') ??
-                                        0.0,
-                                    currency: "EGP",
-                                    sellerName:
-                                        service?.name ?? 'Unknown Seller',
-                                    productId: service?.id.toString() ?? 'N/A',
-                                    sizes: const ['10'],
-                                  ),
-                                  SizedBox(height: 15.h),
-                                  BlocBuilder<SearchCubit, SearchState>(
-                                      builder: (context, state) {
-                                    final cubit = context.read<SearchCubit>();
-
-                                    if (state is CommentLoading) {
-                                      return const Center(
-                                          child: CustomLoadingIndicator());
-                                    }
-
-                                    return ServiceReviewsSection(
-                                      key: reviewSectionKey,
-                                      reviews: cubit.comments,
-                                      commentController:
-                                          cubit.commentController,
-                                      isVendor: widget.isVendor,
-                                      cubit: cubit,
-                                      serviceId: widget.serviceId,
-                                    );
-                                  }),
-                                  SizedBox(height: 15.h),
-
-                                  ProductDescriptionSection(
-                                    description: service?.details ??
-                                        'No description available.',
-                                  ),
-                                  SizedBox(height: 15.h),
-
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
                   ],
                 );
               },

@@ -789,5 +789,9 @@
   "children_privacy_content": "We do not collect children's data without parental consent.",
   "policy_changes": "Policy Changes",
   "policy_changes_content": "We will announce any changes to the privacy policy here.",
-  "privacy_contact_info": "You can reach us via email or phone."
+  "privacy_contact_info": "You can reach us via email or phone.",
+  "no_sizes_available": "No sizes available",
+  "product_not_found": "Product not found",
+  "no_data_found": "No data found",
+  "no_sizes_available_for_this_service": "No sizes available for this service"
 }

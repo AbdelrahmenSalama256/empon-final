@@ -102,8 +102,23 @@ class LikeServiceError extends SearchState {
 
   LikeServiceError({required this.message});
 }
+
 class LikeServiceLoaded extends SearchState {
   final ServiceModel? serviceModel;
 
   LikeServiceLoaded(this.serviceModel);
 }
+
+// Releated Products states with loading more
+class RelatedProductsLoading extends SearchState {}
+
+class RelatedProductsLoaded extends SearchState {}
+
+class RelatedProductsError extends SearchState {
+  final String message;
+
+  RelatedProductsError({required this.message});
+}
+
+// loading more stats
+class LoadingMoreProducts extends SearchState {}

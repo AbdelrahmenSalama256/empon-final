@@ -100,7 +100,8 @@ class EndPoints {
   static const String userOrders = '${baseUrl}user-orders';
   static const String cancelOrder = '${baseUrl}user-order';
   static const String orderDetails = '${baseUrl}user-order';
-
+  // ! related-products
+  static const String relatedProducts = '${baseUrl}related-products';
   static const String topUp = '${baseUrl}top-up';
   //// Buissniss Account Case
   //! Create Account

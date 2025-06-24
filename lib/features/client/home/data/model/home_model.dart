@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-class HomeModel extends Equatable {
+class HomeModel {
   final bool success;
   final String message;
   final List<dynamic> ads;
@@ -23,11 +21,9 @@ class HomeModel extends Equatable {
           .toList(),
     );
   }
-  @override
-  List<Object?> get props => [success, message, ads, accounts];
 }
 
-class Account extends Equatable {
+class Account {
   final int id;
   final String name;
   final String image;
@@ -50,12 +46,9 @@ class Account extends Equatable {
           .toList(),
     );
   }
-
-  @override
-  List<Object?> get props => [id, name, image, products];
 }
 
-class Product extends Equatable {
+class Product {
   final int id;
   final String name;
   final String price;
@@ -79,7 +72,4 @@ class Product extends Equatable {
       isFavourite: json['is_favourite'] ?? false,
     );
   }
-
-  @override
-  List<Object?> get props => [id, name, price, imageUrl, isFavourite];
 }

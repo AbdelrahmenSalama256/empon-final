@@ -67,10 +67,6 @@ class ServiceTabContent extends StatelessWidget {
       );
     }
 
-    if (cubit.services.isEmpty) {
-      return Center(child: Text('no_services'.tr(context)));
-    }
-
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return NotificationListener<ScrollNotification>(
@@ -95,6 +91,10 @@ class ServiceTabContent extends StatelessWidget {
                   padding: EdgeInsets.all(16.0),
                   child: Center(child: CircularProgressIndicator()),
                 );
+              }
+
+              if (cubit.services.isEmpty) {
+                return Center(child: Text('no_services'.tr(context)));
               }
               final service = cubit.services[index];
               return ServiceCard(
@@ -168,10 +168,6 @@ class ProductTabContent extends StatelessWidget {
       );
     }
 
-    if (cubit.homeModel == null || cubit.homeModel!.accounts.isEmpty) {
-      return Center(child: Text('No data available for product'.tr(context)));
-    }
-
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         final accounts = cubit.homeModel!.accounts;
@@ -195,6 +191,10 @@ class ProductTabContent extends StatelessWidget {
                   padding: EdgeInsets.all(16.0),
                   child: Center(child: CircularProgressIndicator()),
                 );
+              }
+              if (cubit.homeModel == null ||
+                  cubit.homeModel!.accounts.isEmpty) {
+                return Center(child: Text('no_product'.tr(context)));
               }
               final account = accounts[index];
               final productsToList = account.products;
