@@ -1,6 +1,5 @@
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/utils/validator.dart';
-import 'package:embone/features/business_account/product/data/model/product_model.dart';
 import 'package:embone/features/business_account/product/view/cubit/product_cubit.dart';
 import 'package:embone/features/business_account/product/view/widgets/color_picker_dialog.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';

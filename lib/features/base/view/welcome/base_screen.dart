@@ -66,7 +66,10 @@ class _BaseScreenState extends State<BaseScreen> {
         ];
       case UserType.business:
         return [
-          const HomeStoreScreen(),
+          HomeStoreScreen(
+            businessAccountId: context.read<GlobalCubit>().businessId,
+            isVendor: true,
+          ),
           const DashboardScreen(),
           const SizedBox(),
           const NotificationsPage(),
