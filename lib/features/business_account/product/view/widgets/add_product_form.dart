@@ -6,7 +6,6 @@ import 'package:embone/features/business_account/product/view/cubit/product_cubi
 import 'package:embone/features/business_account/product/view/widgets/image_upload_section.dart';
 import 'package:embone/features/business_account/product/view/widgets/product_basic_info_section.dart';
 import 'package:embone/features/business_account/product/view/widgets/product_details_section.dart';
-import 'package:embone/features/business_account/product/view/widgets/product_promotion_section.dart';
 import 'package:embone/features/business_account/product/view/widgets/product_submit_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

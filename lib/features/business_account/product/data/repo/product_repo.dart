@@ -34,12 +34,12 @@ class ProductRepo {
         "category_id": categoryId,
         "is_sale": isSale,
         "product_image": await uploadImageToAPI(productImage),
-        "product_images": await Future.wait(
+        "product_images[]": await Future.wait(
             productImages.map((img) => uploadImageToAPI(img))),
      "variations": variations,
      "details":serviceDetails
 
-      });
+      }, isFormData: true);
       return Right(ProductModel.fromJson(response));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);

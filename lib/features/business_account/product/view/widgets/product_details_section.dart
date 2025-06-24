@@ -45,11 +45,10 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
         setState(() => _customColor = color);
       },
       onSavePressed: () {
-        setState(() {
           _colorOptions.add(_customColor);
           _selectedColorIndex = _colorOptions.length - 1;
-         context.read<ProductCubit>().variations[index]['color'] = colorToHexString(_customColor);
-        });
+         context.read<ProductCubit>().variations[index]['color_code'] = colorToHexString(_customColor);
+        
       },
     );
   }
@@ -304,7 +303,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                           hintText: 'price_hint'.tr(context),
                           keyboardType: TextInputType.text,
                           validator: (value) => Validators.validateRequired(
-                              value, 'price_hint'.tr(context), context),
+                              value, 'description_head'.tr(context), context),
                         ),
                       ),
                       SizedBox(width: 10.w),
@@ -410,7 +409,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                       onTap: () {
                         setState(() {
                           _selectedColorIndex = i;
-                          cubit.variations[index]['color'] = colorToHexString(_colorOptions[i]);
+                          cubit.variations[index]['color_code']= colorToHexString(_colorOptions[i]);
                         });
                       },
                       child: Container(
@@ -425,11 +424,10 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                             width: _selectedColorIndex == i ? 2 : 1,
                           ),
                         ),
-                        child: _selectedColorIndex == i
+                        child: cubit.variations[index]['color_code'] == colorToHexString(_colorOptions[i])
                             ? Icon(Icons.check,
                                 size: 16.sp,
-                                color: _colorOptions[i].computeLuminance() > 0.5
-                                    ? Colors.black
+                                color: _colorOptions[i].computeLuminance() > 0.5 ? Colors.black
                                     : Colors.white)
                             : null,
                       ),
@@ -446,3 +444,6 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
   }
 
 }
+
+
+

@@ -1,8 +1,6 @@
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_state.dart';
 import 'package:flutter/material.dart';

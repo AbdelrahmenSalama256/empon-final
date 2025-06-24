@@ -250,8 +250,9 @@
   "add_product_or_service": "Add Product or Service",
   "additional_service_Details": "Additional Service Details",
   "selected_color": "Selected Color",
-  "services": "Services",
-  
+  "description_head":"Name Of Description",
+  "feature_hint":"Feature",
+  "description_hint":"Description",
   "sports_shoe": "Sports Shoe",
   "currency": "EGP",
   "size": "Size",

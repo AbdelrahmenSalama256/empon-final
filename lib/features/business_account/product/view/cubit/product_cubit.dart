@@ -27,14 +27,14 @@ class ProductCubit extends Cubit<ProductState> {
   int? priceVariations;
   int? stockVariation;
   int? attributeValueId;
-  List<String>? colorId; 
+  String? color; 
   
-  List<Map<String, dynamic>> serviceDetailsControllers = [];
+  List<Map<String, TextEditingController>> serviceDetailsControllers = [];
 
   void addParoductDetail() {
     serviceDetailsControllers.add({
-      'quality': TextEditingController().text.trim(),
-      'material': TextEditingController().text.trim(),
+      'quality': TextEditingController(),
+      'material': TextEditingController(),
     });
     emit(ProductInitial());
   }
@@ -49,10 +49,10 @@ class ProductCubit extends Cubit<ProductState> {
 
   void addVariation() {
     variations.add({
-      "color": null, // will be a Color object
-      "attribute_value_id": TextEditingController().text.trim(),
-      "price": TextEditingController().text.trim(),
-      "stock": TextEditingController().text.trim(),
+      "color_code": null, // will be a Color object
+      "attribute_value_id": TextEditingController(),
+      "price": TextEditingController(),
+      "stock": TextEditingController(),
     });
     emit(ProductInitial());
   }
@@ -70,14 +70,18 @@ class ProductCubit extends Cubit<ProductState> {
     emit(ProductLoading());
       final formattedVariations = variations
         .map((v) => {
-              "color": v['color_code'] != null
-                  ? '#${(v['color_code'] as Color).value.toRadixString(16).padLeft(8, '0').toUpperCase()}'
-                  : null,
+              "color_code":v['color_code']?? '',
               "attribute_value_id": v['attribute_value_id']?.text ?? '',
               "price": v['price']?.text ?? '',
               "stock": v['stock']?.text ?? '',
             })
         .toList();
+      final formatedDetails =  serviceDetailsControllers.map(
+        (e) => {
+        'quality':e['quality']?.text??'' ,
+        'material':e['material']?.text ??''
+        }
+        ).toList();
     final result = await productRepo.addProduct(
       accountId,
       productNameController.text.trim(),
@@ -88,7 +92,7 @@ class ProductCubit extends Cubit<ProductState> {
       productImage!,
       productImages,
       formattedVariations,
-      serviceDetailsControllers
+      formatedDetails
       
     );
 
@@ -130,7 +134,7 @@ class ProductCubit extends Cubit<ProductState> {
     priceVariations = null;
     stockVariation = null;
     attributeValueId = null;
-    colorId = null;
+    color = null;
     emit(ProductInitial());
   }
 
