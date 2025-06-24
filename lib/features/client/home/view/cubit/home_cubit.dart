@@ -23,7 +23,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   HomeCubit(this.homeRepo) : super(HomeInitial());
 
-  Future<void> init() async {
+  void init() async {
     await fetchHomeData();
     await fetchServices();
   }
