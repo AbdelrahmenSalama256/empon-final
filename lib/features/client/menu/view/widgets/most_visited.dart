@@ -28,7 +28,9 @@ class VisitedItem extends StatelessWidget {
                 color: Colors.black,
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                  image: AssetImage(imageUrl),
+                  image: imageUrl == null || imageUrl.isEmpty
+                      ? const AssetImage('assets/images/placholder.jpg')
+                      : NetworkImage(imageUrl) as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),

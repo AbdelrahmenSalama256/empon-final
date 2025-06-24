@@ -129,4 +129,128 @@ class CommentRepo {
       return Left(e.errorModel.detail);
     }
   }
+
+
+  Future<Either<String, CommentResponseModel>> serviceFetchParentComments({
+    required int serviceId,
+    int page = 1,
+  }) async {
+    try {
+      final response = await api.get(
+        '${EndPoints.serviceCommentParent}/$serviceId/$page',
+      );
+
+      return Right(CommentResponseModel.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, CommentResponseModel>> serviceFetchChildComments({
+    required int parentId,
+    int page = 1,
+  }) async {
+    try {
+      final response = await api.get(
+        '${EndPoints.serviceCommentChild}/$parentId/$page',
+      );
+
+      return Right(CommentResponseModel.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, CommentResponseModel>> serviceAddComment({
+    required int serviceId,
+    required String comment,
+    int? parentId,
+  }) async {
+    try {
+      final response = await api.post(
+        EndPoints.serviceComment,
+        data: {
+          'service_id': serviceId,
+          'comment': comment,
+          if (parentId != null) 'parent_id': parentId,
+        },
+        isFormData: true,
+      );
+
+      return Right(CommentResponseModel.fromJson({
+        'success': response.data['success'],
+        'message': response.data['message'],
+        'data': {
+          'comments': [response.data['data']]
+        },
+        'current_page': 1,
+        'last_page': 1,
+        'total': 1,
+      }));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, CommentResponseModel>> serviceUpdateComment({
+    required int commentId,
+    required String comment,
+  }) async {
+    try {
+      await api.put(
+        '${EndPoints.serviceComment}/$commentId',
+        data: {
+          'comment': comment,
+          'method': 'PUT',
+        },
+        isFormData: true,
+      );
+
+      return Right(CommentResponseModel.fromJson({}));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, String>> serviceDeleteComment({
+    required int commentId,
+  }) async {
+    try {
+      await api.delete(
+        '${EndPoints.serviceComment}/$commentId',
+      );
+      return const Right('Comment deleted successfully');
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, String>> serviceToggleLike({
+    required int commentId,
+  }) async {
+    try {
+      await api.post(
+        EndPoints.serviceCommentLike,
+        data: {'comment_id': commentId},
+        isFormData: true,
+      );
+
+      return const Right('Comment deleted successfully');
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
 }

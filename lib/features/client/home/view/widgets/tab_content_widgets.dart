@@ -1,8 +1,10 @@
 import 'package:embone/core/component/widgets/skeleton_loader.dart';
 import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/home/view/cubit/home_state.dart';
@@ -10,6 +12,7 @@ import 'package:embone/features/client/home/view/widgets/product_card.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
 import 'package:embone/features/client/home/view/widgets/services_card.dart';
 import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
+import 'package:embone/features/client/product_Details/view/service_detailes_secreen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:flutter/foundation.dart';
@@ -65,7 +68,7 @@ class ServiceTabContent extends StatelessWidget {
     }
 
     if (cubit.services.isEmpty) {
-      return Center(child: Text('No data available for service'.tr(context)));
+      return Center(child: Text('no_services'.tr(context)));
     }
 
     return BlocBuilder<HomeCubit, HomeState>(
@@ -97,9 +100,17 @@ class ServiceTabContent extends StatelessWidget {
               return ServiceCard(
                 service: service,
                 onTap: () {
-                  if (kDebugMode) {
-                    print("Tapped on service ${service.id}");
-                  }
+                  PrintUtil.debug("Service tapped: ${service.name}");
+                  PrintUtil.debug("Service tapped: ${service.id}");
+                  navigateTo(
+                      context,
+                      BlocProvider(
+                        create: (context) => SearchCubit(sl<SearchRepo>()),
+                        child: ServiceDetailPage(
+                          isVendor: false,
+                          serviceId: service.id,
+                        ),
+                      ));
                 },
               );
             },
@@ -202,6 +213,15 @@ class ProductTabContent extends StatelessWidget {
                           backgroundColor: const Color(0xffF6F6F6),
                           title: account.name,
                           imageUrl: account.image,
+                          onTap: () {
+                            PrintUtil.debug("Account tapped: ${account.name}");
+                            navigateTo(
+                                context,
+                                HomeStoreScreen(
+                                  businessAccountId: account.id,
+                                  isVendor: false,
+                                ));
+                          },
                           isNetworkImage: true,
                           subtitle: "sponsored".tr(context),
                           showCloseButton: true,

@@ -4,7 +4,9 @@ import 'package:embone/core/database/api/dio_consumer.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/category_repo.dart';
+import 'package:embone/features/business_account/home/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/product/data/repo/product_repo.dart';
+import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
@@ -14,7 +16,12 @@ import 'package:embone/features/client/checkout/data/repo/checkout_repo.dart';
 import 'package:embone/features/client/contacts/data/repo/friends_repo.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
 import 'package:embone/features/client/locations/data/repo/locations_repo.dart';
+import 'package:embone/features/client/menu/data/repo/account_repo.dart';
 import 'package:embone/features/client/menu/data/repo/address_repo.dart';
+import 'package:embone/features/client/menu/data/repo/business_repo.dart';
+import 'package:embone/features/client/menu/data/repo/faq_repo.dart';
+import 'package:embone/features/client/menu/data/repo/offer_repo.dart';
+import 'package:embone/features/client/menu/data/repo/privacy_policy_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wallet_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wishlist_repo.dart';
@@ -53,6 +60,14 @@ void initServiceLocator() {
   sl.registerLazySingleton(() => OrderRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => WalletRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => ProductRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => ServiceRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => BusinessAccountRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => FaqRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => BusinessRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => OfferRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => AccountsRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => PrivacyPolicyRepo(sl<DioConsumer>()));
+
   // sl.registerLazySingleton(() => DataConnectionChecker());
   // sl.registerLazySingleton(() => NetworkInfoImpl(sl<DataConnectionChecker>()));
   //! Repositorys

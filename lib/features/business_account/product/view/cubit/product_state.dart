@@ -19,3 +19,26 @@ class ProductError extends ProductState {
 class ProductImagePicked extends ProductState {}
 
 class ProductImagesPicked extends ProductState {}
+class ProductLoaded extends ProductState {
+  final List<Product> products;
+  ProductLoaded(this.products);
+}
+
+
+class CategoryLoading extends ProductState {}
+
+class CategoryLoaded extends ProductState {
+  final List<Category> categories;
+  CategoryLoaded(this.categories);
+}
+
+class CategorySelected extends ProductState {
+  final int selectedId;
+  CategorySelected(this.selectedId);
+}
+
+class CategoryError extends ProductState {
+  final String message;
+  CategoryError(this.message);
+}
+

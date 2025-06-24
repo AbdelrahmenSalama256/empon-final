@@ -37,8 +37,7 @@ class ContactOption extends StatelessWidget {
             SizedBox(width: 16.w),
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,

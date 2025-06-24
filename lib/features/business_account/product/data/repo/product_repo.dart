@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:embone/core/common/common.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
+import 'package:embone/features/business_account/product/data/model/product_category_model.dart';
 import 'package:embone/features/business_account/product/data/model/product_model.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -20,10 +22,8 @@ class ProductRepo {
     int isSale,
     XFile productImage,
     List<XFile> productImages,
-    int priceVariations,
-    int stockVariation,
-    int attributeValueId,
-    List<String> colorId,
+    List<Map<String, dynamic>> variations,
+    List<Map<String, dynamic>> serviceDetails
   ) async {
     try {
       final response = await api.post(EndPoints.addProduct, data: {
@@ -34,13 +34,12 @@ class ProductRepo {
         "category_id": categoryId,
         "is_sale": isSale,
         "product_image": await uploadImageToAPI(productImage),
-        "product_images": await Future.wait(
+        "product_images[]": await Future.wait(
             productImages.map((img) => uploadImageToAPI(img))),
-        "variations[][price]": priceVariations,
-        "variations[][stock]": stockVariation,
-        "variations[][attribute_value_id]": attributeValueId,
-        "variations[][color_id]": colorId,
-      });
+     "variations": variations,
+     "details":serviceDetails
+
+      }, isFormData: true);
       return Right(ProductModel.fromJson(response));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
@@ -108,4 +107,37 @@ class ProductRepo {
       return Left(e.errorModel.detail);
     }
   }
+
+  Future<Either<String, ProductResponse>> fetchAccountProductsById(
+      int accountId) async {
+    try {
+      final response = await api
+          .get('${EndPoints.getProducts}$accountId'); // Replace with correct endpoint
+      return Right(ProductResponse.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left('Unexpected error: $e');
+    }
+  }
+
+Future<Either<String, List<Category>>> fetchCategories() async {
+    try {
+      Response response = await api.get(EndPoints.productCategories);
+      final data = CategoryResponse.fromJson(response.data);
+      return Right(data.data);
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left("Unexpected error: ${e.toString()}");
+    }
+  }
+
 }
+
+
+

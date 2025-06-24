@@ -72,7 +72,6 @@ class CommentInput extends StatelessWidget {
                   //     minHeight: 24.h,
                   //   ),
                   //   onPressed: () {
-                  //     // TODO: Implement emoji picker
                   //   },
                   // ),
                   SizedBox(width: 15.w),

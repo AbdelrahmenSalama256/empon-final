@@ -17,6 +17,7 @@ class EndPoints {
   static const String userResendCode = "${baseUrl}auth/password/resend_code";
   static const String userVerifyEmail = "${baseUrl}check-email";
   static const String userVerifyPhone = "${baseUrl}check-phone";
+  static const String account = "${baseUrl}account/";
   //! Logout
   static const String userLogout = "${baseUrl}logout";
   static const String deleteAccount = "${baseUrl}auth/account-deletion";
@@ -48,12 +49,19 @@ class EndPoints {
   static const String searchHistory = '${baseUrl}history-search';
   static const String goToProduct = '${baseUrl}go-to-product';
   static const String commentParent = '${baseUrl}comment/parent';
+  static const String serviceCommentParent = '${baseUrl}service-comment/parent';
   static const String commentChild = '${baseUrl}comment/child';
+  static const String serviceCommentChild = '${baseUrl}service-comment/child';
   static const String comment = '${baseUrl}comment';
+  static const String serviceComment = '${baseUrl}service-comment';
   static const String commentLike = '${baseUrl}comment/ilke';
+  static const String serviceCommentLike = '${baseUrl}service-comment/ilke';
   static const String recentView = '${baseUrl}recent-view';
   static const String clearHistory = '${baseUrl}history-searches';
   static const String productLike = '${baseUrl}product/ilke';
+  static const String serviceLike = '${baseUrl}serviceslike';
+  static const String productCategories = '${baseUrl}category';
+
 
   // ! Notifications
   static const String notifications = '${baseUrl}notifications';
@@ -65,7 +73,8 @@ class EndPoints {
   static const String deleteMessage = '${baseUrl}chat/delete-message';
   static const String chatWith = '${baseUrl}chat-with';
   static const String sendMessage = '${baseUrl}send-message';
-
+  // ! accounts
+  static const String accounts = '${baseUrl}account';
   // ! Wishlist
   static const String favorites = '${baseUrl}favourite';
   static const String addProductToWishlist = '${baseUrl}favourite/product';
@@ -77,7 +86,14 @@ class EndPoints {
   static const String updateCartItemQuantity = '${baseUrl}carts';
   static const String removeCartItem = '${baseUrl}carts';
   static const String cartInfo = '${baseUrl}orders';
+  // ! Faq
+  static const String faqs = '${baseUrl}faqs';
+  static const String contactInfo = '${baseUrl}contact-info';
+  static const String privacyPolicy = '${baseUrl}privacy-policy';
 
+// !Recent View Brands
+  static const String recentViewBrands = '${baseUrl}recent-account-view';
+  static const String offers = '${baseUrl}offers';
   // ! Wallet
   static const String walletBalance = '${baseUrl}wallet-balance';
   static const String walletHistory = '${baseUrl}wallet-history';
@@ -107,6 +123,10 @@ class EndPoints {
   static const String addProduct = '${baseUrl}product';
   static const String updateProduct = '${baseUrl}product/';
   static const String deleteProduct = '${baseUrl}product/';
+  static const String getService = "${baseUrl}services/";
+  static const String addService = "${baseUrl}services";
+  static const String getServicesCategores = "${baseUrl}service-categories";
+  static const String getProducts = "${baseUrl}account-products/";
 }
 
 class ApiKey {

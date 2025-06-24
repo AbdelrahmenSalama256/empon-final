@@ -9,8 +9,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class HomeStoreProducts extends StatelessWidget {
   final int id;
   final int totalProduct;
+  final bool? isVendor;
+
   const HomeStoreProducts(
-      {super.key, required this.totalProduct, required this.id});
+      {super.key,
+      required this.totalProduct,
+      required this.id,
+      this.isVendor = false});
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +35,12 @@ class HomeStoreProducts extends StatelessWidget {
         ),
         SizedBox(width: 10.w),
         Expanded(
+          flex: 2,
           child: AppButton(
-            text: "add_product".tr(context),
+            text: "add_product_or_service".tr(context),
             padding: EdgeInsets.symmetric(horizontal: 12.w),
-            height: 40.h,
+            // height: 30.h,
+            // width: 400.w,
             borderRadius: BorderRadius.circular(10.r),
             onPressed: () {
               // Navigate to add product page
@@ -45,7 +52,7 @@ class HomeStoreProducts extends StatelessWidget {
             },
             prefixIcon: Icon(
               CupertinoIcons.add,
-              size: 20.sp,
+              size: 18.sp,
               color: AppColors.white,
             ),
           ),
