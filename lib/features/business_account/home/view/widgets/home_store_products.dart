@@ -9,8 +9,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class HomeStoreProducts extends StatelessWidget {
   final int id;
   final int totalProduct;
+  final bool? isVendor;
+
   const HomeStoreProducts(
-      {super.key, required this.totalProduct, required this.id});
+      {super.key,
+      required this.totalProduct,
+      required this.id,
+      this.isVendor = false});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +39,7 @@ class HomeStoreProducts extends StatelessWidget {
           child: AppButton(
             text: "add_product_or_service".tr(context),
             padding: EdgeInsets.symmetric(horizontal: 12.w),
-            height: 30.h,
+            // height: 30.h,
             // width: 400.w,
             borderRadius: BorderRadius.circular(10.r),
             onPressed: () {

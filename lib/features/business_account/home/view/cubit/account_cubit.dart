@@ -5,11 +5,11 @@ import 'package:embone/features/business_account/home/data/repo/account_repo.dar
 part 'account_state.dart';
 
 class BusinessAccountCubit extends Cubit<BusinessAccountState> {
-    final BusinessAccountRepo repo;
-    late BusinessAccount accountData;
+  final BusinessAccountRepo repo;
+  BusinessAccount? accountData;
   BusinessAccountCubit(this.repo) : super(BusinessAccountInitial());
 
-   Future<void> fetchBusinessAccount(int accountId) async {
+  Future<void> fetchBusinessAccount(int accountId) async {
     emit(BusinessAccountLoading());
 
     final result = await repo.fetchBusinessAccountById(accountId);
@@ -18,9 +18,8 @@ class BusinessAccountCubit extends Cubit<BusinessAccountState> {
       (error) => emit(BusinessAccountError(error)),
       (response) {
         accountData = response.data;
-        emit(BusinessAccountLoaded(accountData));
+        emit(BusinessAccountLoaded(accountData!));
       },
     );
   }
 }
-

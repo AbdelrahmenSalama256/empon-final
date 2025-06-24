@@ -36,6 +36,7 @@ class HelpSupportPage extends StatelessWidget {
         body: SafeArea(
           child: BlocBuilder<FaqsCubit, FaqsState>(
             builder: (context, state) {
+              final faqsCubit = context.read<FaqsCubit>();
               return Column(
                 children: [
                   AppHeader(
@@ -96,22 +97,24 @@ class HelpSupportPage extends StatelessWidget {
 
                             // Contact Options
                             ContactOption(
-                              title: "via_whatsapp".tr(context),
-                              subtitle: "00201228745120",
+                              title: "whatsapp".tr(context),
+                              subtitle: faqsCubit.contactInfo?.whatsappNumber ??
+                                  "N/A",
                               icon: CupertinoIcons.phone,
                               iconColor: const Color(0xff1E2644),
-                              onTap: () =>
-                                  _launchUrl('https://wa.me/00201228745120'),
+                              onTap: () => _launchUrl(
+                                  'https://wa.me/${faqsCubit.contactInfo?.whatsappNumber ?? ''}'),
                               isRTL: isRTL,
                             ),
                             const CustomDivider(),
                             ContactOption(
-                              title: "via_email".tr(context),
-                              subtitle: "Empon.eg@gmail.com",
+                              title: "email".tr(context),
+                              subtitle:
+                                  faqsCubit.contactInfo?.contactEmail ?? "N/A",
                               icon: CupertinoIcons.envelope,
                               iconColor: const Color(0xff1E2644),
-                              onTap: () =>
-                                  _launchUrl('mailto:Empon.eg@gmail.com'),
+                              onTap: () => _launchUrl(
+                                  'mailto:${faqsCubit.contactInfo?.contactEmail ?? ''}'),
                               isRTL: isRTL,
                             ),
                             const CustomDivider(),

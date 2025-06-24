@@ -116,7 +116,7 @@ Future<void> getServicesByAccountId() async {
       (error) => emit(ServiceError(error)),
       (response) {
         services = response.data;
-        PrintUtil.info("Fetched services: ${services}");
+        PrintUtil.info("Fetched services: $services");
         emit(ServiceLoaded(services));
       },
     );

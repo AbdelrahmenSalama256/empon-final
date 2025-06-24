@@ -4,7 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class HomeStoreHero extends StatelessWidget {
   final String? storeLogo;
   final String? storeCover;
-  const HomeStoreHero({super.key, required this.storeLogo, required this.storeCover});
+  const HomeStoreHero(
+      {super.key, required this.storeLogo, required this.storeCover});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,6 @@ class HomeStoreHero extends StatelessWidget {
                     'assets/images/profile_store.png',
                     fit: BoxFit.cover,
                   ),
-           
           ),
         ),
         Positioned(
@@ -50,11 +50,11 @@ class HomeStoreHero extends StatelessWidget {
                 image: DecorationImage(
                   image: storeLogo!.startsWith('http')
                       ? NetworkImage(storeLogo!)
-                      : const AssetImage('assets/images/brand-logo.png') as ImageProvider,
+                      : const AssetImage('assets/images/brand-logo.png')
+                          as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
-              
             ),
           ),
         ),
