@@ -2,12 +2,14 @@ import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
+import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:embone/features/client/checkout/data/repo/checkout_repo.dart';
 import 'package:embone/features/client/checkout/view/cubit/checkout_cubit.dart';
 import 'package:embone/features/client/checkout/view/cubit/checkout_state.dart';
+import 'package:embone/features/client/checkout/view/widgets/custom_dialog.dart';
 import 'package:embone/features/client/menu/data/repo/wallet_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/wallet_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/wallet_state.dart';
@@ -214,7 +216,15 @@ class _EmponWalletScreenState extends State<EmponWalletScreen> {
                                               Expanded(
                                                 flex: 1,
                                                 child: AppButton(
-                                                  onPressed: _refreshBalance,
+                                                  onPressed: //(){
+                                                  () => showPaymentMethodDialog(context),
+                                                  //    CustomPopup.show(
+                                                  //   context: context,
+                                                  //   type: PopupType.custom,
+                                                  //   title:"chose payment method",
+                                                  //   customContent:
+                                                  //  ),
+                                                  // } ,//_refreshBalance,
                                                   text: 'recharge'.tr(context),
                                                   backgroundColor:
                                                       const Color(0xff64B95C),
