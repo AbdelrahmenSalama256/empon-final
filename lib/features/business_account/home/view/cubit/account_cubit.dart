@@ -8,7 +8,7 @@ part 'account_state.dart';
 
 class BusinessAccountCubit extends Cubit<BusinessAccountState> {
   final BusinessAccountRepo repo;
-  BusinessAccount? accountData;
+  BusinessAccountResponse? accountData;
   BusinessAccountCubit(this.repo) : super(BusinessAccountInitial());
 
   Future<void> fetchBusinessAccount(int accountId) async {
@@ -17,7 +17,7 @@ class BusinessAccountCubit extends Cubit<BusinessAccountState> {
     result.fold(
       (error) => emit(BusinessAccountError(error)),
       (response) {
-        accountData = response.data;
+        accountData = response;
         emit(BusinessAccountLoaded(accountData!));
       },
     );

@@ -57,7 +57,6 @@ class GlobalCubit extends Cubit<GlobalState> {
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final TextEditingController confrimNewPasswordController =
       TextEditingController();
-  bool notificationsEnabled = true;
 
   Gender selectedGender = Gender.male;
   XFile? profileImage;

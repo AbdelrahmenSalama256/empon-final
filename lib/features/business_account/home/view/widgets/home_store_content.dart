@@ -33,7 +33,7 @@ class HomeStoreContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accountData = context.read<BusinessAccountCubit>();
-    PrintUtil.success(accountData.accountData?.name);
+    PrintUtil.success(accountData.accountData?.data.name);
     if (accountData.accountData == null) {
       return const Center(
         child: CustomLoadingIndicator(),
@@ -46,22 +46,23 @@ class HomeStoreContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             HomeStoreHero(
-                storeLogo: accountData.accountData?.logo,
-                storeCover: accountData.accountData?.cover),
+                storeLogo: accountData.accountData?.data.logo,
+                storeCover: accountData.accountData?.data.cover),
             SizedBox(height: 16.h),
             HomeStoreNameSection(
-              name: "${accountData.accountData?.name}",
+              name: "${accountData.accountData?.data.name}",
               onTap: () {
                 businessAccountCubit.launchLocationUrl(
-                    latitude: double.parse(accountData.accountData!.lat),
-                    longitude: double.parse(accountData.accountData!.lng));
+                    latitude: double.parse(accountData.accountData!.data.lat),
+                    longitude: double.parse(accountData.accountData!.data.lng));
               },
-              isVerified: accountData.accountData?.verified ?? false,
+              isVerified: accountData.accountData?.data.verified ?? false,
             ),
             SizedBox(height: 16.h),
             HomeStoreFollowers(
-                followersCount: accountData.accountData?.totalFollowers ?? 0,
-                logo: "${accountData.accountData?.logo}"),
+                followersCount:
+                    accountData.accountData?.data.totalFollowers ?? 0,
+                logo: "${accountData.accountData?.data.logo}"),
             SizedBox(height: 16.h),
             isVendor != true
                 ? ActionButtonsRow(
@@ -71,18 +72,18 @@ class HomeStoreContent extends StatelessWidget {
                     showWhatsApp: true,
                     showFavorite: true,
                     showLike: true,
-                    recivereId: accountData.accountData?.id,
-                    recivereName: accountData.accountData?.name,
-                    recivereImage: accountData.accountData?.logo,
+                    recivereId: accountData.accountData?.data.id,
+                    recivereName: accountData.accountData?.data.name,
+                    recivereImage: accountData.accountData?.data.logo,
                     onChatPressed: () {
                       navigatorKey.currentState!.push(
                         PageRouteBuilder(
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
                                   ChatConversationScreen(
-                            receiverId: accountData.accountData?.id ?? 0,
-                            name: accountData.accountData?.name ?? '',
-                            image: accountData.accountData?.logo ?? '',
+                            receiverId: accountData.accountData?.data.id ?? 0,
+                            name: accountData.accountData?.data.name ?? '',
+                            image: accountData.accountData?.data.logo ?? '',
                           ),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
@@ -97,19 +98,20 @@ class HomeStoreContent extends StatelessWidget {
                     },
                     onFavoritePressed: () {
                       globalCubit.addAccountToWishlist(
-                        accountData.accountData?.id ?? 0,
+                        accountData.accountData?.data.id ?? 0,
                       );
                     },
                   )
                 : HomeStoreProducts(
-                    id: accountData.accountData?.id ?? 0,
+                    id: accountData.accountData?.data.id ?? 0,
                     isVendor: isVendor,
-                    totalProduct: accountData.accountData?.totalProducts ?? 0,
+                    totalProduct:
+                        accountData.accountData?.data.totalProducts ?? 0,
                   ),
             SizedBox(height: 16.h),
             HomeStoreDescription(
-              description: "${accountData.accountData?.description}",
-              name: "${accountData.accountData?.name}",
+              description: "${accountData.accountData?.data.description}",
+              name: "${accountData.accountData?.data.name}",
             ),
             SizedBox(height: 20.h),
             SizedBox(
