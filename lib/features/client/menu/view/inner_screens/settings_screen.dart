@@ -9,7 +9,9 @@ import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/client/chat/view/massages_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/privacy_policy_screen.dart';
@@ -70,6 +72,7 @@ class SettingsScreen extends StatelessWidget {
                               if (state is ProfileLoading)
                                 const Center(child: CircularProgressIndicator())
                               else
+                              isVendor != true?
                                 ProfileSection(
                                   userName:
                                       "${cubit.userName ?? ''} ${cubit.userLastName ?? ''}"
@@ -77,6 +80,15 @@ class SettingsScreen extends StatelessWidget {
                                   userImageUrl: cubit.userAvatar ??
                                       'assets/images/logo.png',
                                   subtitle: cubit.userEmail ?? '',
+                                  isVendor: isVendor ?? false,
+                                  onTap: () {},
+                                ):ProfileSection(
+                                  userName:
+                                      "${cubit.userAccount?.where((element) => element.id == cubit.businessId,).first.name ?? ''}}"
+                                          .trim(),
+                                  userImageUrl: cubit.userAccount?.where((element) => element.id == cubit.businessId,).first.logo ??
+                                      'assets/images/logo.png',
+                                  subtitle:cubit.userAccount?.where((element) => element.id == cubit.businessId,).first.email ?? '',
                                   isVendor: isVendor ?? false,
                                   onTap: () {},
                                 ),
@@ -89,8 +101,12 @@ class SettingsScreen extends StatelessWidget {
                                           context, const EditProfilePage())
                                       : navigateTo(
                                           context,
-                                          const CreateBusinessAccountSettings(
-                                            isFromSetting: true,
+                                          BlocProvider(
+                                            create: (context) => AccountCubit(sl<AccountRepo>()),
+                                            child:
+                                                const CreateBusinessAccountSettings(
+                                              isFromSetting: true,
+                                            ),
                                           ));
                                 },
                               ),

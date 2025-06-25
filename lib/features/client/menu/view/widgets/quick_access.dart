@@ -6,13 +6,19 @@ class QuickAccessButton extends StatelessWidget {
   final String icon;
   final Color color;
   final VoidCallback? onTap;
+  final bool? needSubTitle;
+  final String? subTitle;
+  final Color ? subTitleColor;
+
 
   const QuickAccessButton({
     super.key,
     required this.title,
     required this.icon,
     required this.color,
-    required this.onTap,
+    required this.onTap, 
+    this.needSubTitle, 
+    this.subTitle, this.subTitleColor,
   });
 
   @override
@@ -37,7 +43,34 @@ class QuickAccessButton extends StatelessWidget {
               child: Image.asset(icon, width: 24.w, height: 24.h),
             ),
             SizedBox(width: 8.w),
+            needSubTitle == true ?
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+              title,
+              style: TextStyle(
+                fontSize: 9.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+              
+            ),
+            SizedBox(height: 4.h),
             Text(
+              subTitle!,
+              style: TextStyle(
+                fontSize: 8.sp,
+                fontWeight: FontWeight.w500,
+                color: subTitleColor,
+              ),
+            ),
+
+              ]
+
+            )
+            
+            :Text(
               title,
               style: TextStyle(
                 fontSize: 10.sp,

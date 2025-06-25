@@ -6,7 +6,34 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 
 class DashboardChart extends StatelessWidget {
-  const DashboardChart({super.key});
+  final int januaryValue;
+  final int februaryValue;
+  final int marchValue;
+  final int aprilValue;
+  final int mayValue;
+  final int juneValue;
+  final int julyValue;
+  final int augustValue;
+  final int septemberValue;
+  final int octoberValue;
+  final int novemberValue;
+  final int decemberValue;
+
+  const DashboardChart(
+      {super.key,
+      required this.januaryValue,
+      required this.februaryValue,
+      required this.marchValue,
+      required this.aprilValue,
+      required this.mayValue,
+      required this.juneValue,
+      required this.julyValue,
+      required this.augustValue,
+      required this.septemberValue,
+      required this.octoberValue,
+      required this.novemberValue,
+      required this.decemberValue, 
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +111,7 @@ class DashboardChart extends StatelessWidget {
               primaryYAxis: NumericAxis(
                 opposedPosition: true,
                 minimum: 0,
-                maximum: 150,
+                maximum: 200,
                 interval: 50,
                 majorGridLines: MajorGridLines(
                   width: 1.w,
@@ -123,21 +150,47 @@ class DashboardChart extends StatelessWidget {
     );
   }
 
+
   List<ChartData> getChartData(BuildContext context) {
-    return [
-      ChartData('january'.tr(context), 50, false),
-      ChartData('february'.tr(context), 60, false),
-      ChartData('march'.tr(context), 90, false),
-      ChartData('april'.tr(context), 80, false),
-      ChartData('may'.tr(context), 100, false),
-      ChartData('june'.tr(context), 70, false),
-      ChartData('july'.tr(context), 120, true), // Highlighted bar
-      ChartData('august'.tr(context), 40, false),
-      ChartData('september'.tr(context), 35, false),
-      ChartData('october'.tr(context), 75, false),
-      ChartData('november'.tr(context), 30, false),
-      ChartData('december'.tr(context), 20, false),
+    final months = [
+      'january',
+      'february',
+      'march',
+      'april',
+      'may',
+      'june',
+      'july',
+      'august',
+      'september',
+      'october',
+      'november',
+      'december',
     ];
+    final values = [
+      januaryValue,
+      februaryValue,
+      marchValue,
+      aprilValue,
+      mayValue,
+      juneValue,
+      julyValue,
+      augustValue,
+      septemberValue,
+      octoberValue,
+      novemberValue,
+      decemberValue,
+    ];
+
+    // Get the current month index (0-based)
+    int currentMonthIndex = DateTime.now().month - 1;
+
+    return List.generate(months.length, (i) {
+      return ChartData(
+        months[i].tr(context),
+        values[i].toDouble(),
+        i == currentMonthIndex,
+      );
+    });
   }
 }
 

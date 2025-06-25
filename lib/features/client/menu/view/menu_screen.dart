@@ -12,6 +12,9 @@ import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
+import 'package:embone/features/business_account/dashboard/data/repo/statistics_repo.dart';
+import 'package:embone/features/business_account/dashboard/view/cubit/statistics_cubit.dart';
+import 'package:embone/features/business_account/dashboard/view/dashboard_screen.dart';
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/followers_screen.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
@@ -27,6 +30,7 @@ import 'package:embone/features/client/menu/view/widgets/approval_item.dart';
 import 'package:embone/features/client/menu/view/widgets/buisniss_account.dart';
 import 'package:embone/features/client/menu/view/widgets/menu_item.dart';
 import 'package:embone/features/client/menu/view/widgets/most_visited.dart';
+import 'package:embone/features/client/menu/view/widgets/plan_screen.dart';
 import 'package:embone/features/client/menu/view/widgets/quick_access.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
@@ -191,7 +195,7 @@ class MenuScreen extends StatelessWidget {
                                               .changeBottomNavIndex(0);
                                         },
                                       ),
-                                      const Spacer(),
+                                       SizedBox(width: 85.w),
                                       Column(
                                         children: [
                                           Center(
@@ -230,7 +234,7 @@ class MenuScreen extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                      const Spacer(flex: 2),
+                                      const Spacer(flex: 1),
                                     ],
                                   ),
                                 ),
@@ -298,7 +302,7 @@ class MenuScreen extends StatelessWidget {
                                                             UserType.client);
                                                   },
                                                 ),
-                                                SizedBox(width: 15.w),
+                                                SizedBox(width: 10.w),
                                                 ProfileSection(
                                                   userName: accountData?.name ??
                                                       'business_account'
@@ -410,37 +414,100 @@ class MenuScreen extends StatelessWidget {
                                               height: 0.h,
                                             ),
                                       isVendor != false
-                                          ? Row(
+                                          ? Column(
                                               children: [
-                                                Expanded(
-                                                  child: QuickAccessButton(
-                                                    onTap: () {
-                                                      context
-                                                          .read<GlobalCubit>()
-                                                          .changeBottomNavIndex(
-                                                              0);
-                                                    },
-                                                    title: "home".tr(context),
-                                                    icon:
-                                                        "assets/images/home.png",
-                                                    color: Colors.black,
-                                                  ),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: QuickAccessButton(
+                                                        onTap: () {
+                                                          context
+                                                              .read<
+                                                                  GlobalCubit>()
+                                                              .changeBottomNavIndex(
+                                                                  0);
+                                                        },
+                                                        title:
+                                                            "home".tr(context),
+                                                        icon:
+                                                            "assets/images/home.png",
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 16.w),
+                                                    Expanded(
+                                                      child: QuickAccessButton(
+                                                        onTap: () {
+                                                          context
+                                                              .read<
+                                                                  GlobalCubit>()
+                                                              .changeBottomNavIndex(
+                                                                  1);
+                                                        },
+                                                        title: "nav_info"
+                                                            .tr(context),
+                                                        icon:
+                                                            "assets/images/dashboard.png",
+                                                        color:
+                                                            Colors.red.shade100,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                SizedBox(width: 16.w),
-                                                Expanded(
-                                                  child: QuickAccessButton(
-                                                    onTap: () {
-                                                      context
-                                                          .read<GlobalCubit>()
-                                                          .changeBottomNavIndex(
-                                                              1);
-                                                    },
-                                                    title:
-                                                        "nav_info".tr(context),
-                                                    icon:
-                                                        "assets/images/dashboard.png",
-                                                    color: Colors.red.shade100,
-                                                  ),
+                                                SizedBox(height: 8.h),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: QuickAccessButton(
+                                                        onTap: () {
+                                                          navigateTo(
+                                                              context,
+                                                              SettingsScreen(
+                                                                isVendor:
+                                                                    isVendor,
+                                                              ));
+                                                        },
+                                                        title:
+                                                            "settings_privacy"
+                                                                .tr(context),
+                                                        icon:
+                                                            "assets/images/settings.png",
+                                                        color:
+                                                            Colors.red.shade100,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 16.w),
+                                                    Expanded(
+                                                      child: QuickAccessButton(
+                                                        needSubTitle: true,
+                                                        onTap: () {
+                                                          navigateTo(
+                                                              context,
+                                                              BlocProvider(
+                                                                create: (context) =>
+                                                                    StatisticsCubit(
+                                                                        sl<
+                                                                            StatisticsRepo>())..fetchStatistics(cubit.businessId),
+                                                                child:
+                                                                    const DashboardScreen(),
+                                                              ),
+                                                                
+                                                              );},
+                                                              
+                                                        
+                                                        title:
+                                                            "current_plan"
+                                                                .tr(context),
+                                                        icon:
+                                                            "assets/images/plan_brand.png",
+                                                        color:
+                                                            Colors.red.shade100,
+                                                        subTitle: "الخطة الاساسية",//todo : will get from backend
+                                                        subTitleColor: Colors.lightGreenAccent,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             )
@@ -501,20 +568,6 @@ class MenuScreen extends StatelessWidget {
                                                             Colors.red.shade100,
                                                       ),
                                                     ),
-
-                                                    // SizedBox(width: 16.w),
-                                                    // Expanded(
-                                                    //   child: QuickAccessButton(
-                                                    //     onTap: () {
-                                                    //       navigateTo(context,
-                                                    //           const FollowersPage());
-                                                    //     },
-                                                    //     title: "friends".tr(context),
-                                                    //     icon:
-                                                    //         "assets/images/leadership.png",
-                                                    //     color: Colors.blue.shade100,
-                                                    //   ),
-                                                    // ),
                                                   ],
                                                 ),
                                               ],
@@ -525,29 +578,6 @@ class MenuScreen extends StatelessWidget {
                                           ? const SizedBox()
                                           : Wrap(
                                               children: [
-                                                ApprovalItem(
-                                                  title:
-                                                      'convert_business_to_store'
-                                                          .tr(context),
-                                                  status:
-                                                      ApprovalStatus.processing,
-                                                  icon: Image.asset(
-                                                    "assets/images/cycle-circle.png",
-                                                    width: 24.w,
-                                                    height: 24.h,
-                                                  ),
-                                                  onApprove: () =>
-                                                      CustomPopup.show(
-                                                    context: context,
-                                                    type: PopupType.success,
-                                                    title:
-                                                        "request_sent_successfully"
-                                                            .tr(context),
-                                                    message:
-                                                        "request_under_review"
-                                                            .tr(context),
-                                                  ),
-                                                ),
 
                                                 // Second approval item example
                                                 ApprovalItem(
@@ -575,7 +605,17 @@ class MenuScreen extends StatelessWidget {
                                                 ),
                                               ],
                                             ),
-                                      SizedBox(height: 50.h),
+                                      ExpansionTile(
+                                        //leading:const 
+                                        title:  Text(
+                                          'store_plans'.tr(context), style: TextStyle(color: Colors.black, fontSize: 14.sp),) ,
+                                        children: [
+                                         const PlanSection(),
+                                          SizedBox(height: 16.h),
+                                        ],
+
+                                      ),
+                                      SizedBox(height: 15.h),
                                       MenuItem(
                                         ontap: () {
                                           navigateTo(
@@ -593,7 +633,7 @@ class MenuScreen extends StatelessWidget {
                                           ? const BusinessAccountSection()
                                           : const SizedBox(),
                                       isVendor != true
-                                          ? SizedBox(height: 30.h)
+                                          ? SizedBox(height: 30.h)//todo
                                           : const SizedBox(),
                                       state is LogoutLoading
                                           ? const Center(
