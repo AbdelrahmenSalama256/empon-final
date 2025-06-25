@@ -16,7 +16,11 @@
   "skip": "تخطي",
   "join_and_use": "الإنضمام وبدء الاستخدام",
   "search_my_account": "بحث عن حسابي",
+  "add_product_or_service": "إضافة منتج أو خدمة",
   "verify": "تحقق",
+  "description_head":"اسم التفصيله",
+  "description_hint":"التفصيلة",
+  "feature_hint":"تفاصيل الخدمة",
   "resend_code": "إعادة إرسال الرمز",
   "phone_number": "رقم الهاتف",
   "enter_otp": "أدخل رمز التحقق المرسل إلى هاتفك",
@@ -813,4 +817,16 @@
   "product_not_found": "المنتج غير موجود",
   "no_data_found": "لا توجد بيانات",
   "no_sizes_available_for_this_service": "لا توجد مقاسات متاحة لهذه الخدمة"
+  "number_of_users":"عدد الزوار على الموقع لسنة",
+  "Sponsored_ads":"الاعلانات المموله",
+  "number_of_sales":"عدد المبيعات",
+  "number_of_interactions": "عدد التفاعلات",
+  "watch":"مشاهدة",
+  "number_of_views":"عدد المشاهدات",
+  "average_order_value":"متوسط قيمة الطلب",
+  "total_revenue":"إجمالي الإيرادات",
+  "best_selling_product":"المنتج الأكثر مبيعًا",
+  "store_plans":"خطط ترويج المحل",
+  "current_plan":"خطتك الحالية",
+  "no_transactions_found":"لم يتم العثور على أي معاملات"
 }

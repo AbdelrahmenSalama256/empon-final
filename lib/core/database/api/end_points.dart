@@ -18,6 +18,8 @@ class EndPoints {
   static const String userVerifyEmail = "${baseUrl}check-email";
   static const String userVerifyPhone = "${baseUrl}check-phone";
   static const String account = "${baseUrl}account/";
+  static const String statistics = "${baseUrl}account-statistics/";
+  static const String updateAccountData = "${baseUrl}accounts/";
   //! Logout
   static const String userLogout = "${baseUrl}logout";
   static const String deleteAccount = "${baseUrl}auth/account-deletion";
@@ -59,7 +61,9 @@ class EndPoints {
   static const String recentView = '${baseUrl}recent-view';
   static const String clearHistory = '${baseUrl}history-searches';
   static const String productLike = '${baseUrl}product/ilke';
-  static const String serviceLike = '${baseUrl}services/like';
+  static const String serviceLike = '${baseUrl}serviceslike';
+  static const String productCategories = '${baseUrl}category';
+
 
   // ! Notifications
   static const String notifications = '${baseUrl}notifications';

@@ -24,3 +24,21 @@ class ProductLoaded extends ProductState {
   ProductLoaded(this.products);
 }
 
+
+class CategoryLoading extends ProductState {}
+
+class CategoryLoaded extends ProductState {
+  final List<Category> categories;
+  CategoryLoaded(this.categories);
+}
+
+class CategorySelected extends ProductState {
+  final int selectedId;
+  CategorySelected(this.selectedId);
+}
+
+class CategoryError extends ProductState {
+  final String message;
+  CategoryError(this.message);
+}
+

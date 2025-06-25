@@ -16,9 +16,9 @@ class HomeStoreHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppHeader(
-      title: isVendor == true ? name : '',
+      title: isVendor != true ? name : '',
       centerTitle: false,
-      showBackButton: isVendor == true ? true : false,
+      showBackButton: isVendor != true ? true : false,
       style: HeaderStyle.standard,
       onBackPressed: onBackPressed,
     );

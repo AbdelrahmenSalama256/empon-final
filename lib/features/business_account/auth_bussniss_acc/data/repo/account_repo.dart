@@ -79,4 +79,54 @@ class AccountRepo {
       return Left(e.errorModel.detail);
     }
   }
+  Future<Either<String, AccountModel>> updateAccountData(
+    int id,
+    String? name,
+    String? description,
+    String? videoUrl,
+    String? website,
+    String? email,
+    String? phone,
+    String? address,
+    String? postalCode,
+    String? lat,
+    String? lng,
+    String? cityId,
+    XFile? logo,
+    XFile? coverImage,
+    List<String>? categoryIds,
+    
+  ) async {
+    try {
+      final response = await api.post(
+        '${EndPoints.updateAccountData}$id',
+        data: {
+          'name': name,
+          'description': description,
+          'video_url': videoUrl,
+          'website': website,
+          'email': email,
+          'phone': phone,
+          'city_id': cityId,
+          'address': address,
+          'postal_code': postalCode,
+          'logo': logo != null ? await uploadImageToAPI(logo) : null,
+          'cover': coverImage != null ? await uploadImageToAPI(coverImage) : null,
+          'lat': lat,
+          'lng': lng,
+          "category_ids[]": categoryIds,
+
+        },
+        isFormData: true,
+      );
+
+      return Right(AccountModel.fromJson(response.data['data']));
+
+
+     } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+    }
 }

@@ -22,7 +22,7 @@ class _AddServiceFormState extends State<AddServiceForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ServiceCubit(sl<ServiceRepo>()),
+      create: (context) => ServiceCubit(sl<ServiceRepo>())..getServiceCategories(),
       child: Form(
         key: _formKey,
         child: Column(

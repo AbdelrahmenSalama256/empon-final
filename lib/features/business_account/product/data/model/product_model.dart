@@ -22,19 +22,6 @@ class ProductModel {
 }
 }
 
-class Details{
-  String? key;
-  String? value;
-
-  Details({this.key, this.value});
-
-  Details.fromJson(Map<String, dynamic> json) {
-    key = json['quality'];
-    value = json['material'];
-
-  }
-}
-
 class Data {
   String? accountId;
   String? name;
@@ -278,5 +265,26 @@ class ProductImage {
     return ProductImage(
       url: json['url'],
     );
+  }
+}
+
+class Details {
+  final String? quality;
+  final String? material;
+
+  Details({this.quality, this.material});
+
+  factory Details.fromJson(Map<String, dynamic> json) {
+    return Details(
+      quality: json['quality'],
+      material: json['material'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'quality': quality,
+      'material': material,
+    };
   }
 }

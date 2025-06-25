@@ -1,9 +1,11 @@
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/utils/validator.dart';
+import 'package:embone/features/business_account/product/view/cubit/product_cubit.dart';
 import 'package:embone/features/business_account/product/view/widgets/color_picker_dialog.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:embone/core/component/widgets/app_dropdown.dart';
 import 'package:embone/core/locale/app_loacl.dart';
@@ -19,33 +21,8 @@ class ProductDetailsSection extends StatefulWidget {
 class _ProductDetailsSectionState extends State<ProductDetailsSection> {
   int _selectedColorIndex = 0;
   Color _customColor = Colors.blue;
-  List<Map<String, TextEditingController>> serviceDetailsControllers = [];
-
-  void addParoductDetail() {
-    serviceDetailsControllers.add({
-      'price': TextEditingController(),
-      'description': TextEditingController(),
-    });
-    setState(() {});
-  }
-
-  List<Map<String, dynamic>> variations = [];
-
-  void addVariation() {
-    variations.add({
-      "color": null, // will be a Color object
-      "size": null,
-      "priceController": TextEditingController(),
-      "quantityController": TextEditingController(),
-    });
-    setState(() {});
-  }
-
-  void removeVariation(int index) {
-    variations[index]['priceController']?.dispose();
-    variations[index]['quantityController']?.dispose();
-    variations.removeAt(index);
-    setState(() {});
+  String colorToHexString(Color color) {
+    return '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
   }
 
   // Color options
@@ -59,7 +36,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
     const Color(0xFF9C27B0),
     Colors.white,
   ];
-  void _showCustomColorPicker(int index) {
+    void _showCustomColorPicker(int index) {
     showColorPickerDialog(
       context,
       initialColor: _customColor,
@@ -67,21 +44,25 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
         setState(() => _customColor = color);
       },
       onSavePressed: () {
-        setState(() {
           _colorOptions.add(_customColor);
           _selectedColorIndex = _colorOptions.length - 1;
-          variations[index]['color'] = _customColor;
-        });
+         context.read<ProductCubit>().variations[index]['color_code'] = colorToHexString(_customColor);
+        
       },
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<ProductCubit, ProductState>(
+      builder: (context, state) {
+        final cubit = context.read<ProductCubit>();
+
     return Column(
       children: [
         AppTextField(
-          controller: TextEditingController(),
+          controller: cubit.productPriceController,
           hintText: 'price_hint'.tr(context),
           keyboardType: TextInputType.number,
           prefixIcon: Padding(
@@ -95,12 +76,14 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
           validator: (value) => Validators.validateRequired(
               value, 'price_hint'.tr(context), context),
         ),
+        SizedBox(height: 20.h),
+
         Align(
             alignment: AlignmentDirectional.centerStart,
             child: Column(
               children: [
-                ...List.generate(variations.length, (index) {
-                  final variation = variations[index];
+                ...List.generate(cubit.variations.length, (index) {
+                  final variation = cubit.variations[index];
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -138,7 +121,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                         children: [
                           Expanded(
                             child: AppTextField(
-                              controller: variation['sizeController'] ??=
+                              controller: cubit.variations[index]['attribute_value_id'] ??=
                                   TextEditingController(text: variation['size']),
                               hintText: 'size_hint'.tr(context),
                               prefixIcon: Padding(
@@ -166,7 +149,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                           // === QUANTITY FIELD ===
                           Expanded(
                             child: AppTextField(
-                              controller: variation['quantityController'],
+                              controller: cubit.variations[index]['stock'],
                               hintText: 'quantity_hint'.tr(context),
                               keyboardType: TextInputType.number,
                               prefixIcon: Padding(
@@ -187,7 +170,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                           // === PRICE FIELD ===
                           Expanded(
                             child: AppTextField(
-                              controller: variation['priceController'],
+                              controller:cubit.variations[index]['price'],
                               hintText: 'price_hint'.tr(context),
                               keyboardType: TextInputType.number,
                               prefixIcon: Padding(
@@ -209,7 +192,9 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: IconButton(
-                          onPressed: () => removeVariation(index),
+                          onPressed: () => setState(() {
+                            cubit.removeVariation(index);
+                          }),
                           icon: const Icon(Icons.delete_forever,
                               color: Colors.red),
                         ),
@@ -222,7 +207,9 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
 
                 // === ADD VARIATION BUTTON ===
                 ElevatedButton.icon(
-                  onPressed: addVariation,
+                  onPressed:() => setState(() {
+                    cubit.addVariation();
+                  }) ,
                   icon: const Icon(Icons.add),
                   label: const Text(
                       "Add Variation"), //todo : 'add_variation'.tr(context)),
@@ -235,12 +222,12 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
 
         // Product Details Field
         AppTextField(
-          controller: TextEditingController(),
+          controller: cubit.productDescriptionController,
           hintText: 'product_details'.tr(context),
           // maxLength: 5,
           maxLines: 5,
 
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.text,
           // prefixIcon: SizedBox(
           //   width: 20.w,
           //   height: 20.h,
@@ -259,31 +246,46 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
         ),
         SizedBox(height: 20.h),
         // Size Dropdown
-        AppDropdownField(
-          hint: 'main_category'.tr(context),
-          value: null,
-          prefixIcon: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 13.w),
-            child: SvgPicture.asset(
-              "assets/images/svg/main_category.svg",
-              width: 20.w,
-              height: 20.h,
-            ),
-          ),
-          items: 'main_category'.tr(context).split(','),
-          onChanged: (value) {},
-          validator: (value) => Validators.validateRequired(
-              value, 'main_category'.tr(context), context),
-        ),
-        SizedBox(height: 20.h),
+        if (cubit.categories.isNotEmpty)
+         AppDropdownField(
+                hint: 'category'.tr(context),
+                value: cubit.selectedCategoryId != null
+                    ? cubit.categories
+                        .firstWhere((c) => c.id == cubit.selectedCategoryId)
+                        .name
+                    : null,
+                isMultiSelect: false,
+                items: cubit.categories.map((c) => c.name).toList(),
+                selectedValues: cubit.selectedCategoryId != null
+                    ? [
+                        cubit.categories
+                            .firstWhere((c) => c.id == cubit.selectedCategoryId)
+                            .name
+                      ]
+                    : [],
+                onChanged: (value) {
+                  final selected =
+                      cubit.categories.firstWhere((c) => c.name == value);
+                  cubit.selectCategory(selected.id);
+                  setState(() {});
+                },
+                validator: (value) {
+                  if (cubit.selectedCategoryId == null) {
+                    return 'please_select_category'.tr(context);
+                  }
+                  return null;
+                },
+                showErrorBorder: true,
+              ),
+
+         SizedBox(height: 20.h),
         Text('additional_Product_Details'.tr(context),
             style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
         SizedBox(height: 10.h),
         // Service Details Section
         Column(
           children: [
-            ...List.generate(serviceDetailsControllers.length, (index) {
-              final item = serviceDetailsControllers[index];
+            ...List.generate(cubit.serviceDetailsControllers.length, (index) {
               return Padding(
                 padding: EdgeInsets.only(bottom: 12.h),
                 child: Container(
@@ -296,17 +298,18 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                     children: [
                       Expanded(
                         child: AppTextField(
-                          controller: item['price']!,
+                          controller: cubit.serviceDetailsControllers[index]['quality']!,
                           hintText: 'price_hint'.tr(context),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                           validator: (value) => Validators.validateRequired(
-                              value, 'price_hint'.tr(context), context),
+                              value, 'description_head'.tr(context), context),
                         ),
                       ),
                       SizedBox(width: 10.w),
                       Expanded(
                         child: AppTextField(
-                          controller: item['description']!,
+                          controller: cubit.serviceDetailsControllers[index]
+                                  ['material']!,
                           hintText: 'description_hint'.tr(context),
                           keyboardType: TextInputType.text,
                           validator: (value) => Validators.validateRequired(
@@ -317,6 +320,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                   ),
                 ),
               );
+              
             }),
 
             // "+" Button
@@ -324,7 +328,9 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: addParoductDetail,
+                    onPressed:() => setState(() {
+                      cubit.addParoductDetail();
+                    }),
                     icon: const Icon(Icons.add),
                     label: Text('add_section'.tr(context)),
                     style:
@@ -332,15 +338,13 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                   ),
                 ),
                 SizedBox(width: 10.w),
-                if (serviceDetailsControllers.isNotEmpty)
+                if (cubit.serviceDetailsControllers.isNotEmpty)
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        serviceDetailsControllers.last['price']!.dispose();
-                        serviceDetailsControllers.last['description']!
-                            .dispose();
-                        serviceDetailsControllers.removeLast();
-                        setState(() {});
+                        setState(() {
+                          cubit.removeParoductDetail();
+                        });
                       },
                       icon: const Icon(Icons.undo),
                       label: Text('undo'.tr(context)),
@@ -374,9 +378,15 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
         // ),
       ],
     );
+      },
+    );
   }
 
   Widget _buildColorSelection(BuildContext context, int index) {
+        return BlocBuilder<ProductCubit, ProductState>(
+      builder: (context, state) {
+        final cubit = context.read<ProductCubit>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -398,7 +408,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                       onTap: () {
                         setState(() {
                           _selectedColorIndex = i;
-                          variations[index]['color'] = _colorOptions[i];
+                          cubit.variations[index]['color_code']= colorToHexString(_colorOptions[i]);
                         });
                       },
                       child: Container(
@@ -413,11 +423,10 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                             width: _selectedColorIndex == i ? 2 : 1,
                           ),
                         ),
-                        child: _selectedColorIndex == i
+                        child: cubit.variations[index]['color_code'] == colorToHexString(_colorOptions[i])
                             ? Icon(Icons.check,
                                 size: 16.sp,
-                                color: _colorOptions[i].computeLuminance() > 0.5
-                                    ? Colors.black
+                                color: _colorOptions[i].computeLuminance() > 0.5 ? Colors.black
                                     : Colors.white)
                             : null,
                       ),
@@ -430,5 +439,10 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
         ),
       ],
     );
+      });
   }
+
 }
+
+
+
