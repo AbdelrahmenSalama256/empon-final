@@ -819,5 +819,8 @@
   "number_of_views":"عدد المشاهدات",
   "average_order_value":"متوسط قيمة الطلب",
   "total_revenue":"إجمالي الإيرادات",
-  "best_selling_product":"المنتج الأكثر مبيعًا"
+  "best_selling_product":"المنتج الأكثر مبيعًا",
+  "store_plans":"خطط ترويج المحل",
+  "current_plan":"خطتك الحالية",
+  "no_transactions_found":"لم يتم العثور على أي معاملات"
 }

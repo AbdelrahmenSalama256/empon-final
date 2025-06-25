@@ -801,6 +801,9 @@
   "number_of_views":"Number of views",
   "average_order_value":"Average order value",
   "total_revenue":"Total revenue",
-  "best_selling_product":"Best Selling Product"
+  "best_selling_product":"Best Selling Product",
+  "store_plans":"Store Promotion Plans",
+  "current_plan":"Your current plan",
+  "no_transactions_found":"No transactions found"
 
 }

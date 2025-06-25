@@ -19,6 +19,7 @@ class EndPoints {
   static const String userVerifyPhone = "${baseUrl}check-phone";
   static const String account = "${baseUrl}account/";
   static const String statistics = "${baseUrl}account-statistics/";
+  static const String updateAccountData = "${baseUrl}accounts/";
   //! Logout
   static const String userLogout = "${baseUrl}logout";
   static const String deleteAccount = "${baseUrl}auth/account-deletion";

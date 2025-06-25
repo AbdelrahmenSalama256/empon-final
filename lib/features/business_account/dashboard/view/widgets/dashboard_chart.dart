@@ -111,7 +111,7 @@ class DashboardChart extends StatelessWidget {
               primaryYAxis: NumericAxis(
                 opposedPosition: true,
                 minimum: 0,
-                maximum: 500,
+                maximum: 200,
                 interval: 50,
                 majorGridLines: MajorGridLines(
                   width: 1.w,

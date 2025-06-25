@@ -24,16 +24,16 @@ class DashboardScreen extends StatelessWidget {
         if (state is StatisticsLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: RefreshIndicator(
-            onRefresh: () =>
-              context.read<StatisticsCubit>()
+        return RefreshIndicator(
+          onRefresh: () async {
+            await context.read<StatisticsCubit>()
               .fetchStatistics(
                 context.read<GlobalCubit>().businessId
-              ),
-              
-            child: SafeArea(
+              );
+          },
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
               child: Column(
                 children: [
                   // SizedBox(height: 16.h),
@@ -69,7 +69,13 @@ class DashboardScreen extends StatelessWidget {
                             Center(
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(200.r),
-                                child: Image.asset(
+                                child: cubit.statistics!.account.name != null
+                                    ? Image.network(
+                                        cubit.statistics!.account.logo, 
+                                        width: 74.w,
+                                        height: 74.w,
+                                        )
+                                :Image.asset(
                                   'assets/images/brand-logo.png',
                                   width: 74.w,
                                   height: 74.w,
@@ -78,7 +84,7 @@ class DashboardScreen extends StatelessWidget {
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              'كومفورت شوز',
+                              cubit.statistics!.account.name,
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
@@ -294,20 +300,42 @@ class DashboardScreen extends StatelessWidget {
                               ],
                             ),
                             SizedBox(height: 8.h),
-                            const DashboardChart(
-                              januaryValue: 20,
-                              februaryValue: 30,
-                              marchValue: 40,
-                              aprilValue: 20,
-                              mayValue: 0,
-                              juneValue:100,
-                              julyValue: 80,
-                              augustValue: 90,
-                              septemberValue: 100,
-                              octoberValue: 110,
-                              novemberValue: 30,
-                              decemberValue: 130,
-
+                            DashboardChart(
+                              januaryValue: cubit.statistics!.visitorsCountForYear['january'.tr(context)] ?? 0,
+                              februaryValue: cubit.statistics!.visitorsCountForYear[
+                                          'february'.tr(context)] ??
+                                      0,
+                              marchValue: cubit.statistics!.visitorsCountForYear[
+                                      'march'.tr(context)] ??
+                                  0,
+                              aprilValue: cubit.statistics!.visitorsCountForYear[
+                                      'april'.tr(context)] ??
+                                  0,
+                              mayValue: cubit.statistics!.visitorsCountForYear[
+                                      'may'.tr(context)] ??
+                                  0,
+                              juneValue: cubit.statistics!.visitorsCountForYear[
+                                      'june'.tr(context)] ??
+                                  0,
+                              julyValue: cubit.statistics!.visitorsCountForYear[
+                                      'july'.tr(context)] ??
+                                  0,
+                              augustValue: cubit.statistics!.visitorsCountForYear[
+                                      'august'.tr(context)] ??
+                                  0,
+                              septemberValue: cubit.statistics!.visitorsCountForYear[
+                                          'september'.tr(context)] ??
+                                      0,
+                              octoberValue: cubit.statistics!.visitorsCountForYear[
+                                          'october'.tr(context)] ??
+                                      0,
+                              novemberValue: cubit.statistics!.visitorsCountForYear[
+                                          'november'.tr(context)] ??
+                                      0,
+                              decemberValue: cubit.statistics!.visitorsCountForYear[
+                                          'december'.tr(context)] ??
+                                      0,
+            
                             ),
                             SizedBox(height: 24.h),
                              DashboardOverview(
@@ -330,6 +358,7 @@ class DashboardScreen extends StatelessWidget {
                                     color: const Color(0xff1E2644),
                                   ),
                                 ),
+                                cubit.statistics!.walletTransactions.isNotEmpty?
                                 InkWell(
                                   onTap: () {
                                     navigateTo(
@@ -343,45 +372,27 @@ class DashboardScreen extends StatelessWidget {
                                       color: AppColors.primary,
                                     ),
                                   ),
-                                ),
+                                ):const SizedBox(),
                               ],
                             ),
                             SizedBox(height: 16.h),
                             // Replace Expanded with a SizedBox or Container with fixed height if needed
                             SizedBox(
                               height: 300.h, // Adjust this height as needed
-                              child: ListView(
+                              child: cubit.statistics!.walletTransactions.isEmpty?
+                              Center(
+                                child: Text(
+                                  'no_transactions_found'.tr(context),
+            )):
+                            ListView(
                                 children: [
+                                  for (final transaction in cubit.statistics!.walletTransactions)
                                   TransactionItem(
-                                    amount: '1000',
-                                    isDeposit: true,
-                                    description: 'deposit'.tr(context),
-                                    date: '15 يوليو 2023, 6:30PM',
-                                  ),
-                                  TransactionItem(
-                                    amount: '500',
-                                    isDeposit: false,
-                                    description: 'payment_dev_ratio'.tr(context),
-                                    date: '15 يوليو 2023, 6:30PM',
-                                  ),
-                                  TransactionItem(
-                                    amount: '1000',
-                                    isDeposit: true,
-                                    description: 'refund_dev_ratio'.tr(context),
-                                    date: '15 يوليو 2023, 6:30PM',
-                                  ),
-                                  TransactionItem(
-                                    amount: '500',
-                                    isDeposit: false,
-                                    description:
-                                        'payment_nasbi_stores'.tr(context),
-                                    date: '15 يوليو 2023, 6:30PM',
-                                  ),
-                                  TransactionItem(
-                                    amount: '1000',
-                                    isDeposit: true,
-                                    description: 'refund_nasbi'.tr(context),
-                                    date: '15 يوليو 2023, 6:30PM',
+                                    amount: transaction.amount.toString(),
+                                    // isDeposit: transaction.isDeposit??false,
+                                    description: transaction.type ?? '',
+                                    date: transaction.createdAt.toString(),
+                                    isDeposit: true, // Adjust formatting if needed
                                   ),
                                 ],
                               ),
