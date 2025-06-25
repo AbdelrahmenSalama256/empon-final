@@ -20,12 +20,27 @@ class HomeStoreFollowers extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              logo.startsWith('http')
+              logo != null
                   ? Image.network(
                       logo,
                       width: 36.w,
                       height: 36.h,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 40.w,
+                          height: 40.h,
+                          decoration: const BoxDecoration(
+                            color: AppColors.lightGrey,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.person,
+                            color: AppColors.primary,
+                            size: 24.sp,
+                          ),
+                        );
+                      },
                     )
                   : Container(
                       width: 40.w,
@@ -42,11 +57,12 @@ class HomeStoreFollowers extends StatelessWidget {
                     ),
               for (int i = 0; i < 3; i++)
                 Positioned.directional(
-                  start: i * 20.w,
+                  start: i * 25.w,
                   textDirection: context.read<GlobalCubit>().language == "ar"
                       ? TextDirection.rtl
                       : TextDirection.ltr,
                   child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20.w),
                     width: 36.w,
                     height: 36.w,
                     decoration: BoxDecoration(
@@ -62,7 +78,7 @@ class HomeStoreFollowers extends StatelessWidget {
             ],
           ),
         ),
-        Visibility(visible: followersCount > 0, child: SizedBox(width: 50.w)),
+        Visibility(visible: followersCount > 0, child: SizedBox(width: 100.w)),
         Text(
           'followers_count'.tr(context),
           style: TextStyle(

@@ -58,7 +58,10 @@ class _BaseScreenState extends State<BaseScreen> {
         ];
       case UserType.store:
         return [
-          const HomeStoreScreen(),
+          HomeStoreScreen(
+            businessAccountId: context.read<GlobalCubit>().businessId,
+            isVendor: true,
+          ),
           const ShopScreen(),
           const SizedBox(),
           const NotificationsPage(),
@@ -72,6 +75,7 @@ class _BaseScreenState extends State<BaseScreen> {
             businessAccountId: context.read<GlobalCubit>().businessId,
             isVendor: true,
           ),
+
           BlocProvider(
             create: (context) => StatisticsCubit(sl<StatisticsRepo>())
               ..fetchStatistics(context.read<GlobalCubit>().businessId),
