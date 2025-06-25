@@ -4,21 +4,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class MenuItem extends StatelessWidget {
   final String title;
   final String icon;
-  final Color iconColor;
-  final VoidCallback ontap;
+  final VoidCallback onTap;
+  final Widget? trailing;
 
   const MenuItem({
     super.key,
     required this.title,
     required this.icon,
-    required this.ontap,
-    required this.iconColor,
+    this.trailing,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ontap,
+      onTap: onTap,
       child: Row(
         children: [
           Image.asset(icon, width: 20.w, height: 20.h),

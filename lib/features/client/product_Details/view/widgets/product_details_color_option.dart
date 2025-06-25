@@ -44,33 +44,35 @@ class ColorOptionsSection extends StatelessWidget {
             SizedBox(width: 8.w),
             // Color options
             Expanded(
-              child: SizedBox(
-                height: 32.h,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: availableColors.length,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () => onColorSelected(index),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        width: 24.w,
-                        height: 24.w,
-                        margin: EdgeInsets.symmetric(horizontal: 8.w),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: availableColors[index],
-                          border: Border.all(
-                            color: const Color(0xff36C4ED),
-                            width: 1.w,
-                          ),
-                        ),
+              child: availableColors.isEmpty
+                  ? const SizedBox.shrink()
+                  : SizedBox(
+                      height: 32.h,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: availableColors.length,
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () => onColorSelected(index),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              width: 24.w,
+                              height: 24.w,
+                              margin: EdgeInsets.symmetric(horizontal: 8.w),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: availableColors[index],
+                                border: Border.all(
+                                  color: const Color(0xff36C4ED),
+                                  width: 1.w,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
             ),
           ],
         ),

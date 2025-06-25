@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -44,11 +45,9 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                   carouselController: _carouselController,
                   options: CarouselOptions(
                     height: 250.h,
-                    viewportFraction:
-                        0.85, // Mimics Owl Carousel's partial side visibility
-                    enlargeCenterPage:
-                        true, // Scales center image like Owl Carousel
-                    enableInfiniteScroll: true, // Owl Carousel's loop
+                    viewportFraction: 0.85,
+                    enlargeCenterPage: true,
+                    enableInfiniteScroll: true,
                     autoPlay: widget.autoPlay,
                     autoPlayInterval: widget.autoPlayInterval,
                     autoPlayAnimationDuration:
@@ -63,13 +62,23 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                   items: widget.images.map((imageUrl) {
                     return Builder(
                       builder: (BuildContext context) {
-                        return Image.network(
-                          imageUrl,
-                          fit: BoxFit.contain,
-                          height: 250.h,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(child: Icon(Icons.error));
-                          },
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(10.r),
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            height: 250.h,
+                            errorBuilder: (context, error, stackTrace) {
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(10.r),
+                                child: Image.asset(
+                                  "assets/images/placholder.jpg",
+                                  fit: BoxFit.cover,
+                                  height: 250.h,
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     );
@@ -88,7 +97,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                     icon: Icon(
                       Icons.arrow_back_ios,
                       color: _currentPage > 0
-                          ? Colors.black
+                          ? AppColors.primary
                           : Colors.grey.shade400,
                       size: 24.w,
                     ),
@@ -106,7 +115,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                     icon: Icon(
                       Icons.arrow_forward_ios,
                       color: _currentPage < widget.images.length - 1
-                          ? Colors.black
+                          ? AppColors.primary
                           : Colors.grey.shade400,
                       size: 24.w,
                     ),
@@ -136,11 +145,11 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: index == _currentPage
-                      ? Colors.black
+                      ? AppColors.primary
                       : Colors.grey.shade300,
                   border: Border.all(
                     color: index == _currentPage
-                        ? Colors.black
+                        ? AppColors.primary
                         : Colors.grey.shade300,
                     width: 1.w,
                   ),

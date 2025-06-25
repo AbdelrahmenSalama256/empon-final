@@ -4,6 +4,7 @@ import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/model/service_model.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
+import 'package:embone/features/client/product_Details/data/model/releated_model.dart';
 import 'package:embone/features/client/product_Details/data/repo/comment_repo.dart';
 import 'package:embone/features/client/search/data/model/search_history_model.dart';
 import 'package:embone/features/client/search/data/model/search_model.dart';
@@ -12,6 +13,7 @@ import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+
 import '../../../product_Details/data/model/product_model.dart';
 
 class SearchCubit extends Cubit<SearchState> {
@@ -21,6 +23,12 @@ class SearchCubit extends Cubit<SearchState> {
   CommentResponseModel? commentResponse;
   TextEditingController commentController = TextEditingController();
   List<CommentModel> comments = [];
+  int productsCurrentPage = 1;
+  int productsLimit = 10;
+  bool productsHasMore = true;
+  bool productsIsLoadingMore = false;
+
+  RelatedProductsModel? homeModel;
 
   SearchCubit(this.searchRepo) : super(SearchInitial());
 
@@ -481,7 +489,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   Future<void> serviceAddComment(
-      {required int serviceId,  int? parentId}) async {
+      {required int serviceId, int? parentId}) async {
     if (!isClosed) emit(CommentLoading());
     final response = await sl<CommentRepo>().serviceAddComment(
       serviceId: serviceId,
@@ -704,6 +712,24 @@ class SearchCubit extends Cubit<SearchState> {
       },
       (_) {
         if (!isClosed) emit(LikeServiceLoaded(serviceModel!));
+      },
+    );
+  }
+
+  Future<void> fetchReleatedProducts(
+      {bool loadMore = false, required final int id}) async {
+    emit(RelatedProductsLoading());
+
+    final response = await searchRepo.getReleatedProducts(
+      id: id,
+    );
+    Print.info("======================> $response");
+    response.fold(
+      (l) => emit(RelatedProductsError(message: l)),
+      (r) {
+        homeModel = r;
+        PrintUtil.debug("this is releated ============= $homeModel");
+        emit(RelatedProductsLoaded());
       },
     );
   }

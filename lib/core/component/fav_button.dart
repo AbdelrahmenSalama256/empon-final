@@ -1,7 +1,5 @@
-// ignore: file_names
 import 'dart:math';
 
-import 'package:embone/core/constants/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +25,7 @@ class FavoriteButton extends StatefulWidget {
 
 class _FavoriteButtonState extends State<FavoriteButton>
     with TickerProviderStateMixin {
-  bool isFavorited = false;
+  late bool isFavorited;
   double scale = 1.0;
   bool showHearts = false;
   late AnimationController _heartController;
@@ -37,24 +35,29 @@ class _FavoriteButtonState extends State<FavoriteButton>
   void initState() {
     super.initState();
     isFavorited = widget.isFavorited;
-
     _heartController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-
     floatingHearts = [];
   }
 
+  @override
+  void didUpdateWidget(FavoriteButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isFavorited != oldWidget.isFavorited) {
+      isFavorited = widget.isFavorited;
+    }
+  }
+
   void toggleFavorite() {
-    final wasFavorited = isFavorited; // Store the previous state
+    final wasFavorited = isFavorited;
     setState(() {
       widget.onFavoriteToggle();
-      isFavorited = !isFavorited; // Toggle the state
-      scale = 1.3; // Scale effect for the icon
+      isFavorited = !isFavorited;
+      scale = 1.3;
     });
 
-    // Trigger the floating hearts effect only when favoriting (false -> true)
     if (!wasFavorited && isFavorited) {
       setState(() {
         showHearts = true;
@@ -63,20 +66,16 @@ class _FavoriteButtonState extends State<FavoriteButton>
       });
     }
 
-    // Reset the scale after the animation
     Future.delayed(widget.animationDuration, () {
       if (mounted) {
-        // ✅ التحقق من أن الـ Widget لا يزال موجودًا
         setState(() {
           scale = 1.0;
         });
       }
     });
 
-    // Clear the floating hearts after the animation
     Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) {
-        // ✅ التحقق من أن الـ Widget لا يزال موجودًا
         setState(() {
           floatingHearts.clear();
           showHearts = false;
@@ -128,7 +127,7 @@ class _FavoriteButtonState extends State<FavoriteButton>
                   isFavorited
                       ? CupertinoIcons.heart_fill
                       : CupertinoIcons.heart,
-                  color: isFavorited ? AppColors.red : Colors.grey,
+                  color: isFavorited ? widget.iconColor : Colors.grey,
                   size: widget.size,
                 ),
               );
@@ -149,7 +148,6 @@ class _FavoriteButtonState extends State<FavoriteButton>
                         scale: (1 - heart["animationController"].value) * 1.2,
                         child: Icon(
                           CupertinoIcons.heart_fill,
-                          // ignore: deprecated_member_use
                           color: widget.iconColor.withOpacity(0.8),
                           size: heart["size"].toDouble(),
                         ),

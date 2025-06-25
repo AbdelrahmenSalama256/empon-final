@@ -14,11 +14,11 @@ class StatisticsLoading extends StatisticsState {}
 class StatisticsLoaded extends StatisticsState {
   final StatisticsData statistics;
 
-  StatisticsLoaded(this.statistics);
+  const StatisticsLoaded(this.statistics);
 }
 
 class StatisticsError extends StatisticsState {
   final String message;
 
-  StatisticsError(this.message);
+  const StatisticsError(this.message);
 }

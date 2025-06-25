@@ -96,13 +96,15 @@ class AppHeader extends StatelessWidget {
             : (title != null
                 ? Text(
                     title!,
+                    textAlign: TextAlign.center,
                     style: titleStyle ??
                         TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400,
                           color: AppColors.black,
+                          height: 2.h,
                         ),
-                    overflow: TextOverflow.ellipsis,
+                    // overflow: TextOverflow.ellipsis,
                   )
                 : null));
 
@@ -140,11 +142,11 @@ class AppHeader extends StatelessWidget {
                   : Row(
                       children: [
                         const Spacer(
-                          flex: 1,
+                          flex: 3,
                         ),
-                        Center(child: titleContent),
+                        Expanded(flex: 8, child: titleContent),
                         const Spacer(
-                          flex: 2,
+                          flex: 4,
                         ),
                       ],
                     ),

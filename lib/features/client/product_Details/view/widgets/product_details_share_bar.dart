@@ -163,7 +163,6 @@ class _InteractionBarState extends State<InteractionBar>
         : BlocBuilder<SearchCubit, SearchState>(
             builder: (context, state) {
               final cubit = context.read<SearchCubit>();
-              final isLoved = cubit.productModel?.data?.isLoved ?? false;
 
               return NonVendorInteractionView(
                 likeCount: widget.likeCount,
@@ -186,8 +185,8 @@ class _InteractionBarState extends State<InteractionBar>
                 likeColor: widget.likeColor,
                 thumbsUpColor:
                     widget.thumbsUpColor ?? Theme.of(context).primaryColor,
-                isLoved: isLoved,
-                isThumbsUp: _isThumbsUp,
+                isLoved: cubit.productModel?.data?.isLoved ?? false,
+                isThumbsUp: cubit.productModel?.data?.isLiked ?? false,
                 animateIcon: _animateIcon,
                 controller: _controller,
                 scaleAnimation: _scaleAnimation,

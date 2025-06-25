@@ -47,7 +47,7 @@ class _EmponWalletScreenState extends State<EmponWalletScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WalletCubit(sl<WalletRepo>())..init(),
+      create: (context) => WalletCubit(sl<WalletRepo>())..fetchWalletBalance(),
       child: BlocListener<WalletCubit, WalletState>(
         listener: (context, state) {
           if (state is WalletLoaded) {

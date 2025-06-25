@@ -93,13 +93,11 @@ class BusinessAccount {
       logo: json['logo'],
       cover: json['cover'],
       totalProducts: json['total_products'],
-      products: (json['products'] as List)
-          .map((e) => Product.fromJson(e))
-          .toList(),
+      products:
+          (json['products'] as List).map((e) => Product.fromJson(e)).toList(),
       totalServices: json['total_services'],
-      services: (json['services'] as List)
-          .map((e) => Service.fromJson(e))
-          .toList(),
+      services:
+          (json['services'] as List).map((e) => Service.fromJson(e)).toList(),
       totalFollowers: json['total_followers'],
     );
   }
