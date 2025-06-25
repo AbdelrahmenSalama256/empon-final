@@ -182,6 +182,7 @@ class ProductTabContent extends StatelessWidget {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         final accounts = cubit.homeModel!.accounts;
+        PrintUtil.info(accounts.toString());
         return NotificationListener<ScrollNotification>(
           onNotification: (scrollDetails) {
             if (scrollDetails.metrics.pixels >=

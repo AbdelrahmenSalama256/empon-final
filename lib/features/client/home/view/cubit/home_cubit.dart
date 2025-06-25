@@ -106,6 +106,7 @@ class HomeCubit extends Cubit<HomeState> {
           name: account.name,
           image: account.image,
           products: updatedProducts,
+          isActive: account.isActive,
         );
       }).toList();
 
