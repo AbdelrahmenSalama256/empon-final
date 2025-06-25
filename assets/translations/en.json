@@ -804,6 +804,12 @@
   "best_selling_product":"Best Selling Product",
   "store_plans":"Store Promotion Plans",
   "current_plan":"Your current plan",
-  "no_transactions_found":"No transactions found"
+  "no_transactions_found":"No transactions found",
+  "choose_payment_method":"Choose payment method",
+  "vodafone":"Vodafone Cach",
+  "paymob":"Pay mob",
+  "orange":"Orange Cach",
+  "wepay":"We pay"
+  
 
 }

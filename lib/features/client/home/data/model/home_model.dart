@@ -32,12 +32,14 @@ class Account extends Equatable {
   final String name;
   final String image;
   final List<Product> products;
+  final bool isActive;
 
-  const Account({
+  const Account( {
     required this.id,
     required this.name,
     required this.image,
     required this.products,
+    required this.isActive,
   });
 
   factory Account.fromJson(Map<String, dynamic> json) {
@@ -48,11 +50,12 @@ class Account extends Equatable {
       products: (json['products'] as List<dynamic>? ?? [])
           .map((item) => Product.fromJson(item))
           .toList(),
+      isActive: json['active'] ?? false,
     );
   }
 
   @override
-  List<Object?> get props => [id, name, image, products];
+  List<Object?> get props => [id, name, image, products, isActive];
 }
 
 class Product extends Equatable {
