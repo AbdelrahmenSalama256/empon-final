@@ -21,7 +21,9 @@ import 'package:location/location.dart' as loc;
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class GlobalCubit extends Cubit<GlobalState> {
-  GlobalCubit() : super(GlobalInitial());
+  GlobalCubit() : super(GlobalInitial()) {
+    _initializeBusinessId();
+  }
 
   User? user =
       sl<CacheHelper>().getDataString(key: AppConstants.userProfile) != null
@@ -61,6 +63,14 @@ class GlobalCubit extends Cubit<GlobalState> {
   Gender selectedGender = Gender.male;
   XFile? profileImage;
   bool isLoading = false;
+  int? businessId; // Declare without initializer
+
+  void _initializeBusinessId() {
+    // Try to get businessId from cache, fallback to parsing userId
+    businessId = sl<CacheHelper>().getData(key: AppConstants.businessAccountId)
+            as int? ??
+        (userId != null ? int.tryParse(userId!) : null);
+  }
 
   void initProfileData() {
     firstNameController.text = userName ?? '';
@@ -174,8 +184,9 @@ class GlobalCubit extends Cubit<GlobalState> {
   String? userFcmToken, userWsToken, userLastSeen, userCreatedAt;
   List<Address>? userAddresses;
   List<Account>? userAccount;
-  int? businessId =
-      int.parse(sl<CacheHelper>().getData(key: AppConstants.businessAccountId));
+  // int? businessId =
+  //     sl<CacheHelper>().getData(key: AppConstants.businessAccountId) ??
+  //         int.parse(userId);
   Future<void> getUserProfile({bool forceRefresh = false}) async {
     emit(ProfileLoading());
 
