@@ -2,7 +2,6 @@ import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
-import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
