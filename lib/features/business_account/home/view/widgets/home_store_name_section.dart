@@ -19,25 +19,25 @@ class HomeStoreNameSection extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: onTap,
-          child: Visibility(
-            visible: isVerified,
-            child: Container(
-              width: 35.w,
-              height: 35.w,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Icon(
-                CupertinoIcons.globe,
-                size: 20.sp,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
+        // GestureDetector(
+        //   onTap: onTap,
+        //   child: Visibility(
+        //     visible: isVerified,
+        //     child: Container(
+        //       width: 35.w,
+        //       height: 35.w,
+        //       decoration: BoxDecoration(
+        //         color: AppColors.primary,
+        //         borderRadius: BorderRadius.circular(8.r),
+        //       ),
+        //       child: Icon(
+        //         CupertinoIcons.globe,
+        //         size: 20.sp,
+        //         color: Colors.white,
+        //       ),
+        //     ),
+        //   ),
+        // ),
         const Spacer(),
         Center(
           child: StoreNameWithVerification(

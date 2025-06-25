@@ -100,7 +100,7 @@ class HomeScreen extends StatelessWidget {
                 body: SafeArea(
                   child: Center(
                     child: Text(
-                      "no_data_available".tr(context),
+                      "no_data_found".tr(context),
                       style: TextStyle(fontSize: 16.sp),
                     ),
                   ),
