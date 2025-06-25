@@ -1,4 +1,5 @@
 import 'package:embone/core/component/custom_loading_indicator.dart';
+import 'package:embone/core/component/empty_massage.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/custom_popup.dart';
@@ -155,12 +156,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             child: Center(child: CustomLoadingIndicator()))
                         : product?.id == null
                             ? Expanded(
-                                child: Center(
-                                  child: Text(
-                                    'product_not_found'.tr(context),
-                                    style: TextStyle(
-                                        fontSize: 30.sp, color: Colors.grey),
-                                  ),
+                                child: EmptyMessageWidget(
+                                  message: 'product_not_found'.tr(context),
                                 ),
                               )
                             : Expanded(

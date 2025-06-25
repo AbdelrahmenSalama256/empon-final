@@ -64,11 +64,6 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
           }
         });
       });
-    if (widget.businessAccountId != null &&
-        widget.businessAccountCubit != null) {
-      widget.businessAccountCubit!
-          .fetchBusinessAccount(widget.businessAccountId!);
-    }
   }
 
   @override

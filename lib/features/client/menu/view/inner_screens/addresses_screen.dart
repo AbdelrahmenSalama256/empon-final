@@ -1,5 +1,6 @@
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
@@ -61,7 +62,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffFDFDFD),
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: BlocBuilder<GlobalCubit, GlobalState>(
           builder: (context, state) {
@@ -88,10 +89,6 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       title: 'addresses'.tr(context),
                       centerTitle: true,
                       showBackButton: true,
-                      backgroundColor: Colors.white,
-                      onBackPressed: () {
-                        Navigator.pop(context);
-                      },
                     ),
                     Expanded(
                       child: state is GetAddressLoading

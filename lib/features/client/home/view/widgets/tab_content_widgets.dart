@@ -81,7 +81,9 @@ class ServiceTabContent extends StatelessWidget {
           },
           child: ListView.builder(
             key: const PageStorageKey<String>("service"),
-            padding: EdgeInsets.only(bottom: 16.h, left: 10.w, right: 10.w),
+            // padding: EdgeInsets.only(bottom: 16.h, left: 10.w, right: 10.w),
+            padding: EdgeInsets.only(bottom: 0.h, left: 0.w, right: 0.w),
+
             itemCount:
                 cubit.services.length + (cubit.servicesIsLoadingMore ? 1 : 0),
             itemBuilder: (context, index) {
@@ -99,6 +101,15 @@ class ServiceTabContent extends StatelessWidget {
               final service = cubit.services[index];
               return ServiceCard(
                 service: service,
+                onBrandTap: () {
+                  PrintUtil.debug("Account tapped: ${service.account.name}");
+                  navigateTo(
+                      context,
+                      HomeStoreScreen(
+                        businessAccountId: service.account.id,
+                        isVendor: false,
+                      ));
+                },
                 onTap: () {
                   PrintUtil.debug("Service tapped: ${service.name}");
                   PrintUtil.debug("Service tapped: ${service.id}");
@@ -132,7 +143,7 @@ class ProductTabContent extends StatelessWidget {
   Widget build(BuildContext context) {
     if (state is HomeLoading) {
       return ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        padding: EdgeInsets.symmetric(horizontal: 0.w),
         itemCount: 3,
         itemBuilder: (context, index) {
           return ShimmerEffect(
@@ -183,7 +194,7 @@ class ProductTabContent extends StatelessWidget {
           },
           child: ListView.builder(
             key: const PageStorageKey<String>("product"),
-            padding: EdgeInsets.only(bottom: 16.h, left: 10.w, right: 10.w),
+            padding: EdgeInsets.only(bottom: 0.h, left: 0.w, right: 0.w),
             itemCount: accounts.length + (cubit.productsIsLoadingMore ? 1 : 0),
             itemBuilder: (context, index) {
               if (index == accounts.length && cubit.productsIsLoadingMore) {

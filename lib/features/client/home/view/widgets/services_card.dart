@@ -8,11 +8,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ServiceCard extends StatelessWidget {
   final ServiceModel service;
   final VoidCallback? onTap;
+  final VoidCallback? onBrandTap;
 
   const ServiceCard({
     super.key,
     required this.service,
     this.onTap,
+    this.onBrandTap,
   });
 
   @override
@@ -70,28 +72,31 @@ class ServiceCard extends StatelessWidget {
           PositionedDirectional(
             top: 12.h,
             start: 12.w,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2.w),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 5,
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: service.account.logo, // Handle null logo
-                  width: 45.w,
-                  height: 45.w,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      CircleAvatar(backgroundColor: Colors.grey[300]),
-                  errorWidget: (context, url, error) => CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    child: const Icon(Icons.business, color: Colors.white),
+            child: GestureDetector(
+              onTap: onBrandTap,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2.w),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: service.account.logo, // Handle null logo
+                    width: 45.w,
+                    height: 45.w,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        CircleAvatar(backgroundColor: Colors.grey[300]),
+                    errorWidget: (context, url, error) => CircleAvatar(
+                      backgroundColor: Colors.grey[300],
+                      child: const Icon(Icons.business, color: Colors.white),
+                    ),
                   ),
                 ),
               ),

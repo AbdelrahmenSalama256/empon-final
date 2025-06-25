@@ -14,9 +14,8 @@ class SettingsHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppHeader(
       title: "settings".tr(context),
-      showBackButton: true,
       centerTitle: true,
-      alignment: HeaderAlignment.spaceBetween,
+      showBackButton: true,
       actions: [
         IconButton(
           padding: EdgeInsets.zero,

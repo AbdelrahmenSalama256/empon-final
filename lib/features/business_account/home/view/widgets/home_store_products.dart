@@ -23,19 +23,17 @@ class HomeStoreProducts extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Text(
-            '$totalProduct ${"products".tr(context)}',
-            style: TextStyle(
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w400,
-              color: const Color(0xff1E2644),
-            ),
+        Text(
+          '$totalProduct ${"products".tr(context)}',
+          style: TextStyle(
+            fontSize: 11.sp,
+            fontWeight: FontWeight.w400,
+            color: const Color(0xff1E2644),
           ),
         ),
-        SizedBox(width: 10.w),
+        SizedBox(width: 20.w),
         Expanded(
-          flex: 2,
+          // flex: 3,
           child: AppButton(
             text: "add_product_or_service".tr(context),
             padding: EdgeInsets.symmetric(horizontal: 12.w),

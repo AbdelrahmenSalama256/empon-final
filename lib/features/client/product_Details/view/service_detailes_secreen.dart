@@ -1,4 +1,5 @@
 import 'package:embone/core/component/custom_loading_indicator.dart';
+import 'package:embone/core/component/empty_massage.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/custom_popup.dart';
@@ -103,12 +104,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                             child: Center(child: CustomLoadingIndicator()))
                         : service?.id == null
                             ? Expanded(
-                                child: Center(
-                                  child: Text(
-                                    'no_service'.tr(context),
-                                    style: TextStyle(
-                                        fontSize: 30.sp, color: Colors.grey),
-                                  ),
+                                child: EmptyMessageWidget(
+                                  message: 'no_service_data'.tr(context),
                                 ),
                               )
                             : Expanded(

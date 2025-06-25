@@ -22,13 +22,19 @@ class HomeStoreHero extends StatelessWidget {
             borderRadius: BorderRadius.all(
               Radius.circular(20.r),
             ),
-            child: storeCover!.startsWith('http')
+            child: storeCover != null
                 ? Image.network(
                     storeCover!,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/placholder.jpg',
+                        fit: BoxFit.cover,
+                      );
+                    },
                   )
                 : Image.asset(
-                    'assets/images/profile_store.png',
+                    'assets/images/placholder.jpg',
                     fit: BoxFit.cover,
                   ),
           ),

@@ -1,5 +1,5 @@
+import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/component/custom_loading_indicator.dart';
-import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/features/business_account/home/view/cubit/account_cubit.dart';
@@ -51,6 +51,11 @@ class HomeStoreContent extends StatelessWidget {
             SizedBox(height: 16.h),
             HomeStoreNameSection(
               name: "${accountData.accountData?.name}",
+              onTap: () {
+                businessAccountCubit.launchLocationUrl(
+                    latitude: double.parse(accountData.accountData!.lat),
+                    longitude: double.parse(accountData.accountData!.lng));
+              },
               isVerified: accountData.accountData?.verified ?? false,
             ),
             SizedBox(height: 16.h),
@@ -70,13 +75,25 @@ class HomeStoreContent extends StatelessWidget {
                     recivereName: accountData.accountData?.name,
                     recivereImage: accountData.accountData?.logo,
                     onChatPressed: () {
-                      navigateTo(
-                          context,
-                          ChatConversationScreen(
+                      navigatorKey.currentState!.push(
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  ChatConversationScreen(
                             receiverId: accountData.accountData?.id ?? 0,
                             name: accountData.accountData?.name ?? '',
                             image: accountData.accountData?.logo ?? '',
-                          ));
+                          ),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          transitionDuration: const Duration(milliseconds: 300),
+                        ),
+                      );
                     },
                     onFavoritePressed: () {
                       globalCubit.addAccountToWishlist(

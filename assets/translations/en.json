@@ -793,5 +793,7 @@
   "no_sizes_available": "No sizes available",
   "product_not_found": "Product not found",
   "no_data_found": "No data found",
-  "no_sizes_available_for_this_service": "No sizes available for this service"
+  "no_sizes_available_for_this_service": "No sizes available for this service",
+  "no_services": "No Available Services Now",
+  "no_service_data": "No Services Data Available Here"
 }
