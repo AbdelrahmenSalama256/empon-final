@@ -4,6 +4,7 @@ import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
@@ -21,6 +22,7 @@ import 'package:embone/features/client/menu/view/inner_screens/widgets/language_
 import 'package:embone/features/client/menu/view/inner_screens/widgets/notifications_toggle.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/settings_header.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/wallet.dart';
+import 'package:embone/features/client/menu/view/widgets/approval_item.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
 import 'package:embone/features/client/order/data/repo/orders_repo.dart';
 import 'package:embone/features/client/order/view/cubit/orders_cubit.dart';
@@ -55,6 +57,7 @@ class SettingsScreen extends StatelessWidget {
             },
             builder: (context, state) {
               final cubit = context.read<GlobalCubit>();
+              PrintUtil.debug(isVendor);
               return SafeArea(
                 child: Column(
                   children: [
@@ -69,32 +72,69 @@ class SettingsScreen extends StatelessWidget {
                           child: Column(
                             children: [
                               SizedBox(height: 24.h),
-                              if (state is ProfileLoading)
-                                const Center(child: CircularProgressIndicator())
-                              else
-                              isVendor != true?
-                                ProfileSection(
-                                  userName:
-                                      "${cubit.userName ?? ''} ${cubit.userLastName ?? ''}"
-                                          .trim(),
-                                  userImageUrl: cubit.userAvatar ??
-                                      'assets/images/logo.png',
-                                  subtitle: cubit.userEmail ?? '',
-                                  isVendor: isVendor ?? false,
-                                  onTap: () {},
-                                ):ProfileSection(
-                                  userName:
-                                      "${cubit.userAccount?.where((element) => element.id == cubit.businessId,).first.name ?? ''}}"
-                                          .trim(),
-                                  userImageUrl: cubit.userAccount?.where((element) => element.id == cubit.businessId,).first.logo ??
-                                      'assets/images/logo.png',
-                                  subtitle:cubit.userAccount?.where((element) => element.id == cubit.businessId,).first.email ?? '',
-                                  isVendor: isVendor ?? false,
-                                  onTap: () {},
-                                ),
-                              // Edit Profile
+
+                              state is ProfileLoading
+                                  ? const Center(
+                                      child: CircularProgressIndicator())
+                                  : isVendor != true
+                                      ? ProfileSection(
+                                          userName:
+                                              "${cubit.userName ?? ''} ${cubit.userLastName ?? ''}",
+                                          userImageUrl: cubit.userAvatar ??
+                                              'assets/images/logo.png',
+                                          subtitle: cubit.userEmail ?? '',
+                                          isVendor: isVendor ?? false,
+                                          onTap: () {},
+                                        )
+                                      : ProfileSection(
+                                          userName: (cubit.userAccount
+                                                      ?.where(
+                                                        (element) =>
+                                                            element.id ==
+                                                            cubit.businessId,
+                                                      )
+                                                      .first
+                                                      .name ??
+                                                  '')
+                                              .trim(),
+                                          userImageUrl: cubit.userAccount
+                                                  ?.where(
+                                                    (element) =>
+                                                        element.id ==
+                                                        cubit.businessId,
+                                                  )
+                                                  .first
+                                                  .logo ??
+                                              'assets/images/logo.png',
+                                          subtitle: '',
+                                          isVendor: isVendor!,
+                                          onTap: () {},
+                                        ),
                               SizedBox(height: 16.h),
+
+                              ApprovalItem(
+                                title: 'ask_to_be_store'.tr(context),
+                                status: ApprovalStatus.approved,
+                                icon: Image.asset(
+                                  "assets/images/cycle-circle.png",
+                                  width: 24.w,
+                                  height: 24.h,
+                                ),
+                                onApprove: () => CustomPopup.show(
+                                  context: context,
+                                  type: PopupType.success,
+                                  title:
+                                      "request_sent_successfully".tr(context),
+                                  message: "request_under_review".tr(context),
+                                ),
+                              ),
+
+                              // Edit Profile
+                              SizedBox(height: isVendor != true ? 16.h : 30.h),
                               EditProfile(
+                                title: isVendor != true
+                                    ? "edit_profile"
+                                    : "edit_business_profile",
                                 onTap: () {
                                   isVendor != true
                                       ? navigateTo(
@@ -102,7 +142,8 @@ class SettingsScreen extends StatelessWidget {
                                       : navigateTo(
                                           context,
                                           BlocProvider(
-                                            create: (context) => AccountCubit(sl<AccountRepo>()),
+                                            create: (context) =>
+                                                AccountCubit(sl<AccountRepo>()),
                                             child:
                                                 const CreateBusinessAccountSettings(
                                               isFromSetting: true,
@@ -110,6 +151,7 @@ class SettingsScreen extends StatelessWidget {
                                           ));
                                 },
                               ),
+
                               SizedBox(height: 16.h),
                               Divider(
                                 // ignore: use_full_hex_values_for_flutter_colors
@@ -129,15 +171,16 @@ class SettingsScreen extends StatelessWidget {
                                 height: 1.h,
                               ),
                               // Adresses
-                              SizedBox(height: 16.h),
-                              const AddressesSection(),
-                              SizedBox(height: 16.h),
-                              Divider(
-                                // ignore: use_full_hex_values_for_flutter_colors
-                                color:
-                                    const Color(0xffe3e3e380).withOpacity(0.3),
-                                height: 1.h,
-                              ),
+                              if (isVendor != true) ...[
+                                SizedBox(height: 16.h),
+                                const AddressesSection(),
+                                SizedBox(height: 16.h),
+                                Divider(
+                                  color: const Color(0xffe3e3e380)
+                                      .withOpacity(0.3),
+                                  height: 1.h,
+                                ),
+                              ],
 
                               // Edit Profile
                               SizedBox(height: 16.h),
@@ -154,14 +197,21 @@ class SettingsScreen extends StatelessWidget {
                               const LanguageSelector(),
 
                               // Menu Items
-                              SizedBox(height: 24.h),
+                              SizedBox(height: isVendor == true ? 16.h : 24.h),
                               Container(
-                                margin: EdgeInsets.symmetric(horizontal: 7.w),
-                                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffF0F2F9),
-                                  borderRadius: BorderRadius.circular(16.r),
-                                ),
+                                margin: isVendor == true
+                                    ? EdgeInsets.zero
+                                    : EdgeInsets.symmetric(horizontal: 7.w),
+                                padding: isVendor == true
+                                    ? EdgeInsets.zero
+                                    : EdgeInsets.symmetric(horizontal: 16.w),
+                                decoration: isVendor == true
+                                    ? const BoxDecoration()
+                                    : BoxDecoration(
+                                        color: const Color(0xffF0F2F9),
+                                        borderRadius:
+                                            BorderRadius.circular(16.r),
+                                      ),
                                 child: Column(
                                   children: [
                                     MenuItem(
@@ -190,7 +240,9 @@ class SettingsScreen extends StatelessWidget {
                                           const MassagesScreen(),
                                         );
                                       },
-                                      title: "chat_with_friends".tr(context),
+                                      title: isVendor == true
+                                          ? "chat".tr(context)
+                                          : "chat_with_friends".tr(context),
                                     ),
                                     if (isVendor == true) ...[
                                       Divider(

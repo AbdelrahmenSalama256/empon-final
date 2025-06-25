@@ -195,7 +195,7 @@ class MenuScreen extends StatelessWidget {
                                               .changeBottomNavIndex(0);
                                         },
                                       ),
-                                       SizedBox(width: 85.w),
+                                      SizedBox(width: 85.w),
                                       Column(
                                         children: [
                                           Center(
@@ -456,7 +456,9 @@ class MenuScreen extends StatelessWidget {
                                                 ),
                                                 SizedBox(height: 8.h),
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
                                                     Expanded(
                                                       child: QuickAccessButton(
@@ -483,28 +485,30 @@ class MenuScreen extends StatelessWidget {
                                                         needSubTitle: true,
                                                         onTap: () {
                                                           navigateTo(
-                                                              context,
-                                                              BlocProvider(
-                                                                create: (context) =>
-                                                                    StatisticsCubit(
-                                                                        sl<
-                                                                            StatisticsRepo>())..fetchStatistics(cubit.businessId),
-                                                                child:
-                                                                    const DashboardScreen(),
-                                                              ),
-                                                                
-                                                              );},
-                                                              
-                                                        
-                                                        title:
-                                                            "current_plan"
-                                                                .tr(context),
+                                                            context,
+                                                            BlocProvider(
+                                                              create: (context) =>
+                                                                  StatisticsCubit(sl<
+                                                                      StatisticsRepo>())
+                                                                    ..fetchStatistics(
+                                                                        cubit
+                                                                            .businessId),
+                                                              child:
+                                                                  const DashboardScreen(),
+                                                            ),
+                                                          );
+                                                        },
+
+                                                        title: "current_plan"
+                                                            .tr(context),
                                                         icon:
                                                             "assets/images/plan_brand.png",
                                                         color:
                                                             Colors.red.shade100,
-                                                        subTitle: "الخطة الاساسية",//todo : will get from backend
-                                                        subTitleColor: Colors.lightGreenAccent,
+                                                        subTitle:
+                                                            "الخطة الاساسية", //todo : will get from backend
+                                                        subTitleColor: Colors
+                                                            .lightGreenAccent,
                                                       ),
                                                     ),
                                                   ],
@@ -578,7 +582,6 @@ class MenuScreen extends StatelessWidget {
                                           ? const SizedBox()
                                           : Wrap(
                                               children: [
-
                                                 // Second approval item example
                                                 ApprovalItem(
                                                   title:
@@ -606,24 +609,26 @@ class MenuScreen extends StatelessWidget {
                                               ],
                                             ),
                                       ExpansionTile(
-                                        //leading:const 
-                                        title:  Text(
-                                          'store_plans'.tr(context), style: TextStyle(color: Colors.black, fontSize: 14.sp),) ,
+                                        //leading:const
+                                        title: Text(
+                                          'store_plans'.tr(context),
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14.sp),
+                                        ),
                                         children: [
-                                         const PlanSection(),
+                                          const PlanSection(),
                                           SizedBox(height: 16.h),
                                         ],
-
                                       ),
                                       SizedBox(height: 15.h),
                                       MenuItem(
-                                        ontap: () {
+                                        onTap: () {
                                           navigateTo(
                                               context, const HelpSupportPage());
                                         },
                                         title: "help_support".tr(context),
                                         icon: "assets/images/help.png",
-                                        iconColor: Colors.transparent,
                                       ),
 
                                       SizedBox(height: 16.h),
@@ -633,7 +638,7 @@ class MenuScreen extends StatelessWidget {
                                           ? const BusinessAccountSection()
                                           : const SizedBox(),
                                       isVendor != true
-                                          ? SizedBox(height: 30.h)//todo
+                                          ? SizedBox(height: 30.h) //todo
                                           : const SizedBox(),
                                       state is LogoutLoading
                                           ? const Center(

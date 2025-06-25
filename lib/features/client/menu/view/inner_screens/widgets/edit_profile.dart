@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EditProfile extends StatelessWidget {
-  final VoidCallback? onTap; // New parameter for click event
+  final VoidCallback? onTap;
+  final String? title;
 
   const EditProfile({
     super.key,
-    this.onTap, // Optional onTap callback
+    this.onTap,
+    this.title,
   });
 
   @override
@@ -23,7 +25,7 @@ class EditProfile extends StatelessWidget {
               Icon(CupertinoIcons.person, size: 24.sp),
               SizedBox(width: 12.w),
               Text(
-                "edit_profile".tr(context),
+                "$title".tr(context),
                 style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
               ),
             ],

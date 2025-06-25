@@ -75,7 +75,6 @@ class _BaseScreenState extends State<BaseScreen> {
             businessAccountId: context.read<GlobalCubit>().businessId,
             isVendor: true,
           ),
-
           BlocProvider(
             create: (context) => StatisticsCubit(sl<StatisticsRepo>())
               ..fetchStatistics(context.read<GlobalCubit>().businessId),
