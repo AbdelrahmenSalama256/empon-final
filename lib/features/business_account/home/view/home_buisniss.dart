@@ -43,7 +43,7 @@ class HomeStoreScreen extends StatelessWidget {
                   children: [
                     HomeStoreHeader(
                       isVendor: isVendor ?? false,
-                      name: accountCubit.accountData?.name,
+                      name: accountCubit.accountData?.data.name,
                       onBackPressed: () {
                         isVendor != true ? Navigator.pop(context) : null;
                       },
@@ -54,7 +54,7 @@ class HomeStoreScreen extends StatelessWidget {
                         builder: (context, state) {
                           return state is BusinessAccountLoading
                               ? const Center(child: CustomLoadingIndicator())
-                              : accountCubit.accountData?.id == null
+                              : accountCubit.accountData?.data == null
                                   ? Center(
                                       child: EmptyMessageWidget(
                                         message: "no_data_found".tr(context),

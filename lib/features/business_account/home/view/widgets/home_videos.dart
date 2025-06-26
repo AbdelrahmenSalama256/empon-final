@@ -44,7 +44,7 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     final videoUrl = widget.videoUrl ??
-        (widget.businessAccountCubit?.accountData?.videoUrl ??
+        (widget.businessAccountCubit?.accountData?.data.videoUrl ??
             'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4');
     _controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
       ..initialize().then((_) {
@@ -280,11 +280,11 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
                   controller: _tabController,
                   children: [
                     _buildGridView(
-                      account?.products.map((p) => p.image).toList() ?? [],
-                      account?.products.map((p) => p.id).toList() ?? [],
-                      account?.products.length ?? 0,
+                      account?.data.products.map((p) => p.image).toList() ?? [],
+                      account?.data.products.map((p) => p.id).toList() ?? [],
+                      account?.data.products.length ?? 0,
                       (index) {
-                        if (account?.products.isNotEmpty ?? false) {
+                        if (account?.data.products.isNotEmpty ?? false) {
                           navigateTo(
                             context,
                             BlocProvider(
@@ -293,20 +293,22 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
                               child: ProductDetailPage(
                                 isVendor:
                                     widget.isVendor != true ? false : true,
-                                productId: account!.products[index].id,
+                                productId: account!.data.products[index].id,
                               ),
                             ),
                           );
                         }
                       },
-                      account?.services.map((s) => s.approved).toList() ?? [],
+                      account?.data.services.map((s) => s.approved).toList() ??
+                          [],
                     ),
                     _buildGridView(
-                      account?.services.map((s) => s.mainImage).toList() ?? [],
-                      account?.services.map((s) => s.id).toList() ?? [],
-                      account?.services.length ?? 0,
+                      account?.data.services.map((s) => s.mainImage).toList() ??
+                          [],
+                      account?.data.services.map((s) => s.id).toList() ?? [],
+                      account?.data.services.length ?? 0,
                       (index) {
-                        if (account?.services.isNotEmpty ?? false) {
+                        if (account?.data.services.isNotEmpty ?? false) {
                           navigateTo(
                             context,
                             BlocProvider(
@@ -315,13 +317,14 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
                               child: ServiceDetailPage(
                                 isVendor:
                                     widget.isVendor != true ? false : true,
-                                serviceId: account!.services[index].id,
+                                serviceId: account!.data.services[index].id,
                               ),
                             ),
                           );
                         }
                       },
-                      account?.services.map((s) => s.approved).toList() ?? [],
+                      account?.data.services.map((s) => s.approved).toList() ??
+                          [],
                     ),
                   ],
                 ),

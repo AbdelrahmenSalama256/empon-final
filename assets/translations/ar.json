@@ -820,11 +820,11 @@
   "Sponsored_ads": "الاعلانات المموله",
   "number_of_sales": "عدد المبيعات",
   "number_of_interactions": "عدد التفاعلات",
-  "choose_payment_method":"اختر طريقة الدفع",
-  "vodafone":"فودافون",
-  "orange":"اورانج",
-  "paymob":"باى موب",
-  "wepay":"وى كاش",
+  "choose_payment_method": "اختر طريقة الدفع",
+  "vodafone": "فودافون",
+  "orange": "اورانج",
+  "paymob": "باى موب",
+  "wepay": "وى كاش",
   "watch": "مشاهدة",
   "number_of_views": "عدد المشاهدات",
   "average_order_value": "متوسط قيمة الطلب",
@@ -835,5 +835,4 @@
   "no_transactions_found": "لم يتم العثور على أي معاملات",
   "ask_to_be_store": "طلب تحويل الحساب التجاري إلى متجر الإكتروني",
   "pound": "جنيه"
-
 }
