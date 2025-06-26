@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
+import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
@@ -248,6 +249,28 @@ List<LocationModel> getFilteredStates() {
       },
     );
   }
+  Future<void> sendStoreRequest({required int accountId}) async {
+    emit(StoreRequestLoading());
 
+    try {
+      final response = await accountRepo.requestBusinessToStore(accountId);
+
+      response.fold(
+        (l) {
+          Print.error('API Error: $l');
+          emit(StoreRequestError(l));
+        },
+        (r) {
+          emit(StoreRequestSuccess(r.data));
+        },
+      );
+    } on ServerException catch (e) {
+      emit(StoreRequestError(e.errorModel.detail));
+    } on NoInternetException catch (e) {
+      emit(StoreRequestError(e.errorModel.detail));
+    } catch (e) {
+      emit(StoreRequestError("Something went wrong"));
+    }
+  }
 
 }

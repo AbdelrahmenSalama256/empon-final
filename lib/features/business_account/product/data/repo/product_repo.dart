@@ -58,10 +58,8 @@ class ProductRepo {
     int? isSale,
     XFile? productImage,
     List<XFile>? productImages,
-    int? priceVariations,
-    int? stockVariation,
-    int? attributeValueId,
-    List<String>? colorId,
+List<Map<String, dynamic>>? variations,
+      List<Map<String, dynamic>>? serviceDetails
   }) async {
     try {
       final data = {
@@ -77,10 +75,8 @@ class ProductRepo {
             ? await Future.wait(
                 productImages.map((img) => uploadImageToAPI(img)))
             : null,
-        "variations[][price]": priceVariations,
-        "variations[][stock]": stockVariation,
-        "variations[][attribute_value_id]": attributeValueId,
-        "variations[][color_id]": colorId,
+        "variations": variations,
+        "details": serviceDetails
       };
       final response = await api.put(
         "${EndPoints.updateProduct}$productId",

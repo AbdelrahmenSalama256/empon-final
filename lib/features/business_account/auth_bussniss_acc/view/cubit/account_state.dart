@@ -1,3 +1,5 @@
+import 'package:embone/features/business_account/auth_bussniss_acc/data/model/toStore_model.dart';
+
 import '../../../../client/locations/data/model/location_model.dart';
 
 class AccountState {}
@@ -39,4 +41,18 @@ class StatesLoaded extends AccountState {
 class CitiesLoaded extends AccountState {
   final List<LocationModel> cities;
   CitiesLoaded(this.cities);
+}
+
+class StoreRequestLoading extends AccountState {}
+
+class StoreRequestSuccess extends AccountState {
+  final StoreRequestData data;
+
+  StoreRequestSuccess(this.data);
+}
+
+class StoreRequestError extends AccountState {
+  final String message;
+
+  StoreRequestError(this.message);
 }

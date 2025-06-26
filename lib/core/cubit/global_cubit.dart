@@ -67,8 +67,8 @@ class GlobalCubit extends Cubit<GlobalState> {
 
   void _initializeBusinessId() {
     // Try to get businessId from cache, fallback to parsing userId
-    businessId = sl<CacheHelper>().getData(key: AppConstants.businessAccountId)
-            as int? ??
+    businessId = int.tryParse(
+            sl<CacheHelper>().getData(key: AppConstants.businessAccountId)) ??
         (userId != null ? int.tryParse(userId!) : null);
   }
 

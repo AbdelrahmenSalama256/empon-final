@@ -47,44 +47,46 @@ class ServiceRepo {
 
     
   }
-  // Future<Either<String, ServiceModel>> updateService({
-  //   required int serviceId,
-  //   required String name,
-  //   required String details,
-  //   required String price,
-  //   required int categoryServiceId,
-  //   required XFile? mainImage,
-  //   required List<XFile>? listImages,
-  // }) async {
-  //   try {
-  //     final data = {
-  //       "name": name,
-  //       "details": details,
-  //       "price": price,
-  //       "category_service_id": categoryServiceId,
-  //     };
+  Future<Either<String, ServiceModel>> updateService({
+    required int serviceId,
+     String? name,
+     String? details,
+     String? price,
+     int? categoryServiceId,
+     XFile? mainImage,
+   List<XFile>? listImages,
+   List<String>? about,
+  }) async {
+    try {
+      final data = {
+        "name": name,
+        "details": details,
+        "price": price,
+        "category_service_id": categoryServiceId,
+        "features[]": about
+      };
 
-  //     if (mainImage != null) {
-  //       data["main_image"] = await uploadImageToAPI(mainImage);
-  //     }
+      if (mainImage != null) {
+        data["main_image"] = await uploadImageToAPI(mainImage);
+      }
 
-  //     if (listImages != null && listImages.isNotEmpty) {
-  //       data["list_images[]"] = await Future.wait(listImages.map((img) => uploadImageToAPI(img)));
-  //     }
+      if (listImages != null && listImages.isNotEmpty) {
+        data["list_images[]"] = await Future.wait(listImages.map((img) => uploadImageToAPI(img)));
+      }
 
-  //     final response = await api.put(
-  //       //'${EndPoints.updateService}/$serviceId',
-  //       isFormData: true,
-  //       data: data,
-  //     );
+      // final response = await api.put(
+      //   '${EndPoints.updateService}/$serviceId',
+      //   isFormData: true,
+      //   data: data,
+      // );
 
-  //     return Right(ServiceModel.fromJson(response));
-  //   } on ServerException catch (e) {
-  //     return Left(e.errorModel.detail);
-  //   } on NoInternetException catch (e) {
-  //     return Left(e.errorModel.detail);
-  //   }
-  // }
+      return Right(ServiceModel.fromJson(data));// todo:wait end point to get response
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
 
   Future<Either<String, ServiceModel>> fetchServiceById(int serviceId) async {
     try {
