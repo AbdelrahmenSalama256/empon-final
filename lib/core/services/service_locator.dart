@@ -22,6 +22,7 @@ import 'package:embone/features/client/menu/data/repo/address_repo.dart';
 import 'package:embone/features/client/menu/data/repo/business_repo.dart';
 import 'package:embone/features/client/menu/data/repo/faq_repo.dart';
 import 'package:embone/features/client/menu/data/repo/offer_repo.dart';
+import 'package:embone/features/client/menu/data/repo/packages_repo.dart';
 import 'package:embone/features/client/menu/data/repo/privacy_policy_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wallet_repo.dart';
@@ -69,6 +70,7 @@ void initServiceLocator() {
   sl.registerLazySingleton(() => AccountsRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => PrivacyPolicyRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => StatisticsRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => PackagesRepo(sl<DioConsumer>()));
 
   // sl.registerLazySingleton(() => DataConnectionChecker());
   // sl.registerLazySingleton(() => NetworkInfoImpl(sl<DataConnectionChecker>()));

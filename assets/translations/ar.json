@@ -829,12 +829,6 @@
   "number_of_views": "عدد المشاهدات",
   "average_order_value": "متوسط قيمة الطلب",
   "total_revenue": "إجمالي الإيرادات",
-  "best_selling_product": "المنتج الأكثر مبيعًا",
-  "store_plans": "خطط ترويج المحل",
-  "current_plan": "خطتك الحالية",
-  "no_transactions_found": "لم يتم العثور على أي معاملات",
-  "ask_to_be_store": "طلب تحويل الحساب التجاري إلى متجر الإكتروني",
-  "pound": "جنيه",
   "followed": "تمت المتابعة",
   "unfollowed": "الغيت المتابعة",
   "unfavorite": "إزالة من المفضلة",
@@ -842,5 +836,11 @@
   "cancel_registration_question": "هل تريد إلغاء تسجيلك؟",
   "cancel_data_loss_warning": "في حالة الإيقاف الآن ستفقد أي تقدم حققته",
   "yes_cancel_button": "إيقاف انشاء الحساب",
-  "no_cancel_button": "متابعة انشاء الحساب"
+  "no_cancel_button": "متابعة انشاء الحساب",
+  "pound": "جنيه",
+  "business_promotion_plans":"خطط ترويج العمل",
+  "chose":"اختر",
+  "plan_title":"المنتجات المضافة بالفعل فى خطتك",
+  "plan_subtitle":"استكمل اضافة المنتجات لخطة اعلانك الممول لعرضها للجمهور"
+
 }

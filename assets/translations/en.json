@@ -814,5 +814,10 @@
   "cancel_registration_question": "Do you want to cancel your registration?",
   "cancel_data_loss_warning": "If you stop now, you will lose any progress you have made.",
   "yes_cancel_button": "Stop creating the account",
-  "no_cancel_button": "Follow up on account creation"
+  "no_cancel_button": "Follow up on account creation",
+  "business_promotion_plans":"Business Promotion Plans",
+  "chose":"Chose",
+  "plan_title":"Products already added to your plan",
+  "plan_subtitle":"Complete adding products to your sponsored ad plan to display them to your audience."
+
 }
