@@ -83,11 +83,11 @@ class HomeStoreContent extends StatelessWidget {
                     showWhatsApp: true,
                     showFavorite: true,
                     showLike: true,
-                    recivereId: accountData.accountData?.id,
-                    recivereName: accountData.accountData?.name,
-                    recivereImage: accountData.accountData?.logo,
+                    recivereId: accountData.accountData?.data.id ?? 0,
+                    recivereName: accountData.accountData?.data.name ?? '',
+                    recivereImage: accountData.accountData?.data.logo ?? '',
                     onWhatsAppPressed: () {
-                      openWhatsApp(context.read<GlobalCubit>().userPhone ?? '');
+                      openWhatsApp(accountData.accountData?.data.phone ?? '+201092833551');
                     },
                     onChatPressed: () {
                       navigatorKey.currentState!.push(
