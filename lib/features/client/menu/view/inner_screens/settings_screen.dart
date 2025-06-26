@@ -16,6 +16,7 @@ import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/ac
 import 'package:embone/features/client/chat/view/massages_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/privacy_policy_screen.dart';
+import 'package:embone/features/client/menu/view/inner_screens/total_sales_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/addresses_section.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/language_selector.dart';
@@ -251,7 +252,12 @@ class SettingsScreen extends StatelessWidget {
                                       MenuItem(
                                         icon: "assets/images/mony_bag.png",
                                         title: "total_sales".tr(context),
-                                        onTap: () {},
+                                        onTap: () {
+                                          navigateTo(
+                                            context,
+                                            SalesStatsPage(),
+                                          );
+                                        },
                                       ),
                                     ],
                                     Divider(

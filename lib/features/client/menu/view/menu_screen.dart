@@ -22,8 +22,11 @@ import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/followers_screen.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
 import 'package:embone/features/client/menu/data/repo/business_repo.dart';
+import 'package:embone/features/client/menu/data/repo/packages_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/business_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/business_state.dart';
+import 'package:embone/features/client/menu/view/cubit/packages_cubit.dart';
+import 'package:embone/features/client/menu/view/cubit/packages_state.dart';
 import 'package:embone/features/client/menu/view/inner_screens/help_support.dart';
 import 'package:embone/features/client/menu/view/inner_screens/offers_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
@@ -672,19 +675,34 @@ class MenuScreen extends StatelessWidget {
                                                       ),
                                                     ],
                                                   ),
-                                            ExpansionTile(
-                                              //leading:const
-                                              title: Text(
-                                                'store_plans'.tr(context),
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 14.sp),
-                                              ),
-                                              children: [
-                                                const PlanSection(),
-                                                SizedBox(height: 16.h),
-                                              ],
-                                            ),
+                                            isVendor == true
+                                                ? ExpansionTile(
+                                                    //leading:const
+                                                    title: Text(
+                                                      'store_plans'.tr(context),
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14.sp),
+                                                    ),
+                                                    children: [
+                                                      BlocProvider(
+                                                        create: (context) =>
+                                                            PackagesCubit(sl<
+                                                                PackagesRepo>())
+                                                              ..fetchPackages(),
+                                                        child: BlocBuilder<
+                                                            PackagesCubit,
+                                                            PackagesState>(
+                                                          builder:
+                                                              (context, packageState) {
+                                                            return packageState is PackagesLoading? const Center(child: CustomLoadingIndicator()) : const PlanSection();
+                                                          },
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 16.h),
+                                                    ],
+                                                  )
+                                                : const SizedBox(),
                                             SizedBox(height: 15.h),
                                             MenuItem(
                                               onTap: () {

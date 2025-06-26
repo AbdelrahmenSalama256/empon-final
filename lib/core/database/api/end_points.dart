@@ -17,9 +17,11 @@ class EndPoints {
   static const String userResendCode = "${baseUrl}auth/password/resend_code";
   static const String userVerifyEmail = "${baseUrl}check-email";
   static const String userVerifyPhone = "${baseUrl}check-phone";
-  static const String account = "${baseUrl}account/";
+  static const String account = "${baseUrl}accountInfo/";
   static const String statistics = "${baseUrl}account-statistics/";
   static const String updateAccountData = "${baseUrl}accounts/";
+  static const String packages = "${baseUrl}public-packages";
+  static const String cities = "${baseUrl}cities";
   //! Logout
   static const String userLogout = "${baseUrl}logout";
   static const String deleteAccount = "${baseUrl}auth/account-deletion";
@@ -37,7 +39,6 @@ class EndPoints {
   //! locations
   static const String countries = '${baseUrl}countries';
   static const String states = '${baseUrl}states';
-  static const String cities = '${baseUrl}cities';
   static const String address = '${baseUrl}address';
   // ! Reset Password
   static const String forgotPassword = "${baseUrl}forgot-password";

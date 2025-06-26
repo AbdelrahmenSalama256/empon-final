@@ -805,6 +805,10 @@
   "no_services": "No Available Services Now",
   "no_service_data": "No Services Data Available Here",
   "ask_to_be_store": "Request to convert a business account to an online store",
-  "pound": "EGP"
+  "pound": "EGP",
+  "business_promotion_plans":"Business Promotion Plans",
+  "chose":"Chose",
+  "plan_title":"Products already added to your plan",
+  "plan_subtitle":"Complete adding products to your sponsored ad plan to display them to your audience."
 
 }
