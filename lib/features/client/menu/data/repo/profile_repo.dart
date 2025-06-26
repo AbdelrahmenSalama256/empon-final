@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:embone/core/common/common.dart';
+import 'package:dio/dio.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
@@ -32,7 +32,8 @@ class ProfileRepo {
       };
 
       if (image != null) {
-        data['image'] = await uploadImageToAPI(image);
+        data['image'] =
+            await MultipartFile.fromFile(image.path, filename: image.name);
       }
 
       final response = await api.post(

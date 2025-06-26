@@ -507,21 +507,14 @@ class RegisterCubit extends Cubit<RegisterState> {
     );
   }
 
-  void verifyPhoneNumber(String phone) async {
-    if (phone.isEmpty) {
-      PrintUtil.error("please_enter_phone");
-      emit(VerifyPhoneNumberError('please_enter_phone'));
-      return;
-    }
+  void verifyPhoneNumber(BuildContext context) async {
+    // PrintUtil.error("invalid_phone_format");
+    // emit(VerifyPhoneNumberError('invalid_phone_format'));
+    // return;
 
-    if (!RegExp(r'^\+?[0-9]{10,15}$').hasMatch(phone)) {
-      PrintUtil.error("invalid_phone_format");
-      emit(VerifyPhoneNumberError('invalid_phone_format'));
-      return;
-    }
-    PrintUtil.success("Phone number verified: $phone");
+    PrintUtil.success("Phone number verified: ${phoneController.text}");
     emit(VerifyPhoneNumberLoading());
-    final response = await registerRepo.verifyPhoneNumber(phone);
+    final response = await registerRepo.verifyPhoneNumber(phoneController.text);
 
     if (isClosed) return;
 

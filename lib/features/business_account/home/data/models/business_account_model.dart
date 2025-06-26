@@ -33,8 +33,13 @@ class BusinessAccount {
   final String lng;
   final String lat;
   final String postalCode;
+  final int? isStore;
   final String type;
   final bool verified;
+  final bool? isFavourited;
+  final bool? isFollowed;
+  final bool? isLiked;
+  final int? totalFav;
   final bool status;
   final String logo;
   final String cover;
@@ -52,6 +57,11 @@ class BusinessAccount {
     required this.phone,
     required this.videoUrl,
     required this.website,
+    this.isStore,
+    this.totalFav,
+    this.isFavourited,
+    this.isFollowed,
+    this.isLiked,
     required this.city,
     required this.state,
     required this.country,
@@ -83,13 +93,18 @@ class BusinessAccount {
       city: json['city'],
       state: json['state'],
       country: json['country'],
+      isStore: json['is_store'] as int?,
       address: json['address'],
       lng: json['lng'],
       lat: json['lat'],
       postalCode: json['postal_code'],
       type: json['type'],
       verified: json['verified'],
+      isFavourited: json['is_favourited'] as bool?,
+      isFollowed: json['is_followed'] as bool?,
+      isLiked: json['is_liked'] as bool?,
       status: json['status'],
+      totalFav: json['total_favourites'] as int?,
       logo: json['logo'],
       cover: json['cover'],
       totalProducts: json['total_products'],

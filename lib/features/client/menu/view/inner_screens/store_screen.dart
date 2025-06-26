@@ -4,7 +4,6 @@ import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/client/menu/view/inner_screens/widgets/action_button_row.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/store_desc.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/store_logo.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/store_video_grid_images.dart';
@@ -19,9 +18,10 @@ class StoreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final accountId = int.parse(
         sl<CacheHelper>().getData(key: AppConstants.businessAccountId));
-        final cubit = context.read<GlobalCubit>();
+    final cubit = context.read<GlobalCubit>();
     int index =
-        cubit.userAccount?.indexWhere((element) => element.id == accountId) ?? -1;
+        cubit.userAccount?.indexWhere((element) => element.id == accountId) ??
+            -1;
 
     final accountData = index != -1 ? cubit.userAccount![index] : null;
 
@@ -33,7 +33,7 @@ class StoreScreen extends StatelessWidget {
           children: [
             // Store header with back button using AppHeader
             AppHeader(
-              title: accountData!.name??'store_name'.tr(context),
+              title: accountData!.name ?? 'store_name'.tr(context),
               showBackButton: true,
               centerTitle: true,
               style: HeaderStyle.standard,
@@ -50,10 +50,13 @@ class StoreScreen extends StatelessWidget {
                       SizedBox(height: 16.h),
                       const StoreLogoAndImage(),
 
-                      const ActionButtonsRow(),
+                      // const ActionButtonsRow(),
                       SizedBox(height: 16.h),
 
-                      StoreDescription(description: accountData.description!, name: accountData.name!,),
+                      StoreDescription(
+                        description: accountData.description!,
+                        name: accountData.name!,
+                      ),
                       SizedBox(height: 20.h),
                       SizedBox(
                         height: 500.h,

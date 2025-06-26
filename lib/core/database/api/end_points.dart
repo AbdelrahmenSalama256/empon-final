@@ -67,7 +67,6 @@ class EndPoints {
   static const String requestBusinessToStore = '${baseUrl}business-account/to-store/';
 
 
-
   // ! Notifications
   static const String notifications = '${baseUrl}notifications';
 
@@ -80,6 +79,7 @@ class EndPoints {
   static const String sendMessage = '${baseUrl}send-message';
   // ! accounts
   static const String accounts = '${baseUrl}account';
+  static const String accountsFollow = '${baseUrl}accounts/follow';
   // ! Wishlist
   static const String favorites = '${baseUrl}favourite';
   static const String addProductToWishlist = '${baseUrl}favourite/product';

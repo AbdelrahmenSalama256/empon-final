@@ -1,16 +1,19 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/widgets/text_style.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
+import 'package:path/path.dart' as path;
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http_parser/http_parser.dart';
 
 void navigate({
   required BuildContext context,
@@ -250,13 +253,35 @@ String? formatTime(String? dateTimeString) {
 }
 
 Future<MultipartFile> uploadImageToAPI(XFile image) async {
-  // Get the mime type of the file
-  String? mimeType = lookupMimeType(image.path);
+  try {
+    // Verify file exists
+    final file = File(image.path);
+    if (!await file.exists()) {
+      throw Exception('Image file does not exist at path: ${image.path}');
+    }
 
-  return MultipartFile.fromFile(
-    image.path,
-    filename: image.path.split('/').last,
-    contentType: MediaType.parse(
-        mimeType ?? 'image/jpeg'), // defaulting to image/jpeg if not found
-  );
+    // Get the MIME type of the file
+    String? mimeType = lookupMimeType(image.path);
+    mimeType ??= 'image/jpeg'; // Fallback MIME type
+
+    // Sanitize filename
+    String filename = path.basename(image.path);
+    // Optionally, generate a unique filename to avoid conflicts
+    filename = '${DateTime.now().millisecondsSinceEpoch}_$filename';
+
+    if (kDebugMode) {
+      print('Uploading image: $filename with MIME type: $mimeType');
+    }
+
+    return MultipartFile.fromFile(
+      image.path,
+      filename: filename,
+      contentType: MediaType.parse(mimeType),
+    );
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error preparing image for upload: $e');
+    }
+    rethrow;
+  }
 }

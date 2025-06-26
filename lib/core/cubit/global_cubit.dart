@@ -10,6 +10,7 @@ import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
+import 'package:embone/features/client/menu/data/repo/account_repo.dart';
 import 'package:embone/features/client/menu/data/repo/address_repo.dart';
 import 'package:embone/features/client/menu/data/repo/profile_repo.dart';
 import 'package:embone/features/client/menu/data/repo/wishlist_repo.dart';
@@ -22,7 +23,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class GlobalCubit extends Cubit<GlobalState> {
   GlobalCubit() : super(GlobalInitial()) {
-    _initializeBusinessId();
+    ();
   }
 
   User? user =
@@ -63,15 +64,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   Gender selectedGender = Gender.male;
   XFile? profileImage;
   bool isLoading = false;
-  int? businessId; // Declare without initializer
-
-  void _initializeBusinessId() {
-    // Try to get businessId from cache, fallback to parsing userId
-    businessId = int.tryParse(
-            sl<CacheHelper>().getData(key: AppConstants.businessAccountId)) ??
-        (userId != null ? int.tryParse(userId!) : null);
-  }
-
+  int? businessId;
   void initProfileData() {
     firstNameController.text = userName ?? '';
     lastNameController.text = userLastName ?? '';
@@ -199,6 +192,7 @@ class GlobalCubit extends Cubit<GlobalState> {
     if (!forceRefresh && user != null) {
       PrintUtil.success(
           "Loaded user profile from cache: ${user!.firstName} ${user!.lastName}");
+      user?.account?.where((element) => element.id == businessId);
       _updateUserData(user!);
       emit(ProfileLoaded());
       _fetchAndUpdateProfile();
@@ -313,8 +307,8 @@ class GlobalCubit extends Cubit<GlobalState> {
             ? anotherEmailController.text
             : null;
         userBirthDate = birthDateController.text;
-        profileImage = null;
-        // await getUserProfile(forceRefresh: true);
+        profileImage = profileImage;
+        await getUserProfile(forceRefresh: true);
         isLoading = false;
         emit(ProfileUpdated());
       },
@@ -383,6 +377,21 @@ class GlobalCubit extends Cubit<GlobalState> {
       },
       (r) {
         emit(WishlistSuccess(r));
+        PrintUtil.success(r);
+      },
+    );
+  }
+
+  Future<void> followAccount(int accountId) async {
+    emit(FollowAccountLoading());
+    final response = await sl<AccountsRepo>().followAccount(accountId);
+    response.fold(
+      (l) {
+        PrintUtil.error(l);
+        emit(FollowAccountError(l));
+      },
+      (r) {
+        emit(FollowAccountSuccess(r));
         PrintUtil.success(r);
       },
     );

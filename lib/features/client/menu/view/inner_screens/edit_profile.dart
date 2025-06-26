@@ -6,6 +6,10 @@ import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/auth/data/repo/login_repo.dart';
+import 'package:embone/features/client/auth/view/pages/cubit/login_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/register_steps/otp_verification_page.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/widget/gender_card_selection.dart';
 import 'package:embone/features/client/menu/view/inner_screens/change_password_profile_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/profile_section.dart';
@@ -99,7 +103,22 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                 originalGender = cubit.selectedGender;
                 originalProfileImage = cubit.profileImage;
               });
+
               // cubit.getUserProfile();
+            }
+            if (cubit.userPhoneVerified == false) {
+              showToast(context,
+                  message: 'please_verify_your_phone'.tr(context),
+                  state: ToastStates.error);
+              navigateTo(
+                context,
+                BlocProvider(
+                  create: (context) => LoginCubit(sl<LoginRepo>()),
+                  child: OtpVerificationPage(
+                    phoneNumber: cubit.phoneController.text,
+                  ),
+                ),
+              );
             }
           },
           child: Scaffold(
@@ -122,21 +141,20 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 24.h),
-                          if (state is ProfileLoading)
-                            const Center(child: CircularProgressIndicator())
-                          else
-                            Center(
-                              child: ProfileSection(
-                                userName:
-                                    "${cubit.firstNameController.text} ${cubit.lastNameController.text}"
-                                        .trim(),
-                                userImageUrl: cubit.userAvatar ??
-                                    'assets/images/logo.png',
-                                subtitle: '',
-                                isVendor: false,
-                                onTap: () {},
-                              ),
-                            ),
+                          state is ProfileLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : Center(
+                                  child: ProfileSection(
+                                    userName:
+                                        "${cubit.firstNameController.text} ${cubit.lastNameController.text}"
+                                            .trim(),
+                                    userImageUrl: cubit.userAvatar ??
+                                        'assets/images/logo.png',
+                                    subtitle: '',
+                                    isVendor: false,
+                                    onTap: () {},
+                                  ),
+                                ),
                           SizedBox(height: 16.h),
                           _buildFieldContainer(
                             label: "first_name".tr(context),
@@ -164,22 +182,76 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                             label: "phone_number".tr(context),
                             data: cubit.phoneController.text,
                             icon: Icons.phone_outlined,
-                            onTap: () => _showEditBottomSheet(
-                              title: 'edit_phone_number'.tr(context),
-                              controller: cubit.phoneController,
-                              keyboardType: TextInputType.phone,
-                            ),
+                            onTap: cubit.userPhoneVerified == false
+                                ? () {
+                                    showToast(context,
+                                        message: 'please_verify_your_phone'
+                                            .tr(context),
+                                        state: ToastStates.error);
+                                    navigateTo(
+                                      context,
+                                      BlocProvider(
+                                        create: (context) =>
+                                            LoginCubit(sl<LoginRepo>()),
+                                        child: OtpVerificationPage(
+                                          phoneNumber:
+                                              cubit.phoneController.text,
+                                              type: "verify-phone",
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                : () => _showEditBottomSheet(
+                                      title: 'edit_phone_number'.tr(context),
+                                      controller: cubit.phoneController,
+                                      keyboardType: TextInputType.phone,
+                                    ),
+                            trailing: cubit.userPhoneVerified == false
+                                ? Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w, vertical: 4.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.redAccent,
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                    child: Text(
+                                      'not_verified'.tr(context),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10.sp,
+                                      ),
+                                    ),
+                                  )
+                                : null,
                           ),
                           SizedBox(height: 24.h),
                           _buildFieldContainer(
                             label: "email_address".tr(context),
                             data: cubit.emailController.text,
                             icon: Icons.email_outlined,
-                            onTap: () => _showEditBottomSheet(
-                              title: 'edit_email_address'.tr(context),
-                              controller: cubit.emailController,
-                              keyboardType: TextInputType.emailAddress,
-                            ),
+                            onTap: cubit.userEmailVerified == false
+                                ? () {
+                                    showToast(context,
+                                        message: 'please_verify_your_email'
+                                            .tr(context),
+                                        state: ToastStates.error);
+                                    navigateTo(
+                                      context,
+                                      BlocProvider(
+                                        create: (context) =>
+                                            LoginCubit(sl<LoginRepo>()),
+                                        child: OtpVerificationPage(
+                                          phoneNumber:
+                                              cubit.emailController.text,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                : () => _showEditBottomSheet(
+                                      title: 'edit_email_address'.tr(context),
+                                      controller: cubit.emailController,
+                                      keyboardType: TextInputType.emailAddress,
+                                    ),
                             trailing: cubit.userEmailVerified == false
                                 ? Container(
                                     padding: EdgeInsets.symmetric(
@@ -374,27 +446,24 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'cancel'.tr(context),
-                      style: TextStyle(color: Colors.grey, fontSize: 16.sp),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'cancel'.tr(context),
+                        style: TextStyle(color: Colors.grey, fontSize: 16.sp),
+                      ),
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        controller.text = tempController.text;
-                      });
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'save'.tr(context),
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Expanded(
+                    child: AppButton(
+                      onPressed: () {
+                        setState(() {
+                          controller.text = tempController.text;
+                        });
+                        Navigator.pop(context);
+                      },
+                      text: 'save'.tr(context),
                     ),
                   ),
                 ],

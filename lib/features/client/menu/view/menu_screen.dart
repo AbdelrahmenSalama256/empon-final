@@ -255,282 +255,265 @@ class MenuScreen extends StatelessWidget {
                                         ),
                                       ),
 
-                                Expanded(
-                                  child: RefreshIndicator(
-                                    onRefresh: () async {
-                                      return businessCubit
-                                          .fetchBusinesses()
-                                          .whenComplete(
-                                        () {
-                                          cubit.getUserProfile();
-                                        },
-                                      );
-                                    },
-                                    child: SingleChildScrollView(
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 8.w, vertical: 8.h),
-                                        child: Column(
-                                          crossAxisAlignment: isVendor != true
-                                              ? CrossAxisAlignment.start
-                                              : CrossAxisAlignment.center,
-                                          children: [
-                                            isVendor != true
-                                                ? SizedBox(height: 0.h)
-                                                : SizedBox(height: 24.h),
-                                            isVendor != true
-                                                ? ProfileSection(
-                                                    userName:
-                                                        cubit.userName ?? '',
-                                                    userImageUrl: cubit
-                                                            .userAvatar ??
-                                                        'assets/images/logo.png',
-                                                    subtitle: 'user_account'
-                                                        .tr(context),
-                                                    isVendor: isVendor!,
-                                                    onTap: () {
-                                                      if (cubit.userType ==
-                                                          UserType.client) {
-                                                        navigateTo(context,
-                                                            const SettingsScreen());
-                                                      } else {
-                                                        showAccountsBottomSheet(
-                                                            context);
-                                                      }
-                                                      // cubit.setUserType(UserType.client);
-                                                    },
-                                                  )
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      ProfileSection(
-                                                        userName:
-                                                            cubit.userName ??
-                                                                '',
-                                                        userImageUrl: cubit
-                                                                .userAvatar ??
-                                                            'assets/images/logo.png',
-                                                        subtitle: 'user_account'
-                                                            .tr(context),
-                                                        isVendor: isVendor!,
+                          Expanded(
+                            child: RefreshIndicator(
+                              onRefresh: () async {
+                                return businessCubit
+                                    .fetchBusinesses()
+                                    .whenComplete(
+                                  () {
+                                    cubit.getUserProfile();
+                                  },
+                                );
+                              },
+                              child: SingleChildScrollView(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w, vertical: 8.h),
+                                  child: Column(
+                                    crossAxisAlignment: isVendor != true
+                                        ? CrossAxisAlignment.start
+                                        : CrossAxisAlignment.center,
+                                    children: [
+                                      isVendor != true
+                                          ? SizedBox(height: 0.h)
+                                          : SizedBox(height: 24.h),
+                                      isVendor != true
+                                          ? ProfileSection(
+                                              userName: cubit.userName ?? '',
+                                              userImageUrl:
+                                                  "${cubit.userAvatar}",
+                                              subtitle:
+                                                  'user_account'.tr(context),
+                                              isVendor: isVendor!,
+                                              onTap: () {
+                                                if (cubit.userType ==
+                                                    UserType.client) {
+                                                  navigateTo(context,
+                                                      const SettingsScreen());
+                                                } else {
+                                                  showAccountsBottomSheet(
+                                                      context);
+                                                }
+                                                // cubit.setUserType(UserType.client);
+                                              },
+                                            )
+                                          : Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                ProfileSection(
+                                                  userName:
+                                                      cubit.userName ?? '',
+                                                  userImageUrl: cubit
+                                                          .userAvatar ??
+                                                      'assets/images/logo.png',
+                                                  subtitle: 'user_account'
+                                                      .tr(context),
+                                                  isVendor: isVendor!,
+                                                  onTap: () {
+                                                    context
+                                                        .read<GlobalCubit>()
+                                                        .setUserType(
+                                                            UserType.client);
+                                                  },
+                                                ),
+                                                SizedBox(width: 10.w),
+                                                ProfileSection(
+                                                  userName: accountData?.name ??
+                                                      'business_account'
+                                                          .tr(context),
+                                                  userImageUrl:
+                                                      "${accountData?.logo}",
+                                                  isVendor: true,
+                                                  subtitle: 'business_account'
+                                                      .tr(context),
+                                                  borderColor: Colors.green,
+                                                  onTap: () {
+                                                    navigateTo(context,
+                                                        const HomeStoreScreen());
+                                                  },
+                                                ),
+                                                SizedBox(width: 15.w),
+                                                ProfileSection(
+                                                  userName:
+                                                      'add_new_buisniss_account'
+                                                          .tr(context),
+                                                  userImageUrl: '',
+                                                  isVendor: isVendor!,
+                                                  onTap: () {
+                                                    navigateTo(
+                                                      context,
+                                                      const CreateBusinessAccountTypePage(),
+                                                    );
+                                                  },
+                                                  isAddNew: true,
+                                                ),
+                                              ],
+                                            ),
+                                      SizedBox(height: 32.h.h),
+                                      isVendor != true
+                                          ? Column(
+                                              children: [
+                                                SectionHeader(
+                                                  backgroundColor: Colors.white,
+                                                  title: "most_visited"
+                                                      .tr(context),
+                                                  padding:
+                                                      const EdgeInsets.all(0),
+                                                  showCloseButton: false,
+                                                ),
+                                                SizedBox(height: 16.h),
+                                                state is BusinessLoading
+                                                    ? const Center(
+                                                        child:
+                                                            CustomLoadingIndicator(),
+                                                      )
+                                                    : businessCubit
+                                                            .businesses.isEmpty
+                                                        ? Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    top: 16.h),
+                                                            child: Text(
+                                                              "no_brands_found"
+                                                                  .tr(context),
+                                                              style: TextStyle(
+                                                                color: AppColors
+                                                                    .red,
+                                                                fontSize: 14.sp,
+                                                              ),
+                                                            ),
+                                                          )
+                                                        : SizedBox(
+                                                            height: 90.h,
+                                                            child: ListView(
+                                                              scrollDirection:
+                                                                  Axis.horizontal,
+                                                              children: businessCubit
+                                                                  .businesses
+                                                                  .map(
+                                                                      (business) {
+                                                                return Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .only(
+                                                                          right:
+                                                                              16),
+                                                                  child:
+                                                                      VisitedItem(
+                                                                    name: business
+                                                                        .name,
+                                                                    imageUrl:
+                                                                        business
+                                                                            .imageUrl,
+                                                                    onTap: () {
+                                                                      navigateTo(
+                                                                        context,
+                                                                        HomeStoreScreen(
+                                                                          businessAccountId:
+                                                                              business.id,
+                                                                          isVendor:
+                                                                              false,
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              }).toList(),
+                                                            ),
+                                                          ),
+                                                SizedBox(height: 24.h),
+                                              ],
+                                            )
+                                          : SizedBox(
+                                              height: 0.h,
+                                            ),
+                                      isVendor != false
+                                          ? Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: QuickAccessButton(
                                                         onTap: () {
                                                           context
                                                               .read<
                                                                   GlobalCubit>()
-                                                              .setUserType(
-                                                                  UserType
-                                                                      .client);
+                                                              .changeBottomNavIndex(
+                                                                  0);
                                                         },
+                                                        title:
+                                                            "home".tr(context),
+                                                        icon:
+                                                            "assets/images/home.png",
+                                                        color: Colors.black,
                                                       ),
-                                                      SizedBox(width: 10.w),
-                                                      ProfileSection(
-                                                        userName: accountData
-                                                                ?.name ??
-                                                            'business_account'
-                                                                .tr(context),
-                                                        userImageUrl:
-                                                            "${accountData?.logo}",
-                                                        isVendor: true,
-                                                        subtitle:
-                                                            'business_account'
-                                                                .tr(context),
-                                                        borderColor:
-                                                            Colors.green,
+                                                    ),
+                                                    SizedBox(width: 16.w),
+                                                    Expanded(
+                                                      child: QuickAccessButton(
                                                         onTap: () {
-                                                          navigateTo(context,
-                                                              const HomeStoreScreen());
+                                                          context
+                                                              .read<
+                                                                  GlobalCubit>()
+                                                              .changeBottomNavIndex(
+                                                                  1);
                                                         },
+                                                        title: "nav_info"
+                                                            .tr(context),
+                                                        icon:
+                                                            "assets/images/dashboard.png",
+                                                        color:
+                                                            Colors.red.shade100,
                                                       ),
-                                                      SizedBox(width: 15.w),
-                                                      ProfileSection(
-                                                        userName:
-                                                            'add_new_buisniss_account'
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(height: 8.h),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: QuickAccessButton(
+                                                        onTap: () {
+                                                          navigateTo(
+                                                              context,
+                                                              SettingsScreen(
+                                                                isVendor:
+                                                                    isVendor,
+                                                              ));
+                                                        },
+                                                        title:
+                                                            "settings_privacy"
                                                                 .tr(context),
-                                                        userImageUrl: '',
-                                                        isVendor: isVendor!,
+                                                        icon:
+                                                            "assets/images/settings.png",
+                                                        color:
+                                                            Colors.red.shade100,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 16.w),
+                                                    Expanded(
+                                                      child: QuickAccessButton(
+                                                        needSubTitle: true,
                                                         onTap: () {
                                                           navigateTo(
                                                             context,
-                                                            const CreateBusinessAccountTypePage(),
+                                                            BlocProvider(
+                                                              create: (context) =>
+                                                                  StatisticsCubit(sl<
+                                                                      StatisticsRepo>())
+                                                                    ..fetchStatistics(
+                                                                        cubit
+                                                                            .businessId),
+                                                              child:
+                                                                  const DashboardScreen(),
+                                                            ),
                                                           );
                                                         },
-                                                        isAddNew: true,
-                                                      ),
-                                                    ],
-                                                  ),
-                                            SizedBox(height: 32.h.h),
-                                            isVendor != true
-                                                ? Column(
-                                                    children: [
-                                                      SectionHeader(
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        title: "most_visited"
-                                                            .tr(context),
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(0),
-                                                        showCloseButton: false,
-                                                      ),
-                                                      SizedBox(height: 16.h),
-                                                      state is BusinessLoading
-                                                          ? const Center(
-                                                              child:
-                                                                  CustomLoadingIndicator(),
-                                                            )
-                                                          : businessCubit
-                                                                  .businesses
-                                                                  .isEmpty
-                                                              ? Padding(
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                          top: 16
-                                                                              .h),
-                                                                  child: Text(
-                                                                    "no_brands_found"
-                                                                        .tr(context),
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: AppColors
-                                                                          .red,
-                                                                      fontSize:
-                                                                          14.sp,
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              : SizedBox(
-                                                                  height: 90.h,
-                                                                  child:
-                                                                      ListView(
-                                                                    scrollDirection:
-                                                                        Axis.horizontal,
-                                                                    children: businessCubit
-                                                                        .businesses
-                                                                        .map(
-                                                                            (business) {
-                                                                      return Padding(
-                                                                        padding: const EdgeInsets
-                                                                            .only(
-                                                                            right:
-                                                                                16),
-                                                                        child:
-                                                                            VisitedItem(
-                                                                          name:
-                                                                              business.name,
-                                                                          imageUrl:
-                                                                              business.imageUrl,
-                                                                          onTap:
-                                                                              () {
-                                                                            navigateTo(
-                                                                              context,
-                                                                              HomeStoreScreen(
-                                                                                businessAccountId: business.id,
-                                                                                isVendor: false,
-                                                                              ),
-                                                                            );
-                                                                          },
-                                                                        ),
-                                                                      );
-                                                                    }).toList(),
-                                                                  ),
-                                                                ),
-                                                      SizedBox(height: 24.h),
-                                                    ],
-                                                  )
-                                                : SizedBox(
-                                                    height: 0.h,
-                                                  ),
-                                            isVendor != false
-                                                ? Column(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                                QuickAccessButton(
-                                                              onTap: () {
-                                                                context
-                                                                    .read<
-                                                                        GlobalCubit>()
-                                                                    .changeBottomNavIndex(
-                                                                        0);
-                                                              },
-                                                              title: "home"
-                                                                  .tr(context),
-                                                              icon:
-                                                                  "assets/images/home.png",
-                                                              color:
-                                                                  Colors.black,
-                                                            ),
-                                                          ),
-                                                          SizedBox(width: 16.w),
-                                                          Expanded(
-                                                            child:
-                                                                QuickAccessButton(
-                                                              onTap: () {
-                                                                context
-                                                                    .read<
-                                                                        GlobalCubit>()
-                                                                    .changeBottomNavIndex(
-                                                                        1);
-                                                              },
-                                                              title: "nav_info"
-                                                                  .tr(context),
-                                                              icon:
-                                                                  "assets/images/dashboard.png",
-                                                              color: Colors
-                                                                  .red.shade100,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      SizedBox(height: 8.h),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                                QuickAccessButton(
-                                                              onTap: () {
-                                                                navigateTo(
-                                                                    context,
-                                                                    SettingsScreen(
-                                                                      isVendor:
-                                                                          isVendor,
-                                                                    ));
-                                                              },
-                                                              title: "settings_privacy"
-                                                                  .tr(context),
-                                                              icon:
-                                                                  "assets/images/settings.png",
-                                                              color: Colors
-                                                                  .red.shade100,
-                                                            ),
-                                                          ),
-                                                          SizedBox(width: 16.w),
-                                                          Expanded(
-                                                            child:
-                                                                QuickAccessButton(
-                                                              needSubTitle:
-                                                                  true,
-                                                              onTap: () {
-                                                                navigateTo(
-                                                                  context,
-                                                                  BlocProvider(
-                                                                    create: (context) => StatisticsCubit(sl<
-                                                                        StatisticsRepo>())
-                                                                      ..fetchStatistics(
-                                                                          cubit
-                                                                              .businessId),
-                                                                    child:
-                                                                        const DashboardScreen(),
-                                                                  ),
-                                                                );
-                                                              },
 
                                                               title: "current_plan"
                                                                   .tr(context),

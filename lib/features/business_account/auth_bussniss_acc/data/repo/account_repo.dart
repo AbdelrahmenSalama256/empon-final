@@ -3,7 +3,7 @@ import 'package:embone/core/common/common.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
-import 'package:embone/features/business_account/auth_bussniss_acc/data/model/toStore_model.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/data/model/tostore_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../model/account_model.dart';
