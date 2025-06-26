@@ -11,6 +11,7 @@ import 'package:embone/features/client/menu/view/inner_screens/widgets/action_bu
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'home_store_description.dart';
 import 'home_store_followers.dart';
@@ -29,6 +30,16 @@ class HomeStoreContent extends StatelessWidget {
       required this.globalCubit,
       required this.businessAccountCubit,
       this.isVendor = false});
+
+  Future<void> openWhatsApp(String phoneNumber, {String message = ''}) async {
+    final uri = Uri.parse(
+        "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}");
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $uri';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +83,12 @@ class HomeStoreContent extends StatelessWidget {
                     showWhatsApp: true,
                     showFavorite: true,
                     showLike: true,
-                    recivereId: accountData.accountData?.data.id,
-                    recivereName: accountData.accountData?.data.name,
-                    recivereImage: accountData.accountData?.data.logo,
+                    recivereId: accountData.accountData?.id,
+                    recivereName: accountData.accountData?.name,
+                    recivereImage: accountData.accountData?.logo,
+                    onWhatsAppPressed: () {
+                      openWhatsApp(context.read<GlobalCubit>().userPhone ?? '');
+                    },
                     onChatPressed: () {
                       navigatorKey.currentState!.push(
                         PageRouteBuilder(
