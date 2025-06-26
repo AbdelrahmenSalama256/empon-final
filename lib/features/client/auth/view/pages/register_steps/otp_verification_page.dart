@@ -55,7 +55,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             );
           }
           if (state is VerifyOtpSuccess) {
-            if (widget.type == "profile") {
+            if (widget.type == "profile" || widget.type == "verify-phone") {
               Navigator.pop(context);
             } else {
               navigateAndFinish(context, const BaseScreen());

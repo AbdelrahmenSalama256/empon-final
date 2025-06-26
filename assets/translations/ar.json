@@ -834,5 +834,13 @@
   "current_plan": "خطتك الحالية",
   "no_transactions_found": "لم يتم العثور على أي معاملات",
   "ask_to_be_store": "طلب تحويل الحساب التجاري إلى متجر الإكتروني",
-  "pound": "جنيه"
+  "pound": "جنيه",
+  "followed": "تمت المتابعة",
+  "unfollowed": "الغيت المتابعة",
+  "unfavorite": "إزالة من المفضلة",
+  "unfollow": "إلغاء المتابعة",
+  "cancel_registration_question": "هل تريد إلغاء تسجيلك؟",
+  "cancel_data_loss_warning": "في حالة الإيقاف الآن ستفقد أي تقدم حققته",
+  "yes_cancel_button": "إيقاف انشاء الحساب",
+  "no_cancel_button": "متابعة انشاء الحساب"
 }

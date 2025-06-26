@@ -86,6 +86,7 @@ class ProductData {
       price: json['price'],
       vendorId: json['vendor_id'],
       vendorName: json['vendor_name'],
+      isLoved: json['is_favourited'] ?? false,
       isLiked: json['is_liked'] ?? false,
       isSale: json['is_sale'],
       discountType: json['discount_type'],

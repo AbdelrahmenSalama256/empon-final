@@ -169,11 +169,7 @@ class _InteractionBarState extends State<InteractionBar>
                 commentCount: widget.commentCount,
                 avatarUrls: widget.avatarUrls,
                 onShare: widget.onShare,
-                onLike: () {
-                  cubit.toggleProductLike(
-                    productId: cubit.productModel?.data?.id ?? 0,
-                  );
-                },
+                onLike: widget.onLike,
                 onComment: widget.onComment,
                 onThumbsUp: widget.onThumbsUp,
                 shareIcon: widget.shareIcon,
@@ -405,7 +401,7 @@ class NonVendorInteractionView extends StatelessWidget {
   final int commentCount;
   final List<String> avatarUrls;
   final Function()? onShare;
-  final Function()? onLike;
+  final VoidCallback? onLike;
   final Function()? onComment;
   final Function()? onThumbsUp;
   final IconData shareIcon;
@@ -501,7 +497,7 @@ class NonVendorInteractionView extends StatelessWidget {
                   const SizedBox(width: 24),
                   FavoriteButton(
                     isFavorited: isLoved,
-                    onFavoriteToggle: () => onLike,
+                    onFavoriteToggle: onLike ?? () {},
                   ),
                   const SizedBox(width: 24),
                   _buildAnimatedIcon(

@@ -17,6 +17,7 @@ class HomeStoreNameSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // GestureDetector(
@@ -38,13 +39,14 @@ class HomeStoreNameSection extends StatelessWidget {
         //     ),
         //   ),
         // ),
-        const Spacer(),
+        const SizedBox.shrink(),
+        // const Spacer(),
         Center(
           child: StoreNameWithVerification(
+            isVerified: isVerified,
             storeName: name,
           ),
         ),
-        const Spacer(),
         GestureDetector(
           onTap: onTap,
           child: Visibility(
@@ -55,6 +57,20 @@ class HomeStoreNameSection extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(8.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: Offset(3.w, 3.h),
+                    blurRadius: 6.r,
+                    spreadRadius: 1.r,
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.3),
+                    offset: Offset(-2.w, -2.h),
+                    blurRadius: 4.r,
+                    spreadRadius: 0.5.r,
+                  ),
+                ],
               ),
               child: Icon(
                 CupertinoIcons.location_solid,

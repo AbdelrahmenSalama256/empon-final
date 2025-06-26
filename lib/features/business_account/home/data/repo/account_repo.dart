@@ -12,7 +12,7 @@ class BusinessAccountRepo {
   Future<Either<String, BusinessAccountResponse>> fetchBusinessAccountById(
       int accountId) async {
     try {
-      final response = await api.get('${EndPoints.account}$accountId');
+      final response = await api.get('${EndPoints.account}/$accountId');
       return Right(BusinessAccountResponse.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);

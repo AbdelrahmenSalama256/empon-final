@@ -11,7 +11,7 @@ import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class HomeVideoGridImages extends StatefulWidget {
   final String? videoUrl;
@@ -32,57 +32,18 @@ class HomeVideoGridImages extends StatefulWidget {
 
 class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
     with TickerProviderStateMixin {
-  late VideoPlayerController _controller;
-  bool _isPlaying = false;
-  double _currentPosition = 0;
-  String _currentPositionText = "0:00";
-  String _totalDurationText = "0:00";
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    final videoUrl = widget.videoUrl ??
-        (widget.businessAccountCubit?.accountData?.data.videoUrl ??
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4');
-    _controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.addListener(() {
-          if (_controller.value.isPlaying) {
-            setState(() {
-              _currentPosition = _controller.value.position.inMilliseconds /
-                  _controller.value.duration.inMilliseconds;
-              final position = _controller.value.position;
-              final duration = _controller.value.duration;
-              _currentPositionText =
-                  "${position.inMinutes}:${(position.inSeconds % 60).toString().padLeft(2, '0')}";
-              _totalDurationText =
-                  "${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}";
-            });
-          }
-        });
-      });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     _tabController.dispose();
     super.dispose();
-  }
-
-  void _togglePlayPause() {
-    setState(() {
-      if (_controller.value.isPlaying) {
-        _controller.pause();
-        _isPlaying = false;
-      } else {
-        _controller.play();
-        _isPlaying = true;
-      }
-    });
   }
 
   @override
@@ -93,6 +54,15 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
         final accountCubit =
             widget.businessAccountCubit ?? context.read<BusinessAccountCubit>();
         final account = accountCubit.accountData;
+        final filteredProducts = widget.isVendor != true
+            ? account?.data.products.where((p) => p.active == 1).toList() ?? []
+            : account?.data.products ?? [];
+        final filteredServices = widget.isVendor != true
+            ? account?.data.services
+                    .where((s) => s.active && s.approved)
+                    .toList() ??
+                []
+            : account?.data.services ?? [];
 
         return SafeArea(
           child: Column(
@@ -104,115 +74,121 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
                         color: AppColors.primaryColor,
                       ),
                     )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(16.r),
-                      child: AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            _controller.value.isInitialized
-                                ? VideoPlayer(_controller)
-                                : Container(
-                                    color: Colors.black,
-                                    child: const Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                            GestureDetector(
-                              onTap: _togglePlayPause,
-                              child: Container(
-                                width: 50.w,
-                                height: 50.w,
-                                decoration: const BoxDecoration(
-                                  color: Color.fromRGBO(0, 0, 0, 0.5),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  _isPlaying ? Icons.pause : Icons.play_arrow,
-                                  color: Colors.white,
-                                  size: 30.sp,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 12.w, vertical: 8.h),
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Color.fromRGBO(0, 0, 0, 0.7),
-                                    ],
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    SliderTheme(
-                                      data: SliderThemeData(
-                                        trackHeight: 4.h,
-                                        thumbShape: RoundSliderThumbShape(
-                                            enabledThumbRadius: 6.r),
-                                        overlayShape: RoundSliderOverlayShape(
-                                            overlayRadius: 14.r),
-                                        activeTrackColor: Colors.red,
-                                        inactiveTrackColor: Colors.grey[600],
-                                        thumbColor: Colors.red,
-                                        overlayColor: const Color.fromRGBO(
-                                            255, 0, 0, 0.2),
-                                      ),
-                                      child: Slider(
-                                        value: _currentPosition.isFinite
-                                            ? _currentPosition.clamp(0.0, 1.0)
-                                            : 0.0,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _currentPosition = value;
-                                            final newPosition = value *
-                                                _controller.value.duration
-                                                    .inMilliseconds;
-                                            _controller.seekTo(Duration(
-                                                milliseconds:
-                                                    newPosition.round()));
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          _currentPositionText,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12.sp),
-                                        ),
-                                        Text(
-                                          _totalDurationText,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12.sp),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-              SizedBox(height: 10.h),
+                  :
+                  // : ClipRRect(
+                  //     borderRadius: BorderRadius.circular(16.r),
+                  //     child: AspectRatio(
+                  //       aspectRatio: 16 / 9,
+                  //       child: Stack(
+                  //         alignment: Alignment.center,
+                  //         children: [
+                  //           _controller.value.isInitialized
+                  //               ? VideoPlayer(_controller)
+                  //               : Container(
+                  //                   color: Colors.black,
+                  //                   child: const Center(
+                  //                     child: CircularProgressIndicator(
+                  //                       color: Colors.white,
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //           GestureDetector(
+                  //             onTap: _togglePlayPause,
+                  //             child: Container(
+                  //               width: 50.w,
+                  //               height: 50.w,
+                  //               decoration: const BoxDecoration(
+                  //                 color: Color.fromRGBO(0, 0, 0, 0.5),
+                  //                 shape: BoxShape.circle,
+                  //               ),
+                  //               child: Icon(
+                  //                 _isPlaying ? Icons.pause : Icons.play_arrow,
+                  //                 color: Colors.white,
+                  //                 size: 30.sp,
+                  //               ),
+                  //             ),
+                  //           ),
+                  //           Positioned(
+                  //             bottom: 0,
+                  //             left: 0,
+                  //             right: 0,
+                  //             child: Container(
+                  //               padding: EdgeInsets.symmetric(
+                  //                   horizontal: 12.w, vertical: 8.h),
+                  //               decoration: const BoxDecoration(
+                  //                 gradient: LinearGradient(
+                  //                   begin: Alignment.topCenter,
+                  //                   end: Alignment.bottomCenter,
+                  //                   colors: [
+                  //                     Colors.transparent,
+                  //                     Color.fromRGBO(0, 0, 0, 0.7),
+                  //                   ],
+                  //                 ),
+                  //               ),
+                  //               child: Column(
+                  //                 children: [
+                  //                   SliderTheme(
+                  //                     data: SliderThemeData(
+                  //                       trackHeight: 4.h,
+                  //                       thumbShape: RoundSliderThumbShape(
+                  //                           enabledThumbRadius: 6.r),
+                  //                       overlayShape: RoundSliderOverlayShape(
+                  //                           overlayRadius: 14.r),
+                  //                       activeTrackColor: Colors.red,
+                  //                       inactiveTrackColor: Colors.grey[600],
+                  //                       thumbColor: Colors.red,
+                  //                       overlayColor: const Color.fromRGBO(
+                  //                           255, 0, 0, 0.2),
+                  //                     ),
+                  //                     child: Slider(
+                  //                       value: _currentPosition.isFinite
+                  //                           ? _currentPosition.clamp(0.0, 1.0)
+                  //                           : 0.0,
+                  //                       onChanged: (value) {
+                  //                         setState(() {
+                  //                           _currentPosition = value;
+                  //                           final newPosition = value *
+                  //                               _controller.value.duration
+                  //                                   .inMilliseconds;
+                  //                           _controller.seekTo(Duration(
+                  //                               milliseconds:
+                  //                                   newPosition.round()));
+                  //                         });
+                  //                       },
+                  //                     ),
+                  //                   ),
+                  //                   Row(
+                  //                     mainAxisAlignment:
+                  //                         MainAxisAlignment.spaceBetween,
+                  //                     children: [
+                  //                       Text(
+                  //                         _currentPositionText,
+                  //                         style: TextStyle(
+                  //                             color: Colors.white,
+                  //                             fontSize: 12.sp),
+                  //                       ),
+                  //                       Text(
+                  //                         _totalDurationText,
+                  //                         style: TextStyle(
+                  //                             color: Colors.white,
+                  //                             fontSize: 12.sp),
+                  //                       ),
+                  //                     ],
+                  //                   ),
+                  //                 ],
+                  //               ),
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
+
+                  SizedBox(height: 10.h),
+
+              VideosTab(
+                videoUrl: widget.videoUrl,
+              ),
 
               // Tabs
               Container(
@@ -280,51 +256,46 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
                   controller: _tabController,
                   children: [
                     _buildGridView(
-                      account?.data.products.map((p) => p.image).toList() ?? [],
-                      account?.data.products.map((p) => p.id).toList() ?? [],
-                      account?.data.products.length ?? 0,
+                      filteredProducts.map((p) => p.image).toList(),
+                      filteredProducts.map((p) => p.id).toList(),
+                      filteredProducts.length,
                       (index) {
-                        if (account?.data.products.isNotEmpty ?? false) {
+                        if (filteredProducts.isNotEmpty) {
                           navigateTo(
                             context,
                             BlocProvider(
                               create: (context) =>
                                   SearchCubit(sl<SearchRepo>()),
                               child: ProductDetailPage(
-                                isVendor:
-                                    widget.isVendor != true ? false : true,
-                                productId: account!.data.products[index].id,
+                                isVendor: widget.isVendor ?? false,
+                                productId: filteredProducts[index].id,
                               ),
                             ),
                           );
                         }
                       },
-                      account?.data.services.map((s) => s.approved).toList() ??
-                          [],
+                      filteredProducts.map((p) => p.active == 1).toList(),
                     ),
                     _buildGridView(
-                      account?.data.services.map((s) => s.mainImage).toList() ??
-                          [],
-                      account?.data.services.map((s) => s.id).toList() ?? [],
-                      account?.data.services.length ?? 0,
+                      filteredServices.map((s) => s.mainImage).toList(),
+                      filteredServices.map((s) => s.id).toList(),
+                      filteredServices.length,
                       (index) {
-                        if (account?.data.services.isNotEmpty ?? false) {
+                        if (filteredServices.isNotEmpty) {
                           navigateTo(
                             context,
                             BlocProvider(
                               create: (context) =>
                                   SearchCubit(sl<SearchRepo>()),
                               child: ServiceDetailPage(
-                                isVendor:
-                                    widget.isVendor != true ? false : true,
-                                serviceId: account!.data.services[index].id,
+                                isVendor: widget.isVendor ?? false,
+                                serviceId: filteredServices[index].id,
                               ),
                             ),
                           );
                         }
                       },
-                      account?.data.services.map((s) => s.approved).toList() ??
-                          [],
+                      filteredServices.map((s) => s.approved).toList(),
                     ),
                   ],
                 ),
@@ -407,6 +378,52 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
           ),
         );
       },
+    );
+  }
+}
+
+class VideosTab extends StatelessWidget {
+  final String? videoUrl;
+  const VideosTab({super.key, this.videoUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    String? videoId =
+        videoUrl != null ? YoutubePlayer.convertUrlToId(videoUrl!) : null;
+
+    if (videoId == null) {
+      return Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.w,
+          vertical: 15.h,
+        ),
+        child: const Center(
+          child: Text('لا توجد فيديوهات'),
+        ),
+      );
+    }
+
+    YoutubePlayerController controller = YoutubePlayerController(
+      initialVideoId: videoId,
+      flags: const YoutubePlayerFlags(
+          autoPlay: false,
+          mute: false,
+          enableCaption: false,
+          showLiveFullscreenButton: true,
+          hideControls: true),
+    );
+
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.r),
+        child: YoutubePlayer(
+          progressColors: const ProgressBarColors(
+              handleColor: AppColors.red, playedColor: AppColors.red),
+          progressIndicatorColor: AppColors.red,
+          controller: controller,
+          liveUIColor: AppColors.primary,
+        ),
+      ),
     );
   }
 }

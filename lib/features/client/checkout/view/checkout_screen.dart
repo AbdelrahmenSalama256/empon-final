@@ -46,10 +46,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       child: BlocListener<GlobalCubit, GlobalState>(
         listener: (context, state) {
           if (state is GetAddressSuccess) {
-            if (state.addresses.isNotEmpty) {
+            if (context.read<GlobalCubit>().userAddresses!.isNotEmpty) {
               if (_selectedAddress == null) {
                 setState(() {
-                  _selectedAddress = state.addresses.first;
+                  _selectedAddress =
+                      context.read<GlobalCubit>().userAddresses?.first;
                 });
               }
               _showChangeAddressBottomSheet(context);

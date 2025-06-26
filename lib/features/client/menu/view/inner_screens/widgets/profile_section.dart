@@ -35,38 +35,15 @@ class ProfileSection extends StatelessWidget {
         final cubit = context.read<GlobalCubit>();
         return Column(
           children: [
-            // Profile Image Container
-            if (isAddNew)
-              GestureDetector(
-                onTap: onTap,
-                child: Container(
-                  width: 70.w,
-                  height: 70.h,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: borderColor ?? Colors.grey,
-                      width: 1.w,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.grey,
-                    size: 30,
-                  ),
-                ),
-              )
-            else
-              ProfileImagePicker(
-                profileImage: cubit.profileImage,
-                networkImageUrl: userImageUrl,
-                onImagePicked: (XFile? image) {
-                  if (image != null) {
-                    cubit.setProfileImage(image);
-                  }
-                },
-              ),
-
+            ProfileImagePicker(
+              profileImage: cubit.profileImage,
+              networkImageUrl: userImageUrl,
+              onImagePicked: (XFile? image) {
+                if (image != null) {
+                  cubit.setProfileImage(image);
+                }
+              },
+            ),
             SizedBox(height: 12.h),
             Text(
               userName,

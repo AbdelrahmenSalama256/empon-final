@@ -265,8 +265,8 @@ class MenuScreen extends StatelessWidget {
                                       isVendor != true
                                           ? ProfileSection(
                                               userName: cubit.userName ?? '',
-                                              userImageUrl: cubit.userAvatar ??
-                                                  'assets/images/logo.png',
+                                              userImageUrl:
+                                                  "${cubit.userAvatar}",
                                               subtitle:
                                                   'user_account'.tr(context),
                                               isVendor: isVendor!,
@@ -608,19 +608,22 @@ class MenuScreen extends StatelessWidget {
                                                 ),
                                               ],
                                             ),
-                                      ExpansionTile(
-                                        //leading:const
-                                        title: Text(
-                                          'store_plans'.tr(context),
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14.sp),
+                                      if (isVendor == true) ...[
+                                        ExpansionTile(
+                                          //leading:const
+                                          title: Text(
+                                            'store_plans'.tr(context),
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 14.sp),
+                                          ),
+                                          children: [
+                                            const PlanSection(),
+                                            SizedBox(height: 16.h),
+                                          ],
                                         ),
-                                        children: [
-                                          const PlanSection(),
-                                          SizedBox(height: 16.h),
-                                        ],
-                                      ),
+                                      ],
+
                                       SizedBox(height: 15.h),
                                       MenuItem(
                                         onTap: () {

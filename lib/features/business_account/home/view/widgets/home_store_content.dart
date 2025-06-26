@@ -11,6 +11,7 @@ import 'package:embone/features/client/menu/view/inner_screens/widgets/action_bu
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'home_store_description.dart';
 import 'home_store_followers.dart';
@@ -29,6 +30,13 @@ class HomeStoreContent extends StatelessWidget {
       required this.globalCubit,
       required this.businessAccountCubit,
       this.isVendor = false});
+
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,8 +74,9 @@ class HomeStoreContent extends StatelessWidget {
             SizedBox(height: 16.h),
             isVendor != true
                 ? ActionButtonsRow(
-                    isFavorite: false,
-                    isLiked: false,
+                    isFavorite:
+                        accountData.accountData?.data.isFavourited ?? false,
+                    isLiked: accountData.accountData?.data.isFollowed ?? false,
                     showChat: true,
                     showWhatsApp: true,
                     showFavorite: true,
@@ -75,6 +84,8 @@ class HomeStoreContent extends StatelessWidget {
                     recivereId: accountData.accountData?.data.id,
                     recivereName: accountData.accountData?.data.name,
                     recivereImage: accountData.accountData?.data.logo,
+                    onWhatsAppPressed: () => _launchUrl(
+                        'https://wa.me/+2${accountData.accountData?.data.phone ?? ''}'),
                     onChatPressed: () {
                       navigatorKey.currentState!.push(
                         PageRouteBuilder(
@@ -94,6 +105,11 @@ class HomeStoreContent extends StatelessWidget {
                           },
                           transitionDuration: const Duration(milliseconds: 300),
                         ),
+                      );
+                    },
+                    onLikePressed: () {
+                      globalCubit.followAccount(
+                        accountData.accountData?.data.id ?? 0,
                       );
                     },
                     onFavoritePressed: () {
@@ -118,6 +134,7 @@ class HomeStoreContent extends StatelessWidget {
               height: 500.h,
               child: HomeVideoGridImages(
                 businessAccountId: id,
+                videoUrl: accountData.accountData?.data.videoUrl,
                 isVendor: isVendor,
                 businessAccountCubit: businessAccountCubit,
               ),

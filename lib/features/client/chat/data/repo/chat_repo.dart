@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/chat/data/model/chat_contact_model.dart';
 import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
@@ -75,6 +77,7 @@ class ChatRepo {
 
       formData.fields.addAll([
         MapEntry('receiver_id', receiverId.toString()),
+        MapEntry('sender_id', sl<GlobalCubit>().userId.toString()),
         MapEntry('message', message),
         MapEntry('media_type', mediaType ?? 'text'),
         if (replayId != null) MapEntry('replay_id', replayId),

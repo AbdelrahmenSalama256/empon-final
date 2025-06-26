@@ -42,6 +42,7 @@ class StoreLogoAndImage extends StatelessWidget {
                     fit: BoxFit.contain,
                   ),
                   StoreNameWithVerification(
+                    isVerified: false,
                     storeName: 'store_name'.tr(context),
                   ),
                 ],
@@ -77,6 +78,7 @@ class StoreLogoAndImage extends StatelessWidget {
                     fit: BoxFit.contain,
                   ),
                   StoreNameWithVerification(
+                    isVerified: false,
                     storeName: 'store_name'.tr(context),
                   ),
                 ],

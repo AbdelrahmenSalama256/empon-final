@@ -84,3 +84,16 @@ class AddressError extends GlobalState {
   final String message;
   AddressError(this.message);
 }
+
+class FollowAccountLoading extends GlobalState {}
+
+class FollowAccountSuccess extends GlobalState {
+  final String message;
+  FollowAccountSuccess(this.message);
+}
+
+class FollowAccountError extends GlobalState {
+  final String message;
+
+  FollowAccountError(this.message);
+}

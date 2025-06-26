@@ -1,4 +1,5 @@
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,7 +18,7 @@ class ProductAvailabilityToggle extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'متوفر',
+          'available'.tr(context),
           style: TextStyle(
             fontSize: 9.sp,
             color: AppColors.primary,

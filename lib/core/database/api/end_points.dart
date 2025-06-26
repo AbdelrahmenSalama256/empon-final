@@ -17,7 +17,7 @@ class EndPoints {
   static const String userResendCode = "${baseUrl}auth/password/resend_code";
   static const String userVerifyEmail = "${baseUrl}check-email";
   static const String userVerifyPhone = "${baseUrl}check-phone";
-  static const String account = "${baseUrl}account/";
+  static const String account = "${baseUrl}accountInfo";
   static const String statistics = "${baseUrl}account-statistics/";
   static const String updateAccountData = "${baseUrl}accounts/";
   //! Logout
@@ -64,7 +64,6 @@ class EndPoints {
   static const String serviceLike = '${baseUrl}serviceslike';
   static const String productCategories = '${baseUrl}category';
 
-
   // ! Notifications
   static const String notifications = '${baseUrl}notifications';
 
@@ -77,6 +76,7 @@ class EndPoints {
   static const String sendMessage = '${baseUrl}send-message';
   // ! accounts
   static const String accounts = '${baseUrl}account';
+  static const String accountsFollow = '${baseUrl}accounts/follow';
   // ! Wishlist
   static const String favorites = '${baseUrl}favourite';
   static const String addProductToWishlist = '${baseUrl}favourite/product';

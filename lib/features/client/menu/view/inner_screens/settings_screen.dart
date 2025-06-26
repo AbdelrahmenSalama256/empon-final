@@ -4,7 +4,6 @@ import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
@@ -57,7 +56,6 @@ class SettingsScreen extends StatelessWidget {
             },
             builder: (context, state) {
               final cubit = context.read<GlobalCubit>();
-              PrintUtil.debug(isVendor);
               return SafeArea(
                 child: Column(
                   children: [
@@ -111,23 +109,24 @@ class SettingsScreen extends StatelessWidget {
                                           onTap: () {},
                                         ),
                               SizedBox(height: 16.h),
-
-                              ApprovalItem(
-                                title: 'ask_to_be_store'.tr(context),
-                                status: ApprovalStatus.approved,
-                                icon: Image.asset(
-                                  "assets/images/cycle-circle.png",
-                                  width: 24.w,
-                                  height: 24.h,
-                                ),
-                                onApprove: () => CustomPopup.show(
-                                  context: context,
-                                  type: PopupType.success,
-                                  title:
-                                      "request_sent_successfully".tr(context),
-                                  message: "request_under_review".tr(context),
-                                ),
-                              ),
+                              if (isVendor == true) ...[
+                                ApprovalItem(
+                                  title: 'ask_to_be_store'.tr(context),
+                                  status: ApprovalStatus.approved,
+                                  icon: Image.asset(
+                                    "assets/images/cycle-circle.png",
+                                    width: 24.w,
+                                    height: 24.h,
+                                  ),
+                                  onApprove: () => CustomPopup.show(
+                                    context: context,
+                                    type: PopupType.success,
+                                    title:
+                                        "request_sent_successfully".tr(context),
+                                    message: "request_under_review".tr(context),
+                                  ),
+                                )
+                              ],
 
                               // Edit Profile
                               SizedBox(height: isVendor != true ? 16.h : 30.h),

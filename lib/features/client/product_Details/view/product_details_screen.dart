@@ -10,6 +10,7 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/view/add_product_buisniss_account.dart';
+import 'package:embone/features/business_account/store/view/product_inventory_screen.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
 import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:embone/features/client/home/view/widgets/product_card.dart';
@@ -28,6 +29,7 @@ import 'package:embone/features/client/product_Details/view/widgets/review_secti
 import 'package:embone/features/client/product_Details/view/widgets/section_title.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/cubit/search_state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -234,6 +236,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                           );
                                         },
                                         onLike: () {
+                                          if (kDebugMode) {
+                                            print('onLike called');
+                                          } // Debug print
                                           context
                                               .read<GlobalCubit>()
                                               .addProductToWishlist(cubit
@@ -262,7 +267,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       ),
                                       SizedBox(height: 15.h),
                                       if (widget.isVendor)
-                                        InventoryButton(onPressed: () {}),
+                                        InventoryButton(onPressed: () {
+                                          navigateTo(context,
+                                              const ProductInventoryScreen());
+                                        }),
                                       SizedBox(height: 15.h),
                                       availableColors.isEmpty
                                           ? const SizedBox.shrink()
