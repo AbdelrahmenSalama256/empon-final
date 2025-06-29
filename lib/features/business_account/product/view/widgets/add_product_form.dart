@@ -1,5 +1,4 @@
 import 'package:embone/core/constants/app_constant.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/repo/product_repo.dart';
@@ -74,13 +73,13 @@ class _AddProductFormState extends State<AddProductForm> {
   Widget build(BuildContext context) {
     final data = widget.productData?.data;
     return BlocProvider(
-      create: (context) => ProductCubit(sl<ProductRepo>())
-        ..initControllers(widget.isUpdate ?? false,
-            name: data!.name,
-            description: data.description,
-            price: data.price,
-            variation: data.variations,
-            category: data.category),
+      create: (context) => ProductCubit(sl<ProductRepo>())..getCategories(),
+        // ..initControllers(widget.isUpdate ?? false,
+        //     name: data!.name,
+        //     description: data.description,
+        //     price: data.price,
+        //     variation: data.variations,
+        //     category: data.category),
       child: Form(
         key: _formKey,
         child: Column(
