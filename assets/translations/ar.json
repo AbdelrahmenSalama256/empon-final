@@ -853,9 +853,7 @@
   "current_plan": "الخطة الحالية",
   "identity_store_request": "طلب التحويل الى متجر الكتروني",
   "available_product_numbers":"الاعداد المتاحة من المنتج",
-  "store_plans": "خطط ترويج المحل"
-
-  "no_cancel_button": "متابعة انشاء الحساب",
+  "store_plans": "خطط ترويج المحل",
   "no_transactions_data_found": "لا توجد معاملات حتي الأن",
   "material": "مادة",
   "no_details": "لا توجد تفاصيل بعد",

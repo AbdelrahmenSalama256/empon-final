@@ -814,7 +814,6 @@
   "cancel_registration_question": "Do you want to cancel your registration?",
   "cancel_data_loss_warning": "If you stop now, you will lose any progress you have made.",
   "yes_cancel_button": "Stop creating the account",
-  "no_cancel_button": "Follow up on account creation",
   "business_promotion_plans":"Business Promotion Plans",
   "chose":"Chose",
   "plan_title":"Products already added to your plan",
@@ -829,7 +828,7 @@
   "current_plan": "Current Plan",
   "identity_store_request": "Request to be a store",
   "available_product_numbers":"Available product numbers",
-  "store_plans": "Store promotion plans"
+  "store_plans": "Store promotion plans",
 
   "no_cancel_button": "Follow up on account creation",
   "no_transactions_data_found": "No Transactions Yet",
