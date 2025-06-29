@@ -45,7 +45,6 @@ class PackagesCubit extends Cubit<PackagesState> {
 
   Future<void> fetchCities() async {
     final result = await packagesRepo.fetchCities();
-    print(result);
     result.fold(
       (error) {
         PrintUtil.error("Failed to fetch Packages: $error");

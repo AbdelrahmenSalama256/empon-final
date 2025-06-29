@@ -71,7 +71,7 @@ class _AddProductFormState extends State<AddProductForm> {
 
   @override
   Widget build(BuildContext context) {
-    final data = widget.productData?.data;
+   // final data = widget.productData?.data;
     return BlocProvider(
       create: (context) => ProductCubit(sl<ProductRepo>())..getCategories(),
         // ..initControllers(widget.isUpdate ?? false,
@@ -89,7 +89,7 @@ class _AddProductFormState extends State<AddProductForm> {
             const ProductBasicInfoSection(),
 
             // Image upload sections
-             ImageUploadSection(cubit: true,imageUrl: data!.image),
+             const ImageUploadSection(cubit: true),
 
             // Product details
             const ProductDetailsSection(),
