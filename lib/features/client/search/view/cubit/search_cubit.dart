@@ -736,6 +736,55 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
+  Future<void> updateProductStatus(int productId) async {
+    emit(StatusLoading());
+
+    final result = await searchRepo.activeProduct(productId);
+
+    result.fold(
+      (failure) => emit(StatusError(failure)),
+      (response) async {
+        emit(StatusSuccess(response.message));
+        await goToProduct(id: productId);
+      },
+    );
+  }
+    Future<void> updateServiceStatus(int productId) async {
+    emit(StatusLoading());
+
+    final result = await searchRepo.activeServise(productId);
+
+    result.fold(
+      (failure) => emit(StatusError(failure)),
+      (response)  async {
+        emit(StatusSuccess(response.message));
+        await goToService(id: productId);
+      },
+    );}
+
+    Future<void> deleteService(int id) async {
+    emit(DeletedLoading());
+    final result = await searchRepo.deleteServise(id);
+    result.fold(
+      (error) => emit(DeletedError(error)),
+      (r) {
+        emit(Deleted());
+      },
+    );
+  }
+      Future<void> deleteProduct(int id) async {
+    emit(DeletedLoading());
+    final result = await searchRepo.deleteProduct(id);
+    result.fold(
+      (error) => emit(DeletedError(error)),
+      (r) {
+        emit(Deleted());
+      },
+    );
+  }
+
+  
+
   Future<void> fetchVariations({
     required int productId,
     required int colorId,

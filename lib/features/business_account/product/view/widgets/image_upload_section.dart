@@ -11,8 +11,9 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUploadSection extends StatefulWidget {
-  const ImageUploadSection({super.key, required this.cubit});
+  const ImageUploadSection({super.key, required this.cubit,this.imageUrl});
   final bool cubit;
+  final String? imageUrl;
   @override
   State<ImageUploadSection> createState() => _ImageUploadSectionState();
 }
@@ -22,6 +23,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
   final List<XFile> _additionalImages = [];
   final ImagePicker _picker = ImagePicker();
   final int _maxImages = 10;
+  
 
   Future<void> _pickMainImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -91,7 +93,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _buildImageThumbnail(_mainImage!, -1, isMain: true),
+                      _buildImageThumbnail(_mainImage!, -1, isMain: true, imageUrl: widget.imageUrl),
                     ],
                   ),
                 )
@@ -151,7 +153,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
     );
   }
 
-  Widget _buildImageThumbnail(dynamic image, int index, {bool isMain = false}) {
+  Widget _buildImageThumbnail(dynamic image, int index, {bool isMain = false,String? imageUrl}) {
     return Padding(
       padding: EdgeInsets.only(right: 8.w),
       child: Stack(
@@ -161,14 +163,31 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
             height: 40.h,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(13.r),
-              child: Image.file(
-                image is XFile ? File(image.path) : image,
-                fit: BoxFit.cover,
-                width: 40.w,
-                height: 40.h,
-              ),
+              child: imageUrl != null && imageUrl.isNotEmpty
+                ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  width: 40.w,
+                  height: 40.h,
+                )
+                : image is XFile
+                  ? Image.file(
+                    File(image.path),
+                    fit: BoxFit.cover,
+                    width: 40.w,
+                    height: 40.h,
+                  )
+                  : image is String
+                    ? Image.network(
+                      image,
+                      fit: BoxFit.cover,
+                      width: 40.w,
+                      height: 40.h,
+                    )
+                    : const SizedBox(),
             ),
-          ),
+            ),
+          
           Positioned(
             top: 0,
             right: 0,

@@ -1,11 +1,11 @@
-class ProductModel {
+class AddProductModel {
   bool? success;
   String? message;
   Data? data;
 
-  ProductModel({this.success, this.message, this.data});
+  AddProductModel({this.success, this.message, this.data});
 
-  ProductModel.fromJson(Map<String, dynamic> json) {
+  AddProductModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;

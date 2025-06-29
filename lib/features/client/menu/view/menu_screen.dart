@@ -22,8 +22,11 @@ import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/contacts/view/contact_tree/followers_screen.dart';
 import 'package:embone/features/client/home/view/widgets/section_header_home.dart';
 import 'package:embone/features/client/menu/data/repo/business_repo.dart';
+import 'package:embone/features/client/menu/data/repo/packages_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/business_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/business_state.dart';
+import 'package:embone/features/client/menu/view/cubit/packages_cubit.dart';
+import 'package:embone/features/client/menu/view/cubit/packages_state.dart';
 import 'package:embone/features/client/menu/view/inner_screens/help_support.dart';
 import 'package:embone/features/client/menu/view/inner_screens/offers_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/settings_screen.dart';
@@ -560,7 +563,7 @@ class MenuScreen extends StatelessWidget {
                                                                   "assets/images/plan_brand.png",
                                                               color: Colors
                                                                   .red.shade100,
-                                                              subTitle:
+                                                              subTitle: 
                                                                   "الخطة الاساسية", //todo : will get from backend
                                                               subTitleColor: Colors
                                                                   .lightGreenAccent,
@@ -641,7 +644,38 @@ class MenuScreen extends StatelessWidget {
                                                 ? const SizedBox()
                                                 : Wrap(
                                                     children: [
+                                                      accountData!.type =='business'
+                                                      ?ApprovalItem(
+                                                          title:
+                                                              'identity_store_request'
+                                                                  .tr(context),
+                                                          status: ApprovalStatus
+                                                              .approved,
+                                                          icon: Image.asset(
+                                                            "assets/images/cycle-circle.png",
+                                                            width: 24.w,
+                                                            height: 24.h,
+                                                          ),
+                                                          onApprove: () {
+                                                            context
+                                                                .read<
+                                                                    AccountCubit>()
+                                                                .sendStoreRequest(
+                                                                    accountId: cubit
+                                                                        .businessId!);
+                                                            CustomPopup.show(
+                                                              context: context,
+                                                              type: PopupType
+                                                                  .success,
+                                                              title: "request_sent_successfully"
+                                                                  .tr(context),
+                                                              message:
+                                                                  "request_under_review"
+                                                                      .tr(context),
+                                                            );
+                                                          }):const SizedBox(),
                                                       // Second approval item example
+
                                                       ApprovalItem(
                                                         title:
                                                             'identity_verification_request'
@@ -653,37 +687,62 @@ class MenuScreen extends StatelessWidget {
                                                           width: 24.w,
                                                           height: 24.h,
                                                         ),
-                                                        onApprove: () =>
-                                                            CustomPopup.show(
-                                                          context: context,
-                                                          type:
-                                                              PopupType.success,
-                                                          title:
-                                                              "request_sent_successfully"
-                                                                  .tr(context),
-                                                          message:
-                                                              "request_under_review"
-                                                                  .tr(context),
-                                                        ),
+                                                        onApprove: () {
+                                                          context
+                                                              .read<
+                                                                  AccountCubit>()
+                                                              .sendVerficationRequest(
+                                                                  accountId: cubit
+                                                                      .businessId!);
+
+                                                          CustomPopup.show(
+                                                            context: context,
+                                                            type: PopupType
+                                                                .success,
+                                                            title:
+                                                                "request_sent_successfully"
+                                                                    .tr(context),
+                                                            message:
+                                                                "request_under_review"
+                                                                    .tr(context),
+                                                          );
+                                                        },
                                                       ),
                                                     ],
                                                   ),
-                                            if (isVendor == true) ...[
-                                              ExpansionTile(
-                                                //leading:const
-                                                title: Text(
-                                                  'store_plans'.tr(context),
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14.sp),
-                                                ),
-                                                children: [
-                                                  const PlanSection(),
-                                                  SizedBox(height: 16.h),
-                                                ],
-                                              ),
-                                            ],
-
+                                            isVendor == true
+                                                ? ExpansionTile(
+                                                    //leading:const
+                                                    title: Text(
+                                                      'store_plans'.tr(context),
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14.sp),
+                                                    ),
+                                                    children: [
+                                                      BlocProvider(
+                                                        create: (context) =>
+                                                            PackagesCubit(sl<
+                                                                PackagesRepo>())
+                                                              ..fetchPackages(),
+                                                        child: BlocBuilder<
+                                                            PackagesCubit,
+                                                            PackagesState>(
+                                                          builder: (context,
+                                                              packageState) {
+                                                            return packageState
+                                                                    is PackagesLoading
+                                                                ? const Center(
+                                                                    child:
+                                                                        CustomLoadingIndicator())
+                                                                : const PlanSection();
+                                                          },
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 16.h),
+                                                    ],
+                                                  )
+                                                : const SizedBox(),
                                             SizedBox(height: 15.h),
                                             MenuItem(
                                               onTap: () {

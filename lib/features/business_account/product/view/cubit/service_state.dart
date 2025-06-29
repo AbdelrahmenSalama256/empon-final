@@ -30,3 +30,5 @@ class ServiceLoaded extends ServiceState {
 
   ServiceLoaded(this.services);
 }
+class Deleted extends ServiceState{
+}

@@ -47,6 +47,18 @@ class ServiceRepo {
 
     
   }
+  Future<Either<String, ServiceModel>> deleteServise(int id)async{
+    try {
+      final response = await api.delete(
+        '${EndPoints.updateService}$id'
+      );
+      return Right(ServiceModel.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
   Future<Either<String, ServiceModel>> updateService({
     required int serviceId,
      String? name,
@@ -127,4 +139,5 @@ class ServiceRepo {
       return Left(e.errorModel.detail);
     }
   }
+
 }

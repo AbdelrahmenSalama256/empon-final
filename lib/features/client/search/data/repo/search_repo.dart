@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
+import 'package:embone/features/business_account/product/data/model/active_model.dart';
 import 'package:embone/features/business_account/product/data/model/service_model.dart';
 import 'package:embone/features/client/product_Details/data/model/releated_model.dart';
 import 'package:embone/features/client/search/data/model/search_history_model.dart';
@@ -169,6 +170,50 @@ class SearchRepo {
       return Left(e.errorModel.detail);
     } catch (e) {
       return Left('Failed to fetch related products: $e');
+    }
+  }
+  
+  Future<Either<String, ActiveResponseModel>> activeServise(int id) async {
+    try {
+      final response =
+          await api.patch(EndPoints.activeService, data: {"service_id": id});
+      return Right(ActiveResponseModel.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+
+  Future<Either<String, ActiveResponseModel>> activeProduct(int id) async {
+    try {
+      final response =
+          await api.patch(EndPoints.activeProduct, data: {"product_id": id});
+      return Right(ActiveResponseModel.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+    Future<Either<String, ServiceModel>> deleteServise(int id) async {
+    try {
+      final response = await api.delete('${EndPoints.updateService}$id');
+      return Right(ServiceModel.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
+  Future<Either<String, ProductModel>> deleteProduct(int id) async {
+    try {
+      final response = await api.delete('${EndPoints.deleteProduct}$id');
+      return Right(ProductModel.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
     }
   }
 

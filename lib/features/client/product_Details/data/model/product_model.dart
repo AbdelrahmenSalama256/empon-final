@@ -47,6 +47,7 @@ class ProductData {
   final String? shippingStartDate;
   final String? shippingEndDate;
   final String? shippingPrice;
+  final int? active;
   final String? accountType;
   final String? whastappNum;
   final Map<String, String>? details;
@@ -80,6 +81,7 @@ class ProductData {
     this.details, // Added details parameter
     this.createdAt,
     this.updatedAt,
+    this.active
   });
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
@@ -128,6 +130,7 @@ class ProductData {
       shippingEndDate: json['shipping_end_date'],
       shippingPrice: json['shipping_price'],
       details: detailsMap, // Assign parsed details
+      active: json['active']
     );
   }
 
@@ -179,6 +182,7 @@ class ProductData {
     String? whastappNum,
     String? accountType,
     Map<String, String>? details, // Added details in copyWith
+    int? active
   }) {
     return ProductData(
       id: id ?? this.id,
@@ -202,6 +206,7 @@ class ProductData {
       whastappNum: updatedAt ?? this.whastappNum,
       accountType: updatedAt ?? this.accountType,
       details: details ?? this.details, // Include details in copyWith
+      active: active?? this.active
     );
   }
 }

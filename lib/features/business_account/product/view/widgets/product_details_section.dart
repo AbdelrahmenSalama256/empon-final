@@ -210,9 +210,9 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                   onPressed:() => setState(() {
                     cubit.addVariation();
                   }) ,
-                  icon: const Icon(Icons.add),
-                  label: const Text(
-                      "Add Variation"), //todo : 'add_variation'.tr(context)),
+                  icon: const Icon(Icons.add , color: Colors.white),
+                  label:  Text(
+                      'add_variation'.tr(context)), //todo : 'add_variation'.tr(context)),
                   style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.green),
                 ),
@@ -331,7 +331,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                     onPressed:() => setState(() {
                       cubit.addParoductDetail();
                     }),
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, color: Colors.white),
                     label: Text('add_section'.tr(context)),
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.green),

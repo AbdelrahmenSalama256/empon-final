@@ -1,3 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:embone/core/component/fav_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
@@ -7,10 +13,6 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/store/view/product_inventory_screen.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/cubit/search_state.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InteractionBar extends StatefulWidget {
   final bool isVendor;
@@ -48,9 +50,11 @@ class InteractionBar extends StatefulWidget {
   final TextStyle? likeCountTextStyle;
   final TextStyle? commentCountTextStyle;
   final EdgeInsets? padding;
+  int isActive;
+  final Function()? onActive;
 
-  const InteractionBar({
-    super.key,
+   InteractionBar({
+    Key? key,
     this.isVendor = false,
     this.onShare,
     this.onLike,
@@ -85,7 +89,9 @@ class InteractionBar extends StatefulWidget {
     this.likeCountTextStyle,
     this.commentCountTextStyle,
     this.padding,
-  });
+    required this.isActive,
+    this.onActive,
+  }) : super(key: key);
 
   @override
   State<InteractionBar> createState() => _InteractionBarState();
@@ -158,7 +164,9 @@ class _InteractionBarState extends State<InteractionBar>
             availableTextStyle: widget.availableTextStyle,
             likeCountTextStyle: widget.likeCountTextStyle,
             commentCountTextStyle: widget.commentCountTextStyle,
-            padding: widget.padding,
+            padding: widget.padding, 
+            isActive: widget.isActive,
+            onActive: widget.onActive,
           )
         : BlocBuilder<SearchCubit, SearchState>(
             builder: (context, state) {
@@ -216,9 +224,11 @@ class VendorInteractionView extends StatefulWidget {
   final TextStyle? likeCountTextStyle;
   final TextStyle? commentCountTextStyle;
   final EdgeInsets? padding;
+  int isActive;
+  final Function()? onActive;
 
-  const VendorInteractionView({
-    super.key,
+   VendorInteractionView({
+    Key? key,
     required this.likeCount,
     required this.commentCount,
     this.onEdit,
@@ -239,14 +249,16 @@ class VendorInteractionView extends StatefulWidget {
     this.likeCountTextStyle,
     this.commentCountTextStyle,
     this.padding,
-  });
+    required this.isActive,
+    this.onActive
+
+  }) : super(key: key);
 
   @override
   State<VendorInteractionView> createState() => _VendorInteractionViewState();
 }
 
 class _VendorInteractionViewState extends State<VendorInteractionView> {
-  bool _isAvailable = false;
 
   @override
   Widget build(BuildContext context) {
@@ -272,13 +284,16 @@ class _VendorInteractionViewState extends State<VendorInteractionView> {
                   ),
                   SizedBox(width: 8.w),
                   CupertinoSwitch(
-                    value: _isAvailable,
+                    value: widget.isActive == 1? true: false,
                     onChanged: (value) {
+                      if (widget.onActive != null) {
+                      widget.onActive!();
+                      }
                       setState(() {
-                        _isAvailable = value;
+                      value =widget.isActive == 1?true : false;
                       });
                       if (widget.onAvailabilityChanged != null) {
-                        widget.onAvailabilityChanged!(value);
+                      widget.onAvailabilityChanged!(value);
                       }
                     },
                     activeTrackColor: widget.toggleActiveColor,

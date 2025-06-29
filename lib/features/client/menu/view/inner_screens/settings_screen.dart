@@ -13,8 +13,11 @@ import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/acc
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/client/chat/view/massages_screen.dart';
+import 'package:embone/features/client/menu/data/repo/total_sales_repo.dart';
+import 'package:embone/features/client/menu/view/cubit/total_sales_cubit.dart';
 import 'package:embone/features/client/menu/view/inner_screens/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/privacy_policy_screen.dart';
+import 'package:embone/features/client/menu/view/inner_screens/total_sales_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/addresses_section.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/edit_profile.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/language_selector.dart';
@@ -108,26 +111,6 @@ class SettingsScreen extends StatelessWidget {
                                           isVendor: isVendor!,
                                           onTap: () {},
                                         ),
-                              SizedBox(height: 16.h),
-                              if (isVendor == true) ...[
-                                ApprovalItem(
-                                  title: 'ask_to_be_store'.tr(context),
-                                  status: ApprovalStatus.approved,
-                                  icon: Image.asset(
-                                    "assets/images/cycle-circle.png",
-                                    width: 24.w,
-                                    height: 24.h,
-                                  ),
-                                  onApprove: () => CustomPopup.show(
-                                    context: context,
-                                    type: PopupType.success,
-                                    title:
-                                        "request_sent_successfully".tr(context),
-                                    message: "request_under_review".tr(context),
-                                  ),
-                                )
-                              ],
-
                               // Edit Profile
                               SizedBox(height: isVendor != true ? 16.h : 30.h),
                               EditProfile(
@@ -250,7 +233,16 @@ class SettingsScreen extends StatelessWidget {
                                       MenuItem(
                                         icon: "assets/images/mony_bag.png",
                                         title: "total_sales".tr(context),
-                                        onTap: () {},
+                                        onTap: () {
+                                          navigateTo(
+                                            context,
+                                            BlocProvider(
+                                              create: (context) =>
+                                                  TotalSalesCubit(sl<TotalSalesRepo>()),
+                                              child:const SalesStatsPage(),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ],
                                     Divider(
