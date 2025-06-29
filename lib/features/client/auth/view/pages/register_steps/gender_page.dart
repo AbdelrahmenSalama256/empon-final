@@ -1,4 +1,5 @@
 import 'package:embone/core/component/custom_header.dart';
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_step_indicator.dart';
 import 'package:embone/core/constants/app_colors.dart';
@@ -67,12 +68,10 @@ class _GenderPageState extends State<GenderPage> {
                       selectedGender: cubit.gender != null
                           ? Gender.values.firstWhere(
                               (e) =>
-                                  (e.toString().split('.').last) == cubit.gender,
-                                  
-                                  
+                                  e.toString().split('.').last == cubit.gender,
                               orElse: () => Gender.male,
                             )
-                          :Gender.male,
+                          : null, // No default selection
                       onGenderChanged: (Gender value) {
                         cubit.setGender(value.toString().split('.').last);
                       },
@@ -83,12 +82,12 @@ class _GenderPageState extends State<GenderPage> {
                       isLoading: false,
                       onPressed: () {
                         if (cubit.gender == null) {
-                          cubit.gender= "male";
-                          PrintUtil.success(cubit.gender);
-
+                          showToast(context,
+                              message: 'please_select_gender'.tr(context),
+                              state: ToastStates.error);
+                          return;
                         }
-                        PrintUtil.success(cubit.gender);
-
+                        PrintUtil.success('Selected gender: ${cubit.gender}');
                         widget.onNextStep();
                       },
                       height: 50.h,

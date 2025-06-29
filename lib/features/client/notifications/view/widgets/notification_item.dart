@@ -35,7 +35,14 @@ class NotificationItemList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Icon
-          _buildNotificationIcon(),
+          Container(
+              width: 50.w,
+              height: 50.h,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                shape: BoxShape.circle,
+              ),
+              child: _buildNotificationIcon()),
           SizedBox(width: 12.w),
 
           // Content
@@ -93,7 +100,7 @@ class NotificationItemList extends StatelessWidget {
           child: Center(
             child: Icon(
               Icons.check_circle,
-              color: const Color(0xFF4CAF50),
+              color: AppColors.primary,
               size: 24.w,
             ),
           ),
@@ -105,7 +112,7 @@ class NotificationItemList extends StatelessWidget {
           child: Center(
             child: Icon(
               Icons.cancel,
-              color: const Color(0xFFF44336),
+              color: AppColors.red,
               size: 24.w,
             ),
           ),
@@ -117,7 +124,7 @@ class NotificationItemList extends StatelessWidget {
           child: Center(
             child: Icon(
               Icons.notifications_outlined,
-              color: const Color(0xFF2196F3),
+              color: AppColors.primary,
               size: 24.w,
             ),
           ),

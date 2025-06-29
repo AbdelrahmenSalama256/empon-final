@@ -814,5 +814,17 @@
   "cancel_registration_question": "Do you want to cancel your registration?",
   "cancel_data_loss_warning": "If you stop now, you will lose any progress you have made.",
   "yes_cancel_button": "Stop creating the account",
-  "no_cancel_button": "Follow up on account creation"
+  "no_cancel_button": "Follow up on account creation",
+  "no_transactions_data_found": "No Transactions Yet",
+  "material": "Material",
+  "no_details": "No Details Yet",
+  "whatsapp_order_intro": "I would like to order:",
+  "product_name": "Product Name",
+  "product_id": "Product ID",
+  "image_url": "Image URL",
+  "confirm_request": "Please confirm availability and price.",
+  "not_selected": "Not selected",
+  "no_image_available": "No image available",
+  "unknown_product": "Unknown Product",
+  "could_not_launch_whatsapp": "Could not launch WhatsApp"
 }

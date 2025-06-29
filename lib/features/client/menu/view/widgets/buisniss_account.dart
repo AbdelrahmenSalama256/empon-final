@@ -11,7 +11,7 @@ class BusinessAccountSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        navigateReplacWithNav(context, const CreateBusinessAccountTypePage());
+        navigateWithoutNav(context, const CreateBusinessAccountTypePage());
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

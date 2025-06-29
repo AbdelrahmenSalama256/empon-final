@@ -179,9 +179,9 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _handleRegistrationComplete() {
-    goToNextStep();
-  }
+  // void _handleRegistrationComplete() {
+  //   goToNextStep();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -189,9 +189,9 @@ class _RegisterPageState extends State<RegisterPage> {
       create: (_) => _cubit,
       child: BlocConsumer<RegisterCubit, RegisterState>(
         listener: (context, state) {
-          if (state is RegisterSuccess) {
-            _handleRegistrationComplete();
-          }
+          // if (state is RegisterSuccess) {
+          //   _handleRegistrationComplete();
+          // }
           if (state is RegisterError) {
             showToast(context,
                 message: state.message, state: ToastStates.error);

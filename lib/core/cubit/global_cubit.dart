@@ -7,6 +7,7 @@ import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/enums/gender_enum.dart';
 import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/notification/notification_handler.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
@@ -24,6 +25,15 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 class GlobalCubit extends Cubit<GlobalState> {
   GlobalCubit() : super(GlobalInitial()) {
     ();
+  }
+  late int? businessId; // Late initialization
+
+  void _initializeBusinessId() {
+    businessId = int.tryParse(
+            sl<CacheHelper>().getData(key: AppConstants.businessAccountId) ??
+                "") ??
+        (userId != null ? int.tryParse(userId!) : null);
+    // Use int.tryParse to safely handle potential null or invalid userId
   }
 
   User? user =
@@ -45,8 +55,10 @@ class GlobalCubit extends Cubit<GlobalState> {
     emit(UserTypeLoadedState());
     PrintUtil.warning(
         "User type is ${sl<CacheHelper>().getDataString(key: AppConstants.userType)}");
+    PrintUtil.warning("User FCMTOKEN is ${NotificationHandler.fcmToken}");
     getCurrentLocation();
     getUserProfile();
+    _initializeBusinessId();
   }
 
   final TextEditingController firstNameController = TextEditingController();
@@ -63,8 +75,11 @@ class GlobalCubit extends Cubit<GlobalState> {
 
   Gender selectedGender = Gender.male;
   XFile? profileImage;
+  //01092833551
+  //12345678
+  // erj-OQnnQMyA8Mck73hpEv:APA91bEbLhmNbXFSXDxSvyLfi9oG9yDw0P36JkLfN9IIQRjYRiraFGS5Aa9w1MEMsIOakrE1dh0j2Jw3qjerxvMkaZASZWqrxnYncBYfTVNItYM_Z5ewNt8
   bool isLoading = false;
-  int? businessId;
+  // int? businessId = 0;
   void initProfileData() {
     firstNameController.text = userName ?? '';
     lastNameController.text = userLastName ?? '';
@@ -179,7 +194,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   List<Account>? userAccount;
   // int? businessId =
   //     sl<CacheHelper>().getData(key: AppConstants.businessAccountId) ??
-  //         int.parse(userId);
+  //         int.parse(user?.id.toString());
   Future<void> getUserProfile({bool forceRefresh = false}) async {
     emit(ProfileLoading());
 
@@ -244,6 +259,7 @@ class GlobalCubit extends Cubit<GlobalState> {
     userCreatedAt = userData.createdAt;
     userAddresses = userData.addresses;
     userAccount = userData.account;
+    _initializeBusinessId();
     initProfileData();
   }
 
@@ -477,6 +493,18 @@ class GlobalCubit extends Cubit<GlobalState> {
         emit(AddressSuccess());
       },
     );
+  }
+
+  void setBusinessId(int? id) {
+    businessId = id;
+    if (id != null) {
+      sl<CacheHelper>().setData(AppConstants.businessAccountId, id.toString());
+      log('Business ID set to: $id');
+    } else {
+      sl<CacheHelper>().removeData(key: AppConstants.businessAccountId);
+      log('Business ID cleared');
+    }
+    emit(ProfileDataUpdated()); // Emit state to notify listeners
   }
 }
 

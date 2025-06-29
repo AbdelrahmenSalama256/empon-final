@@ -14,9 +14,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeStoreScreen extends StatelessWidget {
   final int? businessAccountId;
+  final String? businessAccountname;
   final bool? isVendor;
-  const HomeStoreScreen(
-      {super.key, this.businessAccountId, this.isVendor = false});
+  const HomeStoreScreen({
+    super.key,
+    this.businessAccountId,
+    this.businessAccountname,
+    this.isVendor = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +30,16 @@ class HomeStoreScreen extends StatelessWidget {
       body: BlocProvider(
         create: (context) => BusinessAccountCubit(sl<BusinessAccountRepo>())
           ..fetchBusinessAccount(
-              businessAccountId ?? context.read<GlobalCubit>().businessId ?? 0),
+            businessAccountId ?? context.read<GlobalCubit>().businessId ?? 0,
+          ),
         child: BlocListener<BusinessAccountCubit, BusinessAccountState>(
-          listener: (context, state) {
-            if (state is BusinessAccountError) {
-              showToast(context,
-                  message: state.message, state: ToastStates.error);
+          listener: (context, businessState) {
+            if (businessState is BusinessAccountError) {
+              showToast(
+                context,
+                message: businessState.message,
+                state: ToastStates.error,
+              );
             }
           },
           child: BlocBuilder<GlobalCubit, GlobalState>(
@@ -41,20 +50,24 @@ class HomeStoreScreen extends StatelessWidget {
               return BlocListener<GlobalCubit, GlobalState>(
                 listener: (context, globalState) {
                   if (globalState is FollowAccountSuccess) {
-                    accountCubit.fetchBusinessAccount(businessAccountId ??
-                        context.read<GlobalCubit>().businessId ??
-                        0);
-                    showToast(context,
-                        message: globalState.message.tr(context),
-                        state: ToastStates.success);
+                    accountCubit.fetchBusinessAccount(
+                      businessAccountId ?? globalCubit.businessId ?? 0,
+                    );
+                    showToast(
+                      context,
+                      message: globalState.message.tr(context),
+                      state: ToastStates.success,
+                    );
                   }
                   if (globalState is WishlistSuccess) {
-                    accountCubit.fetchBusinessAccount(businessAccountId ??
-                        context.read<GlobalCubit>().businessId ??
-                        0);
-                    showToast(context,
-                        message: globalState.message.tr(context),
-                        state: ToastStates.success);
+                    accountCubit.fetchBusinessAccount(
+                      businessAccountId ?? globalCubit.businessId ?? 0,
+                    );
+                    showToast(
+                      context,
+                      message: globalState.message.tr(context),
+                      state: ToastStates.success,
+                    );
                   }
                 },
                 child: SafeArea(
@@ -62,31 +75,42 @@ class HomeStoreScreen extends StatelessWidget {
                     children: [
                       HomeStoreHeader(
                         isVendor: isVendor ?? false,
-                        name: accountCubit.accountData?.data.name,
+                        name: businessAccountname,
                         onBackPressed: () {
-                          isVendor != true ? Navigator.pop(context) : null;
+                          if (isVendor != true) Navigator.pop(context);
                         },
                       ),
                       Expanded(
                         child: BlocBuilder<BusinessAccountCubit,
                             BusinessAccountState>(
-                          builder: (context, state) {
-                            return state is BusinessAccountLoading
-                                ? const Center(child: CustomLoadingIndicator())
-                                : accountCubit.accountData?.data == null
-                                    ? Center(
-                                        child: EmptyMessageWidget(
-                                          message: "no_data_found".tr(context),
+                          builder: (context, businessState) {
+                            return RefreshIndicator(
+                              onRefresh: () async {
+                                accountCubit.fetchBusinessAccount(
+                                  businessAccountId ??
+                                      globalCubit.businessId ??
+                                      0,
+                                );
+                              },
+                              child: businessState is BusinessAccountLoading
+                                  ? const Center(
+                                      child: CustomLoadingIndicator())
+                                  : accountCubit.accountData?.data == null
+                                      ? Center(
+                                          child: EmptyMessageWidget(
+                                            message:
+                                                "no_data_found".tr(context),
+                                          ),
+                                        )
+                                      : HomeStoreContent(
+                                          globalCubit: globalCubit,
+                                          businessAccountCubit: accountCubit,
+                                          isVendor: isVendor,
+                                          id: businessAccountId ??
+                                              globalCubit.businessId ??
+                                              0,
                                         ),
-                                      )
-                                    : HomeStoreContent(
-                                        globalCubit: globalCubit,
-                                        businessAccountCubit: accountCubit,
-                                        isVendor: isVendor,
-                                        id: businessAccountId ??
-                                            globalCubit.businessId ??
-                                            0,
-                                      );
+                            );
                           },
                         ),
                       ),

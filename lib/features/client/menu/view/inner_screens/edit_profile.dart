@@ -188,7 +188,7 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                                         message: 'please_verify_your_phone'
                                             .tr(context),
                                         state: ToastStates.error);
-                                    navigateTo(
+                                    navigateWithoutNav(
                                       context,
                                       BlocProvider(
                                         create: (context) =>
@@ -196,7 +196,7 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                                         child: OtpVerificationPage(
                                           phoneNumber:
                                               cubit.phoneController.text,
-                                              type: "verify-phone",
+                                          type: "verify-phone",
                                         ),
                                       ),
                                     );
@@ -235,7 +235,7 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                                         message: 'please_verify_your_email'
                                             .tr(context),
                                         state: ToastStates.error);
-                                    navigateTo(
+                                    navigateWithoutNav(
                                       context,
                                       BlocProvider(
                                         create: (context) =>

@@ -11,6 +11,7 @@ class ProductInfoSection extends StatefulWidget {
   final String productId;
   final String? type;
   final List<String> sizes;
+  final Function(String)? onSizeSelected; // Add this callback
 
   const ProductInfoSection({
     super.key,
@@ -21,6 +22,7 @@ class ProductInfoSection extends StatefulWidget {
     required this.sellerName,
     required this.productId,
     required this.sizes,
+    this.onSizeSelected, // Add this parameter
   });
 
   @override
@@ -121,7 +123,15 @@ class _ProductInfoSectionState extends State<ProductInfoSection> {
     final isSelected = selectedSize == size;
 
     return GestureDetector(
-      onTap: () => setState(() => selectedSize = size),
+      onTap: () {
+        setState(() {
+          selectedSize = size;
+        });
+        // Call the callback if provided
+        if (widget.onSizeSelected != null) {
+          widget.onSizeSelected!(size);
+        }
+      },
       child: Container(
         width: 40.w,
         height: 40.w,

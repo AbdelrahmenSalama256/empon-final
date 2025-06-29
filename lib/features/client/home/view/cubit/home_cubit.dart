@@ -12,13 +12,13 @@ class HomeCubit extends Cubit<HomeState> {
   int servicesLimit = 10;
   bool servicesHasMore = true;
   bool servicesIsLoadingMore = false;
+  List<ServiceModel> services = [];
 
   // Pagination for products
   int productsCurrentPage = 1;
   int productsLimit = 10;
   bool productsHasMore = true;
   bool productsIsLoadingMore = false;
-  List<ServiceModel> services = [];
   HomeModel? homeModel;
 
   HomeCubit(this.homeRepo) : super(HomeInitial());
@@ -29,7 +29,11 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> fetchHomeData({bool loadMore = false}) async {
-    if (productsIsLoadingMore) return;
+    if (isClosed) return;
+
+    if (loadMore && !productsHasMore) {
+      return;
+    }
 
     if (loadMore) {
       productsIsLoadingMore = true;
@@ -38,49 +42,65 @@ class HomeCubit extends Cubit<HomeState> {
     } else {
       emit(HomeLoading());
       productsCurrentPage = 1;
-      productsHasMore = true;
+      homeModel = null; // Reset homeModel for fresh load
     }
+
+    Print.info("Starting to fetch home data, page: $productsCurrentPage");
 
     final response = await homeRepo.getHomeData(
         page: productsCurrentPage, limit: productsLimit);
     response.fold(
-      (l) => emit(HomeError(message: l)),
+      (error) {
+        Print.error("Failed to fetch home data: $error");
+        emit(HomeError(message: error));
+      },
       (r) {
         if (loadMore) {
-          // Merge new products with existing ones
           homeModel?.accounts.addAll(r.accounts);
         } else {
           homeModel = r;
         }
-        productsHasMore = (r.accounts.length) == productsLimit;
+        productsHasMore = r.accounts.length == productsLimit;
         productsIsLoadingMore = false;
+        Print.info(
+            "Fetched ${homeModel?.accounts.length ?? 0} accounts successfully");
         emit(HomeSuccess());
       },
     );
   }
 
   Future<void> fetchServices({bool loadMore = false}) async {
-    if (servicesIsLoadingMore || !servicesHasMore) return;
+    if (isClosed) return;
+
+    if (loadMore && !servicesHasMore) {
+      return;
+    }
 
     if (loadMore) {
       servicesIsLoadingMore = true;
       emit(HomeLoadingMore());
       servicesCurrentPage++;
     } else {
+      emit(HomeLoading());
       servicesCurrentPage = 1;
       services = [];
-      servicesHasMore = true;
     }
+
+    Print.info("Starting to fetch services, page: $servicesCurrentPage");
 
     final response = await homeRepo.getServices(
         limit: servicesLimit, page: servicesCurrentPage);
 
     response.fold(
-      (l) => emit(HomeError(message: l)),
+      (error) {
+        Print.error("Failed to fetch services: $error");
+        emit(HomeError(message: error));
+      },
       (r) {
         services.addAll(r);
         servicesHasMore = r.length == servicesLimit;
         servicesIsLoadingMore = false;
+        Print.info("Fetched ${services.length} services successfully");
         emit(HomeSuccess());
       },
     );
@@ -127,8 +147,12 @@ class HomeCubit extends Cubit<HomeState> {
     emit(HomeActionTapped(productId: productId));
   }
 
-  // Method to load more services
+  // Load more methods
+  void loadMoreProducts() {
+    fetchHomeData(loadMore: true);
+  }
+
   void loadMoreServices() {
-    fetchServices();
+    fetchServices(loadMore: true);
   }
 }

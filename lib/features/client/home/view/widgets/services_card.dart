@@ -57,15 +57,20 @@ class ServiceCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
             child: CachedNetworkImage(
-              imageUrl: service.mainImage, // Handle null image
+              imageUrl: "${service.mainImage}", // Handle null image
               width: double.infinity,
               // height: 160.h,
               fit: BoxFit.cover,
 
-              placeholder: (context, url) => Container(color: Colors.grey[200]),
-              errorWidget: (context, url, error) => Container(
-                color: Colors.grey[200],
-                child: const Icon(Icons.broken_image, color: Colors.grey),
+              placeholder: (context, url) => Image.asset(
+                'assets/images/placholder.jpg',
+                fit: BoxFit.contain,
+              ),
+              errorWidget: (context, url, error) => Center(
+                child: Image.asset(
+                  'assets/images/placholder.jpg',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),
@@ -87,15 +92,19 @@ class ServiceCard extends StatelessWidget {
                 ),
                 child: ClipOval(
                   child: CachedNetworkImage(
-                    imageUrl: service.account.logo, // Handle null logo
+                    imageUrl: "${service.account?.logo}",
                     width: 45.w,
                     height: 45.w,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        CircleAvatar(backgroundColor: Colors.grey[300]),
-                    errorWidget: (context, url, error) => CircleAvatar(
-                      backgroundColor: Colors.grey[300],
-                      child: const Icon(Icons.business, color: Colors.white),
+                    placeholder: (context, url) => Image.asset(
+                      'assets/images/placholder.jpg',
+                      fit: BoxFit.contain,
+                    ),
+                    errorWidget: (context, url, error) => Center(
+                      child: Image.asset(
+                        'assets/images/placholder.jpg',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -117,7 +126,7 @@ class ServiceCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                service.category.name.toUpperCase(),
+                service.category?.name.toUpperCase() ?? "",
                 style: TextStyle(
                   fontSize: 11.sp,
                   fontWeight: FontWeight.bold,
@@ -127,7 +136,7 @@ class ServiceCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                service.account.name,
+                "${service.account?.name}",
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
@@ -138,7 +147,7 @@ class ServiceCard extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
           Text(
-            service.name,
+            service.name ?? "",
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -154,7 +163,7 @@ class ServiceCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  '${double.tryParse(service.price)?.toStringAsFixed(2) ?? service.price} ${"currency".tr(context)}',
+                  '${double.tryParse(service.price ?? "")?.toStringAsFixed(2) ?? service.price} ${"currency".tr(context)}',
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,

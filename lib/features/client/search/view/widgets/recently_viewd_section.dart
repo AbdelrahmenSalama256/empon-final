@@ -77,10 +77,9 @@ class RecentlyViewedSection extends StatelessWidget {
                       item.imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Center(
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 24.w,
-                          color: Colors.grey,
+                        child: Image.asset(
+                          'assets/images/placholder.jpg',
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),

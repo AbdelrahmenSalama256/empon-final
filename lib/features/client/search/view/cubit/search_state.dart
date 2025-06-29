@@ -122,3 +122,12 @@ class RelatedProductsError extends SearchState {
 
 // loading more stats
 class LoadingMoreProducts extends SearchState {}
+
+class VariationsLoading extends SearchState {}
+
+class VariationsSuccess extends SearchState {}
+
+class VariationsError extends SearchState {
+  final String message;
+  VariationsError({required this.message});
+}

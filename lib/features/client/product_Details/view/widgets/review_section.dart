@@ -68,6 +68,7 @@ class _ReviewsSectionState extends State<ReviewsSection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(height: 15.h),
         if (widget.isVendor != true)
           Divider(height: 1.h, color: Colors.grey.shade300),
         SectionTitle(

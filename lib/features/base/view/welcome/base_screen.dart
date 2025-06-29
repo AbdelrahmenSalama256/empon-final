@@ -214,11 +214,10 @@ class _BaseScreenState extends State<BaseScreen> {
           items: _navBarsItems(context, userType),
           padding: EdgeInsets.symmetric(vertical: 10.h),
           confineToSafeArea: true,
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
           handleAndroidBackButtonPress: true,
           resizeToAvoidBottomInset: false,
-          stateManagement: true,
           hideNavigationBarWhenKeyboardAppears: true,
           hideOnScrollSettings: const HideOnScrollSettings(
             hideNavBarOnScroll: true,
@@ -252,14 +251,12 @@ class _BaseScreenState extends State<BaseScreen> {
           onItemSelected: (index) {
             context.read<GlobalCubit>().changeBottomNavIndex(index);
             if (userType == UserType.store && index == 2) {
-              showAccountsBottomSheet(
-                  context); // Show bottom sheet instead of navigating
-              return; // Return early to prevent navigation
+              showAccountsBottomSheet(context);
+              return;
             }
             if (userType == UserType.business && index == 2) {
-              showAccountsBottomSheet(
-                  context); // Show bottom sheet instead of navigating
-              return; // Return early to prevent navigation
+              showAccountsBottomSheet(context);
+              return;
             }
           },
         );

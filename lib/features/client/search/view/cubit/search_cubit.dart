@@ -4,6 +4,7 @@ import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/model/service_model.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
+import 'package:embone/features/client/product_Details/data/model/product_variation.dart';
 import 'package:embone/features/client/product_Details/data/model/releated_model.dart';
 import 'package:embone/features/client/product_Details/data/repo/comment_repo.dart';
 import 'package:embone/features/client/search/data/model/search_history_model.dart';
@@ -19,6 +20,7 @@ import '../../../product_Details/data/model/product_model.dart';
 class SearchCubit extends Cubit<SearchState> {
   final SearchRepo searchRepo;
   ProductModel? productModel;
+  List<ProductVariation>? variations;
   ServiceModel? serviceModel;
   CommentResponseModel? commentResponse;
   TextEditingController commentController = TextEditingController();
@@ -730,6 +732,28 @@ class SearchCubit extends Cubit<SearchState> {
         homeModel = r;
         PrintUtil.debug("this is releated ============= $homeModel");
         emit(RelatedProductsLoaded());
+      },
+    );
+  }
+
+  Future<void> fetchVariations({
+    required int productId,
+    required int colorId,
+  }) async {
+    if (!isClosed) emit(VariationsLoading());
+    final response = await searchRepo.fetchVariations(
+      productId: productId,
+      colorId: colorId,
+    );
+    response.fold(
+      (l) {
+        Print.error(l);
+        if (!isClosed) emit(VariationsError(message: l));
+      },
+      (r) {
+        variations = r;
+        Print.success('Variations fetched successfully for color ID: $colorId');
+        if (!isClosed) emit(VariationsSuccess());
       },
     );
   }

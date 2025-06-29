@@ -142,11 +142,11 @@ class AppHeader extends StatelessWidget {
                   : Row(
                       children: [
                         const Spacer(
-                          flex: 3,
+                          flex: 1,
                         ),
-                        Expanded(flex: 8, child: titleContent),
+                        Center(child: titleContent),
                         const Spacer(
-                          flex: 4,
+                          flex: 2,
                         ),
                       ],
                     ),

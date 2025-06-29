@@ -1,13 +1,19 @@
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/features/client/product_Details/data/model/product_model.dart'; // Import ProductModel
 import 'package:embone/features/client/product_Details/view/widgets/section_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductDescriptionSection extends StatefulWidget {
   final String description;
+  final ProductData? productData;
 
-  const ProductDescriptionSection({super.key, required this.description});
+  const ProductDescriptionSection({
+    super.key,
+    required this.description,
+    this.productData,
+  });
 
   @override
   State<ProductDescriptionSection> createState() =>
@@ -19,7 +25,8 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
 
   @override
   Widget build(BuildContext context) {
-    // final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
+    final details =
+        widget.productData?.details ?? {}; // Default to empty map if null
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,28 +40,29 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
 
         SizedBox(height: 16.h),
 
-        // Shipment details
-        _buildInfoRow(
-          context,
-          label: 'condition'.tr(context),
-          value: 'condition_value'.tr(context),
-        ),
-
-        SizedBox(height: 16.h),
-
-        _buildInfoRow(
-          context,
-          label: 'durability'.tr(context),
-          value: 'durability_value'.tr(context),
-        ),
-
-        SizedBox(height: 16.h),
-
-        _buildInfoRow(
-          context,
-          label: 'quality'.tr(context),
-          value: 'quality_value'.tr(context),
-        ),
+        // Display details key-value pairs
+        if (details.isNotEmpty) ...[
+          ...details.entries.map((entry) {
+            return Column(
+              children: [
+                _buildInfoRow(
+                  context,
+                  label: entry.key.tr(context),
+                  value: entry.value,
+                ),
+                SizedBox(height: 16.h),
+              ],
+            );
+          }),
+        ] else ...[
+          _buildInfoRow(
+            context,
+            label: 'no_details'.tr(context), // Fallback message
+            value: '',
+            valueColor: Colors.grey.shade600,
+          ),
+          SizedBox(height: 16.h),
+        ],
 
         // Description (hidden by default, shown when "See More" is clicked)
         if (_isExpanded) ...[
@@ -117,15 +125,6 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // if (isRTL) ...[
-        //   labelWidget,
-        //   SizedBox(width: 16.w),
-        //   valueWidget,
-        // ] else ...[
-        //   valueWidget,
-        //   SizedBox(width: 16.w),
-        //   labelWidget,
-        // ],
         labelWidget,
         SizedBox(width: 16.w),
         valueWidget,

@@ -1,4 +1,5 @@
 import 'package:embone/core/component/custom_toast.dart';
+import 'package:embone/core/component/empty_massage.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -72,20 +73,29 @@ class WalletSummaryScreen extends StatelessWidget {
                                     currency: 'egp'.tr(context),
                                   ),
                                   SizedBox(height: 16.h),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'recent_transactions'.tr(context),
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w400,
-                                          color: const Color(0xff1E2644),
+                                  cubit.transactions.isEmpty
+                                      ? const Expanded(
+                                          child: Center(
+                                            child: EmptyMessageWidget(
+                                              message:
+                                                  "no_transactions_data_found",
+                                            ),
+                                          ),
+                                        )
+                                      : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'recent_transactions'.tr(context),
+                                              style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w400,
+                                                color: const Color(0xff1E2644),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
                                   SizedBox(height: 16.h),
                                   Expanded(
                                       child: ListView.builder(

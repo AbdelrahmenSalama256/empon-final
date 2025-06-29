@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class GenderSelectionCard extends StatelessWidget {
-  final Gender selectedGender;
+  final Gender? selectedGender; // Changed to nullable to allow no selection
   final Function(Gender) onGenderChanged;
 
   const GenderSelectionCard({
@@ -30,7 +30,8 @@ class GenderSelectionCard extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
         child: Column(
           children: Gender.values.map((gender) {
-            final isSelected = selectedGender == gender;
+            final isSelected =
+                selectedGender == gender; // Check if this gender is selected
             return Column(
               children: [
                 _buildGenderOption(

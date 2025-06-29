@@ -20,27 +20,24 @@ class ColorOptionsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section title
         SectionTitle(
-          title: 'product_info'.tr(context),
+          title: 'available_color'.tr(context), // تحسين العنوان ليكون أوضح
           titleSize: 16.sp,
           verticalPadding: 15.h,
         ),
         SizedBox(height: 15.h),
-
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Label
             Text(
-              'available_color'.tr(context),
+              'select_color'.tr(context),
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
                 color: const Color(0xff1E2644),
               ),
             ),
-
             SizedBox(width: 8.w),
             // Color options
             Expanded(
@@ -64,9 +61,20 @@ class ColorOptionsSection extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 color: availableColors[index],
                                 border: Border.all(
-                                  color: const Color(0xff36C4ED),
-                                  width: 1.w,
+                                  color: selectedColorIndex == index
+                                      ? const Color(0xff36C4ED)
+                                      : Colors.transparent,
+                                  width: 2.w,
                                 ),
+                                boxShadow: selectedColorIndex == index
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 4.r,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ]
+                                    : null,
                               ),
                             ),
                           );

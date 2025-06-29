@@ -35,6 +35,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../data/model/product_variation.dart'
+    as pv; // Use alias to resolve ambiguity
+
 class ProductDetailPage extends StatefulWidget {
   final bool isVendor;
   final int productId;
@@ -50,36 +53,112 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  int _selectedColorIndex = 1;
+  int _selectedColorIndex = 1; // Start with index 1 (adjust based on data)
+  String? _selectedSize; // Track selected size
   int _quantity = 1;
   bool _isLoadingMoreTriggered = false; // Prevents multiple load more calls
 
   void _onColorSelected(int index) {
     setState(() {
       _selectedColorIndex = index;
+      _selectedSize = null; // Reset size when color changes
+    });
+    final cubit = context.read<SearchCubit>();
+    final product = cubit.productModel?.data;
+    if (product?.variations != null &&
+        index >= 0 &&
+        index < product!.variations!.length) {
+      final colorId = product.variations![index].color?.id;
+      if (colorId != null) {
+        // Log selection (avoid print in production)
+        if (kDebugMode) {
+          debugPrint('Selected color index: $index, colorId: $colorId');
+        }
+        cubit.fetchVariations(productId: widget.productId, colorId: colorId);
+      }
+    }
+  }
+
+  void _onSizeSelected(String size) {
+    setState(() {
+      _selectedSize = size;
     });
   }
 
   void _onQuantityChanged(int newQuantity) {
     setState(() {
-      _quantity = newQuantity;
+      final maxStock = _getAvailableStock();
+      _quantity = newQuantity.clamp(1, maxStock > 0 ? maxStock : 1);
+      if (_quantity > maxStock && maxStock > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Maximum stock ($maxStock) reached')),
+        );
+      }
     });
+  }
+
+  int _getAvailableStock() {
+    final cubit = context.read<SearchCubit>();
+    final variation = cubit.variations?.firstWhere(
+      (v) => v.attributeValue.name == _selectedSize,
+      orElse: () =>
+          cubit.variations?.firstOrNull ??
+          pv.ProductVariation(
+              id: 0,
+              name: '',
+              price: '0',
+              stock: 0,
+              attributeValue: pv.AttributeValue(id: 0, name: ''),
+              color: pv.ColorDetail(id: 0, name: '', code: '')),
+    );
+    return variation?.stock ?? 0;
+  }
+
+  pv.ProductVariation _getSelectedVariation() {
+    // Ensure non-nullable return by providing a default
+    final cubit = context.read<SearchCubit>();
+    return cubit.variations?.firstWhere(
+          (v) => v.attributeValue.name == _selectedSize,
+          orElse: () =>
+              cubit.variations?.firstOrNull ??
+              pv.ProductVariation(
+                  id: 0,
+                  name: '',
+                  price: '0',
+                  stock: 0,
+                  attributeValue: pv.AttributeValue(id: 0, name: ''),
+                  color: pv.ColorDetail(id: 0, name: '', code: '')),
+        ) ??
+        pv.ProductVariation(
+            id: 0,
+            name: '',
+            price: '0',
+            stock: 0,
+            attributeValue: pv.AttributeValue(id: 0, name: ''),
+            color: pv.ColorDetail(id: 0, name: '', code: ''));
+  }
+
+  Color? _getSelectedColor() {
+    final cubit = context.read<SearchCubit>();
+    final product = cubit.productModel?.data;
+    if (product?.variations != null &&
+        _selectedColorIndex >= 0 &&
+        _selectedColorIndex < product!.variations!.length) {
+      return Color(int.parse(product
+              .variations![_selectedColorIndex].color?.code
+              ?.replaceFirst('#', '0xff') ??
+          '0xff000000'));
+    }
+    return null;
   }
 
   @override
   void initState() {
     super.initState();
-    context
-        .read<SearchCubit>()
-        .goToProduct(id: widget.productId)
-        .whenComplete(() {
-      context
-          .read<SearchCubit>()
-          .fetchReleatedProducts(id: widget.productId)
-          .whenComplete(() {
-        context
-            .read<SearchCubit>()
-            .fetchParentComments(productId: widget.productId);
+    final cubit = context.read<SearchCubit>();
+    cubit.goToProduct(id: widget.productId).whenComplete(() {
+      cubit.fetchReleatedProducts(id: widget.productId).whenComplete(() {
+        cubit.fetchParentComments(productId: widget.productId);
       });
     });
   }
@@ -138,12 +217,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     .toList() ??
                 [];
 
-            final sizes = product?.variations
-                    ?.map((v) => v.attributeValue?.name ?? '')
+            final sizes = cubit.variations
+                    ?.map((v) => v.attributeValue.name)
+                    .where((name) => name.isNotEmpty)
                     .toSet()
                     .toList() ??
                 [];
-
             return BlocBuilder<GlobalCubit, GlobalState>(
               builder: (context, state) {
                 return Column(
@@ -195,11 +274,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                             context,
                                             AddProductPage(
                                               businessAccountId: int.parse(
-                                                sl<CacheHelper>().getData(
-                                                  key: AppConstants
-                                                      .businessAccountId,
-                                                ),
-                                              ),
+                                                  sl<CacheHelper>().getData(
+                                                      key: AppConstants
+                                                          .businessAccountId)),
                                             ),
                                           );
                                         },
@@ -228,7 +305,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                   "Product";
                                           final deepLink =
                                               "myapp://product/$productId";
-
                                           Share.share(
                                             "Check out this product: $productName\n$deepLink",
                                             subject:
@@ -237,8 +313,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         },
                                         onLike: () {
                                           if (kDebugMode) {
-                                            print('onLike called');
-                                          } // Debug print
+                                            debugPrint('onLike called');
+                                          }
                                           context
                                               .read<GlobalCubit>()
                                               .addProductToWishlist(cubit
@@ -259,10 +335,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         },
                                         onThumbsUp: () {
                                           cubit.toggleProductLike(
-                                            productId:
-                                                cubit.productModel?.data?.id ??
-                                                    0,
-                                          );
+                                              productId: cubit
+                                                      .productModel?.data?.id ??
+                                                  0);
                                         },
                                       ),
                                       SizedBox(height: 15.h),
@@ -284,40 +359,78 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                               onColorSelected: _onColorSelected,
                                             ),
                                       SizedBox(height: 15.h),
-                                      PriceDisplay(
-                                        currency: "currency".tr(context),
-                                        currentPrice: double.tryParse(
-                                                product?.price ?? '0') ??
-                                            0.0,
-                                        originalPrice: product?.isSale == 1.0
-                                            ? (double.tryParse(product?.price ??
-                                                        '0') ??
-                                                    0.0) *
-                                                1.5
-                                            : null,
-                                      ),
+                                      if (searchState is VariationsLoading)
+                                        Column(
+                                          children: [
+                                            SizedBox(height: 15.h),
+                                            const Center(
+                                                child:
+                                                    LinearProgressIndicator()),
+                                          ],
+                                        )
+                                      else
+                                        PriceDisplay(
+                                          currency: "currency".tr(context),
+                                          currentPrice: double.tryParse(
+                                                  _getSelectedVariation()
+                                                      .price) ??
+                                              0.0,
+                                          originalPrice: product?.isSale == 1
+                                              ? (double.tryParse(
+                                                          product?.price ??
+                                                              '0') ??
+                                                      0.0) *
+                                                  1.5
+                                              : null,
+                                        ),
                                       SizedBox(height: 15.h),
-                                      ProductInfoSection(
-                                        name:
-                                            product?.name ?? 'Unknown Product',
-                                        price: double.tryParse(
-                                                product?.price ?? '0') ??
-                                            0.0,
-                                        currency: "currency".tr(context),
-                                        sellerName: product?.vendorName ??
-                                            'Unknown Seller',
-                                        productId: product?.code ?? 'N/A',
-                                        sizes: sizes,
-                                      ),
+                                      if (searchState is VariationsLoading)
+                                        Column(
+                                          children: [
+                                            SizedBox(height: 15.h),
+                                            const Center(
+                                                child:
+                                                    LinearProgressIndicator()),
+                                          ],
+                                        )
+                                      else
+                                        ProductInfoSection(
+                                          name: product?.name ??
+                                              'Unknown Product',
+                                          price: double.tryParse(
+                                                  _getSelectedVariation()
+                                                      .price) ??
+                                              0.0,
+                                          currency: "currency".tr(context),
+                                          sellerName: product?.vendorName ??
+                                              'Unknown Seller',
+                                          productId: product?.code ?? 'N/A',
+                                          type: product?.accountType,
+                                          sizes: sizes,
+                                          onSizeSelected: (selectedSize) {
+                                            _onSizeSelected(selectedSize);
+                                          },
+                                        ),
                                       SizedBox(height: 10.h),
                                       product?.id == null
                                           ? const SizedBox.shrink()
-                                          : QuantitySelectorSection(
-                                              isVendor: widget.isVendor,
-                                              quantity: _quantity,
-                                              onQuantityChanged:
-                                                  _onQuantityChanged,
-                                            ),
+                                          : (searchState is VariationsLoading)
+                                              ? Column(
+                                                  children: [
+                                                    SizedBox(height: 15.h),
+                                                    const Center(
+                                                        child:
+                                                            LinearProgressIndicator()),
+                                                  ],
+                                                )
+                                              : QuantitySelectorSection(
+                                                  isVendor: widget.isVendor,
+                                                  quantity: _quantity,
+                                                  maxQuantity:
+                                                      _getAvailableStock(),
+                                                  onQuantityChanged:
+                                                      _onQuantityChanged,
+                                                ),
                                       SizedBox(height: 15.h),
                                       ReviewsSection(
                                         key: reviewSectionKey,
@@ -343,16 +456,32 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         BlocProvider(
                                           create: (context) =>
                                               CartCubit(sl<CartRepo>()),
-                                          child: AddToCartButton(
-                                            productId: widget.productId,
-                                            quantity: _quantity,
-                                            variationId: 6,
-                                          ),
+                                          child: (searchState
+                                                  is VariationsLoading)
+                                              ? const Center(
+                                                  child:
+                                                      CustomLoadingIndicator())
+                                              : AddToCartButton(
+                                                  productId: widget.productId,
+                                                  imageUrl: product?.image,
+                                                  productName: product?.name,
+                                                  quantity: _quantity,
+                                                  phone: product?.whastappNum,
+                                                  variationId:
+                                                      _getSelectedVariation()
+                                                          .id,
+                                                  type:
+                                                      "${product?.accountType}",
+                                                  selectedSize: _selectedSize,
+                                                  selectedColor:
+                                                      _getSelectedColor(),
+                                                ),
                                         ),
                                       SizedBox(height: 15.h),
                                       ProductDescriptionSection(
                                         description: product?.description ??
                                             'No description available.',
+                                        productData: product,
                                       ),
                                       SizedBox(height: 15.h),
                                       if (!widget.isVendor)
@@ -382,7 +511,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                               CustomLoadingIndicator()),
                                                     );
                                                   }
-
                                                   if (state
                                                       is RelatedProductsError) {
                                                     return SizedBox(
@@ -395,10 +523,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                             Text(
                                                               state.message,
                                                               style: TextStyle(
-                                                                fontSize: 16.sp,
-                                                                color:
-                                                                    Colors.red,
-                                                              ),
+                                                                  fontSize:
+                                                                      16.sp,
+                                                                  color: Colors
+                                                                      .red),
                                                             ),
                                                             TextButton(
                                                               onPressed: () => cubit
@@ -414,7 +542,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                       ),
                                                     );
                                                   }
-
                                                   if (relatedProducts.isEmpty) {
                                                     return SizedBox(
                                                       height: 350.h,
@@ -430,7 +557,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                       ),
                                                     );
                                                   }
-
                                                   return SizedBox(
                                                     height: 350.h,
                                                     child: NotificationListener<
@@ -484,49 +610,47 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                                       .length &&
                                                               productsHasMore) {
                                                             return SizedBox(
-                                                              width: 100.w,
-                                                              child: const Center(
-                                                                  child:
-                                                                      CustomLoadingIndicator()),
-                                                            );
+                                                                width: 100.w,
+                                                                child: const Center(
+                                                                    child:
+                                                                        CustomLoadingIndicator()));
                                                           }
-
                                                           final product =
                                                               relatedProducts[
                                                                   index];
                                                           return ProductCard(
                                                             imageUrl:
-                                                                product.image,
-                                                            title: product.name,
+                                                                "${product.image}",
+                                                            title:
+                                                                "${product.name}",
                                                             price: double.parse(
-                                                                product.price),
+                                                                "${product.price}"),
                                                             badge: '',
                                                             actionText:
                                                                 'shop_now'.tr(
                                                                     context),
-                                                            isFavorite:
-                                                                product.isLiked,
+                                                            isFavorite: product
+                                                                    .isFavourited ??
+                                                                false,
                                                             onFavoriteToggle:
                                                                 () {
-                                                              // Implement favorite toggle logic
                                                               context
                                                                   .read<
                                                                       GlobalCubit>()
                                                                   .addProductToWishlist(
-                                                                      product
-                                                                          .id);
+                                                                      product.id ??
+                                                                          0);
                                                             },
                                                             onActionTap: () {},
                                                             onCardTap: () {
                                                               navigateTo(
                                                                 context,
                                                                 ProductDetailPage(
-                                                                  isVendor: widget
-                                                                      .isVendor,
-                                                                  productId:
-                                                                      product
-                                                                          .id,
-                                                                ),
+                                                                    isVendor: widget
+                                                                        .isVendor,
+                                                                    productId:
+                                                                        product.id ??
+                                                                            0),
                                                               );
                                                             },
                                                           );

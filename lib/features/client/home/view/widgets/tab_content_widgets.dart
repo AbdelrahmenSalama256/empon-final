@@ -102,11 +102,11 @@ class ServiceTabContent extends StatelessWidget {
               return ServiceCard(
                 service: service,
                 onBrandTap: () {
-                  PrintUtil.debug("Account tapped: ${service.account.name}");
+                  PrintUtil.debug("Account tapped: ${service.account?.name}");
                   navigateTo(
                       context,
                       HomeStoreScreen(
-                        businessAccountId: service.account.id,
+                        businessAccountId: service.account?.id,
                         isVendor: false,
                       ));
                 },
@@ -119,7 +119,7 @@ class ServiceTabContent extends StatelessWidget {
                         create: (context) => SearchCubit(sl<SearchRepo>()),
                         child: ServiceDetailPage(
                           isVendor: false,
-                          serviceId: service.id,
+                          serviceId: service.id ?? 0,
                         ),
                       ));
                 },

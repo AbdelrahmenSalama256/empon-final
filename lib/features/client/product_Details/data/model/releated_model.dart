@@ -21,41 +21,43 @@ class RelatedProductsModel {
 }
 
 class Product {
-  final int id;
-  final String name;
-  final String description;
-  final String code;
-  final String price;
-  final String image;
-  final List<dynamic> images;
-  final bool isLiked;
-  final int likes;
-  final List<Variation> variations;
+  final int? id;
+  final String? name;
+  final String? description;
+  final String? code;
+  final String? price;
+  final String? image;
+  final List<dynamic>? images;
+  final bool? isLiked;
+  final bool? isFavourited;
+  final int? likes;
+  final List<Variation>? variations;
 
-  const Product({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.code,
-    required this.price,
-    required this.image,
-    required this.images,
-    required this.isLiked,
-    required this.likes,
-    required this.variations,
-  });
+  Product(
+      {this.id,
+      this.name,
+      this.description,
+      this.code,
+      this.price,
+      this.image,
+      this.images,
+      this.isLiked,
+      this.likes,
+      this.variations,
+      this.isFavourited});
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      description: json['description'] ?? '',
-      code: json['code'] ?? '',
-      price: json['price'] ?? '0',
-      image: json['image'] ?? '',
-      images: json['images'] ?? [],
-      isLiked: json['is_liked'] ?? false,
-      likes: json['likes'] ?? 0,
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      code: json['code'] as String?,
+      isFavourited: json['is_favourited'] as bool?,
+      price: json['price'] as String?,
+      image: json['image'] as String?,
+      images: json['images'] as List<dynamic>? ?? [],
+      isLiked: json['is_liked'] as bool?,
+      likes: json['likes'] as int?,
       variations: (json['variations'] as List<dynamic>? ?? [])
           .map((v) => Variation.fromJson(v))
           .toList(),

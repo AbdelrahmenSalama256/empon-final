@@ -27,42 +27,51 @@ class ProductDetails extends StatelessWidget {
             style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
           ),
           SizedBox(height: 8.h),
-          Row(
-            children: [
-              Container(
-                width: 20.w,
-                height: 20.h,
-                decoration: const BoxDecoration(
-                  color: Colors.black,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Image.network(
-                    item['brandLogo'] ?? '',
-                    width: 24.w,
-                    height: 24.h,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 100.w,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.2),
-                        ),
-                        child: const Icon(CupertinoIcons.photo_camera_solid),
-                      );
-                    },
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 20.w,
+                  height: 20.h,
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: ClipRRect(
+                      child: Image.network(
+                        item['brandLogo'] ?? '',
+                        width: 24.w,
+                        height: 24.h,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 100.w,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.2),
+                            ),
+                            child:
+                                const Icon(CupertinoIcons.photo_camera_solid),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: 6.w),
-              Text(
-                item['brandKey'] ?? '',
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  color: const Color(0xff080808),
-                  fontWeight: FontWeight.w400,
+                SizedBox(width: 6.w),
+                Expanded(
+                  child: Text(
+                    item['brandKey'] ?? '',
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: const Color(0xff080808),
+                      fontWeight: FontWeight.w400,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

@@ -45,10 +45,9 @@ class OrderItem extends StatelessWidget {
                 width: 119.w,
                 height: 95.h,
                 color: Colors.grey[200],
-                child: Icon(
-                  Icons.broken_image,
-                  color: Colors.grey[400],
-                  size: 40.w,
+                child: Image.asset(
+                  'assets/images/placholder.jpg',
+                  fit: BoxFit.contain,
                 ),
               ),
             ),

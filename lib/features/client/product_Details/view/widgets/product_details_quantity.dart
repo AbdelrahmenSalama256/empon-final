@@ -7,12 +7,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class QuantitySelectorSection extends StatelessWidget {
   final bool? isVendor;
   final int quantity;
+  final int maxQuantity; // Added to limit quantity based on stock
   final Function(int) onQuantityChanged;
 
   const QuantitySelectorSection({
     super.key,
     this.isVendor,
     required this.quantity,
+    required this.maxQuantity,
     required this.onQuantityChanged,
   });
 
@@ -30,11 +32,9 @@ class QuantitySelectorSection extends StatelessWidget {
                   color: const Color(0xff1E2644),
                 ),
               ),
-              SizedBox(
-                width: 10.w,
-              ),
+              SizedBox(width: 10.w),
               Text(
-                '33',
+                '33', // Replace with dynamic value if available
                 style: TextStyle(
                   fontSize: 25.sp,
                   fontWeight: FontWeight.w700,
@@ -46,7 +46,6 @@ class QuantitySelectorSection extends StatelessWidget {
         : Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              // Quantity label (end side)
               Text(
                 'quantity'.tr(context),
                 style: TextStyle(
@@ -55,9 +54,7 @@ class QuantitySelectorSection extends StatelessWidget {
                   color: const Color(0xff1E2644),
                 ),
               ),
-
               SizedBox(width: 20.w),
-              // Quantity controls (start side)
               Container(
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
@@ -66,7 +63,6 @@ class QuantitySelectorSection extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    // Decrease button
                     _QuantityButton(
                       icon: Icons.remove,
                       onPressed: () {
@@ -75,8 +71,6 @@ class QuantitySelectorSection extends StatelessWidget {
                         }
                       },
                     ),
-
-                    // Quantity display
                     Container(
                       width: 40.w,
                       alignment: Alignment.center,
@@ -93,13 +87,23 @@ class QuantitySelectorSection extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    // Increase button
                     _QuantityButton(
                       icon: Icons.add,
                       onPressed: () {
-                        PrintUtil.info('Increase quantity: $quantity');
-                        onQuantityChanged(quantity + 1);
+                        if (quantity < maxQuantity) {
+                          PrintUtil.info('Increase quantity: $quantity');
+                          onQuantityChanged(quantity + 1);
+                        } else {
+                          PrintUtil.info(
+                              'Maximum quantity ($maxQuantity) reached');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Maximum stock ($maxQuantity) reached'),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ],

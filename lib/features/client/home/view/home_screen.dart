@@ -13,7 +13,6 @@ import 'package:embone/features/client/chat/view/massages_screen.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
 import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/home/view/cubit/home_state.dart';
-import 'package:embone/features/client/home/view/widgets/tab_content_widgets.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/search_page.dart';
@@ -21,6 +20,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'widgets/product_tab_content.dart';
+import 'widgets/services_tab_content.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -75,7 +77,7 @@ class HomeScreen extends StatelessWidget {
               tabs.add(
                 Tab(
                   child: Text(
-                    "service".tr(context),
+                    "services".tr(context),
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,

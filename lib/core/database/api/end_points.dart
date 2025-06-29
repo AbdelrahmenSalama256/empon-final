@@ -63,8 +63,9 @@ class EndPoints {
   static const String productLike = '${baseUrl}product/ilke';
   static const String serviceLike = '${baseUrl}serviceslike';
   static const String productCategories = '${baseUrl}category';
-  static const String requestBusinessToStore = '${baseUrl}business-account/to-store/';
-
+  static const String variations = '${baseUrl}product';
+  static const String requestBusinessToStore =
+      '${baseUrl}business-account/to-store/';
 
   // ! Notifications
   static const String notifications = '${baseUrl}notifications';

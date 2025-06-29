@@ -472,10 +472,9 @@ class _AnimatedProductCardState extends State<ProductCard>
       width: double.infinity,
       color: Colors.grey.shade200,
       child: Center(
-        child: Icon(
-          Icons.image_not_supported_outlined,
-          size: 40.w,
-          color: Colors.grey,
+        child: Image.asset(
+          'assets/images/placholder.jpg',
+          fit: BoxFit.contain,
         ),
       ),
     );

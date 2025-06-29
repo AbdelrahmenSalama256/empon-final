@@ -842,5 +842,17 @@
   "cancel_registration_question": "هل تريد إلغاء تسجيلك؟",
   "cancel_data_loss_warning": "في حالة الإيقاف الآن ستفقد أي تقدم حققته",
   "yes_cancel_button": "إيقاف انشاء الحساب",
-  "no_cancel_button": "متابعة انشاء الحساب"
+  "no_cancel_button": "متابعة انشاء الحساب",
+  "no_transactions_data_found": "لا توجد معاملات حتي الأن",
+  "material": "مادة",
+  "no_details": "لا توجد تفاصيل بعد",
+  "whatsapp_order_intro": "أود طلب:",
+  "product_name": "اسم المنتج",
+  "product_id": "معرف المنتج",
+  "image_url": "رابط الصورة",
+  "confirm_request": "يرجى تأكيد التوفر والسعر.",
+  "not_selected": "غير محدد",
+  "no_image_available": "لا توجد صورة متاحة",
+  "unknown_product": "منتج غير معروف",
+  "could_not_launch_whatsapp": "تعذر فتح واتساب"
 }

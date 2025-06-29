@@ -5,6 +5,7 @@ import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/core/utils/validator.dart';
+import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
 import 'package:embone/features/client/auth/data/repo/login_repo.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
@@ -15,7 +16,6 @@ import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart
 import 'package:embone/features/client/auth/view/pages/register_steps/otp_verification_page.dart';
 import 'package:embone/features/client/auth/view/pages/searching_account.dart';
 import 'package:embone/features/client/auth/view/pages/verification_screen.dart';
-import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:embone/features/client/auth/view/pages/welcom_screen.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
@@ -107,14 +107,16 @@ class _LoginPageState extends State<LoginPage>
                   context,
                   BlocProvider(
                     create: (context) => RegisterCubit(sl<RegisterRepo>()),
-                    child: VerificationPage(onNextStep: () {  
-                      navigateAndFinish(context, const BaseScreen());
-                    }, onPreviousStep: () {
-                      Navigator.pop(context);
+                    child: VerificationPage(
+                      onNextStep: () {
+                        navigateAndFinish(context, const BaseScreen());
                       },
-                        // phone:
-                        // c.valueController.text,
-                        ),
+                      onPreviousStep: () {
+                        Navigator.pop(context);
+                      },
+                      // phone:
+                      // c.valueController.text,
+                    ),
                   ),
                 );
               }
@@ -130,7 +132,6 @@ class _LoginPageState extends State<LoginPage>
         },
         builder: (context, state) {
           final cubit = context.read<LoginCubit>();
-          final isLoading = state is LoginSuccess;
 
           return Scaffold(
             backgroundColor: Colors.white,
@@ -199,7 +200,7 @@ class _LoginPageState extends State<LoginPage>
                           SizedBox(height: 24.h),
                           AppButton(
                             text: 'sign_in'.tr(context),
-                            isLoading: isLoading,
+                            isLoading: state is LoginLoading,
                             onPressed: () {
                               cubit.login();
                             },

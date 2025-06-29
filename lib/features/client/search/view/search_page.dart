@@ -7,6 +7,7 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
+import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:embone/features/client/search/view/widgets/recent_search_section.dart';
 import 'package:embone/features/client/search/view/widgets/recently_viewd_section.dart';
@@ -15,7 +16,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -132,7 +132,15 @@ class _SearchPageState extends State<SearchPage> {
                                   ? SearchResultsSection(
                                       products: searchModel.products,
                                       onGoingTap: (id) {
-                                        cubit.goToProduct(id: id);
+                                        navigateTo(
+                                            context,
+                                            BlocProvider(
+                                              create: (context) =>
+                                                  SearchCubit(sl<SearchRepo>()),
+                                              child: ProductDetailPage(
+                                                productId: id,
+                                              ),
+                                            ));
                                       },
                                     )
                                   : Column(

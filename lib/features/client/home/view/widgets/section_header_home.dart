@@ -132,10 +132,11 @@ class SectionHeader extends StatelessWidget {
       width: 48.w,
       height: 48.w,
       color: Colors.grey.shade200,
-      child: Icon(
-        Icons.image_not_supported_outlined,
-        size: 20.sp,
-        color: Colors.grey,
+      child: Center(
+        child: Image.asset(
+          'assets/images/placholder.jpg',
+          fit: BoxFit.contain,
+        ),
       ),
     );
   }

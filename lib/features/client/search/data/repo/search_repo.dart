@@ -9,6 +9,7 @@ import 'package:embone/features/client/search/data/model/search_model.dart';
 import 'package:embone/features/client/search/data/model/search_recent_view.dart';
 
 import '../../../product_Details/data/model/product_model.dart';
+import '../../../product_Details/data/model/product_variation.dart';
 
 class SearchRepo {
   final ApiConsumer api;
@@ -168,6 +169,28 @@ class SearchRepo {
       return Left(e.errorModel.detail);
     } catch (e) {
       return Left('Failed to fetch related products: $e');
+    }
+  }
+
+  Future<Either<String, List<ProductVariation>>> fetchVariations({
+    required final int productId,
+    required final int colorId,
+  }) async {
+    try {
+      final response = await api.get(
+        '${EndPoints.variations}/$productId/variations/$colorId',
+      );
+      final data = response.data['data'] as Map<String, dynamic>;
+      final variations = (data['variations'] as List)
+          .map((json) => ProductVariation.fromJson(json))
+          .toList();
+      return Right(variations);
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left('Failed to fetch variations: $e');
     }
   }
 }

@@ -55,9 +55,11 @@ class CartItemWidget extends StatelessWidget {
                   width: 119.w,
                   height: 95.h,
                   color: Colors.grey.shade300,
-                  child: Icon(
-                    Icons.image_not_supported_outlined,
-                    color: Colors.grey.shade600,
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/placholder.jpg',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 );
               },

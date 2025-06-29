@@ -58,13 +58,13 @@ void navigateAndFinish(context, Widget) => Navigator.pushAndRemoveUntil(
         return false;
       },
     );
+
 // Navigation without bottom nav bar (regular navigation)
-void navigateWithoutNav(BuildContext context, Widget screen) {
+void navigateWithoutNav(BuildContext context, Widget screen,
+    {String? receiverId, String? name, String? online, String? image}) {
   Navigator.push(
     context,
     PageRouteBuilder(
-      transitionDuration: const Duration(milliseconds: 1000),
-      reverseTransitionDuration: const Duration(milliseconds: 700),
       pageBuilder: (context, animation, secondaryAnimation) => screen,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
@@ -72,6 +72,7 @@ void navigateWithoutNav(BuildContext context, Widget screen) {
           child: child,
         );
       },
+      transitionDuration: const Duration(milliseconds: 300),
     ),
   );
 }

@@ -34,7 +34,20 @@ class AccountsBottomSheetContent extends StatefulWidget {
 
 class _AccountsBottomSheetContentState
     extends State<AccountsBottomSheetContent> {
-  int _selectedAccountIndex = -1; // -1 means personal account is selected
+  late int _selectedAccountIndex; // Initialize dynamically
+
+  @override
+  void initState() {
+    super.initState();
+    final cubit = context.read<GlobalCubit>();
+    // Initialize _selectedAccountIndex based on current userType and businessId
+    _selectedAccountIndex = cubit.userType == UserType.business &&
+            cubit.businessId != null &&
+            cubit.userAccount != null
+        ? cubit.userAccount!
+            .indexWhere((account) => account.id == cubit.businessId)
+        : -1; // -1 for personal account
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +76,11 @@ class _AccountsBottomSheetContentState
             GestureDetector(
               onTap: () {
                 cubit.setUserType(UserType.client);
+                cubit.setBusinessId(
+                    null); // Clear businessId when switching to client
+                setState(() {
+                  _selectedAccountIndex = -1;
+                });
                 Navigator.pop(context);
               },
               child: Row(
@@ -139,16 +157,16 @@ class _AccountsBottomSheetContentState
                     : AppColors.red,
                 isSelected: _selectedAccountIndex == index,
                 onTap: () {
-                  setState(() {
-                    _selectedAccountIndex = index;
-                  });
                   if (accounts[index].status == true) {
+                    setState(() {
+                      _selectedAccountIndex = index;
+                    });
                     cubit.setUserType(UserType.business);
-
+                    cubit
+                        .setBusinessId(accounts[index].id); // Update businessId
                     sl<CacheHelper>().setData(AppConstants.businessAccountId,
                         accounts[index].id.toString());
-
-                    log(index.toString());
+                    log('Selected businessId: ${accounts[index].id}');
                     setState(() {
                       Navigator.pop(context);
                     });
@@ -161,13 +179,16 @@ class _AccountsBottomSheetContentState
                       primaryButtonText: 'ok'.tr(context),
                       onPrimaryButtonPressed: () {
                         cubit.setUserType(UserType.client);
+                        cubit.setBusinessId(null); // Clear businessId
+                        setState(() {
+                          _selectedAccountIndex = -1;
+                        });
                         Navigator.of(context, rootNavigator: true)
                             .pop(); // Close the popup
                         Navigator.pop(context);
                       },
                     );
                   }
-                  // Close the bottom sheet
                 },
               ),
             ),

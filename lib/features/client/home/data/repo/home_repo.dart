@@ -15,8 +15,14 @@ class HomeRepo {
   Future<Either<String, HomeModel>> getHomeData(
       {int page = 1, int limit = 10}) async {
     try {
-      final response =
-          await api.get('${EndPoints.home}?page=$page&limit=$limit');
+      Map<String, dynamic> queryParameters = {
+        'page': page,
+        'limit': limit,
+      };
+      final response = await api.get(
+        EndPoints.home,
+        queryParameters: queryParameters,
+      );
       return Right(HomeModel.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
@@ -30,8 +36,14 @@ class HomeRepo {
   Future<Either<String, List<ServiceModel>>> getServices(
       {int limit = 10, int page = 1}) async {
     try {
-      final response =
-          await api.get('${EndPoints.homeService}?limit=$limit&page=$page');
+      Map<String, dynamic> queryParameters = {
+        'limit': limit,
+        'page': page,
+      };
+      final response = await api.get(
+        EndPoints.homeService,
+        queryParameters: queryParameters,
+      );
       return Right(serviceModelFromJson(jsonEncode(response.data)));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);

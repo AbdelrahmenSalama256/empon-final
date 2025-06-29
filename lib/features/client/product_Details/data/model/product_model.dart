@@ -47,6 +47,9 @@ class ProductData {
   final String? shippingStartDate;
   final String? shippingEndDate;
   final String? shippingPrice;
+  final String? accountType;
+  final String? whastappNum;
+  final Map<String, String>? details;
 
   final String? createdAt;
   final String? updatedAt;
@@ -57,6 +60,8 @@ class ProductData {
     this.description,
     this.isLiked = false,
     this.code,
+    this.accountType,
+    this.whastappNum,
     this.category,
     this.isLoved = false,
     this.price,
@@ -72,16 +77,34 @@ class ProductData {
     this.likes,
     this.image,
     this.images,
+    this.details, // Added details parameter
     this.createdAt,
     this.updatedAt,
   });
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
+    // Parse details as a map from the list of key-value pairs
+    Map<String, String>? detailsMap;
+    if (json['details'] != null && json['details'] is List) {
+      detailsMap = {};
+      for (var item in json['details']) {
+        if (item is Map<String, dynamic>) {
+          item.forEach((key, value) {
+            if (value is String) {
+              detailsMap![key] = value;
+            }
+          });
+        }
+      }
+    }
+
     return ProductData(
       id: json['id'],
       name: json['name'],
       description: json['description'],
       code: json['code'],
+      accountType: json['account_type'],
+      whastappNum: json['whatsapp_number'],
       category: json['category'],
       price: json['price'],
       vendorId: json['vendor_id'],
@@ -104,6 +127,7 @@ class ProductData {
       shippingStartDate: json['shipping_start_date'],
       shippingEndDate: json['shipping_end_date'],
       shippingPrice: json['shipping_price'],
+      details: detailsMap, // Assign parsed details
     );
   }
 
@@ -127,6 +151,9 @@ class ProductData {
       'images': images?.map((i) => i.toJson()).toList(),
       'created_at': createdAt,
       'updated_at': updatedAt,
+      'account_type': accountType,
+      'whatsapp_number': whastappNum,
+      'details': details, // Include details in toJson
     };
   }
 
@@ -149,6 +176,9 @@ class ProductData {
     List<ImageData>? images,
     String? createdAt,
     String? updatedAt,
+    String? whastappNum,
+    String? accountType,
+    Map<String, String>? details, // Added details in copyWith
   }) {
     return ProductData(
       id: id ?? this.id,
@@ -169,11 +199,15 @@ class ProductData {
       images: images ?? this.images,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      whastappNum: updatedAt ?? this.whastappNum,
+      accountType: updatedAt ?? this.accountType,
+      details: details ?? this.details, // Include details in copyWith
     );
   }
 }
 
 class Variation {
+  final int? id; // Added id field
   final String? name;
   final int? stock;
   final String? price;
@@ -181,6 +215,7 @@ class Variation {
   final ColorData? color;
 
   Variation({
+    this.id, // Added id parameter
     this.name,
     this.stock,
     this.price,
@@ -190,6 +225,7 @@ class Variation {
 
   factory Variation.fromJson(Map<String, dynamic> json) {
     return Variation(
+      id: json['id'], // Parse id from JSON
       name: json['name'],
       stock: json['stock'],
       price: json['price'],
@@ -202,6 +238,7 @@ class Variation {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id, // Include id in toJson
       'name': name,
       'stock': stock,
       'price': price,
