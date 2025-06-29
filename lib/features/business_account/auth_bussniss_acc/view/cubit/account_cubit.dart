@@ -271,6 +271,31 @@ List<LocationModel> getFilteredStates() {
     } catch (e) {
       emit(StoreRequestError("Something went wrong"));
     }
+
+    
+  }
+  Future<void> sendVerficationRequest({required int accountId}) async {
+    emit(StoreRequestLoading());
+
+    try {
+      final response = await accountRepo.requestBusinessVirfication(accountId);
+
+      response.fold(
+        (l) {
+          Print.error('API Error: $l');
+          emit(StoreRequestError(l));
+        },
+        (r) {
+          emit(StoreRequestSuccess(r.data));
+        },
+      );
+    } on ServerException catch (e) {
+      emit(StoreRequestError(e.errorModel.detail));
+    } on NoInternetException catch (e) {
+      emit(StoreRequestError(e.errorModel.detail));
+    } catch (e) {
+      emit(StoreRequestError("Something went wrong"));
+    }
   }
 
 }

@@ -57,8 +57,8 @@ class _PlanSectionState extends State<PlanSection> {
                               ..fetchBusinessAccount(cubit.businessId ?? 0),
                       ),
                       BlocProvider(
-                        create: (context) => PackagesCubit(sl<PackagesRepo>()..fetchCities(),
-                      ),)
+                        create: (context) => PackagesCubit(sl<PackagesRepo>())..fetchCities()
+                        )
                     ],
                     child: const SelectableGridScreen(),
                   ),

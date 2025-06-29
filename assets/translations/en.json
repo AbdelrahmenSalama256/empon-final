@@ -818,6 +818,17 @@
   "business_promotion_plans":"Business Promotion Plans",
   "chose":"Chose",
   "plan_title":"Products already added to your plan",
-  "plan_subtitle":"Complete adding products to your sponsored ad plan to display them to your audience."
+  "plan_subtitle":"Complete adding products to your sponsored ad plan to display them to your audience.",
+  "add_variation":"Add properties",
+  "choose_date":"Choose a date",
+  "total_sales_embon":"Total sales through embon",
+  "number_orders_embon":"Number of orders through embon",
+  "daily":"daily",
+  "monthly": "monthly",
+  "yearly":"yearly",
+  "current_plan": "Current Plan",
+  "identity_store_request": "Request to be a store",
+  "available_product_numbers":"Available product numbers",
+  "store_plans": "Store promotion plans"
 
 }

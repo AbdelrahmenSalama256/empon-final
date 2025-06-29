@@ -144,5 +144,20 @@ class AccountRepo {
     }
 
     }
+
+        Future<Either<String, StoreRequestResponse>> requestBusinessVirfication(
+    int id,
+  ) async {
+    try {
+      final response = await api.post(
+        '${EndPoints.verificationRequest}$id',
+      );
+      return Right(StoreRequestResponse.fromJson(response.data['data']));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
         
 }

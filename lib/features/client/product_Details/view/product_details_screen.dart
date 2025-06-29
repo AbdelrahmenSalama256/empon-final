@@ -1,7 +1,6 @@
 import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/empty_massage.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
-import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
@@ -27,6 +26,7 @@ import 'package:embone/features/client/product_Details/view/widgets/product_deta
 import 'package:embone/features/client/product_Details/view/widgets/product_details_shipping_info.dart';
 import 'package:embone/features/client/product_Details/view/widgets/review_section.dart';
 import 'package:embone/features/client/product_Details/view/widgets/section_title.dart';
+import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/foundation.dart';
@@ -188,18 +188,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       ),
                                       SizedBox(height: 15.h),
                                       InteractionBar(
+                                        isActive: product?.active ?? 1,
+                                        onActive: () {
+                                          cubit.updateProductStatus(
+                                              product!.id!);
+                                        },
                                         isVendor: widget.isVendor,
                                         likeCount: product?.likes ?? 0,
                                         onEdit: () {
                                           navigateTo(
                                             context,
                                             AddProductPage(
-                                              businessAccountId: int.parse(
-                                                sl<CacheHelper>().getData(
-                                                  key: AppConstants
-                                                      .businessAccountId,
-                                                ),
-                                              ),
+                                              businessAccountId: context
+                                                  .read<GlobalCubit>()
+                                                  .businessId!,
+                                              isUpdate: true,
+                                              isService: false,
+                                              productData: cubit.productModel,
                                             ),
                                           );
                                         },
@@ -213,9 +218,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                           primaryButtonText: "yes".tr(context),
                                           secondaryButtonText: "no".tr(context),
                                           onPrimaryButtonPressed: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
+                                            // Correct usage: create the cubit synchronously, then call the async method
+                                            final contextToUse = context;
+                                            final productIdToDelete =
+                                                product!.id!;
+                                            cubit
+                                                .deleteProduct(
+                                                    productIdToDelete)
+                                                .whenComplete(() {
+                                              Navigator.of(contextToUse,
+                                                      rootNavigator: true)
+                                                  .pop();
+                                            });
                                           },
                                         ),
                                         commentCount:
@@ -268,8 +282,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       SizedBox(height: 15.h),
                                       if (widget.isVendor)
                                         InventoryButton(onPressed: () {
-                                          navigateTo(context,
-                                              const ProductInventoryScreen());
+                                          navigateTo(
+                                            context,
+                                            BlocProvider(
+                                              create: (context) =>
+                                                  SearchCubit(sl<SearchRepo>())
+                                                    ..goToProduct(
+                                                        id: cubit.productModel!
+                                                            .data!.id!),
+                                              child:
+                                                  const ProductInventoryScreen(),
+                                            ),
+                                          );
                                         }),
                                       SizedBox(height: 15.h),
                                       availableColors.isEmpty

@@ -122,3 +122,23 @@ class RelatedProductsError extends SearchState {
 
 // loading more stats
 class LoadingMoreProducts extends SearchState {}
+
+
+class StatusLoading extends SearchState {}
+
+class StatusSuccess extends SearchState {
+  final String message;
+  StatusSuccess(this.message);
+}
+
+class StatusError extends SearchState {
+  final String message;
+  StatusError(this.message);
+}
+class Deleted extends SearchState {}
+class DeletedError extends SearchState {
+  final String message;
+  DeletedError(this.message);
+}
+
+class DeletedLoading extends SearchState {}

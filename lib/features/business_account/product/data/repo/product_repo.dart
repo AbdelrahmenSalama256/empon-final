@@ -13,7 +13,7 @@ class ProductRepo {
 
   ProductRepo(this.api);
   // Define methods for interacting with store products here
-  Future<Either<String, ProductModel>> addProduct(
+  Future<Either<String, AddProductModel>> addProduct(
     int accountId,
     String name,
     String description,
@@ -40,7 +40,7 @@ class ProductRepo {
      "details":serviceDetails
 
       }, isFormData: true);
-      return Right(ProductModel.fromJson(response));
+      return Right(AddProductModel.fromJson(response));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
@@ -48,7 +48,7 @@ class ProductRepo {
     }
   }
 
-  Future<Either<String, ProductModel>> updateProduct(
+  Future<Either<String, AddProductModel>> updateProduct(
     int productId, {
     int? accountId,
     String? name,
@@ -83,7 +83,7 @@ List<Map<String, dynamic>>? variations,
         data: data,
         isFormData: true,
       );
-      return Right(ProductModel.fromJson(response));
+      return Right(AddProductModel.fromJson(response));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
@@ -91,12 +91,12 @@ List<Map<String, dynamic>>? variations,
     }
   }
 
-  Future<Either<String, ProductModel>> deleteProduct(int productId) async {
+  Future<Either<String, AddProductModel>> deleteProduct(int productId) async {
     try {
       final response = await api.delete(
         "${EndPoints.deleteProduct}$productId",
       );
-      return Right(ProductModel.fromJson(response));
+      return Right(AddProductModel.fromJson(response));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {

@@ -1,16 +1,12 @@
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_dropdown.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/business_account/home/view/cubit/account_cubit.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_header.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_hero.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_name_section.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
-import 'package:embone/features/client/menu/data/repo/packages_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/packages_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/packages_state.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +31,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
   @override
   Widget build(BuildContext context) {
     final accountCubit = context.read<BusinessAccountCubit>();
-    final cities = context.read<PackagesCubit>();
+    final citiesCubit = context.read<PackagesCubit>();
 
     return BlocBuilder<BusinessAccountCubit, BusinessAccountState>(
       builder: (context, state) {
@@ -178,14 +174,14 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                 children: [
                                   Expanded(
                                     child: AppTextField(
-                                      controller: cities.minAge!,
+                                      controller: citiesCubit.minAge!,
                                       hintText:"min Age"
                                       )
                                       ),
                                   SizedBox(width: 12.w,),
                                   Expanded(child: AppTextField(
                                       hintText:"max Age",
-                                      controller: cities.maxAge!
+                                      controller: citiesCubit.maxAge!
                                       )),
                                 ],
                               ),
@@ -198,16 +194,16 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                 'women'.tr(context),
                               ],
                         
-                              onChanged: (String? value) {cities.slectedGander = value;},
+                              onChanged: (String? value) {citiesCubit.slectedGander = value;},
                             ),
                             SizedBox(height: 12.h),
                             AppDropdownField(
                               hint: 'gander'.tr(context),
-                              items: cities.cities
+                              items: citiesCubit.cities
                                   .map((city) => city.name)
                                   .toList(),
-                              onChanged: (String? value) { cities.selectedCityId = 
-                                cities.cities.where((value)=>value.name == value).first.id
+                              onChanged: (String? value) { citiesCubit.selectedCityId = 
+                                citiesCubit.cities.where((value)=>value.name == value).first.id
                                 ;},
                             ),
                             // _buildDropdowns(),

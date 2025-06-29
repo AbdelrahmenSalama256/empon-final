@@ -124,15 +124,20 @@ class EndPoints {
   static const String acceptFriendRequest = '${baseUrl}friend-request';
   static const String declineFriendRequest = '${baseUrl}friend-request';
   static const String myFriends = '${baseUrl}friends';
+  static const String sellerStatistics = '${baseUrl}seller-statistics';
 
 //! product
   static const String addProduct = '${baseUrl}product';
   static const String updateProduct = '${baseUrl}product/';
   static const String deleteProduct = '${baseUrl}product/';
   static const String getService = "${baseUrl}services/";
+  static const String updateService = '${baseUrl}services/';
   static const String addService = "${baseUrl}services";
   static const String getServicesCategores = "${baseUrl}service-categories";
   static const String getProducts = "${baseUrl}account-products/";
+  static const String verificationRequest = "${baseUrl}verification-request/";
+  static const String activeProduct = '${baseUrl}active-product';
+  static const String activeService = '${baseUrl}active-service';
 }
 
 class ApiKey {

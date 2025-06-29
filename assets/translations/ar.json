@@ -504,6 +504,7 @@
   "add_product": "أضف منتج",
   "add_product_title": "إضافة منتج",
   "product_add_button": "أضف منتجك الآن واجعل متجرك أكثر انتشارًا",
+  "service_add_button": "أضف خدمتك الآن واجعل متجرك أكثر انتشارًا",
   "product_add_subtitle": "إضافة منتج",
   "service_add_subtitle": "إضافة خدمة",
   "additional_Product_Details": "تفاصيل إضافية للمنتج",
@@ -841,6 +842,17 @@
   "business_promotion_plans":"خطط ترويج العمل",
   "chose":"اختر",
   "plan_title":"المنتجات المضافة بالفعل فى خطتك",
-  "plan_subtitle":"استكمل اضافة المنتجات لخطة اعلانك الممول لعرضها للجمهور"
+  "plan_subtitle":"استكمل اضافة المنتجات لخطة اعلانك الممول لعرضها للجمهور",
+  "add_variation": "إضافة الخصائص",
+  "choose_date":"اختيار تاريخ",
+  "total_sales_embon":"إجمالي المبيعات من خلال امبون",
+  "number_orders_embon":"عدد الطلبات من خلال امبون",
+  "daily": "يومي",
+  "monthly": "شهري",
+  "yearly": "سنوي",
+  "current_plan": "الخطة الحالية",
+  "identity_store_request": "طلب التحويل الى متجر الكتروني",
+  "available_product_numbers":"الاعداد المتاحة من المنتج",
+  "store_plans": "خطط ترويج المحل"
 
 }

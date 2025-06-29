@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddServiceForm extends StatefulWidget {
-  const AddServiceForm({super.key});
+  final bool isUpdate;
+  const AddServiceForm({super.key, required this.isUpdate});
 
   @override
   State<AddServiceForm> createState() => _AddServiceFormState();
@@ -38,7 +39,7 @@ class _AddServiceFormState extends State<AddServiceForm> {
             const ServiceDetailsSection(),
 
             // Submit buttons
-            ServiceSubmitButtons(formKey: _formKey),
+            ServiceSubmitButtons(formKey: _formKey, isUpdate: true , ),
           ],
         ),
       ),

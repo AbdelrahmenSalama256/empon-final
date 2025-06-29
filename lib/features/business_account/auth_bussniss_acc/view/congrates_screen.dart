@@ -82,7 +82,7 @@ class CongratesScreen extends StatelessWidget {
                       text: 'add_product'.tr(context),
                       onPressed: () {
 
-                        navigateTo(context, AddProductPage(businessAccountId: int.parse(sl<CacheHelper>().getData(key: AppConstants.businessAccountId))));
+                        navigateTo(context, AddProductPage(isService: false,isUpdate: false,businessAccountId: int.parse(sl<CacheHelper>().getData(key: AppConstants.businessAccountId))));
                       },
                     ),
                   ),

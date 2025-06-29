@@ -7,7 +7,7 @@ class ProductInitial extends ProductState {}
 class ProductLoading extends ProductState {}
 
 class ProductSuccess extends ProductState {
-  final ProductModel product;
+  final business.AddProductModel product;
   ProductSuccess(this.product);
 }
 
@@ -20,7 +20,7 @@ class ProductImagePicked extends ProductState {}
 
 class ProductImagesPicked extends ProductState {}
 class ProductLoaded extends ProductState {
-  final List<Product> products;
+  final List<business.Product> products;
   ProductLoaded(this.products);
 }
 
@@ -41,4 +41,6 @@ class CategoryError extends ProductState {
   final String message;
   CategoryError(this.message);
 }
-
+class ProductDeleted extends ProductState{
+ ProductDeleted();
+}

@@ -46,7 +46,7 @@ class HomeStoreProducts extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                         AddProductPage(businessAccountId: id)
+                         AddProductPage(businessAccountId: id,isUpdate: false, isService: false,)
                           ));
             },
             prefixIcon: Icon(

@@ -20,6 +20,7 @@ class ServiceCubit extends Cubit<ServiceState> {
   // Inputs
   int? categoryServiceId;
   int? accountId;
+  int? serviceId;
   List<ServiceCategoryData> categories = [];
   XFile? mainImage;
   List<XFile> sliderImages = [];
@@ -30,12 +31,14 @@ class ServiceCubit extends Cubit<ServiceState> {
 
   void addFeature() {
     featureControllers.add(TextEditingController());
+    emit(ServiceInitial());
   }
 
   void disposeController() {
     for (var controller in featureControllers) {
       controller.dispose();
   }
+   emit(ServiceInitial());
   }
 
   // Setters
@@ -120,6 +123,47 @@ Future<void> getServicesByAccountId() async {
     );
   }
 
+  Future <void> updateService(int id) async{
+    if (nameController.text.isEmpty ||
+        detailsController.text.isEmpty ||
+        mainImage == null ||
+        priceController.text.isEmpty ||
+        sliderImages.isEmpty ||
+        categoryServiceId == null ||
+        accountId == null) {
+      emit(ServiceError("Missing required fields or images"));
+      return;
+    }
+
+    emit(ServiceLoading());
+
+    final result = await repo.updateService(
+     name: nameController.text.trim(),
+      details: detailsController.text.trim(),
+      price: priceController.text.trim(),
+      categoryServiceId: categoryServiceId!,
+      serviceId: serviceId!,
+      mainImage: mainImage!,
+      listImages: sliderImages,
+      about: featureControllers.map((e) => e.text).toList(),
+    );
+
+    result.fold(
+      (error) => emit(ServiceError(error)),
+      (model) => emit(ServiceSuccess(model)),
+    );
+  }
+Future<void> deleteService(int id) async {
+    emit(
+        ServiceLoading());
+    final result = await repo.deleteServise(id);
+    result.fold(
+      (error) => emit(ServiceError(error)),
+      (r) {
+        emit(Deleted());
+      },
+    );
+  }
 
 
 }

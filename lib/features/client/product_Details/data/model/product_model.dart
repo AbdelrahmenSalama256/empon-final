@@ -47,6 +47,7 @@ class ProductData {
   final String? shippingStartDate;
   final String? shippingEndDate;
   final String? shippingPrice;
+  final int? active;
 
   final String? createdAt;
   final String? updatedAt;
@@ -74,6 +75,7 @@ class ProductData {
     this.images,
     this.createdAt,
     this.updatedAt,
+    this.active
   });
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
@@ -104,6 +106,7 @@ class ProductData {
       shippingStartDate: json['shipping_start_date'],
       shippingEndDate: json['shipping_end_date'],
       shippingPrice: json['shipping_price'],
+      active: json['active']
     );
   }
 
@@ -149,6 +152,7 @@ class ProductData {
     List<ImageData>? images,
     String? createdAt,
     String? updatedAt,
+    int? active
   }) {
     return ProductData(
       id: id ?? this.id,
@@ -169,6 +173,7 @@ class ProductData {
       images: images ?? this.images,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      active: active?? this.active
     );
   }
 }
