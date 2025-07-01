@@ -4,6 +4,7 @@ import 'package:embone/core/common/common.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
+import 'package:embone/features/business_account/product/data/model/attributes_model.dart';
 import 'package:embone/features/business_account/product/data/model/product_category_model.dart';
 import 'package:embone/features/business_account/product/data/model/product_model.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,7 +49,7 @@ class ProductRepo {
     }
   }
 
-  Future<Either<String, AddProductModel>> updateProduct(
+  Future<Either<String, UpdateProductResponse>> updateProduct(
     int productId, {
     int? accountId,
     String? name,
@@ -69,21 +70,26 @@ List<Map<String, dynamic>>? variations,
         "price": price,
         "category_id": categoryId,
         "is_sale": isSale,
-        "product_image":
-            productImage != null ? await uploadImageToAPI(productImage) : null,
-        "product_images": productImages != null
-            ? await Future.wait(
-                productImages.map((img) => uploadImageToAPI(img)))
-            : null,
         "variations": variations,
-        "details": serviceDetails
+        "details": serviceDetails,
+        "_method":"PUT",
+        
       };
-      final response = await api.put(
+           if (productImage != null) {
+        data["product_image"] = await uploadImageToAPI(productImage);
+      }
+
+      if (productImages != null && productImages.isNotEmpty) {
+        data["product_images[]"] =
+            await Future.wait(
+            productImages.map((img) => uploadImageToAPI(img)));
+      }
+      final response = await api.post(
         "${EndPoints.updateProduct}$productId",
         data: data,
         isFormData: true,
       );
-      return Right(AddProductModel.fromJson(response));
+      return Right(UpdateProductResponse.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
@@ -104,12 +110,12 @@ List<Map<String, dynamic>>? variations,
     }
   }
 
-  Future<Either<String, ProductResponse>> fetchAccountProductsById(
+  Future<Either<String, AddProductModel>> fetchAccountProductsById(
       int accountId) async {
     try {
       final response = await api
           .get('${EndPoints.getProducts}$accountId'); // Replace with correct endpoint
-      return Right(ProductResponse.fromJson(response.data));
+      return Right(AddProductModel.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
@@ -130,6 +136,17 @@ Future<Either<String, List<Category>>> fetchCategories() async {
       return Left(e.errorModel.detail);
     } catch (e) {
       return Left("Unexpected error: ${e.toString()}");
+    }
+  }
+
+  Future<Either<String, AttributesResponse>> getAttributes() async {
+    try {
+      final response = await api.get(EndPoints.attributes);
+      return Right(AttributesResponse.fromJson(response.data));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
     }
   }
 

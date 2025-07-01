@@ -170,7 +170,7 @@ class _AddProductPageState extends State<AddProductPage>
                               Divider(height: 1.h),
 
                               // Main form content
-                              const AddServiceForm(isUpdate: false,),
+                              const AddServiceForm(),
                             ],
                           ),
                         ),
@@ -220,7 +220,7 @@ class _AddProductPageState extends State<AddProductPage>
                                 Divider(height: 1.h),
                         
                                 // Main form content
-                                const AddServiceForm(isUpdate: true,),
+                                const AddServiceForm(),
                               ],
                             ),
                           ),

@@ -11,14 +11,12 @@ class ApiInterceptors extends Interceptor {
     RequestInterceptorHandler handler,
   ) {
     String? token = sl<CacheHelper>().getDataString(key: ApiKey.token);
-    String? cookie = sl<CacheHelper>().getDataString(key: AppConstants.cookie);
 
     options.headers[ApiKey.authorization] =
         token != null ? 'Bearer $token' : null;
     options.headers["lang"] =
         sl<CacheHelper>().getCachedLanguage() == "ar" ? "ar" : "en";
 
-    options.headers["Cookie"] = "maxliss_session=$cookie";
     super.onRequest(options, handler);
   }
 

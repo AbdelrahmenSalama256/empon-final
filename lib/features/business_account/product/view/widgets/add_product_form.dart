@@ -1,3 +1,4 @@
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -71,15 +72,12 @@ class _AddProductFormState extends State<AddProductForm> {
 
   @override
   Widget build(BuildContext context) {
-   // final data = widget.productData?.data;
     return BlocProvider(
-      create: (context) => ProductCubit(sl<ProductRepo>())..getCategories(),
-        // ..initControllers(widget.isUpdate ?? false,
-        //     name: data!.name,
-        //     description: data.description,
-        //     price: data.price,
-        //     variation: data.variations,
-        //     category: data.category),
+      create: (context) {
+        final cubit = ProductCubit(sl<ProductRepo>());
+        cubit.getAttributes().whenComplete(() => cubit.getCategories());
+        return cubit;
+      },
       child: Form(
         key: _formKey,
         child: Column(
@@ -87,16 +85,16 @@ class _AddProductFormState extends State<AddProductForm> {
           children: [
             // Basic product information
             const ProductBasicInfoSection(),
-
+      
             // Image upload sections
-             const ImageUploadSection(cubit: true),
-
+            const ImageUploadSection(cubit: true),
+      
             // Product details
             const ProductDetailsSection(),
-
+      
             // Promotion section
             // const ProductPromotionSection(),
-
+      
             // Submit buttons
             ProductSubmitButtons(
               formKey: _formKey,

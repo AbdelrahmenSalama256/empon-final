@@ -33,6 +33,7 @@ class ServiceData {
   final String createdAt;
   final String updatedAt;
   final List<String> features;
+  final List<Category> categoties;
 
   ServiceData({
     required this.id,
@@ -49,6 +50,7 @@ class ServiceData {
     required this.createdAt,
     required this.updatedAt,
     required this.features,
+    required this.categoties
   });
 
   factory ServiceData.fromJson(Map<String, dynamic> json) {
@@ -67,6 +69,13 @@ class ServiceData {
       features: List<String>.from(json['features'] ?? []),
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      categoties: json['category'] is List
+          ? (json['category'] as List)
+              .map((item) => Category.fromJson(item))
+              .toList()
+          : json['category'] is Map
+              ? [Category.fromJson(json['category'])]
+              : [],
     );
   }
 
@@ -85,6 +94,7 @@ class ServiceData {
     String? createdAt,
     String? updatedAt,
     List<String>? features,
+    List<Category>? categories
   }) {
     return ServiceData(
       id: id ?? this.id,
@@ -101,6 +111,7 @@ class ServiceData {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       features: features??this.features,
+      categoties: categories??this.categoties,
     );
   }
 }

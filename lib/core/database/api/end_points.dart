@@ -47,6 +47,7 @@ class EndPoints {
   static const String resetPassword = "${baseUrl}reset-password";
   static const String home = "${baseUrl}home";
   static const String homeService = "${baseUrl}random-services";
+  static const String attributes = "${baseUrl}attributes";
   // ! Search
   static const String search = "${baseUrl}search";
   static const String searchHistory = '${baseUrl}history-search';

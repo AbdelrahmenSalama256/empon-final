@@ -9,15 +9,10 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
 
 class ServiceSubmitButtons extends StatelessWidget {
-  final bool isUpdate;
-  final int? serviceId;
   final GlobalKey<FormState> formKey;
-
 
   const ServiceSubmitButtons({
     super.key,
-    required this.isUpdate,
-    this.serviceId,
     required this.formKey,
   });
 
@@ -31,15 +26,8 @@ class ServiceSubmitButtons extends StatelessWidget {
           text: 'service_add_subtitle'.tr(context),
           onPressed: () {
             if (formKey.currentState?.validate() ?? false) {
-              cubit.accountId =  globalCubit.businessId;
-              // int.parse(sl<CacheHelper>()
-              //         .getDataString(key: AppConstants.businessAccountId) ??
-              //     '0');
-              isUpdate?
-              cubit.updateService(serviceId!)
-
-              :cubit.createService();
-              // Submit logic
+              cubit.accountId = globalCubit.businessId;
+              cubit.createService();
             }
           },
         ),

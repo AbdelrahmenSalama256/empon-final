@@ -50,7 +50,7 @@ class ProductData {
   final int? active;
   final String? accountType;
   final String? whastappNum;
-  final Map<String, String>? details;
+  final List<Detail>? details;
 
   final String? createdAt;
   final String? updatedAt;
@@ -85,20 +85,7 @@ class ProductData {
   });
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
-    // Parse details as a map from the list of key-value pairs
-    Map<String, String>? detailsMap;
-    if (json['details'] != null && json['details'] is List) {
-      detailsMap = {};
-      for (var item in json['details']) {
-        if (item is Map<String, dynamic>) {
-          item.forEach((key, value) {
-            if (value is String) {
-              detailsMap![key] = value;
-            }
-          });
-        }
-      }
-    }
+
 
     return ProductData(
       id: json['id'],
@@ -129,7 +116,9 @@ class ProductData {
       shippingStartDate: json['shipping_start_date'],
       shippingEndDate: json['shipping_end_date'],
       shippingPrice: json['shipping_price'],
-      details: detailsMap, // Assign parsed details
+      details: (json['details'] as List?)
+            ?.map((item) => Detail.fromJson(item))
+            .toList(), // Assign parsed details as List<Detail>
       active: json['active']
     );
   }
@@ -181,7 +170,7 @@ class ProductData {
     String? updatedAt,
     String? whastappNum,
     String? accountType,
-    Map<String, String>? details, // Added details in copyWith
+    List<Detail>? details, // Added details in copyWith
     int? active
   }) {
     return ProductData(
@@ -325,6 +314,29 @@ class ImageData {
   Map<String, dynamic> toJson() {
     return {
       'url': url,
+    };
+  }
+}
+class Detail {
+  final String? quality;
+  final String? material;
+
+  Detail({
+    this.quality,
+    this.material
+  });
+
+  factory Detail.fromJson(Map<String, dynamic> json) {
+    return Detail(
+      quality: json['quality'],
+      material: json['material'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'quality': quality,
+      'material':material
     };
   }
 }

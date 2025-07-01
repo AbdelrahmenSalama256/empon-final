@@ -12,6 +12,7 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
 import 'package:embone/features/business_account/product/view/add_product_buisniss_account.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
+import 'package:embone/features/business_account/product/view/update_product_buisniss_account.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
 import 'package:embone/features/client/product_Details/view/widgets/price_display.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_description.dart';
@@ -134,7 +135,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                         create: (context) => ServiceCubit(sl<ServiceRepo>()),
                                         child: InteractionBar(
                                           isActive:service?.active==true?1:0 ,
-                                          onActive:(){ cubit.updateProductStatus(service!.id);
+                                          onActive:(){ cubit.updateServiceStatus(service!.id);
                                           cubit.goToService(id: service.id);
                                           },
                                           isVendor: widget.isVendor,
@@ -142,9 +143,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                           onEdit: () {
                                             navigateTo(
                                                 context,
-                                                AddProductPage(
+                                                UpdateProductPage(
                                                     isService: true,
-                                                    isUpdate: true,
+                                                    serviceData: cubit.serviceModel,
                                                     businessAccountId: int.parse(
                                                         sl<CacheHelper>().getData(
                                                             key: AppConstants

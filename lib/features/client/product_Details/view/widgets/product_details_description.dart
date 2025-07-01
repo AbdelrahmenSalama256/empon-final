@@ -25,8 +25,8 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
 
   @override
   Widget build(BuildContext context) {
-    final details =
-        widget.productData?.details ?? {}; // Default to empty map if null
+    final List<Detail> details =
+        widget.productData?.details ?? []; // Default to empty list if null
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,18 +42,14 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
 
         // Display details key-value pairs
         if (details.isNotEmpty) ...[
-          ...details.entries.map((entry) {
-            return Column(
-              children: [
-                _buildInfoRow(
-                  context,
-                  label: entry.key.tr(context),
-                  value: entry.value,
-                ),
-                SizedBox(height: 16.h),
-              ],
-            );
-          }),
+          for (final detail in details) ...[
+            _buildInfoRow(
+              context,
+              label: detail.material ?? '',
+              value: detail.quality ?? '',
+            ),
+            SizedBox(height: 16.h),
+          ],
         ] else ...[
           _buildInfoRow(
             context,
