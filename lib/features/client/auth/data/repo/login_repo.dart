@@ -23,7 +23,7 @@ class LoginRepo {
           "value": value,
           "password": password,
           "type": type,
-          "fcm_token": await NotificationHandler.getToken(),
+          "fcm_token": NotificationHandler.fcmToken,
         },
       );
       return Right(LoginModel.fromJson(response.data as Map<String, dynamic>));

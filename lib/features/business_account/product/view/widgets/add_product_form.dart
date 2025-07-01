@@ -1,5 +1,4 @@
 import 'package:embone/core/constants/app_constant.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/repo/product_repo.dart';
@@ -76,7 +75,7 @@ class _AddProductFormState extends State<AddProductForm> {
     return BlocProvider(
       create: (context) => ProductCubit(sl<ProductRepo>())
         ..initControllers(widget.isUpdate ?? false,
-            name: data!.name,
+            name: data.name,
             description: data.description,
             price: data.price,
             variation: data.variations,
@@ -90,7 +89,7 @@ class _AddProductFormState extends State<AddProductForm> {
             const ProductBasicInfoSection(),
 
             // Image upload sections
-             ImageUploadSection(cubit: true,imageUrl: data!.image),
+            ImageUploadSection(cubit: true, imageUrl: data!.image),
 
             // Product details
             const ProductDetailsSection(),

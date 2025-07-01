@@ -19,7 +19,6 @@ import '../cubit/account_state.dart';
 
 class BusinessAccountSettings extends StatefulWidget {
   final AccountCubit cubit;
-  
 
   const BusinessAccountSettings({super.key, required this.cubit});
 
@@ -131,7 +130,6 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                       hint: 'country'.tr(context),
                       value: _selectedCountry?.name,
                       items: countries.map((country) => country.name).toList(),
-                      enabled: countries.isNotEmpty,
                       onChanged: (value) {
                         if (value == null) return;
                         final selected = countries.firstWhere(
@@ -161,7 +159,6 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                       hint: 'governorate'.tr(context),
                       value: _selectedState?.name,
                       items: states.map((state) => state.name).toList(),
-                      enabled: states.isNotEmpty,
                       onChanged: (value) {
                         if (value == null) return;
                         final selected = states.firstWhere(
@@ -190,7 +187,6 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                       hint: 'city'.tr(context),
                       value: _selectedCity?.name,
                       items: cities.map((city) => city.name).toList(),
-                      enabled: cities.isNotEmpty,
                       onChanged: (value) {
                         if (value == null) return;
                         final selected = cities.firstWhere(
@@ -283,8 +279,7 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                         ),
                       ),
                     ),
-                    
-                            SizedBox(height: 16.h),
+                    SizedBox(height: 16.h),
                     AppTextField(
                       controller: cubit.postalCodeController,
                       labelText: 'postal_code'.tr(context),

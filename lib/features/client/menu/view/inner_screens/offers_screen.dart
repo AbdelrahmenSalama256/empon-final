@@ -1,4 +1,5 @@
 import 'package:embone/core/component/custom_toast.dart';
+import 'package:embone/core/component/empty_massage.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
@@ -144,84 +145,93 @@ class _OffersScreenState extends State<OffersScreen> {
         if (state is OfferLoading && cubit.offers.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (state is OfferError) {
-          return Center(
-            child: Text(
-              state.message,
-              style: TextStyle(color: Colors.red, fontSize: 14.sp),
-            ),
-          );
-        }
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 0.w),
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: cubit.offers.length +
-                (cubit.hasMoreOffers && state is OfferLoadingMore ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == cubit.offers.length &&
-                  cubit.hasMoreOffers &&
-                  state is OfferLoadingMore) {
-                return const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              final offer = cubit.offers[index];
-              final offerable = offer.offerable;
-              return Column(
-                children: [
-                  ProductCard(
-                    imageUrl: offerable.image.isNotEmpty
-                        ? offerable.image
-                        : (offer.account.logo),
-                    title: offerable.name,
-                    isOffer: true,
-                    price: double.tryParse(offer.offerPrice) ?? 0.0,
-                    originalPrice: double.tryParse(offer.originalPrice),
-                    badge: offer.status == 'pending' ? 'Pending' : offer.status,
-                    actionText: 'add_to_cart'.tr(context),
-                    isFavorite: GlobalState is WishlistError
-                        ? false
-                        : GlobalState is WishlistSuccess
-                            ? true
-                            : false,
-                    discountPercentage:
-                        offer.originalPrice != null && offer.offerPrice != null
-                            ? ((double.parse(offer.originalPrice) -
-                                        double.parse(offer.offerPrice)) /
-                                    double.parse(offer.originalPrice) *
-                                    100)
-                                .round()
-                            : null,
-                    onFavoriteToggle: () {
-                      context.read<GlobalCubit>().addProductToWishlist(
-                            offer.id,
+
+        return state is OfferLoading
+            ? const Center(child: CircularProgressIndicator())
+            : cubit.offers.isEmpty
+                ? Center(
+                    child: EmptyMessageWidget(
+                      message: "no_offers".tr(context),
+                    ),
+                  )
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 0.w),
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.symmetric(horizontal: 0.w),
+                      itemCount: cubit.offers.length +
+                          (cubit.hasMoreOffers && state is OfferLoadingMore
+                              ? 1
+                              : 0),
+                      itemBuilder: (context, index) {
+                        if (index == cubit.offers.length &&
+                            cubit.hasMoreOffers &&
+                            state is OfferLoadingMore) {
+                          return const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Center(child: CircularProgressIndicator()),
                           );
-                    },
-                    onActionTap: () {
-                      context.read<CartCubit>().addProductToCart(
-                            productId: offer.id,
-                            variationId: 6,
-                            quantity: 1,
-                          );
-                    },
-                    onCardTap: () {
-                      navigateTo(
-                        context,
-                        BlocProvider(
-                          create: (context) => SearchCubit(sl<SearchRepo>()),
-                          child: ProductDetailPage(productId: offer.id),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDivider(),
-                ],
-              );
-            },
-          ),
-        );
+                        }
+                        final offer = cubit.offers[index];
+                        final offerable = offer.offerable;
+                        return Column(
+                          children: [
+                            ProductCard(
+                              imageUrl: "${offerable?.image}",
+                              title: offerable?.name ?? '',
+                              isOffer: true,
+                              price: double.tryParse(offer.offerPrice) ?? 0.0,
+                              originalPrice:
+                                  double.tryParse(offer.originalPrice),
+                              badge: offer.status == 'pending'
+                                  ? 'Pending'
+                                  : offer.status,
+                              actionText: 'add_to_cart'.tr(context),
+                              isFavorite: GlobalState is WishlistError
+                                  ? false
+                                  : GlobalState is WishlistSuccess
+                                      ? true
+                                      : false,
+                              discountPercentage: offer.originalPrice != null &&
+                                      offer.offerPrice != null
+                                  ? ((double.parse(offer.originalPrice) -
+                                              double.parse(offer.offerPrice)) /
+                                          double.parse(offer.originalPrice) *
+                                          100)
+                                      .round()
+                                  : null,
+                              onFavoriteToggle: () {
+                                context
+                                    .read<GlobalCubit>()
+                                    .addProductToWishlist(
+                                      offer.id,
+                                    );
+                              },
+                              onActionTap: () {
+                                context.read<CartCubit>().addProductToCart(
+                                      productId: offer.id,
+                                      variationId: 6,
+                                      quantity: 1,
+                                    );
+                              },
+                              onCardTap: () {
+                                navigateTo(
+                                  context,
+                                  BlocProvider(
+                                    create: (context) =>
+                                        SearchCubit(sl<SearchRepo>()),
+                                    child:
+                                        ProductDetailPage(productId: offer.id),
+                                  ),
+                                );
+                              },
+                            ),
+                            _buildDivider(),
+                          ],
+                        );
+                      },
+                    ),
+                  );
       },
     );
   }

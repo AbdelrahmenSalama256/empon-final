@@ -171,7 +171,6 @@ class _EditAddressDialogState extends State<EditAddressDialog> {
                     hint: 'country'.tr(context),
                     value: selectedCountry?.name,
                     items: countries.map((country) => country.name).toList(),
-                    enabled: countries.isNotEmpty,
                     onChanged: (value) {
                       if (value == null) return;
                       final selected = countries.firstWhere(
@@ -196,7 +195,6 @@ class _EditAddressDialogState extends State<EditAddressDialog> {
                     hint: 'state'.tr(context),
                     value: selectedState?.name,
                     items: states.map((state) => state.name).toList(),
-                    enabled: states.isNotEmpty,
                     onChanged: (value) {
                       if (value == null) return;
                       final selected = states.firstWhere(
@@ -220,7 +218,6 @@ class _EditAddressDialogState extends State<EditAddressDialog> {
                     hint: 'city'.tr(context),
                     value: selectedCity?.name,
                     items: cities.map((city) => city.name).toList(),
-                    enabled: cities.isNotEmpty,
                     onChanged: (value) {
                       if (value == null) return;
                       final selected = cities.firstWhere(

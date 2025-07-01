@@ -1,3 +1,4 @@
+import 'package:embone/features/client/chat/data/model/chat_contact_model.dart';
 import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
 
 abstract class ChatState {}
@@ -75,6 +76,12 @@ class MassageSentLoading extends ChatState {
 class MassageSentLoaded extends ChatState {
   final Message message;
   MassageSentLoaded(this.message);
+}
+
+class ChatContactsFiltered extends ChatState {
+  final List<ChatContact> filteredContacts;
+
+  ChatContactsFiltered(this.filteredContacts);
 }
 
 class MassageSentError extends ChatState {

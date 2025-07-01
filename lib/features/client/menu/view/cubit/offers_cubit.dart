@@ -47,8 +47,8 @@ class OffersCubit extends Cubit<OffersState> {
         emit(OfferError(error));
       },
       (offerModel) {
-        offers.addAll(offerModel.data.offers);
-        hasMoreOffers = offerModel.data.offers.length == limit;
+        offers.addAll(offerModel.data!.offers ?? []);
+        hasMoreOffers = offerModel.data?.offers?.length == limit;
         Print.info("Fetched ${offers.length} offers successfully");
         emit(OfferLoaded(offerModel));
       },

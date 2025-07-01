@@ -112,14 +112,14 @@ class MenuScreen extends StatelessWidget {
                                     ? Directionality(
                                         textDirection: cubit.language == "ar"
                                             ? TextDirection.rtl
-                                            : TextDirection.ltr,
+                                            : TextDirection.rtl,
                                         child: AppHeader(
                                           title: "menu".tr(context),
                                           centerTitle: false,
                                           leadingPosition:
                                               cubit.language == "ar"
                                                   ? MainAxisAlignment.end
-                                                  : MainAxisAlignment.end,
+                                                  : MainAxisAlignment.start,
                                           alignment:
                                               HeaderAlignment.spaceBetween,
                                           titleStyle:
@@ -563,7 +563,7 @@ class MenuScreen extends StatelessWidget {
                                                                   "assets/images/plan_brand.png",
                                                               color: Colors
                                                                   .red.shade100,
-                                                              subTitle: 
+                                                              subTitle:
                                                                   "الخطة الاساسية", //todo : will get from backend
                                                               subTitleColor: Colors
                                                                   .lightGreenAccent,
@@ -644,36 +644,40 @@ class MenuScreen extends StatelessWidget {
                                                 ? const SizedBox()
                                                 : Wrap(
                                                     children: [
-                                                      accountData!.type =='business'
-                                                      ?ApprovalItem(
-                                                          title:
-                                                              'identity_store_request'
+                                                      accountData!.type ==
+                                                              'business'
+                                                          ? ApprovalItem(
+                                                              title: 'identity_store_request'
                                                                   .tr(context),
-                                                          status: ApprovalStatus
-                                                              .approved,
-                                                          icon: Image.asset(
-                                                            "assets/images/cycle-circle.png",
-                                                            width: 24.w,
-                                                            height: 24.h,
-                                                          ),
-                                                          onApprove: () {
-                                                            context
-                                                                .read<
-                                                                    AccountCubit>()
-                                                                .sendStoreRequest(
-                                                                    accountId: cubit
-                                                                        .businessId!);
-                                                            CustomPopup.show(
-                                                              context: context,
-                                                              type: PopupType
-                                                                  .success,
-                                                              title: "request_sent_successfully"
-                                                                  .tr(context),
-                                                              message:
-                                                                  "request_under_review"
+                                                              status:
+                                                                  ApprovalStatus
+                                                                      .approved,
+                                                              icon: Image.asset(
+                                                                "assets/images/cycle-circle.png",
+                                                                width: 24.w,
+                                                                height: 24.h,
+                                                              ),
+                                                              onApprove: () {
+                                                                context
+                                                                    .read<
+                                                                        AccountCubit>()
+                                                                    .sendStoreRequest(
+                                                                        accountId:
+                                                                            cubit.businessId!);
+                                                                CustomPopup
+                                                                    .show(
+                                                                  context:
+                                                                      context,
+                                                                  type: PopupType
+                                                                      .success,
+                                                                  title: "request_sent_successfully"
                                                                       .tr(context),
-                                                            );
-                                                          }):const SizedBox(),
+                                                                  message:
+                                                                      "request_under_review"
+                                                                          .tr(context),
+                                                                );
+                                                              })
+                                                          : const SizedBox(),
                                                       // Second approval item example
 
                                                       ApprovalItem(
@@ -765,7 +769,7 @@ class MenuScreen extends StatelessWidget {
                                             state is LogoutLoading
                                                 ? const Center(
                                                     child:
-                                                        CustomLoadingIndicator())
+                                                        LinearProgressIndicator())
                                                 : SignOutButton(
                                                     onPressed: () {
                                                       // Show confirmation popup

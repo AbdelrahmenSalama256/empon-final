@@ -24,7 +24,6 @@ import 'package:embone/features/client/menu/view/inner_screens/widgets/language_
 import 'package:embone/features/client/menu/view/inner_screens/widgets/notifications_toggle.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/settings_header.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/wallet.dart';
-import 'package:embone/features/client/menu/view/widgets/approval_item.dart';
 import 'package:embone/features/client/menu/view/widgets/sign_out.dart';
 import 'package:embone/features/client/order/data/repo/orders_repo.dart';
 import 'package:embone/features/client/order/view/cubit/orders_cubit.dart';
@@ -238,8 +237,9 @@ class SettingsScreen extends StatelessWidget {
                                             context,
                                             BlocProvider(
                                               create: (context) =>
-                                                  TotalSalesCubit(sl<TotalSalesRepo>()),
-                                              child:const SalesStatsPage(),
+                                                  TotalSalesCubit(
+                                                      sl<TotalSalesRepo>()),
+                                              child: const SalesStatsPage(),
                                             ),
                                           );
                                         },

@@ -5,6 +5,7 @@ import 'package:embone/features/client/menu/data/model/cities_model.dart';
 import 'package:embone/features/client/menu/data/model/packages_model.dart';
 import 'package:embone/features/client/menu/data/repo/packages_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/packages_state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PackagesCubit extends Cubit<PackagesState> {
@@ -45,7 +46,9 @@ class PackagesCubit extends Cubit<PackagesState> {
 
   Future<void> fetchCities() async {
     final result = await packagesRepo.fetchCities();
-    print(result);
+    if (kDebugMode) {
+      print(result);
+    }
     result.fold(
       (error) {
         PrintUtil.error("Failed to fetch Packages: $error");
@@ -58,5 +61,4 @@ class PackagesCubit extends Cubit<PackagesState> {
       },
     );
   }
-
 }

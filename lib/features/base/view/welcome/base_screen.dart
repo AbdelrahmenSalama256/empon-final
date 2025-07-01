@@ -214,9 +214,17 @@ class _BaseScreenState extends State<BaseScreen> {
           items: _navBarsItems(context, userType),
           padding: EdgeInsets.symmetric(vertical: 10.h),
           confineToSafeArea: true,
+          onWillPop: (p0) async {
+            if (context.read<GlobalCubit>().controller.index == 0) {
+              return true;
+            } else {
+              context.read<GlobalCubit>().changeBottomNavIndex(0);
+              return false;
+            }
+          },
           backgroundColor: Colors.transparent,
           popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
-          handleAndroidBackButtonPress: true,
+          handleAndroidBackButtonPress: false,
           resizeToAvoidBottomInset: false,
           hideNavigationBarWhenKeyboardAppears: true,
           hideOnScrollSettings: const HideOnScrollSettings(

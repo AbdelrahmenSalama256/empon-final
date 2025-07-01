@@ -51,6 +51,28 @@ class _ActionButtonsRowState extends State<ActionButtonsRow> {
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
         child: Row(
           children: [
+            if (widget.showLike)
+              ActionButton(
+                icon: "assets/images/svg/like.svg",
+                activeIcon: "assets/images/svg/like.svg",
+                label: widget.isLiked ? 'unfollow' : 'follow',
+                onPressed: widget.onLikePressed ?? () {},
+                isActive: widget.isLiked,
+              ),
+            if (widget.showFavorite)
+              ActionButton(
+                icon: "assets/images/svg/heart.svg",
+                activeIcon: "assets/images/svg/heart-active.svg",
+                label: widget.isFavorite ? 'unfavorite' : 'favorite',
+                onPressed: widget.onFavoritePressed ?? () {},
+                isActive: widget.isFavorite,
+              ),
+            if (widget.showWhatsApp)
+              ActionButton(
+                icon: "assets/images/svg/whatsapp.svg",
+                label: 'contact',
+                onPressed: widget.onWhatsAppPressed ?? () {},
+              ),
             if (widget.showChat)
               ActionButton(
                 icon: "assets/images/svg/chat.svg",
@@ -67,28 +89,6 @@ class _ActionButtonsRowState extends State<ActionButtonsRow> {
                         ),
                       );
                     },
-              ),
-            if (widget.showWhatsApp)
-              ActionButton(
-                icon: "assets/images/svg/whatsapp.svg",
-                label: 'contact',
-                onPressed: widget.onWhatsAppPressed ?? () {},
-              ),
-            if (widget.showFavorite)
-              ActionButton(
-                icon: "assets/images/svg/heart.svg",
-                activeIcon: "assets/images/svg/heart-active.svg",
-                label: widget.isFavorite ? 'unfavorite' : 'favorite',
-                onPressed: widget.onFavoritePressed ?? () {},
-                isActive: widget.isFavorite,
-              ),
-            if (widget.showLike)
-              ActionButton(
-                icon: "assets/images/svg/like.svg",
-                activeIcon: "assets/images/svg/like.svg",
-                label: widget.isLiked ? 'unfollow' : 'follow',
-                onPressed: widget.onLikePressed ?? () {},
-                isActive: widget.isLiked,
               ),
           ],
         ),

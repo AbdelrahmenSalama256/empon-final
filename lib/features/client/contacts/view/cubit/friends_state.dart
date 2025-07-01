@@ -1,3 +1,5 @@
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
+import 'package:embone/features/client/contacts/data/model/contact_model.dart';
 import 'package:embone/features/client/contacts/data/model/friends_model.dart';
 
 class FriendsState {
@@ -18,7 +20,17 @@ final class FriendAddedSuccess extends FriendsState {
   FriendAddedSuccess(this.message);
 }
 
-final class FriendsLoaded extends FriendsState {}
+final class FriendsRefreshed extends FriendsState {}
+
+class FriendsLoaded extends FriendsState {
+  final List<User>? registeredUsers;
+  final List<ContactModel>? nonRegisteredContacts;
+
+  FriendsLoaded({
+    this.registeredUsers,
+    this.nonRegisteredContacts,
+  });
+}
 
 final class FriendRequestUpdated extends FriendsState {
   final String message;

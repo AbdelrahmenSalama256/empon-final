@@ -1,5 +1,7 @@
+import 'package:embone/core/constants/widgets/custom_cached_image.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/contacts/view/cubit/friends_cubit.dart';
+import 'package:embone/features/client/contacts/view/cubit/friends_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +14,7 @@ import '../../data/model/contact_model.dart';
 
 class ContactListItem extends StatelessWidget {
   final ContactModel contact;
-  final VoidCallback onTap;
+  final VoidCallback onTap; // Retain for selection if needed
   final bool isRegistered;
 
   const ContactListItem({
@@ -26,41 +28,61 @@ class ContactListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isRTL = sl<CacheHelper>().getCachedLanguage() == 'ar';
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 15.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0x1D22610F),
-            offset: Offset(0, 10.h),
-            blurRadius: 70.r,
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
+    return BlocBuilder<FriendsCubit, FriendsState>(
+      builder: (context, state) {
+        final isLoading = state is FriendsLoading;
+        return AbsorbPointer(
+          absorbing: isLoading,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 15.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.r),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0x1D22610F),
+                  offset: Offset(0, 10.h),
+                  blurRadius: 70.r,
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildAvatar(),
-                  SizedBox(width: 12.w),
-                  Flexible(child: _buildContactInfo(isRTL)),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        _buildAvatar(),
+                        SizedBox(width: 12.w),
+                        Flexible(child: _buildContactInfo(isRTL)),
+                      ],
+                    ),
+                  ),
+                  _buildActionButton(context, isRTL, isLoading),
                 ],
               ),
             ),
-            _buildActionButton(context, isRTL),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildAvatar() {
+    if (contact.image != null && contact.image!.isNotEmpty) {
+      return CustomCachedImage(
+        imageUrl: contact.image!,
+        w: 50.w,
+        h: 50.w,
+        borderRadius: 100.r,
+      );
+    }
+    return _buildInitialAvatar();
+  }
+
+  Widget _buildInitialAvatar() {
     return Container(
       width: 50.w,
       height: 50.w,
@@ -111,7 +133,7 @@ class ContactListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(BuildContext context, bool isRTL) {
+  Widget _buildActionButton(BuildContext context, bool isRTL, bool isLoading) {
     final double buttonWidth = isRegistered ? 100.w : 80.w;
 
     return SizedBox(
@@ -138,67 +160,75 @@ class _ButtonContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final friendsCubit = context.read<FriendsCubit>();
-    final status = friendsCubit.getFriendRequestStatus(contact.id);
+    return BlocBuilder<FriendsCubit, FriendsState>(
+      builder: (context, state) {
+        final friendsCubit = context.read<FriendsCubit>();
+        final status = friendsCubit.getFriendRequestStatus(contact.id);
 
-    // Determine button state based on API response
-    final isFriend = contact.isFriend == true;
-    final isPending = friendsCubit.nonRegisteredContacts == "pending";
-    final isAccepted = status == "accepted";
+        // Determine button state based on the current status
+        final isFriend = contact.isFriend == true;
+        final isPending = status == "pending" || contact.status == "pending";
+        final isAccepted = status == "accepted";
 
-    String buttonText;
-    IconData icon;
-    Color color;
+        String buttonText;
+        IconData icon;
+        Color color;
 
-    if (isRegistered) {
-      if (isFriend) {
-        buttonText = 'delete';
-        icon = CupertinoIcons.trash;
-        color = AppColors.red;
-      } else if (contact.status == 'pending' || isPending) {
-        buttonText = 'pending';
-        icon = CupertinoIcons.hourglass;
-        color = AppColors.orange;
-      } else if (contact.status == 'accepted' || isAccepted) {
-        buttonText = 'added';
-        icon = CupertinoIcons.person_crop_circle_fill_badge_checkmark;
-        color = AppColors.green;
-      } else {
-        buttonText = 'add';
-        icon = CupertinoIcons.person_add_solid;
-        color = AppColors.primary;
-      }
-    } else {
-      buttonText = 'invite';
-      icon = CupertinoIcons.share;
-      color = AppColors.gradientFour;
-    }
+        if (isRegistered) {
+          if (isFriend) {
+            buttonText = 'delete';
+            icon = CupertinoIcons.trash;
+            color = AppColors.red;
+          } else if (isPending) {
+            buttonText = 'pending';
+            icon = CupertinoIcons.hourglass;
+            color = AppColors.orange;
+          } else if (isAccepted) {
+            buttonText = 'added';
+            icon = CupertinoIcons.person_crop_circle_fill_badge_checkmark;
+            color = AppColors.green;
+          } else {
+            buttonText = 'add';
+            icon = CupertinoIcons.person_add_solid;
+            color = AppColors.primary;
+          }
+        } else {
+          buttonText = 'invite';
+          icon = CupertinoIcons.share;
+          color = AppColors.gradientFour;
+        }
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 36.h,
-        padding: EdgeInsets.symmetric(horizontal: 8.w),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white, size: 16.w),
-            SizedBox(width: 4.w),
-            Text(
-              buttonText.tr(context),
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
+        return GestureDetector(
+          onTap: () async {
+            onTap();
+            // Force a rebuild after the state changes
+            friendsCubit.refresh();
+          },
+          child: Container(
+            height: 36.h,
+            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8.r),
             ),
-          ],
-        ),
-      ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: Colors.white, size: 16.w),
+                SizedBox(width: 4.w),
+                Text(
+                  buttonText.tr(context),
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

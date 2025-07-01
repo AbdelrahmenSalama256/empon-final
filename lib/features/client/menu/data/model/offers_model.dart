@@ -1,31 +1,34 @@
 class OfferModel {
   final bool success;
   final String message;
-  final OfferData data;
+  final OfferData? data; // Make data nullable
 
   OfferModel({
     required this.success,
     required this.message,
-    required this.data,
+    this.data,
   });
 
   factory OfferModel.fromJson(Map<String, dynamic> json) {
     return OfferModel(
-      success: json['success'] as bool,
-      message: json['message'] as String,
-      data: OfferData.fromJson(json['data'] as Map<String, dynamic>),
+      success: json['success'] as bool? ?? false, // Default to false if null
+      message:
+          json['message'] as String? ?? '', // Default to empty string if null
+      data: json['data'] != null
+          ? OfferData.fromJson(json['data'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
 
 class OfferData {
-  final List<Offer> offers;
+  final List<Offer>? offers; // Make offers nullable
   final int currentPage;
   final int lastPage;
   final int total;
 
   OfferData({
-    required this.offers,
+    this.offers,
     required this.currentPage,
     required this.lastPage,
     required this.total,
@@ -33,12 +36,13 @@ class OfferData {
 
   factory OfferData.fromJson(Map<String, dynamic> json) {
     return OfferData(
-      offers: (json['offers'] as List)
-          .map((item) => Offer.fromJson(item as Map<String, dynamic>))
-          .toList(),
-      currentPage: json['current_page'] as int,
-      lastPage: json['last_page'] as int,
-      total: json['total'] as int,
+      offers: (json['offers'] as List?)
+              ?.map((item) => Offer.fromJson(item as Map<String, dynamic>))
+              .toList() ??
+          [],
+      currentPage: json['current_page'] as int? ?? 0,
+      lastPage: json['last_page'] as int? ?? 0,
+      total: json['total'] as int? ?? 0,
     );
   }
 }
@@ -56,7 +60,7 @@ class Offer {
   final Account account;
   final String offerableType;
   final int offerableId;
-  final Offerable offerable;
+  final Offerable? offerable; // Make offerable nullable
 
   Offer({
     required this.id,
@@ -71,28 +75,31 @@ class Offer {
     required this.account,
     required this.offerableType,
     required this.offerableId,
-    required this.offerable,
+    this.offerable,
   });
 
   factory Offer.fromJson(Map<String, dynamic> json) {
     return Offer(
       id: json['id'] as int,
-      originalPrice: json['original_price'] as String,
-      offerPrice: json['offer_price'] as String,
-      status: json['status'] as String,
-      message: json['message'] as String,
-      createdAt: json['created_at'] as String,
-      updatedAt: json['updated_at'] as String,
-      expiresAt: json['expires_at'] as String,
+      originalPrice: json['original_price'] as String? ?? '',
+      offerPrice: json['offer_price'] as String? ?? '',
+      status: json['status'] as String? ?? '',
+      message: json['message'] as String? ?? '',
+      createdAt: json['created_at'] as String? ?? '',
+      updatedAt: json['updated_at'] as String? ?? '',
+      expiresAt: json['expires_at'] as String? ?? '',
       user: User.fromJson(json['user'] as Map<String, dynamic>),
       account: Account.fromJson(json['account'] as Map<String, dynamic>),
-      offerableType: json['offerable_type'] as String,
-      offerableId: json['offerable_id'] as int,
-      offerable: Offerable.fromJson(json['offerable'] as Map<String, dynamic>),
+      offerableType: json['offerable_type'] as String? ?? '',
+      offerableId: json['offerable_id'] as int? ?? 0,
+      offerable: json['offerable'] != null
+          ? Offerable.fromJson(json['offerable'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
 
+// Keep User, Account, and Offerable classes as they are, but ensure they handle nulls where applicable
 class User {
   final int id;
   final String firstName;
@@ -108,9 +115,9 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] as int,
-      firstName: json['first_name'] as String,
-      lastName: json['last_name'] as String,
+      id: json['id'] as int? ?? 0,
+      firstName: json['first_name'] as String? ?? '',
+      lastName: json['last_name'] as String? ?? '',
       image: json['image'] as String? ?? '',
     );
   }
@@ -129,8 +136,8 @@ class Account {
 
   factory Account.fromJson(Map<String, dynamic> json) {
     return Account(
-      id: json['id'] as int,
-      name: json['name'] as String,
+      id: json['id'] as int? ?? 0,
+      name: json['name'] as String? ?? '',
       logo: json['logo'] as String? ?? '',
     );
   }
@@ -151,9 +158,9 @@ class Offerable {
 
   factory Offerable.fromJson(Map<String, dynamic> json) {
     return Offerable(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      price: json['price'] as String,
+      id: json['id'] as int? ?? 0,
+      name: json['name'] as String? ?? '',
+      price: json['price'] as String? ?? '',
       image: json['image'] as String? ?? '',
     );
   }

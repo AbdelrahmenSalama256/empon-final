@@ -131,6 +131,8 @@ class InviteContactsPage extends StatelessWidget {
                                                   child: ContactListItem(
                                                     contact: ContactModel(
                                                       id: user.id.toString(),
+                                                      image:
+                                                          user.image.toString(),
                                                       name: user.name ?? "",
                                                       phone: user.phone ?? '',
                                                       isSelected:
@@ -142,11 +144,11 @@ class InviteContactsPage extends StatelessWidget {
                                                       isFriend: user.isFriend ??
                                                           false,
                                                     ),
-                                                    onTap: () {
+                                                    onTap: () async {
                                                       if (!friendsCubit
                                                               .isClosed &&
                                                           context.mounted) {
-                                                        friendsCubit
+                                                        await friendsCubit
                                                             .toggleFriendRequest(
                                                           user.id.toString(),
                                                         );
