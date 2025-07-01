@@ -218,14 +218,14 @@ class Variation {
   }
 }
 class AttributeValue {
-  final int id;
-  final String name;
-  final String attribute;
+  final int? id;
+  final String? name;
+  final String? attribute;
 
   AttributeValue({
     required this.id,
     required this.name,
-    required this.attribute,
+     this.attribute,
   });
 
   factory AttributeValue.fromJson(Map<String, dynamic> json) {
@@ -238,17 +238,20 @@ class AttributeValue {
 }
 
 class ColorModel {
-  final int id;
-  final String name;
-  final String code;
+  final int? id;
+  final String? name;
+  final String? code;
 
   ColorModel({
-    required this.id,
-    required this.name,
-    required this.code,
+    this.id,
+    this.name,
+    this.code,
   });
 
-  factory ColorModel.fromJson(Map<String, dynamic> json) {
+  factory ColorModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return ColorModel();
+    }
     return ColorModel(
       id: json['id'],
       name: json['name'],
@@ -286,5 +289,119 @@ class Details {
       'quality': quality,
       'material': material,
     };
+  }
+}
+class UpdateProductResponse {
+  final bool success;
+  final String message;
+  final ProductData data;
+
+  UpdateProductResponse({
+    required this.success,
+    required this.message,
+    required this.data,
+  });
+
+  factory UpdateProductResponse.fromJson(Map<String, dynamic> json) {
+    return UpdateProductResponse(
+      success: json['success'],
+      message: json['message'],
+      data: ProductData.fromJson(json['data']),
+    );
+  }
+}
+
+class ProductData {
+  final int id;
+  final String? name;
+  final String? description;
+  final List<ProductDetails>? details;
+  final String? code;
+  final String? category;
+  final String? price;
+  final int? vendorId;
+  final String? vendorName;
+  final String? isSale;
+  final int? active;
+  final String? discountType;
+  final String? discountValue;
+  final String? estimatedDeliveryTime;
+  final String? freeShippingCostAfter;
+  final List<Variation>? variations;
+  final bool? isLiked;
+  final int? likes;
+  final bool? isFavourited;
+  final int? favourites;
+  final String? image;
+  final List<ProductImage>? images;
+  final String? createdAt;
+  final String? updatedAt;
+  final String? accountType;
+  final String? whatsappNumber;
+
+  ProductData({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.details,
+    required this.code,
+    required this.category,
+    required this.price,
+    required this.vendorId,
+    required this.vendorName,
+    required this.isSale,
+    required this.active,
+    required this.discountType,
+    required this.discountValue,
+    required this.estimatedDeliveryTime,
+    required this.freeShippingCostAfter,
+    required this.variations,
+    required this.isLiked,
+    required this.likes,
+    required this.isFavourited,
+    required this.favourites,
+    required this.image,
+    required this.images,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.accountType,
+    required this.whatsappNumber,
+  });
+
+  factory ProductData.fromJson(Map<String, dynamic> json) {
+    return ProductData(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      details: (json['details'] as List)
+          .map((d) => ProductDetails.fromJson(d))
+          .toList(),
+      code: json['code'],
+      category: json['category'],
+      price: json['price'],
+      vendorId: json['vendor_id'],
+      vendorName: json['vendor_name'],
+      isSale: json['is_sale'],
+      active: json['active'],
+      discountType: json['discount_type'],
+      discountValue: json['discount_value'],
+      estimatedDeliveryTime: json['estimated_delivery_time'],
+      freeShippingCostAfter: json['free_shipping_cost_after'],
+      variations: (json['variations'] as List)
+          .map((v) => Variation.fromJson(v))
+          .toList(),
+      isLiked: json['is_liked'],
+      likes: json['likes'],
+      isFavourited: json['is_favourited'],
+      favourites: json['favourites'],
+      image: json['image'],
+      images: (json['images'] as List)
+          .map((img) => ProductImage.fromJson(img))
+          .toList(),
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+      accountType: json['account_type'],
+      whatsappNumber: json['whatsapp_number'],
+    );
   }
 }

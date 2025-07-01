@@ -6,6 +6,7 @@ import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/locations/data/model/location_model.dart';
 import 'package:embone/features/client/locations/data/repo/locations_repo.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,10 @@ class AccountCubit extends Cubit<AccountState> {
   LocationModel? selectedState;
   LocationModel? selectedCity;
   List<LocationModel> allLocations = [];
+  String? city;
+  String? stat;
+  String? country;
+
 
   AccountCubit(this.accountRepo, {this.name}) : super(AccountInitial());
   final String? name;
@@ -272,8 +277,34 @@ List<LocationModel> getFilteredStates() {
       emit(StoreRequestError("Something went wrong"));
     }
 
-    
+   }
+    Future<void> updateAccount({required int accountId}) async {
+    emit(AccountLoading());
+
+    final response = await accountRepo.updateAccountData(
+        accountId,
+        nameController.text,
+        descriptionController.text,
+        videoUrlController.text,
+        emailController.text,
+        phoneController.text,
+        addressController.text,
+        postalCodeController.text,
+        latController.text,
+        lngController.text,
+        selectedCity?.id.toString() ?? "");
+
+    response.fold(
+      (l) {
+        Print.error('API Error (Update): $l');
+        emit(AccountError(massage: l));
+      },
+      (r) {
+        emit(AccountSuccess());
+      },
+    );
   }
+  
   Future<void> sendVerficationRequest({required int accountId}) async {
     emit(StoreRequestLoading());
 
@@ -295,6 +326,42 @@ List<LocationModel> getFilteredStates() {
       emit(StoreRequestError(e.errorModel.detail));
     } catch (e) {
       emit(StoreRequestError("Something went wrong"));
+    }
+  }
+  void initControllers({Account? model}) {
+    if (model != null) {
+      emit(AccountLoading());
+      nameController.text = model.name!;
+      descriptionController.text = model.description!;
+      videoUrlController.text = model.videoUrl!;
+      emailController.text = model.email! ;
+      phoneController.text = model.phone! ;
+      addressController.text = model.address!;
+      postalCodeController.text = model.postalCode!;
+      latController.text = model.lat.toString();
+      lngController.text = model.lng.toString() ;
+      city = model.city!;
+      stat = model.state!;
+      country = model.country!;
+
+      emit(AccountUpdated());
+    } else {
+      nameController.clear();
+      descriptionController.clear();
+      videoUrlController.clear();
+      websiteController.clear();
+      emailController.clear();
+      phoneController.clear();
+      addressController.clear();
+      postalCodeController.clear();
+      latController.clear();
+      lngController.clear();
+      categoryIds.clear();
+      files.clear();
+      selectedCity = null;
+      selectedState = null;
+      selectedCountry = null;
+      emit(AccountUpdated());
     }
   }
 

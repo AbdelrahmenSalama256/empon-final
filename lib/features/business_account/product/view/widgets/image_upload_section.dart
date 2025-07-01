@@ -11,9 +11,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUploadSection extends StatefulWidget {
-  const ImageUploadSection({super.key, required this.cubit,this.imageUrl});
+  const ImageUploadSection({super.key, required this.cubit});
   final bool cubit;
-  final String? imageUrl;
   @override
   State<ImageUploadSection> createState() => _ImageUploadSectionState();
 }
@@ -93,7 +92,7 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _buildImageThumbnail(_mainImage!, -1, isMain: true, imageUrl: widget.imageUrl),
+                      _buildImageThumbnail(_mainImage!, -1, isMain: true),
                     ],
                   ),
                 )

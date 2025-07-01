@@ -85,7 +85,6 @@ class AccountRepo {
     String? name,
     String? description,
     String? videoUrl,
-    String? website,
     String? email,
     String? phone,
     String? address,
@@ -93,9 +92,6 @@ class AccountRepo {
     String? lat,
     String? lng,
     String? cityId,
-    XFile? logo,
-    XFile? coverImage,
-    List<String>? categoryIds,
     
   ) async {
     try {
@@ -105,17 +101,14 @@ class AccountRepo {
           'name': name,
           'description': description,
           'video_url': videoUrl,
-          'website': website,
           'email': email,
           'phone': phone,
           'city_id': cityId,
           'address': address,
           'postal_code': postalCode,
-          'logo': logo != null ? await uploadImageToAPI(logo) : null,
-          'cover': coverImage != null ? await uploadImageToAPI(coverImage) : null,
           'lat': lat,
           'lng': lng,
-          "category_ids[]": categoryIds,
+          '_method':'PUT'
 
         },
         isFormData: true,

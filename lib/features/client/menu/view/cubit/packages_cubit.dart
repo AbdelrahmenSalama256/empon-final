@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/features/client/menu/data/model/ads_pack_model.dart';
 import 'package:embone/features/client/menu/data/model/cities_model.dart';
 import 'package:embone/features/client/menu/data/model/packages_model.dart';
 import 'package:embone/features/client/menu/data/repo/packages_repo.dart';
@@ -16,6 +17,16 @@ class PackagesCubit extends Cubit<PackagesState> {
   int? selectedCityId;
   TextEditingController? maxAge = TextEditingController();
   TextEditingController? minAge = TextEditingController();
+  PackageAdsData? packageAdsResponse;
+  List<int> selectedItems = [];
+  
+ String? startDate;
+ String? endDate;
+
+  String? selectedAudience;
+  String? selectedType;
+  String? selectedCategory;
+
 
   PackagesCubit(this.packagesRepo) : super(PackagesInitial());
   void init() {
@@ -61,4 +72,40 @@ class PackagesCubit extends Cubit<PackagesState> {
       },
     );
   }
+
+  Future<void> createPackageAds({
+    required int packageId,
+    required int accountId,
+  }) async {
+    if (isClosed) return;
+
+    emit(PackageAdsLoading());
+
+    
+      final result = await packagesRepo.createPackageWithAds(
+        packageId: packageId,
+        accountId: accountId,
+        productIds: selectedItems,
+        genderFilter: slectedGander!,
+        minAge: int.tryParse(minAge?.text ?? '') ?? 0,
+        maxAge: int.tryParse(maxAge?.text ?? '') ?? 0,
+        cityId: selectedCityId!,
+        startDate: startDate!,
+        endDate: endDate!,
+      );
+
+      if (isClosed) return;
+
+     result.fold(
+      (error) {
+        PrintUtil.error("Failed to fetch Packages: $error");
+        emit(PackageAdsError(error.toString()));
+      },
+      (response) {
+        packageAdsResponse = response.data;
+        emit(PackageAdsLoaded(packageAdsResponse!));
+      }
+    );
+  }
+
 }

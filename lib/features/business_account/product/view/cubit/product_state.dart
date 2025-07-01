@@ -10,6 +10,10 @@ class ProductSuccess extends ProductState {
   final business.AddProductModel product;
   ProductSuccess(this.product);
 }
+class UpdateProductSuccess extends ProductState {
+  final business.UpdateProductResponse product;
+  UpdateProductSuccess(this.product);
+}
 
 class ProductError extends ProductState {
   final String error;
@@ -20,7 +24,7 @@ class ProductImagePicked extends ProductState {}
 
 class ProductImagesPicked extends ProductState {}
 class ProductLoaded extends ProductState {
-  final List<business.Product> products;
+  final business.Data products;
   ProductLoaded(this.products);
 }
 
@@ -43,4 +47,21 @@ class CategoryError extends ProductState {
 }
 class ProductDeleted extends ProductState{
  ProductDeleted();
+}
+
+class AttributesLoading extends ProductState {}
+
+class AttributesLoaded extends ProductState {
+  final List<AttributeValue> attribute;
+  AttributesLoaded(this.attribute);
+}
+
+class AttributesSelected extends ProductState {
+  final int selectedId;
+  AttributesSelected(this.selectedId);
+}
+
+class AttributesError extends ProductState {
+  final String message;
+  AttributesError(this.message);
 }

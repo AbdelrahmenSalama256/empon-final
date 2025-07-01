@@ -12,6 +12,7 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
 import 'package:embone/features/business_account/product/view/add_product_buisniss_account.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
+import 'package:embone/features/business_account/product/view/update_product_buisniss_account.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
 import 'package:embone/features/client/product_Details/view/widgets/price_display.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_description.dart';
@@ -121,11 +122,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     children: [
                                       ProductImageSection(
                                         images: [
-                                          service?.mainImage?.isNotEmpty == true
-                                              ? service!.mainImage!
+                                          service?.mainImage.isNotEmpty == true
+                                              ? service!.mainImage
                                               : 'assets/default_image.png',
                                           ...(service?.listImages
-                                                  ?.where((img) =>
+                                                  .where((img) =>
                                                       img.isNotEmpty == true)
                                                   .map((img) => img) ??
                                               []),
@@ -139,8 +140,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                         create: (context) =>
                                             ServiceCubit(sl<ServiceRepo>()),
                                         child: InteractionBar(
-                                          showLike: false,
-
+                                          isActive:service?.active==true?1:0 ,
+                                          onActive:(){ cubit.updateServiceStatus(service!.id);
+                                          cubit.goToService(id: service.id);
+                                          },
                                           isVendor: widget.isVendor,
                                           likeCount: service?.likes ?? 0,
                                           commentCount:
@@ -182,16 +185,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                           },
                                           onEdit: () {
                                             navigateTo(
-                                              context,
-                                              AddProductPage(
-                                                isService: true,
-                                                isUpdate: true,
-                                                businessAccountId: int.parse(
-                                                    sl<CacheHelper>().getData(
-                                                        key: AppConstants
-                                                            .businessAccountId)),
-                                              ),
-                                            );
+                                                context,
+                                                UpdateProductPage(
+                                                    isService: true,
+                                                    serviceData: cubit.serviceModel,
+                                                    businessAccountId: int.parse(
+                                                        sl<CacheHelper>().getData(
+                                                            key: AppConstants
+                                                                .businessAccountId))));
                                           },
                                           onDelete: () {
                                             CustomPopup.show(

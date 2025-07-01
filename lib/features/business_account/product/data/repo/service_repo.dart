@@ -7,6 +7,8 @@ import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
 
+import '../../../../../core/constants/widgets/print_util.dart';
+
 
 class ServiceRepo {
   final ApiConsumer api;
@@ -61,6 +63,7 @@ class ServiceRepo {
   }
   Future<Either<String, ServiceModel>> updateService({
     required int serviceId,
+    int? accountId,
      String? name,
      String? details,
      String? price,
@@ -71,6 +74,7 @@ class ServiceRepo {
   }) async {
     try {
       final data = {
+        "account_id":accountId,
         "name": name,
         "details": details,
         "price": price,
@@ -83,16 +87,18 @@ class ServiceRepo {
       }
 
       if (listImages != null && listImages.isNotEmpty) {
-        data["list_images[]"] = await Future.wait(listImages.map((img) => uploadImageToAPI(img)));
+        for (int i = 0; i < listImages.length; i++) {
+          data["list_images[$i]"] = await uploadImageToAPI(listImages[i]);
+        }
       }
+      
+      final response = await api.post(
+        '${EndPoints.updateService}$serviceId',
+        isFormData: true,
+        data: data,
+      );
 
-      // final response = await api.put(
-      //   '${EndPoints.updateService}/$serviceId',
-      //   isFormData: true,
-      //   data: data,
-      // );
-
-      return Right(ServiceModel.fromJson(data));// todo:wait end point to get response
+      return Right(ServiceModel.fromJson(response.data));// todo:wait end point to get response
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {

@@ -39,28 +39,30 @@ class ServiceData {
   final bool? approved;
   final bool? isLiked;
   final int? likes;
-  final String? approvalStatus;
-  final String? mainImage;
-  final List<String>? listImages;
-  final String? createdAt;
-  final String? updatedAt;
-  final Map<String, String>? features;
+  final String approvalStatus;
+  final String mainImage;
+  final List<String> listImages;
+  final String createdAt;
+  final String updatedAt;
+  final List<String> features;
+  final List<Category> categoties;
 
   ServiceData({
-    this.id,
-    this.name,
-    this.details,
-    this.price,
-    this.active,
-    this.approved,
-    this.isLiked,
-    this.likes,
-    this.approvalStatus,
-    this.mainImage,
-    this.listImages,
-    this.createdAt,
-    this.updatedAt,
-    this.features,
+    required this.id,
+    required this.name,
+    required this.details,
+    required this.price,
+    required this.active,
+    required this.approved,
+    required this.isLiked,
+    required this.likes,
+    required this.approvalStatus,
+    required this.mainImage,
+    required this.listImages,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.features,
+    required this.categoties
   });
 
   factory ServiceData.fromJson(Map<String, dynamic> json) {
@@ -87,6 +89,13 @@ class ServiceData {
       features: featuresMap,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+      categoties: json['category'] is List
+          ? (json['category'] as List)
+              .map((item) => Category.fromJson(item))
+              .toList()
+          : json['category'] is Map
+              ? [Category.fromJson(json['category'])]
+              : [],
     );
   }
 
@@ -104,7 +113,8 @@ class ServiceData {
     List<String>? listImages,
     String? createdAt,
     String? updatedAt,
-    Map<String, String>? features,
+    List<String>? features,
+    List<Category>? categories
   }) {
     return ServiceData(
       id: id ?? this.id,
@@ -120,7 +130,8 @@ class ServiceData {
       listImages: listImages ?? this.listImages,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      features: features ?? this.features,
+      features: features??this.features,
+      categoties: categories??this.categoties,
     );
   }
 }

@@ -48,6 +48,7 @@ class EndPoints {
   static const String resetPassword = "${baseUrl}reset-password";
   static const String home = "${baseUrl}home";
   static const String homeService = "${baseUrl}random-services";
+  static const String attributes = "${baseUrl}attributes";
   // ! Search
   static const String search = "${baseUrl}search";
   static const String searchHistory = '${baseUrl}history-search';
@@ -128,6 +129,7 @@ class EndPoints {
   static const String declineFriendRequest = '${baseUrl}friend-request';
   static const String myFriends = '${baseUrl}friends';
   static const String sellerStatistics = '${baseUrl}seller-statistics';
+  static const String adsPack = '${baseUrl}buy-package-with-ads';
 
 //! product
   static const String addProduct = '${baseUrl}product';

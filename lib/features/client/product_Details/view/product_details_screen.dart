@@ -9,7 +9,7 @@ import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/business_account/product/view/add_product_buisniss_account.dart';
+import 'package:embone/features/business_account/product/view/update_product_buisniss_account.dart';
 import 'package:embone/features/business_account/store/view/product_inventory_screen.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
 import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
@@ -313,12 +313,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         onEdit: () {
                                           navigateTo(
                                             context,
-                                            AddProductPage(
+                                            UpdateProductPage(
                                               businessAccountId: int.parse(
                                                   sl<CacheHelper>().getData(
                                                       key: AppConstants
                                                           .businessAccountId)),
-                                              isUpdate: true,
                                               isService: false,
                                               productData: cubit.productModel,
                                             ),

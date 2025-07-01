@@ -10,8 +10,9 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
-import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/view/update_account%20business.dart';
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/chat/view/massages_screen.dart';
 import 'package:embone/features/client/menu/data/repo/total_sales_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/total_sales_cubit.dart';
@@ -149,10 +150,17 @@ class SettingsScreen extends StatelessWidget {
                                           BlocProvider(
                                             create: (context) =>
                                                 AccountCubit(sl<AccountRepo>()),
-                                            child:
-                                                const CreateBusinessAccountSettings(
-                                              isFromSetting: true,
-                                            ),
+                                            child: cubit.userAccount != null
+                                                ? UpdateBusinessAccount(
+                                                    accountData: cubit.userAccount!
+                                                        .where((element) =>
+                                                            element.id ==
+                                                            cubit.businessId)
+                                                        .cast<Account>().first,
+
+                                                        
+                                                  )
+                                                : const SizedBox.shrink(),
                                           ));
                                 },
                               ),

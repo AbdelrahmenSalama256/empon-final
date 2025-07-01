@@ -83,7 +83,6 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
             child: Column(
               children: [
                 ...List.generate(cubit.variations.length, (index) {
-                  final variation = cubit.variations[index];
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -119,30 +118,42 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                       // === SIZE DROPDOWN ===
                       Row(
                         children: [
-                          Expanded(
-                            child: AppTextField(
-                              controller: cubit.variations[index]['attribute_value_id'] ??=
-                                  TextEditingController(text: variation['size']),
-                              hintText: 'size_hint'.tr(context),
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 13.w),
-                                child: SvgPicture.asset(
-                                  "assets/images/svg/product_size.svg",
-                                  width: 20.w,
-                                  height: 20.h,
+                         Expanded(
+                                child: AppDropdownField(
+                                  hint: 'size_hint'.tr(context),
+                                  value: cubit
+                                      .findAttributeById(cubit.variations[index]
+                                          ['attribute_value_id'])
+                                      ?.name,
+                                  items: cubit.attributes
+                                      .map((s) => s.name)
+                                      .toList(),
+                                  onChanged: (value) {
+                                    final selected =
+                                        cubit.attributes.firstWhere(
+                                      (s) => s.name == value,
+                                    );
+
+                                    if (selected.id != -1) {
+                                      setState(() {
+                                        cubit.variations[index]
+                                                ['attribute_value_id'] =
+                                            selected.id;
+                                      });
+                                    }
+                                  },
+                                  showErrorBorder: true,
+                                  prefixIcon: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 13.w),
+                                    child: SvgPicture.asset(
+                                      "assets/images/svg/product_size.svg",
+                                      width: 20.w,
+                                      height: 20.h,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              keyboardType: TextInputType.text,
-                              onChanged: (value) {
-                                variation['size'] = value;
-                              },
-                              validator: (value) => Validators.validateRequired(
-                                value,
-                                'size_hint'.tr(context),
-                                context,
-                              ),
-                            ),
-                          ),
                           
                           SizedBox(width: 10.w),
                           
