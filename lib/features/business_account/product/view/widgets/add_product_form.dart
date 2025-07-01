@@ -71,15 +71,15 @@ class _AddProductFormState extends State<AddProductForm> {
 
   @override
   Widget build(BuildContext context) {
-   // final data = widget.productData?.data;
+    final data = widget.productData?.data;
     return BlocProvider(
-      create: (context) => ProductCubit(sl<ProductRepo>())
-        ..initControllers(widget.isUpdate ?? false,
-            name: data.name,
-            description: data.description,
-            price: data.price,
-            variation: data.variations,
-            category: data.category),
+      create: (context) => ProductCubit(sl<ProductRepo>()),
+        // ..initControllers(widget.isUpdate ?? false,
+        //     name: data.name,
+        //     description: data.description,
+        //     price: data.price,
+        //     variation: data.variations,
+        //     category: data.category),
       child: Form(
         key: _formKey,
         child: Column(
