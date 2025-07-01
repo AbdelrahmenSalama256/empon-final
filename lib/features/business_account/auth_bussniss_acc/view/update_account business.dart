@@ -22,9 +22,9 @@ class UpdateBusinessAccount extends StatefulWidget {
 
 
   const UpdateBusinessAccount({
-    Key? key,
+    super.key,
     required this.accountData,
-  }) : super(key: key);
+  });
 
   @override
   State<UpdateBusinessAccount> createState() => _UpdateBusinessAccountState();
