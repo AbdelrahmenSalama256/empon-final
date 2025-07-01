@@ -129,7 +129,7 @@ class _AccountsBottomSheetContentState
             // Business accounts title
             if (accounts.isNotEmpty)
               Align(
-                alignment: Alignment.centerRight,
+                alignment: AlignmentDirectional.centerStart,
                 child: Text(
                   'business_accounts_title'.tr(context),
                   style: TextStyle(

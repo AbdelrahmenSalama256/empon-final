@@ -1,6 +1,8 @@
 class ContactModel {
   final String id;
   final String name;
+  final String? image;
+
   final String phone;
   final bool isSelected;
   final String? initial;
@@ -11,6 +13,7 @@ class ContactModel {
     required this.id,
     required this.name,
     required this.phone,
+    this.image,
     this.status,
     required this.isSelected,
     this.initial,
@@ -21,6 +24,7 @@ class ContactModel {
     String? id,
     String? name,
     String? phone,
+    String? image,
     bool? isSelected,
     String? status,
     String? initial,
@@ -30,6 +34,7 @@ class ContactModel {
       id: id ?? this.id,
       name: name ?? this.name,
       phone: phone ?? this.phone,
+      image: image ?? this.image,
       isSelected: isSelected ?? this.isSelected,
       status: status ?? this.status,
       initial: initial ?? this.initial,

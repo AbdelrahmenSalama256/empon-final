@@ -39,19 +39,12 @@ class AddNewAddressPage extends StatefulWidget {
 
 class _AddNewAddressPageState extends State<AddNewAddressPage> {
   final _formKey = GlobalKey<FormState>();
-  LocationModel? _selectedCountry;
-  LocationModel? _selectedState;
-  LocationModel? _selectedCity;
 
   @override
   void initState() {
     super.initState();
-    // Initialize dropdown values from cubit
     final cubit = context.read<RegisterCubit>();
     cubit.fetchAllLocations();
-    _selectedCountry = cubit.selectedCountry;
-    _selectedState = cubit.selectedState;
-    _selectedCity = cubit.selectedCity;
   }
 
   @override
@@ -70,7 +63,6 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
               showToast(context,
                   message: "address_updated_successfully".tr(context),
                   state: ToastStates.success);
-              // context.read<GlobalCubit>().fetchUserAddresses();
               Navigator.pop(context);
               navigateReplac(context, const AddressesScreen());
             }
@@ -88,15 +80,16 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
             builder: (context, state) {
               final globalCubit = context.read<GlobalCubit>();
               final cubit = context.read<RegisterCubit>();
-              List<LocationModel> countries =
-                  state is CountriesLoaded ? state.countries : [];
-              List<LocationModel> states = cubit.getFilteredStates();
-              List<LocationModel> cities = cubit.getFilteredCities();
 
-              PrintUtil.info("Current state: $state");
-              PrintUtil.info("Countries count: ${countries.length}");
-              PrintUtil.info("States count: ${states.length}");
-              PrintUtil.info("Cities count: ${cities.length}");
+              // Get the current state values from cubit
+              final selectedCountry = cubit.selectedCountry;
+              final selectedState = cubit.selectedState;
+              final selectedCity = cubit.selectedCity;
+
+              // Get the filtered lists from cubit
+              final countries = cubit.allCountries;
+              final states = cubit.getFilteredStates();
+              final cities = cubit.getFilteredCities();
 
               bool isLoading = state is LocationsLoading;
 
@@ -147,11 +140,10 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                               else ...[
                                 AppDropdownField(
                                   hint: 'country'.tr(context),
-                                  value: _selectedCountry?.name,
+                                  value: selectedCountry?.name,
                                   items: countries
                                       .map((country) => country.name)
                                       .toList(),
-                                  enabled: countries.isNotEmpty,
                                   onChanged: (value) {
                                     if (value == null) return;
                                     final selected = countries.firstWhere(
@@ -163,11 +155,6 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                           stateId: 0),
                                     );
                                     if (selected.id != 0) {
-                                      setState(() {
-                                        _selectedCountry = selected;
-                                        _selectedState = null;
-                                        _selectedCity = null;
-                                      });
                                       cubit.setCountry(selected);
                                       PrintUtil.info(
                                           "Selected country: ${selected.name} (ID: ${selected.id})");
@@ -182,11 +169,10 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                 SizedBox(height: 16.h),
                                 AppDropdownField(
                                   hint: 'governorate'.tr(context),
-                                  value: _selectedState?.name,
+                                  value: selectedState?.name,
                                   items: states
                                       .map((state) => state.name)
                                       .toList(),
-                                  enabled: states.isNotEmpty,
                                   onChanged: (value) {
                                     if (value == null) return;
                                     final selected = states.firstWhere(
@@ -198,10 +184,6 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                           stateId: 0),
                                     );
                                     if (selected.id != 0) {
-                                      setState(() {
-                                        _selectedState = selected;
-                                        _selectedCity = null;
-                                      });
                                       cubit.setGovernorate(selected);
                                       PrintUtil.info(
                                           "Selected governorate: ${selected.name} (ID: ${selected.id})");
@@ -216,10 +198,9 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                 SizedBox(height: 16.h),
                                 AppDropdownField(
                                   hint: 'city'.tr(context),
-                                  value: _selectedCity?.name,
+                                  value: selectedCity?.name,
                                   items:
                                       cities.map((city) => city.name).toList(),
-                                  enabled: cities.isNotEmpty,
                                   onChanged: (value) {
                                     if (value == null) return;
                                     final selected = cities.firstWhere(
@@ -231,9 +212,6 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                           stateId: 0),
                                     );
                                     if (selected.id != 0) {
-                                      setState(() {
-                                        _selectedCity = selected;
-                                      });
                                       cubit.setCity(selected);
                                       PrintUtil.info(
                                           "Selected city: ${selected.name} (ID: ${selected.id})");
@@ -245,17 +223,6 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                   contentPadding: EdgeInsets.symmetric(
                                       vertical: 16.h, horizontal: 16.w),
                                 ),
-                                // SizedBox(height: 16.h),
-                                // AppTextField(
-                                //   controller: cubit.detailedAddressController,
-                                //   hintText: 'detailed_address'.tr(context),
-                                //   keyboardType: TextInputType.text,
-                                //   textInputAction: TextInputAction.done,
-                                //   validator: (value) => value!.isEmpty
-                                //       ? 'please_enter_detailed_address'
-                                //           .tr(context)
-                                //       : null,
-                                // ),
                                 SizedBox(height: 16.h),
                                 GestureDetector(
                                   onTap: () async {
@@ -273,10 +240,8 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                         result['lng'].toString(),
                                       );
                                       setState(() {
-                                        cubit.detailedAddressController.text ==
+                                        cubit.detailedAddressController.text =
                                             result['address'];
-                                        PrintUtil.debug(cubit
-                                            .detailedAddressController.text);
                                       });
                                       PrintUtil.info(
                                           "Location selected: ${result['address']}, Lat: ${result['lat']}, Lng: ${result['lng']}");
@@ -341,16 +306,16 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                               cubit.lng != null) {
                                             PrintUtil.info(
                                                 "Navigating to next step with data: "
-                                                "Country: ${_selectedCountry?.name} (ID: ${_selectedCountry?.id}), "
-                                                "Governorate: ${_selectedState?.name} (ID: ${_selectedState?.id}), "
-                                                "City: ${_selectedCity?.name} (ID: ${_selectedCity?.id}), "
+                                                "Country: ${selectedCountry?.name} (ID: ${selectedCountry?.id}), "
+                                                "Governorate: ${selectedState?.name} (ID: ${selectedState?.id}), "
+                                                "City: ${selectedCity?.name} (ID: ${selectedCity?.id}), "
                                                 "Detailed Address: ${cubit.detailedAddressController.text}, "
                                                 "Lat: ${cubit.lat}, Lng: ${cubit.lng}");
                                             globalCubit.addAddress(
                                                 address: cubit
                                                     .detailedAddressController
                                                     .text,
-                                                city: _selectedCity?.id
+                                                city: selectedCity?.id
                                                         .toString() ??
                                                     "0",
                                                 lat: cubit.lat ?? "",
@@ -374,9 +339,9 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
                                               cubit.lng != null) {
                                             PrintUtil.info(
                                                 "Navigating to next step with data: "
-                                                "Country: ${_selectedCountry?.name} (ID: ${_selectedCountry?.id}), "
-                                                "Governorate: ${_selectedState?.name} (ID: ${_selectedState?.id}), "
-                                                "City: ${_selectedCity?.name} (ID: ${_selectedCity?.id}), "
+                                                "Country: ${selectedCountry?.name} (ID: ${selectedCountry?.id}), "
+                                                "Governorate: ${selectedState?.name} (ID: ${selectedState?.id}), "
+                                                "City: ${selectedCity?.name} (ID: ${selectedCity?.id}), "
                                                 "Detailed Address: ${cubit.detailedAddressController.text}, "
                                                 "Lat: ${cubit.lat}, Lng: ${cubit.lng}");
                                             widget.onNextStep();

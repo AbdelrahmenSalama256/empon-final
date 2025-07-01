@@ -842,5 +842,6 @@
   "not_selected": "Not selected",
   "no_image_available": "No image available",
   "unknown_product": "Unknown Product",
-  "could_not_launch_whatsapp": "Could not launch WhatsApp"
+  "could_not_launch_whatsapp": "Could not launch WhatsApp",
+  "no_offers":"No Offers Yet"
 }

@@ -7,6 +7,7 @@ import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
 import 'package:embone/features/client/chat/data/repo/chat_repo.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as ws_status;
 
@@ -23,7 +24,9 @@ class ChatCubit extends Cubit<ChatState> {
   Set<int> selectedMessageIds = {};
   late IOWebSocketChannel? _channel;
   final int? receiverId;
-  final int currentUserId; // Current user's ID
+  final int currentUserId;
+  List<ChatContact> filteredContacts = [];
+  TextEditingController searchController = TextEditingController();
 
   ChatCubit(this.chatRepo, this.receiverId, this.currentUserId)
       : super(ChatInitial()) {
@@ -77,6 +80,8 @@ class ChatCubit extends Cubit<ChatState> {
   @override
   Future<void> close() {
     _channel?.sink.close(ws_status.normalClosure);
+    searchController.dispose();
+
     return super.close();
   }
 
@@ -341,5 +346,17 @@ class ChatCubit extends Cubit<ChatState> {
       );
       focusOnMessage(originalMessage);
     }
+  }
+
+  void filterContacts(String query) {
+    if (query.isEmpty) {
+      filteredContacts = List.from(contacts);
+    } else {
+      filteredContacts = contacts.where((contact) {
+        final name = contact.fullName.toLowerCase();
+        return name.contains(query.toLowerCase());
+      }).toList();
+    }
+    emit(ChatContactsFiltered(filteredContacts));
   }
 }

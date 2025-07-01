@@ -143,6 +143,7 @@ class _ProductTabContentState extends State<ProductTabContent> {
                                 HomeStoreScreen(
                                   businessAccountId: account.id,
                                   isVendor: false,
+                                  businessAccountname: account.name,
                                 ));
                           },
                           isNetworkImage: true,

@@ -34,7 +34,7 @@ class RegisterRepo {
   }) async {
     try {
       // Fetch FCM token
-      final fcmToken = await NotificationHandler.getToken();
+      final fcmToken = NotificationHandler.fcmToken;
 
       // Prepare the form data
       Map<String, dynamic> data = {

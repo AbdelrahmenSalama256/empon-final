@@ -179,7 +179,6 @@ class _AddAddressSheetState extends State<AddAddressSheet> {
                             items: countries
                                 .map((country) => country.name)
                                 .toList(),
-                            enabled: countries.isNotEmpty,
                             onChanged: (value) {
                               if (value == null) return;
                               final selected = countries.firstWhere(
@@ -207,7 +206,6 @@ class _AddAddressSheetState extends State<AddAddressSheet> {
                             hint: 'governorate'.tr(context),
                             value: _selectedState?.name,
                             items: states.map((state) => state.name).toList(),
-                            enabled: states.isNotEmpty,
                             onChanged: (value) {
                               if (value == null) return;
                               final selected = states.firstWhere(
@@ -234,7 +232,6 @@ class _AddAddressSheetState extends State<AddAddressSheet> {
                             hint: 'city'.tr(context),
                             value: _selectedCity?.name,
                             items: cities.map((city) => city.name).toList(),
-                            enabled: cities.isNotEmpty,
                             onChanged: (value) {
                               if (value == null) return;
                               final selected = cities.firstWhere(

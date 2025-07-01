@@ -20,14 +20,22 @@ class FriendsCubit extends Cubit<FriendsState> {
   List<Friend> acceptedFriends = [];
   final ScrollController scrollController = ScrollController();
 
-  // Pagination state
   int _nonRegisteredOffset = 0;
   final int _pageSize = 20;
   bool _hasMoreNonRegistered = true;
   bool _isLoadingMore = false;
   Timer? _debounceTimer;
-
   FriendsCubit(this.friendsRepo) : super(FriendsInitial());
+
+  void refresh() {
+    emit(FriendsRefreshed());
+    if (state is FriendsLoaded) {
+      emit(FriendsLoaded(
+        registeredUsers: registeredUsers,
+        nonRegisteredContacts: nonRegisteredContacts,
+      ));
+    }
+  }
 
   void loadMoreNonRegisteredContacts() async {
     if (_isLoadingMore || !_hasMoreNonRegistered) return;

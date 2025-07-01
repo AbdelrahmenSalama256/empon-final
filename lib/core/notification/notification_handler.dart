@@ -1,16 +1,16 @@
 import 'dart:developer';
+import 'dart:io';
 
-import 'package:firebase_core/firebase_core.dart';
+import 'package:embone/core/app/embone.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 
-import '../../core/common/logs.dart';
 import 'local_notification_handler.dart';
 
 class NotificationHandler {
   static FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static String? fcmToken = '';
   static Future init() async {
-    //! Request for permission
     await firebaseMessaging.requestPermission(
       alert: true,
       announcement: true,
@@ -22,29 +22,66 @@ class NotificationHandler {
     );
 
     //! Get the token
-    fcmToken = await firebaseMessaging.getToken();
-    Print.success('FCM Token: $fcmToken');
-
+    if (Platform.isIOS) {
+      await firebaseMessaging.getAPNSToken();
+      fcmToken = await firebaseMessaging.getToken();
+    } else {
+      fcmToken = await firebaseMessaging.getToken();
+    }
+    log('FCM Token: $fcmToken');
+    // sl<CacheHelper>().setData(, fcmToken);
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-    //! Handle foreground message
+
+    //! Ensure notifications show in foreground for iOS
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    //! Handle foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       LocalNotificationService.showBasicNotification(message);
-      Print.success('Notification onMessage: ${message.notification?.title}');
+      if (!kReleaseMode) {
+        log('Notification onMessage: ${message.notification?.title}');
+        log('Notification Data: ${message.data}');
+      }
     });
-  }
 
-  static Future<String?> getToken() async {
-    String? token = await firebaseMessaging.getToken();
-    fcmToken = token;
-    log('FCM Token: $token');
-    return token;
+    //! Handle taps on notifications when the app is in background
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNavigation(message.data);
+    });
+
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      _handleNavigation(initialMessage.data);
+    }
   }
 
   //! Handle background message
   static Future<void> handleBackgroundMessage(RemoteMessage message) async {
-    await Firebase.initializeApp();
-    LocalNotificationService.showBasicNotification(message);
+    if (message.notification == null) {
+      LocalNotificationService.showBasicNotification(message);
+    }
 
-    Print.success('Notification: ${message.notification?.title}');
+    if (!kReleaseMode) log('Notification: ${message.notification?.title}');
+  }
+
+  static void _handleNavigation(Map<String, dynamic> data) {
+    if (navigatorKey.currentState != null && data.isNotEmpty) {
+      LocalNotificationService.navigateBasedOnPayload(data);
+    } else {
+      Future.delayed(
+        const Duration(milliseconds: 1000),
+        () {
+          if (navigatorKey.currentState != null && data.isNotEmpty) {
+            LocalNotificationService.navigateBasedOnPayload(data);
+          }
+        },
+      );
+    }
   }
 }

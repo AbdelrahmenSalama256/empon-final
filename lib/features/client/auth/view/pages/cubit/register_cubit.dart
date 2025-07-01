@@ -194,6 +194,8 @@ class RegisterCubit extends Cubit<RegisterState> {
   }
 
   Future<void> register() async {
+    emit(RegisterLoading());
+
     final firstName = firstNameController.text.trim();
     final lastName = lastNameController.text.trim();
     final birthDate = birthDateController.text.trim();
@@ -259,8 +261,6 @@ class RegisterCubit extends Cubit<RegisterState> {
       emit(RegisterError(message: validationError));
       return;
     }
-
-    emit(RegisterLoading());
 
     final response = await registerRepo.registerUser(
       firstName: firstName,

@@ -237,8 +237,9 @@ class SettingsScreen extends StatelessWidget {
                                             context,
                                             BlocProvider(
                                               create: (context) =>
-                                                  TotalSalesCubit(sl<TotalSalesRepo>()),
-                                              child:const SalesStatsPage(),
+                                                  TotalSalesCubit(
+                                                      sl<TotalSalesRepo>()),
+                                              child: const SalesStatsPage(),
                                             ),
                                           );
                                         },

@@ -54,7 +54,7 @@ class InteractionBar extends StatefulWidget {
   final Function()? onActive;
 
    InteractionBar({
-    Key? key,
+    super.key,
     this.isVendor = false,
     this.onShare,
     this.onLike,
@@ -91,7 +91,7 @@ class InteractionBar extends StatefulWidget {
     this.padding,
     required this.isActive,
     this.onActive,
-  }) : super(key: key);
+  });
 
   @override
   State<InteractionBar> createState() => _InteractionBarState();
@@ -228,7 +228,7 @@ class VendorInteractionView extends StatefulWidget {
   final Function()? onActive;
 
    VendorInteractionView({
-    Key? key,
+    super.key,
     required this.likeCount,
     required this.commentCount,
     this.onEdit,
@@ -252,7 +252,7 @@ class VendorInteractionView extends StatefulWidget {
     required this.isActive,
     this.onActive
 
-  }) : super(key: key);
+  });
 
   @override
   State<VendorInteractionView> createState() => _VendorInteractionViewState();

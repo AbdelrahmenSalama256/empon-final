@@ -101,10 +101,12 @@ class HomeScreen extends StatelessWidget {
                 backgroundColor: Colors.white,
                 body: SafeArea(
                   child: Center(
-                    child: Text(
-                      "no_data_found".tr(context),
-                      style: TextStyle(fontSize: 16.sp),
-                    ),
+                    child: state is HomeLoading
+                        ? const LinearProgressIndicator()
+                        : Text(
+                            "no_data_found".tr(context),
+                            style: TextStyle(fontSize: 16.sp),
+                          ),
                   ),
                 ),
               );
@@ -188,8 +190,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 10.h),
-                          if (tabs.length >
-                              1) // Only show TabBar if multiple tabs
+                          if (tabs.length > 1)
                             Container(
                               height: 60.h,
                               padding: EdgeInsets.all(0.w),

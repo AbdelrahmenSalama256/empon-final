@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-class LocationModel extends Equatable {
+class LocationModel {
   final int id;
   final String name;
   final int? countryId;
@@ -30,7 +28,4 @@ class LocationModel extends Equatable {
       if (stateId != null) 'state_id': stateId,
     };
   }
-
-  @override
-  List<Object?> get props => [id, name, countryId, stateId];
 }

@@ -30,7 +30,7 @@ class Account {
   final List<Product> products;
   final bool isActive;
 
-  const Account( {
+  const Account({
     required this.id,
     required this.name,
     required this.image,
@@ -72,7 +72,7 @@ class Product {
       name: json['name'] ?? '',
       price: json['price'] ?? '',
       imageUrl: json['image_url'] ?? '',
-      isFavourite: json['is_favourite'] ?? false,
+      isFavourite: json['is_favourited'] ?? false,
     );
   }
 }

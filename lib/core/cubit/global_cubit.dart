@@ -279,8 +279,9 @@ class GlobalCubit extends Cubit<GlobalState> {
         emit(LogoutError(failure));
       },
       (message) {
-        sl<CacheHelper>().clearData();
         user = null;
+        sl<CacheHelper>().removeData(key: AppConstants.userProfile);
+        sl<CacheHelper>().removeData(key: AppConstants.token);
         PrintUtil.success("User logged out successfully: $message");
         emit(LogoutSuccess(message));
       },

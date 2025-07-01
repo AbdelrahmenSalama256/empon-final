@@ -672,12 +672,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                             onCardTap: () {
                                                               navigateTo(
                                                                 context,
-                                                                ProductDetailPage(
-                                                                    isVendor: widget
-                                                                        .isVendor,
-                                                                    productId:
-                                                                        product.id ??
-                                                                            0),
+                                                                BlocProvider(
+                                                                  create: (context) =>
+                                                                      SearchCubit(
+                                                                          sl<SearchRepo>()),
+                                                                  child: ProductDetailPage(
+                                                                      isVendor:
+                                                                          widget
+                                                                              .isVendor,
+                                                                      productId:
+                                                                          product.id ??
+                                                                              0),
+                                                                ),
                                                               );
                                                             },
                                                           );
