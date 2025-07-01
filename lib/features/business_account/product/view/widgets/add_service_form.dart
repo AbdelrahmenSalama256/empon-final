@@ -31,7 +31,7 @@ class _AddServiceFormState extends State<AddServiceForm> {
         listener: (context, state) {
           if (state is ServiceSuccess){
              showToast(context,
-                message: state.model.message, state: ToastStates.success);
+                message: state.model.message!, state: ToastStates.success);
             Navigator.pop(context);
           }
           if (state is ServiceLoading){

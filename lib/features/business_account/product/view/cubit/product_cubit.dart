@@ -6,6 +6,7 @@ import 'package:embone/features/business_account/product/view/widgets/color_pick
 import 'package:embone/features/business_account/product/data/model/product_model.dart'
     as business;
 import 'package:embone/features/business_account/product/data/repo/product_repo.dart';
+import 'package:embone/features/client/product_Details/data/model/product_model.dart' as client;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -93,8 +94,6 @@ class ProductCubit extends Cubit<ProductState> {
           serviceDetailsControllers[i]['material']?.text = details[i].material ?? '';
         }
       }
-
-      Print.success("message");
       emit(ProductInitial());
     }
   }

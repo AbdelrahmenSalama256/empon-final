@@ -67,11 +67,6 @@ class ServiceData {
 
   factory ServiceData.fromJson(Map<String, dynamic> json) {
     // Convert features object to Map<String, String>
-    Map<String, String>? featuresMap;
-    if (json['features'] != null && json['features'] is Map) {
-      featuresMap = (json['features'] as Map)
-          .map((key, value) => MapEntry(key.toString(), value.toString()));
-    }
     return ServiceData(
       id: json['id'],
       name: json['name'],
@@ -85,8 +80,8 @@ class ServiceData {
       mainImage: json['main_image'],
       listImages: json['list_images'] != null
           ? List<String>.from(json['list_images'])
-          : null,
-      features: featuresMap,
+          : <String>[],
+      features: json['features'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       categoties: json['category'] is List
@@ -131,7 +126,7 @@ class ServiceData {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       features: features??this.features,
-      categoties: categories??this.categoties,
+      categoties: categories??categoties,
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FeaturesSection extends StatelessWidget {
-  final Map<String, String>? features;
+  final List< String>? features;
 
   const FeaturesSection({super.key, required this.features});
 
@@ -22,7 +22,7 @@ class FeaturesSection extends StatelessWidget {
           verticalPadding: 15.h,
         ),
         SizedBox(height: 16.h),
-        ...features!.entries.map((entry) => Padding(
+        ...features!.map((entry) => Padding(
               padding: EdgeInsets.only(bottom: 8.h),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +31,7 @@ class FeaturesSection extends StatelessWidget {
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
-                      '${entry.key}: ${entry.value}',
+                      entry,
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,

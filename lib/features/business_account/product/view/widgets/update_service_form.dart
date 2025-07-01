@@ -45,7 +45,7 @@ class _UpdateServiceFormState extends State<UpdateServiceForm> {
       child: BlocListener<ServiceCubit, ServiceState>(
         listener: (context, state) {
           if (state is ServiceSuccess) {
-            showToast(context, message: state.model.message, state: ToastStates.success);
+            showToast(context, message: state.model.message!, state: ToastStates.success);
             Navigator.pop(context);
           }
         },
@@ -276,7 +276,7 @@ class _UpdateServiceFormState extends State<UpdateServiceForm> {
                         if (_formKey.currentState?.validate() ?? false) {
                           cubit.accountId =
                               context.read<GlobalCubit>().businessId;
-                          cubit.updateService(widget.serviceData!.data!.id);
+                          cubit.updateService(widget.serviceData!.data!.id!);
                         }
                       },
                     ),

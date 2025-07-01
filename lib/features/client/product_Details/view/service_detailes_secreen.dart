@@ -10,7 +10,6 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
-import 'package:embone/features/business_account/product/view/add_product_buisniss_account.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
 import 'package:embone/features/business_account/product/view/update_product_buisniss_account.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
@@ -140,19 +139,57 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                         create: (context) =>
                                             ServiceCubit(sl<ServiceRepo>()),
                                         child: InteractionBar(
-                                          isActive:service?.active==true?1:0 ,
-                                          onActive:(){ cubit.updateServiceStatus(service!.id);
-                                          cubit.goToService(id: service.id);
+                                          isActive:
+                                              service?.active == true ? 1 : 0,
+                                          onActive: () {
+                                            cubit.updateServiceStatus(
+                                                service!.id ?? 0);
+                                            cubit.goToService(
+                                                id: service.id ?? 0);
                                           },
                                           isVendor: widget.isVendor,
                                           likeCount: service?.likes ?? 0,
+                                          onEdit: () {
+                                            navigateTo(
+                                                context,
+                                                UpdateProductPage(
+                                                    isService: true,
+                                                    serviceData:
+                                                        cubit.serviceModel,
+                                                    businessAccountId: int.parse(
+                                                        sl<CacheHelper>().getData(
+                                                            key: AppConstants
+                                                                .businessAccountId))));
+                                          },
+                                          onDelete: () {
+                                            CustomPopup.show(
+                                              context: context,
+                                              type: PopupType.alert,
+                                              title:
+                                                  'delete_product'.tr(context),
+                                              titleColor:
+                                                  const Color(0xffEC4B4B),
+                                              message: 'confirmation_message'
+                                                  .tr(context),
+                                              primaryButtonText:
+                                                  "yes".tr(context),
+                                              secondaryButtonText:
+                                                  "no".tr(context),
+                                              onPrimaryButtonPressed: () {
+                                                cubit.deleteService(
+                                                    service!.id ?? 0);
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
+                                              },
+                                            );
+                                          },
                                           commentCount:
                                               cubit.commentResponse?.total ?? 0,
                                           isLoved: false,
 
                                           isThumbsUp: service?.isLiked ?? false,
-                                          isActive:
-                                              service?.active == true ? 1 : 0,
+
                                           avatarUrls: const [], // Populate if needed
                                           onShare: () {
                                             final serviceId = service?.id ?? 0;
@@ -182,44 +219,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                           onThumbsUp: () {
                                             cubit.toggleServiceLike(
                                                 serviceId: service?.id ?? 0);
-                                          },
-                                          onEdit: () {
-                                            navigateTo(
-                                                context,
-                                                UpdateProductPage(
-                                                    isService: true,
-                                                    serviceData: cubit.serviceModel,
-                                                    businessAccountId: int.parse(
-                                                        sl<CacheHelper>().getData(
-                                                            key: AppConstants
-                                                                .businessAccountId))));
-                                          },
-                                          onDelete: () {
-                                            CustomPopup.show(
-                                              context: context,
-                                              type: PopupType.alert,
-                                              title:
-                                                  'delete_service'.tr(context),
-                                              titleColor:
-                                                  const Color(0xffEC4B4B),
-                                              message: 'confirmation_message'
-                                                  .tr(context),
-                                              primaryButtonText:
-                                                  "yes".tr(context),
-                                              secondaryButtonText:
-                                                  "no".tr(context),
-                                              onPrimaryButtonPressed: () {
-                                                cubit.deleteService(
-                                                    service?.id ?? 0);
-                                                Navigator.of(context,
-                                                        rootNavigator: true)
-                                                    .pop();
-                                              },
-                                            );
-                                          },
-                                          onActive: () {
-                                            cubit.updateServiceStatus(
-                                                service?.id ?? 0);
                                           },
                                         ),
                                       ),

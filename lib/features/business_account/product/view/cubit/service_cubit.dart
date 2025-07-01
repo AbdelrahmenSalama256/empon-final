@@ -18,7 +18,7 @@ class ServiceCubit extends Cubit<ServiceState> {
   final TextEditingController priceController = TextEditingController();
 final int maxImages = 10;
 final ImagePicker _picker = ImagePicker();
-final bool _isPickingImages = false;
+ bool _isPickingImages = false;
   // Inputs
   int? categoryServiceId;
   int? accountId;
