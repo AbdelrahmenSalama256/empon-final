@@ -36,6 +36,7 @@ class ProductData {
   final int? vendorId;
   final String? vendorName;
   final int? isSale;
+  final int? commentCount;
   final bool isLiked;
   final bool isLoved;
   final String? discountType;
@@ -55,83 +56,72 @@ class ProductData {
   final String? createdAt;
   final String? updatedAt;
 
-  ProductData({
-    this.id,
-    this.name,
-    this.description,
-    this.isLiked = false,
-    this.code,
-    this.accountType,
-    this.whastappNum,
-    this.category,
-    this.isLoved = false,
-    this.price,
-    this.shippingStartDate,
-    this.shippingEndDate,
-    this.shippingPrice,
-    this.vendorId,
-    this.vendorName,
-    this.isSale,
-    this.discountType,
-    this.discountValue,
-    this.variations,
-    this.likes,
-    this.image,
-    this.images,
-    this.details, // Added details parameter
-    this.createdAt,
-    this.updatedAt,
-    this.active
-  });
+  ProductData(
+      {this.id,
+      this.name,
+      this.description,
+      this.isLiked = false,
+      this.code,
+      this.accountType,
+      this.commentCount,
+      this.whastappNum,
+      this.category,
+      this.isLoved = false,
+      this.price,
+      this.shippingStartDate,
+      this.shippingEndDate,
+      this.shippingPrice,
+      this.vendorId,
+      this.vendorName,
+      this.isSale,
+      this.discountType,
+      this.discountValue,
+      this.variations,
+      this.likes,
+      this.image,
+      this.images,
+      this.details, // Added details parameter
+      this.createdAt,
+      this.updatedAt,
+      this.active});
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
-    // Parse details as a map from the list of key-value pairs
-    Map<String, String>? detailsMap;
-    if (json['details'] != null && json['details'] is List) {
-      detailsMap = {};
-      for (var item in json['details']) {
-        if (item is Map<String, dynamic>) {
-          item.forEach((key, value) {
-            if (value is String) {
-              detailsMap![key] = value;
-            }
-          });
-        }
-      }
-    }
-
     return ProductData(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      code: json['code'],
-      accountType: json['account_type'],
-      whastappNum: json['whatsapp_number'],
-      category: json['category'],
-      price: json['price'],
-      vendorId: json['vendor_id'],
-      vendorName: json['vendor_name'],
-      isLoved: json['is_favourited'] ?? false,
-      isLiked: json['is_liked'] ?? false,
-      isSale: json['is_sale'],
-      discountType: json['discount_type'],
-      discountValue: json['discount_value'],
-      variations: (json['variations'] as List?)
-          ?.map((item) => Variation.fromJson(item))
-          .toList(),
-      likes: json['likes'],
-      image: json['image'],
-      images: (json['images'] as List?)
-          ?.map((item) => ImageData.fromJson(item))
-          .toList(),
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      shippingStartDate: json['shipping_start_date'],
-      shippingEndDate: json['shipping_end_date'],
-      shippingPrice: json['shipping_price'],
-      details: detailsMap, // Assign parsed details
-      active: json['active']
-    );
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        code: json['code'],
+        accountType: json['account_type'],
+        whastappNum: json['whatsapp_number'],
+        category: json['category'],
+        price: json['price'],
+        vendorId: json['vendor_id'],
+        vendorName: json['vendor_name'],
+        isLoved: json['is_favourited'] ?? false,
+        isLiked: json['is_liked'] ?? false,
+        isSale: json['is_sale'],
+        commentCount: json['comments_count'],
+        discountType: json['discount_type'],
+        discountValue: json['discount_value'],
+        variations: (json['variations'] as List?)
+            ?.map((item) => Variation.fromJson(item))
+            .toList(),
+        likes: json['likes'],
+        image: json['image'],
+        images: (json['images'] as List?)
+            ?.map((item) => ImageData.fromJson(item))
+            .toList(),
+        createdAt: json['created_at'],
+        updatedAt: json['updated_at'],
+        shippingStartDate: json['shipping_start_date'],
+        shippingEndDate: json['shipping_end_date'],
+        shippingPrice: json['shipping_price'],
+        details: json['details'] != null
+            ? (json['details'] as Map<String, dynamic>).map(
+                (key, value) => MapEntry(key, value.toString()),
+              )
+            : null,
+        active: json['active']);
   }
 
   Map<String, dynamic> toJson() {
@@ -156,58 +146,56 @@ class ProductData {
       'updated_at': updatedAt,
       'account_type': accountType,
       'whatsapp_number': whastappNum,
-      'details': details, // Include details in toJson
+      'details': details,
     };
   }
 
-  ProductData copyWith({
-    int? id,
-    String? name,
-    String? description,
-    String? code,
-    String? category,
-    String? price,
-    int? vendorId,
-    String? vendorName,
-    int? isSale,
-    bool? isLiked,
-    String? discountType,
-    String? discountValue,
-    List<Variation>? variations,
-    int? likes,
-    String? image,
-    List<ImageData>? images,
-    String? createdAt,
-    String? updatedAt,
-    String? whastappNum,
-    String? accountType,
-    Map<String, String>? details, // Added details in copyWith
-    int? active
-  }) {
+  ProductData copyWith(
+      {int? id,
+      String? name,
+      String? description,
+      String? code,
+      String? category,
+      String? price,
+      int? vendorId,
+      String? vendorName,
+      int? isSale,
+      bool? isLiked,
+      String? discountType,
+      String? discountValue,
+      List<Variation>? variations,
+      int? likes,
+      String? image,
+      List<ImageData>? images,
+      String? createdAt,
+      String? updatedAt,
+      String? whastappNum,
+      String? accountType,
+      Map<String, String>? details, // Added details in copyWith
+      int? active}) {
     return ProductData(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      code: code ?? this.code,
-      category: category ?? this.category,
-      price: price ?? this.price,
-      vendorId: vendorId ?? this.vendorId,
-      vendorName: vendorName ?? this.vendorName,
-      isSale: isSale ?? this.isSale,
-      isLiked: isLiked ?? this.isLiked,
-      discountType: discountType ?? this.discountType,
-      discountValue: discountValue ?? this.discountValue,
-      variations: variations ?? this.variations,
-      likes: likes ?? this.likes,
-      image: image ?? this.image,
-      images: images ?? this.images,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      whastappNum: updatedAt ?? this.whastappNum,
-      accountType: updatedAt ?? this.accountType,
-      details: details ?? this.details, // Include details in copyWith
-      active: active?? this.active
-    );
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        code: code ?? this.code,
+        category: category ?? this.category,
+        price: price ?? this.price,
+        vendorId: vendorId ?? this.vendorId,
+        vendorName: vendorName ?? this.vendorName,
+        isSale: isSale ?? this.isSale,
+        isLiked: isLiked ?? this.isLiked,
+        discountType: discountType ?? this.discountType,
+        discountValue: discountValue ?? this.discountValue,
+        variations: variations ?? this.variations,
+        likes: likes ?? this.likes,
+        image: image ?? this.image,
+        images: images ?? this.images,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        whastappNum: updatedAt ?? this.whastappNum,
+        accountType: updatedAt ?? this.accountType,
+        details: details ?? this.details, // Include details in copyWith
+        active: active ?? this.active);
   }
 }
 

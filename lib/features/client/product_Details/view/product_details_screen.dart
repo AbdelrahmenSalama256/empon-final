@@ -268,13 +268,48 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                       ),
                                       SizedBox(height: 15.h),
                                       InteractionBar(
-                                        isActive: product?.active ?? 1,
-                                        onActive: () {
-                                          cubit.updateProductStatus(
-                                              product!.id!);
-                                        },
                                         isVendor: widget.isVendor,
                                         likeCount: product?.likes ?? 0,
+                                        commentCount:
+                                            product?.commentCount ?? 0,
+                                        isLoved: product?.isLoved ?? false,
+                                        isThumbsUp: product?.isLiked ?? false,
+                                        isActive: product?.active ?? 1,
+                                        avatarUrls: const [], // Populate if needed
+                                        onShare: () {
+                                          final productId = product?.id ?? 0;
+                                          final productName =
+                                              product?.name ?? "Product";
+                                          final deepLink =
+                                              "myapp://product/$productId";
+                                          Share.share(
+                                            "Check out this product: $productName\n$deepLink",
+                                            subject:
+                                                "Awesome Product on Our App",
+                                          );
+                                        },
+                                        onLike: () {
+                                          context
+                                              .read<GlobalCubit>()
+                                              .addProductToWishlist(
+                                                  product?.id ?? 0);
+                                        },
+                                        onComment: () {
+                                          final context =
+                                              reviewSectionKey.currentContext;
+                                          if (context != null) {
+                                            Scrollable.ensureVisible(
+                                              context,
+                                              duration: const Duration(
+                                                  milliseconds: 500),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          }
+                                        },
+                                        onThumbsUp: () {
+                                          cubit.toggleProductLike(
+                                              productId: product?.id ?? 0);
+                                        },
                                         onEdit: () {
                                           navigateTo(
                                             context,
@@ -299,13 +334,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                           primaryButtonText: "yes".tr(context),
                                           secondaryButtonText: "no".tr(context),
                                           onPrimaryButtonPressed: () {
-                                            // Correct usage: create the cubit synchronously, then call the async method
                                             final contextToUse = context;
                                             final productIdToDelete =
-                                                product!.id!;
+                                                product?.id;
                                             cubit
                                                 .deleteProduct(
-                                                    productIdToDelete)
+                                                    productIdToDelete ?? 0)
                                                 .whenComplete(() {
                                               Navigator.of(contextToUse,
                                                       rootNavigator: true)
@@ -313,49 +347,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                             });
                                           },
                                         ),
-                                        commentCount:
-                                            cubit.commentResponse?.total ?? 0,
-                                        onShare: () {
-                                          final productId =
-                                              cubit.productModel?.data?.id ?? 0;
-                                          final productName =
-                                              cubit.productModel?.data?.name ??
-                                                  "Product";
-                                          final deepLink =
-                                              "myapp://product/$productId";
-                                          Share.share(
-                                            "Check out this product: $productName\n$deepLink",
-                                            subject:
-                                                "Awesome Product on Our App",
-                                          );
-                                        },
-                                        onLike: () {
-                                          if (kDebugMode) {
-                                            debugPrint('onLike called');
-                                          }
-                                          context
-                                              .read<GlobalCubit>()
-                                              .addProductToWishlist(cubit
-                                                      .productModel?.data?.id ??
-                                                  0);
-                                        },
-                                        onComment: () {
-                                          final context =
-                                              reviewSectionKey.currentContext;
-                                          if (context != null) {
-                                            Scrollable.ensureVisible(
-                                              context,
-                                              duration: const Duration(
-                                                  milliseconds: 500),
-                                              curve: Curves.easeInOut,
-                                            );
-                                          }
-                                        },
-                                        onThumbsUp: () {
-                                          cubit.toggleProductLike(
-                                              productId: cubit
-                                                      .productModel?.data?.id ??
-                                                  0);
+                                        onActive: () {
+                                          cubit.updateProductStatus(
+                                              product?.id ?? 0);
                                         },
                                       ),
                                       SizedBox(height: 15.h),

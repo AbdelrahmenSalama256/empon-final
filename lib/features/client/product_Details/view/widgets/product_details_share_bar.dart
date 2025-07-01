@@ -1,21 +1,21 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:embone/core/component/fav_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/business_account/store/view/product_inventory_screen.dart';
-import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
-import 'package:embone/features/client/search/view/cubit/search_state.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InteractionBar extends StatefulWidget {
   final bool isVendor;
+  final int likeCount;
+  final int commentCount;
+  final bool isLoved;
+  final bool isThumbsUp;
+  final int isActive;
+  final List<String> avatarUrls;
   final Function()? onShare;
   final Function()? onLike;
   final Function()? onComment;
@@ -23,10 +23,7 @@ class InteractionBar extends StatefulWidget {
   final Function()? onEdit;
   final Function()? onDelete;
   final Function(bool)? onAvailabilityChanged;
-  final List<String> avatarUrls;
-  final int likeCount;
-  final int commentCount;
-  // isLoved bool
+  final Function()? onActive;
   final IconData shareIcon;
   final IconData likeIcon;
   final IconData likedIcon;
@@ -50,12 +47,24 @@ class InteractionBar extends StatefulWidget {
   final TextStyle? likeCountTextStyle;
   final TextStyle? commentCountTextStyle;
   final EdgeInsets? padding;
-  int isActive;
-  final Function()? onActive;
+  // New visibility parameters
+  final bool showShare;
+  final bool showLike;
+  final bool showComment;
+  final bool showThumbsUp;
+  final bool showEdit;
+  final bool showDelete;
+  final bool showAvailabilityToggle;
 
-   InteractionBar({
+  const InteractionBar({
     super.key,
     this.isVendor = false,
+    required this.likeCount,
+    required this.commentCount,
+    required this.isLoved,
+    required this.isThumbsUp,
+    required this.isActive,
+    this.avatarUrls = const [],
     this.onShare,
     this.onLike,
     this.onComment,
@@ -63,13 +72,11 @@ class InteractionBar extends StatefulWidget {
     this.onEdit,
     this.onDelete,
     this.onAvailabilityChanged,
-    this.avatarUrls = const [],
-    this.likeCount = 0,
-    this.commentCount = 0,
+    this.onActive,
     this.shareIcon = Icons.share_outlined,
     this.likeIcon = Icons.favorite_border,
-    this.likedIcon = Icons.favorite,
-    this.commentIcon = Icons.chat_bubble_outline,
+    this.likedIcon = CupertinoIcons.heart,
+    this.commentIcon = CupertinoIcons.chat_bubble,
     this.thumbsUpIcon = CupertinoIcons.hand_thumbsup,
     this.thumbsUpSelectedIcon = CupertinoIcons.hand_thumbsup_fill,
     this.vendorThumbsUpIcon = CupertinoIcons.hand_thumbsup,
@@ -89,8 +96,13 @@ class InteractionBar extends StatefulWidget {
     this.likeCountTextStyle,
     this.commentCountTextStyle,
     this.padding,
-    required this.isActive,
-    this.onActive,
+    this.showShare = true,
+    this.showLike = true,
+    this.showComment = true,
+    this.showThumbsUp = true,
+    this.showEdit = true,
+    this.showDelete = true,
+    this.showAvailabilityToggle = true,
   });
 
   @override
@@ -102,6 +114,10 @@ class _InteractionBarState extends State<InteractionBar>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   bool _isThumbsUp = false;
+  bool _isSharePressed = false;
+  bool _isCommentPressed = false;
+  bool _isEditPressed = false;
+  bool _isDeletePressed = false;
 
   @override
   void initState() {
@@ -121,6 +137,8 @@ class _InteractionBarState extends State<InteractionBar>
         _controller.reverse();
       }
     });
+
+    _isThumbsUp = widget.isThumbsUp;
   }
 
   @override
@@ -130,14 +148,33 @@ class _InteractionBarState extends State<InteractionBar>
   }
 
   void _animateIcon(int index) {
-    switch (index) {
-      case 3: // Thumbs up
-        setState(() {
+    setState(() {
+      switch (index) {
+        case 0: // Share
+          _isSharePressed = true;
+          break;
+        case 2: // Comment
+          _isCommentPressed = true;
+          break;
+        case 3: // Thumbs up
           _isThumbsUp = !_isThumbsUp;
-        });
-        break;
-    }
-    _controller.forward();
+          break;
+        case 4: // Edit
+          _isEditPressed = true;
+          break;
+        case 5: // Delete
+          _isDeletePressed = true;
+          break;
+      }
+    });
+    _controller.forward().then((_) {
+      setState(() {
+        _isSharePressed = false;
+        _isCommentPressed = false;
+        _isEditPressed = false;
+        _isDeletePressed = false;
+      });
+    });
   }
 
   @override
@@ -146,8 +183,7 @@ class _InteractionBarState extends State<InteractionBar>
         ? VendorInteractionView(
             likeCount: widget.likeCount,
             commentCount: widget.commentCount,
-            onEdit: widget.onEdit ??
-                () => navigateTo(context, const ProductInventoryScreen()),
+            onEdit: widget.onEdit,
             onDelete: widget.onDelete,
             onAvailabilityChanged: widget.onAvailabilityChanged,
             vendorThumbsUpIcon: widget.vendorThumbsUpIcon,
@@ -164,46 +200,54 @@ class _InteractionBarState extends State<InteractionBar>
             availableTextStyle: widget.availableTextStyle,
             likeCountTextStyle: widget.likeCountTextStyle,
             commentCountTextStyle: widget.commentCountTextStyle,
-            padding: widget.padding, 
+            padding: widget.padding,
             isActive: widget.isActive,
             onActive: widget.onActive,
+            animateIcon: _animateIcon,
+            controller: _controller,
+            scaleAnimation: _scaleAnimation,
+            isEditPressed: _isEditPressed,
+            isDeletePressed: _isDeletePressed,
+            showEdit: widget.showEdit,
+            showDelete: widget.showDelete,
+            showAvailabilityToggle: widget.showAvailabilityToggle,
           )
-        : BlocBuilder<SearchCubit, SearchState>(
-            builder: (context, state) {
-              final cubit = context.read<SearchCubit>();
-
-              return NonVendorInteractionView(
-                likeCount: widget.likeCount,
-                commentCount: widget.commentCount,
-                avatarUrls: widget.avatarUrls,
-                onShare: widget.onShare,
-                onLike: widget.onLike,
-                onComment: widget.onComment,
-                onThumbsUp: widget.onThumbsUp,
-                shareIcon: widget.shareIcon,
-                likeIcon: widget.likeIcon,
-                likedIcon: widget.likedIcon,
-                commentIcon: widget.commentIcon,
-                thumbsUpIcon: widget.thumbsUpIcon,
-                thumbsUpSelectedIcon: widget.thumbsUpSelectedIcon,
-                likeColor: widget.likeColor,
-                thumbsUpColor:
-                    widget.thumbsUpColor ?? Theme.of(context).primaryColor,
-                isLoved: cubit.productModel?.data?.isLoved ?? false,
-                isThumbsUp: cubit.productModel?.data?.isLiked ?? false,
-                animateIcon: _animateIcon,
-                controller: _controller,
-                scaleAnimation: _scaleAnimation,
-                likeCountTextStyle: widget.likeCountTextStyle,
-                commentCountTextStyle: widget.commentCountTextStyle,
-                padding: widget.padding,
-              );
-            },
+        : NonVendorInteractionView(
+            likeCount: widget.likeCount,
+            commentCount: widget.commentCount,
+            avatarUrls: widget.avatarUrls,
+            onShare: widget.onShare,
+            onLike: widget.onLike,
+            onComment: widget.onComment,
+            onThumbsUp: widget.onThumbsUp,
+            shareIcon: widget.shareIcon,
+            likeIcon: widget.likeIcon,
+            likedIcon: widget.likedIcon,
+            commentIcon: widget.commentIcon,
+            thumbsUpIcon: widget.thumbsUpIcon,
+            thumbsUpSelectedIcon: widget.thumbsUpSelectedIcon,
+            likeColor: widget.likeColor,
+            thumbsUpColor:
+                widget.thumbsUpColor ?? Theme.of(context).primaryColor,
+            isLoved: widget.isLoved,
+            isThumbsUp: _isThumbsUp,
+            animateIcon: _animateIcon,
+            controller: _controller,
+            scaleAnimation: _scaleAnimation,
+            isSharePressed: _isSharePressed,
+            isCommentPressed: _isCommentPressed,
+            likeCountTextStyle: widget.likeCountTextStyle,
+            commentCountTextStyle: widget.commentCountTextStyle,
+            padding: widget.padding,
+            showShare: widget.showShare,
+            showLike: widget.showLike,
+            showComment: widget.showComment,
+            showThumbsUp: widget.showThumbsUp,
           );
   }
 }
 
-class VendorInteractionView extends StatefulWidget {
+class VendorInteractionView extends StatelessWidget {
   final int likeCount;
   final int commentCount;
   final Function()? onEdit;
@@ -224,10 +268,18 @@ class VendorInteractionView extends StatefulWidget {
   final TextStyle? likeCountTextStyle;
   final TextStyle? commentCountTextStyle;
   final EdgeInsets? padding;
-  int isActive;
+  final int isActive;
   final Function()? onActive;
+  final Function(int)? animateIcon;
+  final AnimationController? controller;
+  final Animation<double>? scaleAnimation;
+  final bool isEditPressed;
+  final bool isDeletePressed;
+  final bool showEdit;
+  final bool showDelete;
+  final bool showAvailabilityToggle;
 
-   VendorInteractionView({
+  const VendorInteractionView({
     super.key,
     required this.likeCount,
     required this.commentCount,
@@ -250,20 +302,21 @@ class VendorInteractionView extends StatefulWidget {
     this.commentCountTextStyle,
     this.padding,
     required this.isActive,
-    this.onActive
-
+    this.onActive,
+    this.animateIcon,
+    this.controller,
+    this.scaleAnimation,
+    this.isEditPressed = false,
+    this.isDeletePressed = false,
+    this.showEdit = true,
+    this.showDelete = true,
+    this.showAvailabilityToggle = true,
   });
-
-  @override
-  State<VendorInteractionView> createState() => _VendorInteractionViewState();
-}
-
-class _VendorInteractionViewState extends State<VendorInteractionView> {
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: widget.padding ??
+      padding: padding ??
           const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         children: [
@@ -271,80 +324,107 @@ class _VendorInteractionViewState extends State<VendorInteractionView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Availability toggle
-              Row(
-                children: [
-                  Text(
-                    'available'.tr(context),
-                    style: widget.availableTextStyle ??
-                        TextStyle(
-                          fontSize: 9.sp,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
-                  SizedBox(width: 8.w),
-                  CupertinoSwitch(
-                    value: widget.isActive == 1? true: false,
-                    onChanged: (value) {
-                      if (widget.onActive != null) {
-                      widget.onActive!();
-                      }
-                      setState(() {
-                      value =widget.isActive == 1?true : false;
-                      });
-                      if (widget.onAvailabilityChanged != null) {
-                      widget.onAvailabilityChanged!(value);
-                      }
-                    },
-                    activeTrackColor: widget.toggleActiveColor,
-                  ),
-                ],
-              ),
+              if (showAvailabilityToggle)
+                Row(
+                  children: [
+                    Text(
+                      'available'.tr(context),
+                      style: availableTextStyle ??
+                          TextStyle(
+                            fontSize: 9.sp,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                    SizedBox(width: 8.w),
+                    CupertinoSwitch(
+                      value: isActive == 1,
+                      onChanged: (value) {
+                        if (onActive != null) {
+                          onActive!();
+                        }
+                        if (onAvailabilityChanged != null) {
+                          onAvailabilityChanged!(value);
+                        }
+                      },
+                      activeTrackColor: toggleActiveColor,
+                    ),
+                  ],
+                )
+              else
+                const SizedBox.shrink(),
 
               // Action buttons
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (widget.onEdit != null)
+                  if (showEdit && onEdit != null)
                     GestureDetector(
-                      onTap: widget.onEdit,
-                      child: Container(
-                        width: 40.w,
-                        height: 40.h,
-                        decoration: BoxDecoration(
-                          color: widget.editButtonColor,
-                          border: Border.all(
-                              color: widget.editButtonBorderColor!,
-                              width: 1.5.w),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Icon(
-                          widget.editIcon,
-                          color: Colors.black,
-                          size: 20.sp,
-                        ),
+                      onTap: () {
+                        if (animateIcon != null) animateIcon!(4);
+                        onEdit!();
+                      },
+                      child: AnimatedBuilder(
+                        animation: controller!,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: isEditPressed ? scaleAnimation!.value : 1.0,
+                            child: Container(
+                              width: 40.w,
+                              height: 40.h,
+                              decoration: BoxDecoration(
+                                color: editButtonColor,
+                                border: Border.all(
+                                    color: editButtonBorderColor!,
+                                    width: 1.5.w),
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: Icon(
+                                editIcon,
+                                color: Colors.black,
+                                size: 20.sp,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  if (widget.onEdit != null && widget.onDelete != null)
+                  if (showEdit &&
+                      onEdit != null &&
+                      showDelete &&
+                      onDelete != null)
                     SizedBox(width: 12.w),
-                  if (widget.onDelete != null)
+                  if (showDelete && onDelete != null)
                     GestureDetector(
-                      onTap: widget.onDelete,
-                      child: Container(
-                        width: 40.w,
-                        height: 40.h,
-                        padding: EdgeInsets.symmetric(vertical: 8.h),
-                        decoration: BoxDecoration(
-                          color: widget.deleteButtonColor,
-                          border: Border.all(
-                              color: widget.deleteButtonBorderColor!,
-                              width: 1.5.w),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Image.asset(
-                          "assets/images/trash.png",
-                          width: 16.w,
-                          height: 16.h,
-                        ),
+                      onTap: () {
+                        if (animateIcon != null) animateIcon!(5);
+                        onDelete!();
+                      },
+                      child: AnimatedBuilder(
+                        animation: controller!,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale:
+                                isDeletePressed ? scaleAnimation!.value : 1.0,
+                            child: Container(
+                              width: 40.w,
+                              height: 40.h,
+                              padding: EdgeInsets.symmetric(vertical: 8.h),
+                              decoration: BoxDecoration(
+                                color: deleteButtonColor,
+                                border: Border.all(
+                                    color: deleteButtonBorderColor!,
+                                    width: 1.5.w),
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: Image.asset(
+                                "assets/images/trash.png",
+                                width: 16.w,
+                                height: 16.h,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                 ],
@@ -370,16 +450,16 @@ class _VendorInteractionViewState extends State<VendorInteractionView> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '${'likes_count_label'.tr(context)} ${widget.likeCount}',
-                        style: widget.likeCountTextStyle ??
+                        '${'likes_count_label'.tr(context)} $likeCount',
+                        style: likeCountTextStyle ??
                             TextStyle(
                               fontSize: 12.sp,
                               color: const Color(0xffA0A0A0),
                             ),
                       ),
                       SizedBox(width: 10.w),
-                      Icon(widget.vendorThumbsUpIcon,
-                          size: 30.sp, color: widget.vendorThumbsUpColor),
+                      Icon(vendorThumbsUpIcon,
+                          size: 30.sp, color: vendorThumbsUpColor),
                     ],
                   ),
                   SizedBox(width: 15.w),
@@ -389,16 +469,16 @@ class _VendorInteractionViewState extends State<VendorInteractionView> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '${'comments_count_label'.tr(context)} ${widget.commentCount}',
-                        style: widget.commentCountTextStyle ??
+                        '${'comments_count_label'.tr(context)} $commentCount',
+                        style: commentCountTextStyle ??
                             TextStyle(
                               fontSize: 12.sp,
                               color: const Color(0xffA0A0A0),
                             ),
                       ),
                       SizedBox(width: 10.w),
-                      Icon(widget.vendorCommentIcon,
-                          size: 30.sp, color: widget.vendorCommentColor),
+                      Icon(vendorCommentIcon,
+                          size: 30.sp, color: vendorCommentColor),
                     ],
                   ),
                 ],
@@ -432,9 +512,15 @@ class NonVendorInteractionView extends StatelessWidget {
   final Function(int) animateIcon;
   final AnimationController controller;
   final Animation<double> scaleAnimation;
+  final bool isSharePressed;
+  final bool isCommentPressed;
   final TextStyle? likeCountTextStyle;
   final TextStyle? commentCountTextStyle;
   final EdgeInsets? padding;
+  final bool showShare;
+  final bool showLike;
+  final bool showComment;
+  final bool showThumbsUp;
 
   const NonVendorInteractionView({
     super.key,
@@ -458,9 +544,15 @@ class NonVendorInteractionView extends StatelessWidget {
     required this.animateIcon,
     required this.controller,
     required this.scaleAnimation,
+    this.isSharePressed = false,
+    this.isCommentPressed = false,
     this.likeCountTextStyle,
     this.commentCountTextStyle,
     this.padding,
+    this.showShare = true,
+    this.showLike = true,
+    this.showComment = true,
+    this.showThumbsUp = true,
   });
 
   @override
@@ -500,39 +592,49 @@ class NonVendorInteractionView extends StatelessWidget {
 
               // Icons (right in LTR, left in RTL)
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildAnimatedIcon(
-                    icon: shareIcon,
-                    onTap: () {
-                      animateIcon(0);
-                      if (onShare != null) onShare!();
-                    },
-                    index: 0,
-                  ),
-                  const SizedBox(width: 24),
-                  FavoriteButton(
-                    isFavorited: isLoved,
-                    onFavoriteToggle: onLike ?? () {},
-                  ),
-                  const SizedBox(width: 24),
-                  _buildAnimatedIcon(
-                    icon: commentIcon,
-                    onTap: () {
-                      animateIcon(2);
-                      if (onComment != null) onComment!();
-                    },
-                    index: 2,
-                  ),
-                  const SizedBox(width: 24),
-                  _buildAnimatedIcon(
-                    icon: isThumbsUp ? thumbsUpSelectedIcon : thumbsUpIcon,
-                    onTap: () {
-                      animateIcon(3);
-                      if (onThumbsUp != null) onThumbsUp!();
-                    },
-                    index: 3,
-                    color: isThumbsUp ? thumbsUpColor : null,
-                  ),
+                  if (showShare)
+                    _buildAnimatedIcon(
+                      icon: shareIcon,
+                      onTap: () {
+                        animateIcon(0);
+                        if (onShare != null) onShare!();
+                      },
+                      index: 0,
+                      isPressed: isSharePressed,
+                    ),
+                  if (showShare && (showLike || showComment || showThumbsUp))
+                    const SizedBox(width: 24),
+                  if (showLike)
+                    FavoriteButton(
+                      isFavorited: isLoved,
+                      onFavoriteToggle: onLike ?? () {},
+                    ),
+                  if (showLike && (showComment || showThumbsUp))
+                    const SizedBox(width: 24),
+                  if (showComment)
+                    _buildAnimatedIcon(
+                      icon: commentIcon,
+                      onTap: () {
+                        animateIcon(2);
+                        if (onComment != null) onComment!();
+                      },
+                      index: 2,
+                      isPressed: isCommentPressed,
+                    ),
+                  if (showComment && showThumbsUp) const SizedBox(width: 24),
+                  if (showThumbsUp)
+                    _buildAnimatedIcon(
+                      icon: isThumbsUp ? thumbsUpSelectedIcon : thumbsUpIcon,
+                      onTap: () {
+                        animateIcon(3);
+                        if (onThumbsUp != null) onThumbsUp!();
+                      },
+                      index: 3,
+                      color: isThumbsUp ? thumbsUpColor : null,
+                      isPressed: isThumbsUp,
+                    ),
                 ],
               ),
 
@@ -601,6 +703,7 @@ class NonVendorInteractionView extends StatelessWidget {
     required Function() onTap,
     required int index,
     Color? color,
+    bool isPressed = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -608,8 +711,7 @@ class NonVendorInteractionView extends StatelessWidget {
         animation: controller,
         builder: (context, child) {
           return Transform.scale(
-            scale: controller.status == AnimationStatus.forward &&
-                    (isThumbsUp && index == 3)
+            scale: isPressed && controller.status == AnimationStatus.forward
                 ? scaleAnimation.value
                 : 1.0,
             child: Icon(icon, size: 24, color: color ?? Colors.black54),

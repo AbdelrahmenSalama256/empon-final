@@ -62,8 +62,7 @@ void navigateAndFinish(context, Widget) => Navigator.pushAndRemoveUntil(
 // Navigation without bottom nav bar (regular navigation)
 void navigateWithoutNav(BuildContext context, Widget screen,
     {String? receiverId, String? name, String? online, String? image}) {
-  Navigator.push(
-    context,
+  navigatorKey.currentState!.push(
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => screen,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {

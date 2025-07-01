@@ -1,9 +1,11 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -15,8 +17,6 @@ class NotificationsToggle extends StatefulWidget {
 }
 
 class _NotificationsToggleState extends State<NotificationsToggle> {
-  bool notificationsEnabled = true;
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -38,10 +38,10 @@ class _NotificationsToggleState extends State<NotificationsToggle> {
           ],
         ),
         CupertinoSwitch(
-          value: notificationsEnabled,
+          value: context.read<GlobalCubit>().isNotificationsDisabled,
           onChanged: (value) {
             setState(() {
-              notificationsEnabled = value;
+              context.read<GlobalCubit>().isNotificationsDisabled = value;
             });
           },
           activeTrackColor: AppColors.primary,

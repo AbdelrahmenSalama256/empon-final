@@ -5,7 +5,6 @@ import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
-import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/home/view/cubit/home_state.dart';
 import 'package:embone/features/client/home/view/widgets/product_card.dart';
@@ -95,115 +94,215 @@ class _ProductTabContentState extends State<ProductTabContent> {
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        final accounts = widget.cubit.homeModel?.accounts ?? [];
-        PrintUtil.info(accounts.toString());
+        final homeModel = widget.cubit.homeModel;
+        final ads = homeModel?.ads ?? [];
+        final accounts = homeModel?.accounts ?? [];
+        PrintUtil.info('Ads: $ads, Accounts: $accounts');
+
         return NotificationListener<ScrollNotification>(
           onNotification: (scrollDetails) {
-            // This is a fallback; _onScroll handles the main logic
             return false;
           },
-          child: ListView.builder(
+          child: ListView(
             controller: _scrollController,
             key: const PageStorageKey<String>("product"),
             padding: EdgeInsets.only(bottom: 0.h, left: 0.w, right: 0.w),
-            itemCount:
-                accounts.length + (widget.cubit.productsIsLoadingMore ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == accounts.length &&
-                  widget.cubit.productsIsLoadingMore) {
-                return const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              if (widget.cubit.homeModel == null || accounts.isEmpty) {
-                return Center(child: Text('no_product'.tr(context)));
-              }
-              final account = accounts[index];
-              final productsToList = account.products;
-              if (productsToList.isEmpty) return const SizedBox.shrink();
-              return ShimmerEffect(
-                isLoading: state is HomeLoading,
-                child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 8.h),
-                  decoration: const BoxDecoration(color: Color(0xffF6F6F6)),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 8.h),
-                        child: SectionHeader(
-                          backgroundColor: const Color(0xffF6F6F6),
-                          title: account.name,
-                          imageUrl: account.image,
-                          onTap: () {
-                            PrintUtil.debug("Account tapped: ${account.name}");
-                            navigateTo(
-                                context,
-                                HomeStoreScreen(
-                                  businessAccountId: account.id,
-                                  isVendor: false,
-                                  businessAccountname: account.name,
-                                ));
-                          },
-                          isNetworkImage: true,
-                          subtitle: "sponsored".tr(context),
-                          showCloseButton: true,
-                          onClose: () {
-                            if (kDebugMode) {
-                              print(
-                                  "Close button tapped for account: ${account.name}");
-                            }
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        height: 360.h,
-                        child: ListView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 10.w),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: productsToList.length,
-                          itemBuilder: (context, productIndex) {
-                            final product = productsToList[productIndex];
-                            return ProductCard(
-                              imageUrl: product.imageUrl,
-                              title: product.name,
-                              price: double.tryParse(product.price) ?? 0.0,
-                              badge: 'best_seller'.tr(context),
-                              actionText: 'shop_now'.tr(context),
-                              isFavorite: product.isFavourite,
-                              onFavoriteToggle: () {
-                                context
-                                    .read<GlobalCubit>()
-                                    .addProductToWishlist(product.id);
-                              },
-                              onActionTap: () {
-                                context.read<CartCubit>().addProductToCart(
-                                      productId: product.id,
-                                      variationId: 6,
-                                      quantity: 1,
-                                    );
-                              },
-                              onCardTap: () {
+            children: [
+              // Ads Section
+              if (ads.isNotEmpty)
+                ...ads.map((ad) {
+                  final productsToList = ad.products;
+                  if (productsToList.isEmpty) return const SizedBox.shrink();
+                  return ShimmerEffect(
+                    isLoading: state is HomeLoading,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 8.h),
+                      decoration: const BoxDecoration(color: Color(0xffF6F6F6)),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 8.h),
+                            child: SectionHeader(
+                              backgroundColor: const Color(0xffF6F6F6),
+                              title: ad.name,
+                              imageUrl: ad.image,
+                              onTap: () {
+                                PrintUtil.debug("Ad tapped: ${ad.name}");
                                 navigateTo(
-                                  context,
-                                  BlocProvider(
-                                    create: (context) =>
-                                        SearchCubit(sl<SearchRepo>()),
-                                    child: ProductDetailPage(
-                                        productId: product.id),
-                                  ),
+                                    context,
+                                    HomeStoreScreen(
+                                      businessAccountId: ad.id,
+                                      isVendor: false,
+                                      businessAccountname: ad.name,
+                                    ));
+                              },
+                              isNetworkImage: true,
+                              subtitle: "sponsored".tr(context),
+                              showCloseButton: false,
+                              onClose: () {
+                                if (kDebugMode) {
+                                  print(
+                                      "Close button tapped for ad: ${ad.name}");
+                                }
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            height: 360.h,
+                            child: ListView.builder(
+                              padding: EdgeInsets.symmetric(horizontal: 10.w),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: productsToList.length,
+                              itemBuilder: (context, productIndex) {
+                                final product = productsToList[productIndex];
+                                return ProductCard(
+                                  imageUrl: product.imageUrl,
+                                  title: product.name,
+                                  price: double.tryParse(product.price) ?? 0.0,
+                                  badge: product.adInfo?.title ?? '',
+                                  actionText: 'shop_now'.tr(context),
+                                  isFavorite: product.isFavourite,
+                                  onFavoriteToggle: () {
+                                    context
+                                        .read<GlobalCubit>()
+                                        .addProductToWishlist(product.id);
+                                  },
+                                  onActionTap: () {
+                                    // context.read<CartCubit>().addProductToCart(
+                                    //       productId: product.id,
+                                    //       variationId: 6,
+                                    //       quantity: 1,
+                                    //     );
+                                    navigateTo(
+                                      context,
+                                      BlocProvider(
+                                        create: (context) =>
+                                            SearchCubit(sl<SearchRepo>()),
+                                        child: ProductDetailPage(
+                                            productId: product.id),
+                                      ),
+                                    );
+                                  },
+                                  onCardTap: () {
+                                    navigateTo(
+                                      context,
+                                      BlocProvider(
+                                        create: (context) =>
+                                            SearchCubit(sl<SearchRepo>()),
+                                        child: ProductDetailPage(
+                                            productId: product.id),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
+                    ),
+                  );
+                }),
+
+              // Accounts Section
+              if (accounts.isNotEmpty)
+                ...accounts.map((account) {
+                  final productsToList = account.products;
+                  if (productsToList.isEmpty) return const SizedBox.shrink();
+                  return ShimmerEffect(
+                    isLoading: state is HomeLoading,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 8.h),
+                      decoration: const BoxDecoration(color: Color(0xffF6F6F6)),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 8.h),
+                            child: SectionHeader(
+                              backgroundColor: const Color(0xffF6F6F6),
+                              title: account.name,
+                              imageUrl: account.image,
+                              onTap: () {
+                                PrintUtil.debug(
+                                    "Account tapped: ${account.name}");
+                                navigateTo(
+                                    context,
+                                    HomeStoreScreen(
+                                      businessAccountId: account.id,
+                                      isVendor: false,
+                                      businessAccountname: account.name,
+                                    ));
+                              },
+                              isNetworkImage: true,
+                              subtitle: null, // No sponsored text
+                              showCloseButton: false,
+                              onClose: () {
+                                if (kDebugMode) {
+                                  print(
+                                      "Close button tapped for account: ${account.name}");
+                                }
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            height: 360.h,
+                            child: ListView.builder(
+                              padding: EdgeInsets.symmetric(horizontal: 10.w),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: productsToList.length,
+                              itemBuilder: (context, productIndex) {
+                                final product = productsToList[productIndex];
+                                return ProductCard(
+                                  imageUrl: product.imageUrl,
+                                  title: product.name,
+                                  price: double.tryParse(product.price) ?? 0.0,
+                                  badge: 'best_seller'.tr(context),
+                                  actionText: 'shop_now'.tr(context),
+                                  isFavorite: product.isFavourite,
+                                  onFavoriteToggle: () {
+                                    context
+                                        .read<GlobalCubit>()
+                                        .addProductToWishlist(product.id);
+                                  },
+                                  onActionTap: () {
+                                    // context.read<CartCubit>().addProductToCart(
+                                    //       productId: product.id,
+                                    //       variationId: 6,
+                                    //       quantity: 1,
+                                    //     );
+                                    navigateTo(
+                                      context,
+                                      BlocProvider(
+                                        create: (context) =>
+                                            SearchCubit(sl<SearchRepo>()),
+                                        child: ProductDetailPage(
+                                            productId: product.id),
+                                      ),
+                                    );
+                                  },
+                                  onCardTap: () {
+                                    navigateTo(
+                                      context,
+                                      BlocProvider(
+                                        create: (context) =>
+                                            SearchCubit(sl<SearchRepo>()),
+                                        child: ProductDetailPage(
+                                            productId: product.id),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+            ],
           ),
         );
       },

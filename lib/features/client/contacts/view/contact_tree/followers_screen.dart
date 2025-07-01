@@ -129,7 +129,7 @@ class _FollowersPageState extends State<FollowersPage> {
                   .declineFriendRequest(friend.id.toString());
             },
             onTapPressed: () {
-              navigateTo(
+              navigateWithoutNav(
                   context,
                   ChatConversationScreen(
                     receiverId: friend.id,

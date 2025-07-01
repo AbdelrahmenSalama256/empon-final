@@ -773,33 +773,46 @@ class MenuScreen extends StatelessWidget {
                                                 : SignOutButton(
                                                     onPressed: () {
                                                       // Show confirmation popup
-                                                      CustomPopup.show(
-                                                        type: PopupType.alert,
-                                                        context: context,
-                                                        titleColor: const Color(
-                                                            0xffEC4B4B),
-                                                        title: "sign_out"
-                                                            .tr(context),
-                                                        message:
-                                                            "sign_out_confirmation"
-                                                                .tr(context),
-                                                        primaryButtonText:
-                                                            "yes".tr(context),
-                                                        secondaryButtonText:
-                                                            "no".tr(context),
-                                                        onPrimaryButtonPressed:
-                                                            () {
-                                                          cubit.logout();
-                                                        },
-                                                        onSecondaryButtonPressed:
-                                                            () {
-                                                          // Dismiss the popup if user cancels
-                                                          Navigator.of(context,
-                                                                  rootNavigator:
-                                                                      true)
-                                                              .pop();
-                                                        },
-                                                      );
+                                                      cubit.userType ==
+                                                              UserType.client
+                                                          ? CustomPopup.show(
+                                                              type: PopupType
+                                                                  .alert,
+                                                              context: context,
+                                                              titleColor:
+                                                                  const Color(
+                                                                      0xffEC4B4B),
+                                                              title: "sign_out"
+                                                                  .tr(context),
+                                                              message:
+                                                                  "sign_out_confirmation"
+                                                                      .tr(context),
+                                                              primaryButtonText:
+                                                                  "yes".tr(
+                                                                      context),
+                                                              secondaryButtonText:
+                                                                  "no".tr(
+                                                                      context),
+                                                              onPrimaryButtonPressed:
+                                                                  () {
+                                                                cubit.logout();
+                                                              },
+                                                              onSecondaryButtonPressed:
+                                                                  () {
+                                                                // Dismiss the popup if user cancels
+                                                                Navigator.of(
+                                                                        context,
+                                                                        rootNavigator:
+                                                                            true)
+                                                                    .pop();
+                                                              },
+                                                            )
+                                                          : context
+                                                              .read<
+                                                                  GlobalCubit>()
+                                                              .setUserType(
+                                                                  UserType
+                                                                      .client);
                                                     },
                                                   ),
                                             SizedBox(height: 30.h),

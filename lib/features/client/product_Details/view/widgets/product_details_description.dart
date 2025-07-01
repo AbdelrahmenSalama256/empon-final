@@ -25,8 +25,9 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
 
   @override
   Widget build(BuildContext context) {
+    final product = widget.productData;
     final details =
-        widget.productData?.details ?? {}; // Default to empty map if null
+        product?.details ?? {}; // Get the details map from ProductData
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +41,6 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
 
         SizedBox(height: 16.h),
 
-        // Display details key-value pairs
         if (details.isNotEmpty) ...[
           ...details.entries.map((entry) {
             return Column(
@@ -101,7 +101,6 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
     required String value,
     Color? valueColor,
   }) {
-    // Define the label and value widgets once
     final labelWidget = Text(
       label,
       style: TextStyle(

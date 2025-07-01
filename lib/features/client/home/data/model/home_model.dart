@@ -1,7 +1,7 @@
 class HomeModel {
   final bool success;
   final String message;
-  final List<dynamic> ads;
+  final List<Ad> ads;
   final List<Account> accounts;
 
   const HomeModel({
@@ -15,9 +15,36 @@ class HomeModel {
     return HomeModel(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      ads: json['data']['ads'] ?? [], // Changed this line
+      ads: (json['data']['ads'] as List<dynamic>? ?? [])
+          .map((item) => Ad.fromJson(item))
+          .toList(),
       accounts: (json['data']['accounts'] as List<dynamic>? ?? [])
           .map((item) => Account.fromJson(item))
+          .toList(),
+    );
+  }
+}
+
+class Ad {
+  final int id;
+  final String name;
+  final String image;
+  final List<Product> products;
+
+  const Ad({
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.products,
+  });
+
+  factory Ad.fromJson(Map<String, dynamic> json) {
+    return Ad(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      image: json['image'] ?? '',
+      products: (json['products'] as List<dynamic>? ?? [])
+          .map((item) => Product.fromJson(item))
           .toList(),
     );
   }
@@ -57,6 +84,7 @@ class Product {
   final String price;
   final String imageUrl;
   final bool isFavourite;
+  final AdInfo? adInfo; // Nullable AdInfo
 
   const Product({
     required this.id,
@@ -64,6 +92,7 @@ class Product {
     required this.price,
     required this.imageUrl,
     required this.isFavourite,
+    this.adInfo,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -72,7 +101,34 @@ class Product {
       name: json['name'] ?? '',
       price: json['price'] ?? '',
       imageUrl: json['image_url'] ?? '',
-      isFavourite: json['is_favourited'] ?? false,
+      isFavourite: json['is_favourite'] ?? false,
+      adInfo: json['ad_info'] != null ? AdInfo.fromJson(json['ad_info']) : null,
+    );
+  }
+}
+
+class AdInfo {
+  final int id;
+  final String title;
+  final String description;
+  final String startDate;
+  final String endDate;
+
+  const AdInfo({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.startDate,
+    required this.endDate,
+  });
+
+  factory AdInfo.fromJson(Map<String, dynamic> json) {
+    return AdInfo(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      startDate: json['start_date'] ?? '',
+      endDate: json['end_date'] ?? '',
     );
   }
 }

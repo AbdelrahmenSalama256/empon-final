@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/features/business_account/product/data/model/active_model.dart';
@@ -82,13 +83,14 @@ class SearchRepo {
       {required final int id}) async {
     try {
       final response = await api.get("${EndPoints.getService}$id");
+      PrintUtil.debug('API Response for service $id: ${response.data}');
       return Right(ServiceModel.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {
       return Left(e.errorModel.detail);
     } catch (e) {
-      return Left('Failed to fetch product: $e');
+      return Left('Failed to fetch service: $e');
     }
   }
 
@@ -172,7 +174,7 @@ class SearchRepo {
       return Left('Failed to fetch related products: $e');
     }
   }
-  
+
   Future<Either<String, ActiveResponseModel>> activeServise(int id) async {
     try {
       final response =
@@ -196,7 +198,8 @@ class SearchRepo {
       return Left(e.errorModel.detail);
     }
   }
-    Future<Either<String, ServiceModel>> deleteServise(int id) async {
+
+  Future<Either<String, ServiceModel>> deleteServise(int id) async {
     try {
       final response = await api.delete('${EndPoints.updateService}$id');
       return Right(ServiceModel.fromJson(response.data));
@@ -206,6 +209,7 @@ class SearchRepo {
       return Left(e.errorModel.detail);
     }
   }
+
   Future<Either<String, ProductModel>> deleteProduct(int id) async {
     try {
       final response = await api.delete('${EndPoints.deleteProduct}$id');

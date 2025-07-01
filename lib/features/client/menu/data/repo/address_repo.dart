@@ -62,6 +62,19 @@ class AddressRepo {
     }
   }
 
+  Future<Either<String, String>> deleteAccount() async {
+    try {
+      final response = await api.delete(EndPoints.accountDelete);
+      return Right(response.data['message'] ?? 'Account deleted successfully');
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left('Failed to delete address: $e');
+    }
+  }
+
   Future<Either<String, List<Address>>> addAddress({
     required String address,
     required String city,

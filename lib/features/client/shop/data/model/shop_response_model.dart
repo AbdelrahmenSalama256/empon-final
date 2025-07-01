@@ -1,3 +1,5 @@
+import 'package:embone/features/client/home/data/model/home_model.dart';
+
 class ShopResponseModel {
   final bool success;
   final String message;
@@ -25,7 +27,7 @@ class ShopResponseModel {
 }
 
 class ShopData {
-  final List<dynamic>? ads;
+  final List<Ad>? ads;
   final List<CategoryModel>? categories;
 
   ShopData({
@@ -35,7 +37,9 @@ class ShopData {
 
   factory ShopData.fromJson(Map<String, dynamic> json) {
     return ShopData(
-      ads: json['ads'] as List<dynamic>?,
+      ads: (json['ads'] as List<dynamic>? ?? [])
+          .map((item) => Ad.fromJson(item))
+          .toList(),
       categories: (json['categories'] as List<dynamic>?)
           ?.map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
           .toList(),

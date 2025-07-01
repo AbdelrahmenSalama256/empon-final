@@ -866,5 +866,8 @@
   "no_image_available": "لا توجد صورة متاحة",
   "unknown_product": "منتج غير معروف",
   "could_not_launch_whatsapp": "تعذر فتح واتساب",
-  "no_offers": "لا توجد عروض حتي الان"
+  "no_offers": "لا توجد عروض حتي الان",
+  "no_friends_to_chat": "لا يوجد اصدقاء لمحادثتهم",
+  "features": "المميزات",
+  "press_back_again_to_exit": "اضغط للرجوع مرة اخري للخروج"
 }

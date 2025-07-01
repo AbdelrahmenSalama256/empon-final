@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/model/service_model.dart';
@@ -50,12 +49,12 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await searchRepo.searchProducts(query);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(SearchError(message: l));
       },
       (r) {
         searchModel = r;
-        Print.success('Search results fetched successfully');
+        PrintUtil.success('Search results fetched successfully');
         if (!isClosed) emit(SearchSuccess());
       },
     );
@@ -73,12 +72,12 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await searchRepo.getSearchHistory();
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(SearchHistoryError(message: l));
       },
       (r) {
         searchHistoryModel = r;
-        Print.success('Search history fetched successfully');
+        PrintUtil.success('Search history fetched successfully');
         if (!isClosed) emit(SearchHistorySuccess());
       },
     );
@@ -89,11 +88,11 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await searchRepo.deleteSearchHistory(id: id);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(DeleteSearchHistoryError(message: l));
       },
       (r) {
-        Print.success('Search history deleted successfully');
+        PrintUtil.success('Search history deleted successfully');
         if (!isClosed) emit(DeleteSearchHistorySuccess());
         fetchSearchHistory();
       },
@@ -105,12 +104,12 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await searchRepo.goToProduct(id: id);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(GoToProductError(message: l));
       },
       (r) async {
         productModel = r;
-        Print.success('You are going to product ========> successfully');
+        PrintUtil.success('You are going to product ========> successfully');
         getRecentView();
         await fetchParentComments(productId: id);
         if (!isClosed) emit(GoToProductSuccess());
@@ -123,12 +122,13 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await searchRepo.goToService(id: id);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(GoToProductError(message: l));
       },
       (r) async {
+        PrintUtil.debug('Raw response for service $id: $r');
         serviceModel = r;
-        Print.success('You are going to product ========> successfully');
+        PrintUtil.success('You are going to service ========> successfully');
         getRecentView();
         await servicefetchParentComments(ser: id);
         if (!isClosed) emit(GoToProductSuccess());
@@ -143,12 +143,12 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await searchRepo.getRecentView();
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(RecentViewError(message: l));
       },
       (r) {
         recentViewModel = r;
-        Print.success('Recent views fetched successfully');
+        PrintUtil.success('Recent views fetched successfully');
         if (!isClosed) emit(RecentViewSuccess());
       },
     );
@@ -159,11 +159,11 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await searchRepo.clearHistory();
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(ClearHistoryError(message: l));
       },
       (r) {
-        Print.success('Search history deleted successfully');
+        PrintUtil.success('Search history deleted successfully');
         if (!isClosed) emit(ClearHistorySuccess());
         init();
       },
@@ -176,12 +176,12 @@ class SearchCubit extends Cubit<SearchState> {
         await sl<CommentRepo>().fetchParentComments(productId: productId);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
         comments = r.data.comments;
-        Print.success('Parent comments fetched successfully');
+        PrintUtil.success('Parent comments fetched successfully');
         if (kDebugMode) {
           print('Set comments: $comments');
         }
@@ -200,7 +200,7 @@ class SearchCubit extends Cubit<SearchState> {
     response.fold(
       (l) {
         currentParentId = null;
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
@@ -211,7 +211,7 @@ class SearchCubit extends Cubit<SearchState> {
           }
           return comment;
         }).toList();
-        Print.success('Child comments fetched successfully');
+        PrintUtil.success('Child comments fetched successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -226,12 +226,12 @@ class SearchCubit extends Cubit<SearchState> {
     );
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
         comments = [...comments, ...r.data.comments];
-        Print.success('Comment added successfully');
+        PrintUtil.success('Comment added successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
         commentController.clear();
       },
@@ -251,13 +251,12 @@ class SearchCubit extends Cubit<SearchState> {
     );
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
         comments = comments.map((c) {
           if (c.commentId == parentId) {
-            // Explicitly type as List<CommentModel>
             final updatedReplies = <CommentModel>[
               ...(c.replies ?? []),
               ...r.data.comments,
@@ -266,7 +265,7 @@ class SearchCubit extends Cubit<SearchState> {
           }
           return c;
         }).toList();
-        Print.success('Reply added successfully');
+        PrintUtil.success('Reply added successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -283,7 +282,7 @@ class SearchCubit extends Cubit<SearchState> {
     );
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
@@ -300,7 +299,7 @@ class SearchCubit extends Cubit<SearchState> {
           }).toList();
           return c.copyWith(replies: updatedReplies);
         }).toList();
-        Print.success('Comment updated successfully');
+        PrintUtil.success('Comment updated successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -312,7 +311,7 @@ class SearchCubit extends Cubit<SearchState> {
         await sl<CommentRepo>().deleteComment(commentId: commentId);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
@@ -321,7 +320,7 @@ class SearchCubit extends Cubit<SearchState> {
               c.replies?.where((r) => r.commentId != commentId).toList();
           return c.copyWith(replies: newReplies);
         }).toList();
-        Print.success('Comment deleted successfully');
+        PrintUtil.success('Comment deleted successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -367,7 +366,6 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await sl<CommentRepo>().toggleLike(commentId: commentId);
     response.fold(
       (l) {
-        // Revert optimistic update on failure
         comments = comments.map((comment) {
           if (comment.commentId == commentId) {
             return comment.copyWith(
@@ -449,12 +447,12 @@ class SearchCubit extends Cubit<SearchState> {
         await sl<CommentRepo>().serviceFetchParentComments(serviceId: ser);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
         comments = r.data.comments;
-        Print.success('Parent comments fetched successfully');
+        PrintUtil.success('Parent comments fetched successfully');
         if (kDebugMode) {
           print('Set comments: $comments');
         }
@@ -466,25 +464,25 @@ class SearchCubit extends Cubit<SearchState> {
   int? servicecurrentParentId;
 
   Future<void> servicefetchChildComments({required int parentId}) async {
-    currentParentId = parentId;
+    servicecurrentParentId = parentId;
     if (!isClosed) emit(CommentLoading());
     final response =
         await sl<CommentRepo>().serviceFetchChildComments(parentId: parentId);
     response.fold(
       (l) {
-        currentParentId = null;
-        Print.error(l);
+        servicecurrentParentId = null;
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
-        currentParentId = null;
+        servicecurrentParentId = null;
         comments = comments.map((comment) {
           if (comment.commentId == parentId) {
             return comment.copyWith(replies: r.data.comments);
           }
           return comment;
         }).toList();
-        Print.success('Child comments fetched successfully');
+        PrintUtil.success('Child comments fetched successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -500,12 +498,12 @@ class SearchCubit extends Cubit<SearchState> {
     );
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
         comments = [...comments, ...r.data.comments];
-        Print.success('Comment added successfully');
+        PrintUtil.success('Comment added successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
         commentController.clear();
       },
@@ -525,13 +523,12 @@ class SearchCubit extends Cubit<SearchState> {
     );
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
         comments = comments.map((c) {
           if (c.commentId == parentId) {
-            // Explicitly type as List<CommentModel>
             final updatedReplies = <CommentModel>[
               ...(c.replies ?? []),
               ...r.data.comments,
@@ -540,7 +537,7 @@ class SearchCubit extends Cubit<SearchState> {
           }
           return c;
         }).toList();
-        Print.success('Reply added successfully');
+        PrintUtil.success('Reply added successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -557,7 +554,7 @@ class SearchCubit extends Cubit<SearchState> {
     );
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
@@ -574,7 +571,7 @@ class SearchCubit extends Cubit<SearchState> {
           }).toList();
           return c.copyWith(replies: updatedReplies);
         }).toList();
-        Print.success('Comment updated successfully');
+        PrintUtil.success('Comment updated successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -586,7 +583,7 @@ class SearchCubit extends Cubit<SearchState> {
         await sl<CommentRepo>().serviceDeleteComment(commentId: commentId);
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(CommentError(message: l));
       },
       (r) {
@@ -595,7 +592,7 @@ class SearchCubit extends Cubit<SearchState> {
               c.replies?.where((r) => r.commentId != commentId).toList();
           return c.copyWith(replies: newReplies);
         }).toList();
-        Print.success('Comment deleted successfully');
+        PrintUtil.success('Comment deleted successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
       },
     );
@@ -642,7 +639,6 @@ class SearchCubit extends Cubit<SearchState> {
         await sl<CommentRepo>().serviceToggleLike(commentId: commentId);
     response.fold(
       (l) {
-        // Revert optimistic update on failure
         comments = comments.map((comment) {
           if (comment.commentId == commentId) {
             return comment.copyWith(
@@ -682,8 +678,9 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> toggleServiceLike({required int serviceId}) async {
     if (!isClosed) emit(LikeServiceLoading());
 
-    if (serviceModel?.data?.id != serviceId) {
-      if (!isClosed) emit(LikeServiceError(message: 'service not found'));
+    // Check if serviceModel and its data are not null
+    if (serviceModel?.data?.id == null || serviceModel?.data?.id != serviceId) {
+      if (!isClosed) emit(LikeServiceError(message: 'Service not found'));
       return;
     }
 
@@ -692,8 +689,8 @@ class SearchCubit extends Cubit<SearchState> {
       success: serviceModel!.success,
       message: serviceModel!.message,
       data: service.copyWith(
-        likes: (service.likes ?? 0) + (service.isLiked ? -1 : 1),
-        isLiked: !service.isLiked,
+        likes: (service.likes ?? 0) + (service.isLiked ?? false ? -1 : 1),
+        isLiked: !(service.isLiked ?? false),
       ),
     );
 
@@ -725,12 +722,12 @@ class SearchCubit extends Cubit<SearchState> {
     final response = await searchRepo.getReleatedProducts(
       id: id,
     );
-    Print.info("======================> $response");
+    PrintUtil.info("======================> $response");
     response.fold(
       (l) => emit(RelatedProductsError(message: l)),
       (r) {
         homeModel = r;
-        PrintUtil.debug("this is releated ============= $homeModel");
+        PrintUtil.debug("this is related ============= $homeModel");
         emit(RelatedProductsLoaded());
       },
     );
@@ -749,20 +746,22 @@ class SearchCubit extends Cubit<SearchState> {
       },
     );
   }
-    Future<void> updateServiceStatus(int productId) async {
+
+  Future<void> updateServiceStatus(int serviceId) async {
     emit(StatusLoading());
 
-    final result = await searchRepo.activeServise(productId);
+    final result = await searchRepo.activeServise(serviceId);
 
     result.fold(
       (failure) => emit(StatusError(failure)),
-      (response)  async {
+      (response) async {
         emit(StatusSuccess(response.message));
-        await goToService(id: productId);
+        await goToService(id: serviceId);
       },
-    );}
+    );
+  }
 
-    Future<void> deleteService(int id) async {
+  Future<void> deleteService(int id) async {
     emit(DeletedLoading());
     final result = await searchRepo.deleteServise(id);
     result.fold(
@@ -772,7 +771,8 @@ class SearchCubit extends Cubit<SearchState> {
       },
     );
   }
-      Future<void> deleteProduct(int id) async {
+
+  Future<void> deleteProduct(int id) async {
     emit(DeletedLoading());
     final result = await searchRepo.deleteProduct(id);
     result.fold(
@@ -782,8 +782,6 @@ class SearchCubit extends Cubit<SearchState> {
       },
     );
   }
-
-  
 
   Future<void> fetchVariations({
     required int productId,
@@ -796,12 +794,13 @@ class SearchCubit extends Cubit<SearchState> {
     );
     response.fold(
       (l) {
-        Print.error(l);
+        PrintUtil.error(l);
         if (!isClosed) emit(VariationsError(message: l));
       },
       (r) {
         variations = r;
-        Print.success('Variations fetched successfully for color ID: $colorId');
+        PrintUtil.success(
+            'Variations fetched successfully for color ID: $colorId');
         if (!isClosed) emit(VariationsSuccess());
       },
     );

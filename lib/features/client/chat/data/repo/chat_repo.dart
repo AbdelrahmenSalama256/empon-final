@@ -172,4 +172,22 @@ class ChatRepo {
       return Left(e.errorModel.detail);
     }
   }
+
+  Future<Either<String, String>> deleteChat({required int receiveID}) async {
+    try {
+      final response = await api.delete(
+        '${EndPoints.deleteChat}/$receiveID',
+      );
+
+      if (response.data['success'] == true) {
+        return Right(response.data['message'] as String);
+      } else {
+        return Left(response.data['message'] ?? 'Failed to delete message');
+      }
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }
 }

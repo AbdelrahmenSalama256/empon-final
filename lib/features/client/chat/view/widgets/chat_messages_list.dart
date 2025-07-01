@@ -2,6 +2,7 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/chat/data/model/chat_details_model.dart';
 import 'package:embone/features/client/chat/view/cubit/chat_state.dart';
 import 'package:embone/features/client/chat/view/widgets/massage_bubble.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -93,7 +94,7 @@ class ChatMessagesList extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.chat_bubble_outline,
+            CupertinoIcons.chat_bubble,
             size: 64.sp,
             color: Colors.grey.shade400,
           ),

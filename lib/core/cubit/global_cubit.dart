@@ -33,7 +33,6 @@ class GlobalCubit extends Cubit<GlobalState> {
             sl<CacheHelper>().getData(key: AppConstants.businessAccountId) ??
                 "") ??
         (userId != null ? int.tryParse(userId!) : null);
-    // Use int.tryParse to safely handle potential null or invalid userId
   }
 
   User? user =
@@ -79,6 +78,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   //12345678
   // erj-OQnnQMyA8Mck73hpEv:APA91bEbLhmNbXFSXDxSvyLfi9oG9yDw0P36JkLfN9IIQRjYRiraFGS5Aa9w1MEMsIOakrE1dh0j2Jw3qjerxvMkaZASZWqrxnYncBYfTVNItYM_Z5ewNt8
   bool isLoading = false;
+  bool isNotificationsDisabled = false;
   // int? businessId = 0;
   void initProfileData() {
     firstNameController.text = userName ?? '';
@@ -445,6 +445,24 @@ class GlobalCubit extends Cubit<GlobalState> {
         sl<CacheHelper>()
             .setData(AppConstants.userProfile, jsonEncode(user?.toJson()));
         emit(ProfileUpdated());
+      },
+    );
+  }
+
+  Future<void> deleteAccount() async {
+    emit(ProfileLoading());
+    final result = await sl<AddressRepo>().deleteAccount();
+    result.fold(
+      (failure) {
+        emit(ProfileError(failure));
+      },
+      (message) {
+        user = null;
+        sl<CacheHelper>().removeData(key: AppConstants.userProfile);
+        sl<CacheHelper>().removeData(key: AppConstants.token);
+        PrintUtil.success("User Account Deleted successfully: $message");
+
+        emit(AccountDeletedSuccess(message));
       },
     );
   }

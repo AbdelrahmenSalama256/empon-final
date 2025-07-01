@@ -55,6 +55,30 @@ class SettingsScreen extends StatelessWidget {
                   state: ToastStates.error,
                 );
               }
+              if (state is AccountDeletedSuccess) {
+                Navigator.pop(context);
+                showToast(
+                  context,
+                  message: state.message,
+                  // color: Colors.red,
+                  state: ToastStates.success,
+                );
+              }
+              navigatorKey.currentState!.pushAndRemoveUntil(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const IntroPage(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                  transitionDuration: const Duration(milliseconds: 300),
+                ),
+                (Route<dynamic> route) => false,
+              );
             },
             builder: (context, state) {
               final cubit = context.read<GlobalCubit>();
@@ -281,26 +305,7 @@ class SettingsScreen extends StatelessWidget {
                                     primaryButtonText: "yes".tr(context),
                                     secondaryButtonText: "no".tr(context),
                                     onPrimaryButtonPressed: () {
-                                      navigatorKey.currentState!
-                                          .pushAndRemoveUntil(
-                                        PageRouteBuilder(
-                                          pageBuilder: (context, animation,
-                                                  secondaryAnimation) =>
-                                              const IntroPage(),
-                                          transitionsBuilder: (context,
-                                              animation,
-                                              secondaryAnimation,
-                                              child) {
-                                            return FadeTransition(
-                                              opacity: animation,
-                                              child: child,
-                                            );
-                                          },
-                                          transitionDuration:
-                                              const Duration(milliseconds: 300),
-                                        ),
-                                        (Route<dynamic> route) => false,
-                                      );
+                                      cubit.deleteAccount();
                                     },
                                     onSecondaryButtonPressed: () {
                                       Navigator.of(context, rootNavigator: true)

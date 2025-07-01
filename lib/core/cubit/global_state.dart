@@ -97,3 +97,8 @@ class FollowAccountError extends GlobalState {
 
   FollowAccountError(this.message);
 }
+
+class AccountDeletedSuccess extends GlobalState {
+  final String message;
+  AccountDeletedSuccess(this.message);
+}

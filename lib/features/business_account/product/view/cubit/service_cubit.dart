@@ -37,8 +37,8 @@ class ServiceCubit extends Cubit<ServiceState> {
   void disposeController() {
     for (var controller in featureControllers) {
       controller.dispose();
-  }
-   emit(ServiceInitial());
+    }
+    emit(ServiceInitial());
   }
 
   // Setters
@@ -108,7 +108,7 @@ class ServiceCubit extends Cubit<ServiceState> {
     );
   }
 
-Future<void> getServicesByAccountId() async {
+  Future<void> getServicesByAccountId() async {
     emit(ServiceLoading());
 
     final result = await repo.fetchServicesByAccountId();
@@ -116,14 +116,14 @@ Future<void> getServicesByAccountId() async {
     result.fold(
       (error) => emit(ServiceError(error)),
       (response) {
-        services = response.data;
+        services = response.data!;
         PrintUtil.info("Fetched services: $services");
         emit(ServiceLoaded(services));
       },
     );
   }
 
-  Future <void> updateService(int id) async{
+  Future<void> updateService(int id) async {
     if (nameController.text.isEmpty ||
         detailsController.text.isEmpty ||
         mainImage == null ||
@@ -138,7 +138,7 @@ Future<void> getServicesByAccountId() async {
     emit(ServiceLoading());
 
     final result = await repo.updateService(
-     name: nameController.text.trim(),
+      name: nameController.text.trim(),
       details: detailsController.text.trim(),
       price: priceController.text.trim(),
       categoryServiceId: categoryServiceId!,
@@ -153,9 +153,9 @@ Future<void> getServicesByAccountId() async {
       (model) => emit(ServiceSuccess(model)),
     );
   }
-Future<void> deleteService(int id) async {
-    emit(
-        ServiceLoading());
+
+  Future<void> deleteService(int id) async {
+    emit(ServiceLoading());
     final result = await repo.deleteServise(id);
     result.fold(
       (error) => emit(ServiceError(error)),
@@ -164,6 +164,4 @@ Future<void> deleteService(int id) async {
       },
     );
   }
-
-
 }

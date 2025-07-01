@@ -89,6 +89,20 @@ class MassageSentError extends ChatState {
   MassageSentError(this.error);
 }
 
+class ChatCleareLoading extends ChatState {}
+
+class ChatCleareError extends ChatState {
+  final String? error;
+
+  ChatCleareError(this.error);
+}
+
+class ChatContactSelected extends ChatState {
+  final ChatContact? contact;
+
+  ChatContactSelected(this.contact);
+}
+
 enum MessageStatus {
   sending,
   sent,

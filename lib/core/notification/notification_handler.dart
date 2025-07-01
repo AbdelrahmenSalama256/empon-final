@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:embone/core/app/embone.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
@@ -10,6 +12,7 @@ import 'local_notification_handler.dart';
 class NotificationHandler {
   static FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static String? fcmToken = '';
+
   static Future init() async {
     await firebaseMessaging.requestPermission(
       alert: true,
@@ -29,7 +32,7 @@ class NotificationHandler {
       fcmToken = await firebaseMessaging.getToken();
     }
     log('FCM Token: $fcmToken');
-    // sl<CacheHelper>().setData(, fcmToken);
+
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 
     //! Ensure notifications show in foreground for iOS
@@ -42,28 +45,33 @@ class NotificationHandler {
 
     //! Handle foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      LocalNotificationService.showBasicNotification(message);
-      if (!kReleaseMode) {
-        log('Notification onMessage: ${message.notification?.title}');
-        log('Notification Data: ${message.data}');
+      if (!sl<GlobalCubit>().isNotificationsDisabled) {
+        LocalNotificationService.showBasicNotification(message);
+        if (!kReleaseMode) {
+          log('Notification onMessage: ${message.notification?.title}');
+          log('Notification Data: ${message.data}');
+        }
       }
     });
 
     //! Handle taps on notifications when the app is in background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleNavigation(message.data);
+      if (!sl<GlobalCubit>().isNotificationsDisabled) {
+        _handleNavigation(message.data);
+      }
     });
 
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
+    if (initialMessage != null && !sl<GlobalCubit>().isNotificationsDisabled) {
       _handleNavigation(initialMessage.data);
     }
   }
 
   //! Handle background message
   static Future<void> handleBackgroundMessage(RemoteMessage message) async {
-    if (message.notification == null) {
+    if (!sl<GlobalCubit>().isNotificationsDisabled &&
+        message.notification == null) {
       LocalNotificationService.showBasicNotification(message);
     }
 

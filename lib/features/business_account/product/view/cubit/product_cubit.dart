@@ -4,12 +4,8 @@ import 'package:embone/features/business_account/product/data/model/product_cate
 import 'package:embone/features/business_account/product/data/model/product_model.dart'
     as business;
 import 'package:embone/features/business_account/product/data/repo/product_repo.dart';
-import 'package:embone/features/client/product_Details/data/model/product_model.dart'
-    as client;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../../../../core/common/logs.dart';
 
 part 'product_state.dart';
 
@@ -51,7 +47,7 @@ class ProductCubit extends Cubit<ProductState> {
   //     productNameController.text = name!;
   //     productDescriptionController.text = description!;
   //     productPriceController.text = price!;
-      
+
   //     selectedCategoryId = categories.firstWhere(
   //       (e) => e.name == category,
   //     ).id;

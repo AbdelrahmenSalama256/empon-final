@@ -16,6 +16,7 @@ class ChatCubit extends Cubit<ChatState> {
   List<Message> messages = [];
   List<ChatContact> contacts = [];
   Message? replyMessage;
+  ChatContact? selectedContact;
   String inputText = '';
   bool isRecording = false;
   int recordingDuration = 0;
@@ -62,6 +63,16 @@ class ChatCubit extends Cubit<ChatState> {
         },
       );
     }
+  }
+
+  void selectContact(ChatContact contact) {
+    selectedContact = contact;
+    emit(ChatContactSelected(contact));
+  }
+
+  void clearSelectionContact() {
+    selectedContact = null;
+    emit(ChatLoaded());
   }
 
   Map<String, dynamic> _parseWebSocketMessage(dynamic message) {
@@ -182,7 +193,7 @@ class ChatCubit extends Cubit<ChatState> {
       (sentMessage) {
         sentMessage = sentMessage.copyWith(
           fromMe: sentMessage.senderId == currentUserId,
-          status: MessageStatus.sent,
+          status: MessageStatus.delivered,
         );
         _replaceMessage(tempMessage.id, sentMessage);
         emit(MassageSentLoaded(sentMessage));
@@ -220,7 +231,7 @@ class ChatCubit extends Cubit<ChatState> {
       (sentMessage) {
         sentMessage = sentMessage.copyWith(
           fromMe: sentMessage.senderId == currentUserId,
-          status: MessageStatus.sent,
+          status: MessageStatus.delivered,
         );
         _replaceMessage(tempMessage.id, sentMessage);
         emit(MassageSentLoaded(sentMessage));
@@ -241,7 +252,7 @@ class ChatCubit extends Cubit<ChatState> {
     emit(ChatLoaded());
 
     await Future.delayed(const Duration(seconds: 2));
-    _updateMessageStatus(tempMessage.id, MessageStatus.sent);
+    _updateMessageStatus(tempMessage.id, MessageStatus.delivered);
     emit(ChatLoaded());
   }
 
@@ -296,6 +307,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   void clearSelection() {
     selectedMessage = null;
+    selectedContact = null;
     emit(ChatMessageSelected(null));
   }
 
@@ -322,7 +334,7 @@ class ChatCubit extends Cubit<ChatState> {
     result.fold(
       (error) {
         messages[messageIndex] = messages[messageIndex].copyWith(
-          status: MessageStatus.sent,
+          status: MessageStatus.delivered,
         );
         emit(ChatError(error));
       },
@@ -333,9 +345,19 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
-  Future<void> clearChat() async {
-    messages.clear();
-    emit(ChatCleared());
+  Future<void> clearChat({required int receiveID}) async {
+    // Use receiverId from constructor
+    emit(ChatCleareLoading());
+    final result = await chatRepo.deleteChat(receiveID: receiveID);
+    result.fold(
+      (error) => emit(ChatCleareError(error)),
+      (_) {
+        messages.clear();
+        contacts.removeAt(receiveID);
+        fetchChatContacts();
+        emit(ChatCleared());
+      },
+    );
   }
 
   void navigateToReply(Message replyMessage) {

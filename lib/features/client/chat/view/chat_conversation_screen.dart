@@ -171,7 +171,11 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _chatCubit.clearChat();
+              if (widget.receiverId != null) {
+                _chatCubit.clearChat(
+                  receiveID: widget.receiverId ?? 0,
+                );
+              }
             },
             child: Text(
               'clear'.tr(context),
@@ -216,6 +220,8 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                 });
               } else if (state is ChatMessageDeleted) {
                 _scrollToBottomDelayed();
+              } else if (state is ChatCleared) {
+                _scrollToBottom(); // Scroll to bottom after chat is cleared
               }
             },
             builder: (context, state) {

@@ -18,6 +18,7 @@ class EndPoints {
   static const String userVerifyEmail = "${baseUrl}check-email";
   static const String userVerifyPhone = "${baseUrl}check-phone";
   static const String account = "${baseUrl}accountInfo/";
+  static const String accountDelete = "${baseUrl}delete-user";
   static const String statistics = "${baseUrl}account-statistics/";
   static const String updateAccountData = "${baseUrl}accounts/";
   static const String packages = "${baseUrl}public-packages";
@@ -76,6 +77,7 @@ class EndPoints {
   // ! Chat
   static const String chatMessages = '${baseUrl}chat/messages';
   static const String deleteMessage = '${baseUrl}chat/delete-message';
+  static const String deleteChat = '${baseUrl}chat/clear';
   static const String chatWith = '${baseUrl}chat-with';
   static const String sendMessage = '${baseUrl}send-message';
   // ! accounts

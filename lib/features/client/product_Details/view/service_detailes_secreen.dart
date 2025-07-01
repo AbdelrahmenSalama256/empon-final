@@ -18,6 +18,7 @@ import 'package:embone/features/client/product_Details/view/widgets/product_deta
 import 'package:embone/features/client/product_Details/view/widgets/product_details_image.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_info.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_share_bar.dart';
+import 'package:embone/features/client/product_Details/view/widgets/service_features.dart';
 import 'package:embone/features/client/product_Details/view/widgets/service_review_section.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/cubit/search_state.dart';
@@ -52,8 +53,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
     return comments.map((comment) {
       return {
         'commentId': comment.commentId,
-        'avatar': comment.userImage ??
-            'assets/images/default_avatar.png', // Add default avatar
+        'avatar': comment.userImage ?? 'assets/images/default_avatar.png',
         'name': comment.userName,
         'date': comment.time,
         'comment': comment.comment,
@@ -121,9 +121,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                     children: [
                                       ProductImageSection(
                                         images: [
-                                          service?.mainImage ?? '',
-                                          ...?(service?.listImages
-                                              .map((img) => img))
+                                          service?.mainImage?.isNotEmpty == true
+                                              ? service!.mainImage!
+                                              : 'assets/default_image.png',
+                                          ...(service?.listImages
+                                                  ?.where((img) =>
+                                                      img.isNotEmpty == true)
+                                                  .map((img) => img) ??
+                                              []),
                                         ],
                                         autoPlay: true,
                                         autoPlayInterval:
@@ -131,72 +136,34 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                       ),
                                       SizedBox(height: 15.h),
                                       BlocProvider(
-                                        create: (context) => ServiceCubit(sl<ServiceRepo>()),
+                                        create: (context) =>
+                                            ServiceCubit(sl<ServiceRepo>()),
                                         child: InteractionBar(
-                                          isActive:service?.active==true?1:0 ,
-                                          onActive:(){ cubit.updateProductStatus(service!.id);
-                                          cubit.goToService(id: service.id);
-                                          },
+                                          showLike: false,
+
                                           isVendor: widget.isVendor,
-                                          // likeCount: service?.price ?? 0,
-                                          onEdit: () {
-                                            navigateTo(
-                                                context,
-                                                AddProductPage(
-                                                    isService: true,
-                                                    isUpdate: true,
-                                                    businessAccountId: int.parse(
-                                                        sl<CacheHelper>().getData(
-                                                            key: AppConstants
-                                                                .businessAccountId))));
-                                          },
-                                          onDelete: () {
-                                            CustomPopup.show(
-                                              context: context,
-                                              type: PopupType.alert,
-                                              title:
-                                                  'delete_product'.tr(context),
-                                              titleColor:
-                                                  const Color(0xffEC4B4B),
-                                              message: 'confirmation_message'
-                                                  .tr(context),
-                                              primaryButtonText:
-                                                  "yes".tr(context),
-                                              secondaryButtonText:
-                                                  "no".tr(context),
-                                              onPrimaryButtonPressed: () {
-                                                cubit.deleteService(service!.id);
-                                                Navigator.of(context,
-                                                        rootNavigator: true)
-                                                    .pop();
-                                              },
-                                            );
-                                          },
+                                          likeCount: service?.likes ?? 0,
                                           commentCount:
                                               cubit.commentResponse?.total ?? 0,
-                                          onShare: () {
-                                            final serviceId =
-                                                cubit.serviceModel?.data?.id ??
-                                                    0;
-                                            final serviceName = cubit
-                                                    .serviceModel?.data?.name ??
-                                                "Product";
-                                            final deepLink =
-                                                "myapp://product/$serviceId";
+                                          isLoved: false,
 
+                                          isThumbsUp: service?.isLiked ?? false,
+                                          isActive:
+                                              service?.active == true ? 1 : 0,
+                                          avatarUrls: const [], // Populate if needed
+                                          onShare: () {
+                                            final serviceId = service?.id ?? 0;
+                                            final serviceName =
+                                                service?.name ?? "Service";
+                                            final deepLink =
+                                                "myapp://service/$serviceId";
                                             Share.share(
-                                              "Check out this product: $serviceName\n$deepLink",
+                                              "Check out this service: $serviceName\n$deepLink",
                                               subject:
-                                                  "Awesome Product on Our App",
+                                                  "Awesome Service on Our App",
                                             );
                                           },
-                                          // onLike: () {
-                                          //   context
-                                          //       .read<GlobalCubit>()
-                                          //       .addProductToWishlist(
-                                          //           cubit.productModel?.data?.id ??
-                                          //               0);
-                                          // },
+
                                           onComment: () {
                                             final context =
                                                 reviewSectionKey.currentContext;
@@ -211,10 +178,47 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                           },
                                           onThumbsUp: () {
                                             cubit.toggleServiceLike(
-                                              serviceId: cubit
-                                                      .serviceModel?.data?.id ??
-                                                  0,
+                                                serviceId: service?.id ?? 0);
+                                          },
+                                          onEdit: () {
+                                            navigateTo(
+                                              context,
+                                              AddProductPage(
+                                                isService: true,
+                                                isUpdate: true,
+                                                businessAccountId: int.parse(
+                                                    sl<CacheHelper>().getData(
+                                                        key: AppConstants
+                                                            .businessAccountId)),
+                                              ),
                                             );
+                                          },
+                                          onDelete: () {
+                                            CustomPopup.show(
+                                              context: context,
+                                              type: PopupType.alert,
+                                              title:
+                                                  'delete_service'.tr(context),
+                                              titleColor:
+                                                  const Color(0xffEC4B4B),
+                                              message: 'confirmation_message'
+                                                  .tr(context),
+                                              primaryButtonText:
+                                                  "yes".tr(context),
+                                              secondaryButtonText:
+                                                  "no".tr(context),
+                                              onPrimaryButtonPressed: () {
+                                                cubit.deleteService(
+                                                    service?.id ?? 0);
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
+                                              },
+                                            );
+                                          },
+                                          onActive: () {
+                                            cubit.updateServiceStatus(
+                                                service?.id ?? 0);
                                           },
                                         ),
                                       ),
@@ -224,17 +228,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                         currentPrice: double.tryParse(
                                                 service?.price ?? '0') ??
                                             0.0,
-                                        //originalPrice: service?. == 1.0
-                                        // ? (double.tryParse(
-                                        //             product?.price ?? '0') ??
-                                        //         0.0) *
-                                        //     1.5
-                                        // : null,
                                       ),
                                       SizedBox(height: 15.h),
                                       ProductInfoSection(
                                         name:
-                                            service?.name ?? 'Unknown Product',
+                                            service?.name ?? 'Unknown Service',
                                         price: double.tryParse(
                                                 service?.price ?? '0') ??
                                             0.0,
@@ -243,10 +241,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                             service?.name ?? 'Unknown Seller',
                                         productId:
                                             service?.id.toString() ?? 'N/A',
-                                        sizes: const ['0'],
+                                        sizes: const [
+                                          '0'
+                                        ], // No sizes for services
                                         type: "services",
                                       ),
                                       SizedBox(height: 15.h),
+                                      FeaturesSection(
+                                          features: service?.features),
                                       ServiceReviewsSection(
                                         key: reviewSectionKey,
                                         reviews: cubit.comments,

@@ -63,6 +63,6 @@ class LocalNotificationService {
   }
 
   static void navigateBasedOnPayload(Map<String, dynamic> map) {
-    final String? type = map["type"];
+    // final String? type = map["type"];
   }
 }

@@ -1,11 +1,11 @@
 class ServiceModel {
-  final bool success;
-  final String message;
+  final bool? success;
+  final String? message;
   final ServiceData? data;
 
   ServiceModel({
-    required this.success,
-    required this.message,
+    this.success,
+    this.message,
     this.data,
   });
 
@@ -16,42 +16,60 @@ class ServiceModel {
       data: json['data'] != null ? ServiceData.fromJson(json['data']) : null,
     );
   }
+
+  ServiceModel copyWith({
+    bool? success,
+    String? message,
+    ServiceData? data,
+  }) {
+    return ServiceModel(
+      success: success ?? this.success,
+      message: message ?? this.message,
+      data: data ?? this.data,
+    );
+  }
 }
 
 class ServiceData {
-  final int id;
-  final String name;
-  final String details;
-  final String price;
-  final bool active;
-  final bool approved;
-  final bool isLiked;
+  final int? id;
+  final String? name;
+  final String? details;
+  final String? price;
+  final bool? active;
+  final bool? approved;
+  final bool? isLiked;
   final int? likes;
-  final String approvalStatus;
-  final String mainImage;
-  final List<String> listImages;
-  final String createdAt;
-  final String updatedAt;
-  final List<String> features;
+  final String? approvalStatus;
+  final String? mainImage;
+  final List<String>? listImages;
+  final String? createdAt;
+  final String? updatedAt;
+  final Map<String, String>? features;
 
   ServiceData({
-    required this.id,
-    required this.name,
-    required this.details,
-    required this.price,
-    required this.active,
-    required this.approved,
-    required this.isLiked,
-    required this.likes,
-    required this.approvalStatus,
-    required this.mainImage,
-    required this.listImages,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.features,
+    this.id,
+    this.name,
+    this.details,
+    this.price,
+    this.active,
+    this.approved,
+    this.isLiked,
+    this.likes,
+    this.approvalStatus,
+    this.mainImage,
+    this.listImages,
+    this.createdAt,
+    this.updatedAt,
+    this.features,
   });
 
   factory ServiceData.fromJson(Map<String, dynamic> json) {
+    // Convert features object to Map<String, String>
+    Map<String, String>? featuresMap;
+    if (json['features'] != null && json['features'] is Map) {
+      featuresMap = (json['features'] as Map)
+          .map((key, value) => MapEntry(key.toString(), value.toString()));
+    }
     return ServiceData(
       id: json['id'],
       name: json['name'],
@@ -59,12 +77,14 @@ class ServiceData {
       price: json['price'],
       active: json['active'],
       approved: json['approved'],
-      isLiked: json['is_liked'] ?? false,
+      isLiked: json['is_liked'],
       likes: json['likes'],
       approvalStatus: json['approval_status'],
       mainImage: json['main_image'],
-      listImages: List<String>.from(json['list_images'] ?? []),
-      features: List<String>.from(json['features'] ?? []),
+      listImages: json['list_images'] != null
+          ? List<String>.from(json['list_images'])
+          : null,
+      features: featuresMap,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
@@ -84,7 +104,7 @@ class ServiceData {
     List<String>? listImages,
     String? createdAt,
     String? updatedAt,
-    List<String>? features,
+    Map<String, String>? features,
   }) {
     return ServiceData(
       id: id ?? this.id,
@@ -100,63 +120,76 @@ class ServiceData {
       listImages: listImages ?? this.listImages,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      features: features??this.features,
+      features: features ?? this.features,
     );
   }
 }
 
-
 class ServicesResponse {
-  final bool success;
-  final String message;
-  final List<Service> data;
+  final bool? success;
+  final String? message;
+  final List<Service>? data;
 
   ServicesResponse({
-    required this.success,
-    required this.message,
-    required this.data,
+    this.success,
+    this.message,
+    this.data,
   });
 
   factory ServicesResponse.fromJson(Map<String, dynamic> json) {
     return ServicesResponse(
       success: json['success'],
       message: json['message'],
-      data: List<Service>.from(json['data'].map((x) => Service.fromJson(x))),
+      data: json['data'] != null
+          ? List<Service>.from(json['data'].map((x) => Service.fromJson(x)))
+          : null,
+    );
+  }
+
+  ServicesResponse copyWith({
+    bool? success,
+    String? message,
+    List<Service>? data,
+  }) {
+    return ServicesResponse(
+      success: success ?? this.success,
+      message: message ?? this.message,
+      data: data ?? this.data,
     );
   }
 }
 
 class Service {
-  final int id;
-  final String name;
-  final String details;
-  final String price;
-  final bool active;
-  final bool approved;
-  final String approvalStatus;
-  final Category category;
-  final String logo;
-  final String mainImage;
-  final List<String> listImages;
-  final String createdAt;
-  final String updatedAt;
-  final int likes;
+  final int? id;
+  final String? name;
+  final String? details;
+  final String? price;
+  final bool? active;
+  final bool? approved;
+  final String? approvalStatus;
+  final Category? category;
+  final String? logo;
+  final String? mainImage;
+  final List<String>? listImages;
+  final String? createdAt;
+  final String? updatedAt;
+  final int? likes;
 
   Service({
-    required this.id,
-    required this.name,
-    required this.details,
-    required this.price,
-    required this.active,
-    required this.approved,
-    required this.approvalStatus,
-    required this.category,
-    required this.logo,
-    required this.mainImage,
-    required this.listImages,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.likes,
+    this.id,
+    this.name,
+    this.details,
+    this.price,
+    this.active,
+    this.approved,
+    this.approvalStatus,
+    this.category,
+    this.logo,
+    this.mainImage,
+    this.listImages,
+    this.createdAt,
+    this.updatedAt,
+    this.likes,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
@@ -168,30 +201,67 @@ class Service {
       active: json['active'],
       approved: json['approved'],
       approvalStatus: json['approval_status'],
-      category: Category.fromJson(json['category']),
+      category:
+          json['category'] != null ? Category.fromJson(json['category']) : null,
       logo: json['logo'],
       mainImage: json['main_image'],
-      listImages: List<String>.from(json['list_images']),
+      listImages: json['list_images'] != null
+          ? List<String>.from(json['list_images'])
+          : null,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       likes: json['likes'],
     );
   }
+
+  Service copyWith({
+    int? id,
+    String? name,
+    String? details,
+    String? price,
+    bool? active,
+    bool? approved,
+    String? approvalStatus,
+    Category? category,
+    String? logo,
+    String? mainImage,
+    List<String>? listImages,
+    String? createdAt,
+    String? updatedAt,
+    int? likes,
+  }) {
+    return Service(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      details: details ?? this.details,
+      price: price ?? this.price,
+      active: active ?? this.active,
+      approved: approved ?? this.approved,
+      approvalStatus: approvalStatus ?? this.approvalStatus,
+      category: category ?? this.category,
+      logo: logo ?? this.logo,
+      mainImage: mainImage ?? this.mainImage,
+      listImages: listImages ?? this.listImages,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      likes: likes ?? this.likes,
+    );
+  }
 }
 
 class Category {
-  final int id;
-  final String name;
-  final String slug;
-  final String createdAt;
-  final String updatedAt;
+  final int? id;
+  final String? name;
+  final String? slug;
+  final String? createdAt;
+  final String? updatedAt;
 
   Category({
-    required this.id,
-    required this.name,
-    required this.slug,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.name,
+    this.slug,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
@@ -201,6 +271,22 @@ class Category {
       slug: json['slug'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
+    );
+  }
+
+  Category copyWith({
+    int? id,
+    String? name,
+    String? slug,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return Category(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      slug: slug ?? this.slug,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }
