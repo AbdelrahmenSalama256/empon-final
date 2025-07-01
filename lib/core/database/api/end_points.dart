@@ -127,6 +127,7 @@ class EndPoints {
   static const String declineFriendRequest = '${baseUrl}friend-request';
   static const String myFriends = '${baseUrl}friends';
   static const String sellerStatistics = '${baseUrl}seller-statistics';
+  static const String adsPack = '${baseUrl}buy-package-with-ads';
 
 //! product
   static const String addProduct = '${baseUrl}product';

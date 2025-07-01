@@ -1,4 +1,5 @@
 
+import 'package:embone/features/client/menu/data/model/ads_pack_model.dart';
 import 'package:embone/features/client/menu/data/model/cities_model.dart';
 import 'package:embone/features/client/menu/data/model/packages_model.dart';
 
@@ -30,3 +31,16 @@ class CitiesError extends PackagesState {
   final String message;
   CitiesError(this.message);
 }
+class PackageAdsLoading extends PackagesState{}
+
+class PackageAdsLoaded extends PackagesState{
+   final PackageAdsData res;
+
+  PackageAdsLoaded( this.res);
+   
+}
+class PackageAdsError extends PackagesState {
+  final String message;
+  PackageAdsError(this.message);
+}
+

@@ -1,6 +1,8 @@
+import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/home/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/home/view/cubit/account_cubit.dart';
@@ -60,7 +62,12 @@ class _PlanSectionState extends State<PlanSection> {
                         create: (context) => PackagesCubit(sl<PackagesRepo>())..fetchCities()
                         )
                     ],
-                    child: const SelectableGridScreen(),
+                    child:  SelectableGridScreen(
+                      accountId: int.parse(sl<CacheHelper>()
+                          .getData(key: AppConstants.businessAccountId)) ,
+                      planId: productCubit.packages[i].id,
+
+                    ),
                   ),
                 );
                 setState(() {

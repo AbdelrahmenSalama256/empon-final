@@ -218,14 +218,14 @@ class Variation {
   }
 }
 class AttributeValue {
-  final int id;
-  final String name;
-  final String attribute;
+  final int? id;
+  final String? name;
+  final String? attribute;
 
   AttributeValue({
     required this.id,
     required this.name,
-    required this.attribute,
+     this.attribute,
   });
 
   factory AttributeValue.fromJson(Map<String, dynamic> json) {
@@ -238,17 +238,20 @@ class AttributeValue {
 }
 
 class ColorModel {
-  final int id;
-  final String name;
-  final String code;
+  final int? id;
+  final String? name;
+  final String? code;
 
   ColorModel({
-    required this.id,
-    required this.name,
-    required this.code,
+    this.id,
+    this.name,
+    this.code,
   });
 
-  factory ColorModel.fromJson(Map<String, dynamic> json) {
+  factory ColorModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return ColorModel();
+    }
     return ColorModel(
       id: json['id'],
       name: json['name'],
@@ -312,13 +315,13 @@ class ProductData {
   final int id;
   final String? name;
   final String? description;
-  final String? details;
+  final List<ProductDetails>? details;
   final String? code;
   final String? category;
   final String? price;
   final int? vendorId;
   final String? vendorName;
-  final int? isSale;
+  final String? isSale;
   final int? active;
   final String? discountType;
   final String? discountValue;
@@ -370,7 +373,9 @@ class ProductData {
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      details: json['details'],
+      details: (json['details'] as List)
+          .map((d) => ProductDetails.fromJson(d))
+          .toList(),
       code: json['code'],
       category: json['category'],
       price: json['price'],

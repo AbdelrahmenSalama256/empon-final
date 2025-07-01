@@ -1,4 +1,3 @@
-import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -12,63 +11,16 @@ import 'package:embone/features/client/product_Details/data/model/product_model.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddProductForm extends StatefulWidget {
+class AddProductForm extends StatelessWidget {
   final bool? isUpdate;
   ProductModel? productData;
 
   AddProductForm({super.key, this.isUpdate, this.productData});
 
-  @override
-  State<AddProductForm> createState() => _AddProductFormState();
-}
-
-class _AddProductFormState extends State<AddProductForm> {
   final _formKey = GlobalKey<FormState>();
 
   final accountId =
       int.parse(sl<CacheHelper>().getData(key: AppConstants.businessAccountId));
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//  WidgetsBinding.instance.addPostFrameCallback((_) {
-//       if (widget.isUpdate!) {
-//         final cubit = context.read<ProductCubit>();
-//         final data = widget.productData?.data;
-
-//         if (data == null) return;
-//         PrintUtil.success(data.description);
-//         cubit.productNameController = TextEditingController(text:data.name ?? "hi");
-//         cubit.productDescriptionController.text = data.description ?? "";
-//         cubit.productPriceController.text = data.price ?? "";
-
-//         cubit.variations.clear(); // Clear default
-//         for (var variation in data.variations ?? []) {
-//           cubit.variations.add({
-//             "color_code": null,
-//             "attribute_value_id": TextEditingController(
-//                 text: variation.attributeValueId.toString()),
-//             "price": TextEditingController(text: variation.price.toString()),
-//             "stock": TextEditingController(text: variation.stock.toString()),
-//           });
-//         }
-
-//         cubit.serviceDetailsControllers.clear(); // Clear default
-//         // for (var detail in data.details ?? []) {
-//         //   cubit.serviceDetailsControllers.add({
-//         //     "quality": TextEditingController(text: detail.quality ?? ''),
-//         //     "material": TextEditingController(text: detail.material ?? ''),
-//         //   });
-//         // }
-
-//         if (cubit.variations.isEmpty) cubit.addVariation();
-//         if (cubit.serviceDetailsControllers.isEmpty) cubit.addParoductDetail();
-
-//       }
-//     });
-
-//   }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +51,7 @@ class _AddProductFormState extends State<AddProductForm> {
             ProductSubmitButtons(
               formKey: _formKey,
               accountId: accountId,
-              isUpdate: widget.isUpdate!,
+              isUpdate: isUpdate!,
             ),
           ],
         ),

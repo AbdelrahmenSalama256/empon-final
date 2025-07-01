@@ -54,9 +54,9 @@ class _UpdateProductFormState extends State<UpdateProductForm> {
             details: widget.productData!.data!.details),
       child: BlocListener<ProductCubit, ProductState>(
         listener: (context, state) {
-      if (state is ProductSuccess) {
+      if (state is UpdateProductSuccess) {
                 showToast(context,
-                    message: state.product.message!, state: ToastStates.success);
+                    message: state.product.message, state: ToastStates.success);
                 Navigator.pop(context);
               }        },
         child: BlocBuilder<ProductCubit, ProductState>(builder: (context, state) {

@@ -36,7 +36,9 @@ class ProductSubmitButtons extends StatelessWidget {
       },
       child: BlocBuilder<ProductCubit, ProductState>(builder: (context, state) {
         final cubit = context.read<ProductCubit>();
-
+if (state is ProductLoading) {
+         return const Center(child: CircularProgressIndicator());
+        }
         return Column(
           children: [
             AppButton(

@@ -2,7 +2,6 @@ import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_dropdown.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/utils/validator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
@@ -19,8 +18,9 @@ import '../cubit/account_state.dart';
 
 class BusinessAccountSettings extends StatefulWidget {
   final AccountCubit cubit;
+  final bool isUpdate;
 
-  const BusinessAccountSettings({super.key, required this.cubit});
+  const BusinessAccountSettings({super.key, required this.cubit, required this.isUpdate});
 
   @override
   _BusinessAccountSettingsState createState() =>
@@ -64,10 +64,6 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
           List<LocationModel> states = cubit.getFilteredStates();
           List<LocationModel> cities = cubit.getFilteredCities();
 
-          PrintUtil.info("Current state: $state");
-          PrintUtil.info("Countries count: ${countries.length}");
-          PrintUtil.info("States count: ${states.length}");
-          PrintUtil.info("Cities count: ${cities.length}");
 
           bool isLoading = state is AccountLoading;
 
@@ -103,6 +99,7 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                         : null,
                   ),
                   SizedBox(height: 5.h),
+                  widget.isUpdate?
                   Text(
                     'business_description_hint'.tr(context),
                     style: TextStyle(
@@ -110,7 +107,7 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                       fontWeight: FontWeight.w400,
                       color: const Color(0xff7C7C7C),
                     ),
-                  ),
+                  ):const SizedBox(),
                   SizedBox(height: 16.h),
                   _buildVideoUploadSection(context),
                   SizedBox(height: 32.h),
@@ -125,89 +122,118 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                   SizedBox(height: 10.h),
                   if (isLoading)
                     const Center(child: CustomLoadingIndicator())
-                  else ...[
+                    else ...[
                     AppDropdownField(
-                      hint: 'country'.tr(context),
-                      value: _selectedCountry?.name,
+                      hint: cubit.country ?? 'country'.tr(context),
+                      value: _selectedCountry?.name ??
+                        (cubit.country != null
+                          ? (countries.firstWhere(
+                                (country) => country.name == cubit.country,
+                                orElse: () => const LocationModel(
+                                  id: 0, name: '', countryId: 0, stateId: 0))
+                              .name
+                              .isNotEmpty
+                            ? countries
+                              .firstWhere((country) => country.name == cubit.country)
+                              .name
+                            : null)
+                          : null),
                       items: countries.map((country) => country.name).toList(),
                       onChanged: (value) {
-                        if (value == null) return;
-                        final selected = countries.firstWhere(
-                          (country) => country.name == value,
-                          orElse: () => const LocationModel(
-                              id: 0, name: '', countryId: 0, stateId: 0),
-                        );
-                        if (selected.id != 0) {
-                          setState(() {
-                            _selectedCountry = selected;
-                            _selectedState = null;
-                            _selectedCity = null;
-                          });
-                          cubit.setCountry(selected);
-                          PrintUtil.info(
-                              "Selected country: ${selected.name} (ID: ${selected.id})");
-                        }
+                      if (value == null) return;
+                      final selected = countries.firstWhere(
+                        (country) => country.name == value,
+                        orElse: () => const LocationModel(
+                          id: 0, name: '', countryId: 0, stateId: 0),
+                      );
+                      if (selected.id != 0) {
+                        setState(() {
+                        _selectedCountry = selected;
+                        _selectedState = null;
+                        _selectedCity = null;
+                        });
+                        cubit.setCountry(selected);
+                      }
                       },
                       validator: (value) => value == null
-                          ? 'please_select_country'.tr(context)
-                          : null,
+                        ? 'please_select_country'.tr(context)
+                        : null,
                       contentPadding: EdgeInsets.symmetric(
-                          vertical: 16.h, horizontal: 16.w),
+                        vertical: 16.h, horizontal: 16.w),
                     ),
                     SizedBox(height: 16.h),
                     AppDropdownField(
-                      hint: 'governorate'.tr(context),
-                      value: _selectedState?.name,
+                      hint: cubit.stat ?? 'governorate'.tr(context),
+                      value: _selectedState?.name ??
+                        (cubit.stat != null
+                          ? (states.firstWhere(
+                                (state) => state.name == cubit.stat,
+                                orElse: () => const LocationModel(
+                                  id: 0, name: '', countryId: 0, stateId: 0))
+                              .name
+                              .isNotEmpty
+                            ? states
+                              .firstWhere((state) => state.name == cubit.stat)
+                              .name
+                            : null)
+                          : null),
                       items: states.map((state) => state.name).toList(),
                       onChanged: (value) {
-                        if (value == null) return;
-                        final selected = states.firstWhere(
-                          (state) => state.name == value,
-                          orElse: () => const LocationModel(
-                              id: 0, name: '', countryId: 0, stateId: 0),
-                        );
-                        if (selected.id != 0) {
-                          setState(() {
-                            _selectedState = selected;
-                            _selectedCity = null;
-                          });
-                          cubit.setGovernorate(selected);
-                          PrintUtil.info(
-                              "Selected governorate: ${selected.name} (ID: ${selected.id})");
-                        }
+                      if (value == null) return;
+                      final selected = states.firstWhere(
+                        (state) => state.name == value,
+                        orElse: () => const LocationModel(
+                          id: 0, name: '', countryId: 0, stateId: 0),
+                      );
+                      if (selected.id != 0) {
+                        setState(() {
+                        _selectedState = selected;
+                        _selectedCity = null;
+                        });
+                        cubit.setGovernorate(selected);
+                      }
                       },
                       validator: (value) => value == null
-                          ? 'please_select_governorate'.tr(context)
-                          : null,
+                        ? 'please_select_governorate'.tr(context)
+                        : null,
                       contentPadding: EdgeInsets.symmetric(
-                          vertical: 16.h, horizontal: 16.w),
+                        vertical: 16.h, horizontal: 16.w),
                     ),
                     SizedBox(height: 16.h),
                     AppDropdownField(
-                      hint: 'city'.tr(context),
-                      value: _selectedCity?.name,
+                      hint: cubit.city ?? 'city'.tr(context),
+                      value: _selectedCity?.name ??
+                        (cubit.city != null
+                          ? (cities.firstWhere(
+                              (city) => city.name == cubit.city,
+                              orElse: () => const LocationModel(
+                                id: 0, name: '', countryId: 0, stateId: 0))
+                            .name.isNotEmpty
+                            ? cities
+                              .firstWhere((city) => city.name == cubit.city)
+                              .name
+                            : null)
+                          : null),
                       items: cities.map((city) => city.name).toList(),
                       onChanged: (value) {
-                        if (value == null) return;
-                        final selected = cities.firstWhere(
-                          (city) => city.name == value,
-                          orElse: () => const LocationModel(
-                              id: 0, name: '', countryId: 0, stateId: 0),
-                        );
-                        if (selected.id != 0) {
-                          setState(() {
-                            _selectedCity = selected;
-                          });
-                          cubit.setCity(selected);
-                          PrintUtil.info(
-                              "Selected city: ${selected.name} (ID: ${selected.id})");
-                        }
+                      if (value == null) return;
+                      final selected = cities.firstWhere(
+                        (city) => city.name == value,
+                        orElse: () => const LocationModel(
+                          id: 0, name: '', countryId: 0, stateId: 0),
+                      );
+                      if (selected.id != 0) {
+                        setState(() {
+                        _selectedCity = selected;
+                        });
+                        cubit.setCity(selected);
+                      }
                       },
                       validator: (value) => value == null
-                          ? 'please_select_city'.tr(context)
-                          : null,
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 16.h, horizontal: 16.w),
+                        ? 'please_select_city'.tr(context)
+                        : null,
+                      contentPadding:
+                        EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
                     ),
                     SizedBox(height: 16.h),
                     AppTextField(
@@ -216,67 +242,65 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.done,
                       validator: (value) => value!.isEmpty
-                          ? 'please_enter_detailed_address'.tr(context)
-                          : null,
+                        ? 'please_enter_detailed_address'.tr(context)
+                        : null,
                     ),
                     SizedBox(height: 16.h),
                     GestureDetector(
                       onTap: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SelectLocationMapPage(),
-                          ),
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) => const SelectLocationMapPage(),
+                        ),
+                      );
+                      if (result != null) {
+                        cubit.setLocation(
+                        result['address'],
+                        result['lat'].toString(),
+                        result['lng'].toString(),
                         );
-                        if (result != null) {
-                          cubit.setLocation(
-                            result['address'],
-                            result['lat'].toString(),
-                            result['lng'].toString(),
-                          );
-                          setState(() {});
-                          PrintUtil.info(
-                              "Location selected: ${result['address']}, Lat: ${result['lat']}, Lng: ${result['lng']}");
-                        }
+                        setState(() {});
+                      }
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 16.h, horizontal: 16.w),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF0F2F9),
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(
-                            color: cubit.latController.text.isEmpty
-                                ? Colors.red
-                                : Colors.transparent,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 16.h, horizontal: 16.w),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF0F2F9),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                        color: cubit.latController.text.isEmpty
+                          ? Colors.red
+                          : Colors.transparent,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                        Expanded(
+                          child: Text(
+                          cubit.addressController.text.isEmpty
+                            ? 'select_location'.tr(context)
+                            : cubit.addressController.text,
+                          maxLines: 1,
+                          style: TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                            fontSize: 16.sp,
+                            color: cubit.addressController.text.isEmpty
+                              ? Colors.grey
+                              : Colors.black87,
+                          ),
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                cubit.addressController.text.isEmpty
-                                    ? 'select_location'.tr(context)
-                                    : cubit.addressController.text,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                  fontSize: 16.sp,
-                                  color: cubit.addressController.text.isEmpty
-                                      ? Colors.grey
-                                      : Colors.black87,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 10.w),
-                            Icon(
-                              CupertinoIcons.location_fill,
-                              color: Colors.grey,
-                              size: 24.w,
-                            ),
-                          ],
+                        SizedBox(width: 10.w),
+                        Icon(
+                          CupertinoIcons.location_fill,
+                          color: Colors.grey,
+                          size: 24.w,
                         ),
+                        ],
+                      ),
                       ),
                     ),
                     SizedBox(height: 16.h),
@@ -286,11 +310,12 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                       hintText: 'enter_postal_code'.tr(context),
                       keyboardType: TextInputType.number,
                       validator: (value) => Validators.validateRequired(
-                          value, 'postal_code'.tr(context), context),
+                        value, 'postal_code'.tr(context), context),
                     ),
                     SizedBox(height: 32.h),
+                    ]
                   ],
-                ],
+                
               ),
             ),
           );
