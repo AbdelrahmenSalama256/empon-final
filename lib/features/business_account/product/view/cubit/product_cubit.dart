@@ -37,41 +37,41 @@ class ProductCubit extends Cubit<ProductState> {
   int? attributeValueId;
   String? color;
 
-  initControllers(
-    bool isUpdate, {
-    String? name,
-    String? description,
-    String? price,
-    String? category,
-    List<client.Variation>? variation,
-    String? mainImage
-  }) async {
-    await getCategories();
-    if (isUpdate) {
-      productNameController.text = name!;
-      productDescriptionController.text = description!;
-      productPriceController.text = price!;
+  // initControllers(
+  //   bool isUpdate, {
+  //   String? name,
+  //   String? description,
+  //   String? price,
+  //   String? category,
+  //   List<client.Variation>? variation,
+  //   String? mainImage
+  // }) async {
+  //   await getCategories();
+  //   if (isUpdate) {
+  //     productNameController.text = name!;
+  //     productDescriptionController.text = description!;
+  //     productPriceController.text = price!;
       
-      selectedCategoryId = categories.firstWhere(
-        (e) => e.name == category,
-      ).id;
-      if (variation != null && variation.isNotEmpty) {
-        for (int i = 0; i < variation.length; i++) {
-          if (variations.length <= i) {
-            addVariation();
-          }
-          variations[i]['color_code'] = variation[i].color?.code;
-          variations[i]['attribute_value_id'].text = variation[i].attributeValue?.name;
-          variations[i]['price'].text = variation[i].price;
-          variations[i]['stock'].text = variation[i].stock.toString();
-        }
+  //     selectedCategoryId = categories.firstWhere(
+  //       (e) => e.name == category,
+  //     ).id;
+  //     if (variation != null && variation.isNotEmpty) {
+  //       for (int i = 0; i < variation.length; i++) {
+  //         if (variations.length <= i) {
+  //           addVariation();
+  //         }
+  //         variations[i]['color_code'] = variation[i].color?.code;
+  //         variations[i]['attribute_value_id'].text = variation[i].attributeValue?.name;
+  //         variations[i]['price'].text = variation[i].price;
+  //         variations[i]['stock'].text = variation[i].stock.toString();
+  //       }
 
-      }
+  //     }
 
-      Print.success("message");
-      emit(ProductInitial());
-    }
-  }
+  //     Print.success("message");
+  //     emit(ProductInitial());
+  //   }
+  // }
 
   List<Map<String, TextEditingController>> serviceDetailsControllers = [];
 
