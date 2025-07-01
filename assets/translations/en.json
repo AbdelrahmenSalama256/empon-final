@@ -846,5 +846,12 @@
   "no_offers": "No Offers Yet",
   "no_friends_to_chat": "No Friends To Chat",
   "features": "Features",
-  "press_back_again_to_exit": "Press back again to exit"
+  "press_back_again_to_exit": "Press back again to exit",
+  "service_details": "Service Details",
+  "enable_notifications": "Enable Notifications",
+  "notifications_permission_required": "Notifications Permission Required",
+  "enable_notifications_in_settings": "To receive notifications, please enable them in your device settings.",
+  "open_settings": "Open Settings",
+  "notifications_disabled": "Notifications are disabled",
+  "enable_in_settings": "Please enable notifications in device settings to control them here"
 }

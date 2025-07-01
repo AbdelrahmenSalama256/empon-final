@@ -25,6 +25,9 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 class GlobalCubit extends Cubit<GlobalState> {
   GlobalCubit() : super(GlobalInitial()) {
     ();
+    isNotificationsDisabled = sl<CacheHelper>()
+            .getData(key: AppConstants.isNotificationsDisabledKey) ??
+        false;
   }
   late int? businessId; // Late initialization
 
@@ -457,12 +460,13 @@ class GlobalCubit extends Cubit<GlobalState> {
         emit(ProfileError(failure));
       },
       (message) {
+        // Clear user data and token
         user = null;
         sl<CacheHelper>().removeData(key: AppConstants.userProfile);
         sl<CacheHelper>().removeData(key: AppConstants.token);
         PrintUtil.success("User Account Deleted successfully: $message");
-
-        emit(AccountDeletedSuccess(message));
+        // Trigger logout to handle navigation
+        logout();
       },
     );
   }
@@ -524,6 +528,58 @@ class GlobalCubit extends Cubit<GlobalState> {
       log('Business ID cleared');
     }
     emit(ProfileDataUpdated()); // Emit state to notify listeners
+  }
+
+// Update your toggleNotifications method in GlobalCubit
+  Future<void> toggleNotifications(bool isDisabled) async {
+    if (isLoading) return;
+
+    emit(LoadingState()); // Emit loading state for UI
+    isLoading = true;
+
+    try {
+      // Simulate network delay for better UX
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Update local state
+      isNotificationsDisabled = isDisabled;
+      await sl<CacheHelper>().saveData(
+          key: AppConstants.isNotificationsDisabledKey, value: isDisabled);
+
+      /*
+    // Uncomment when you have the API endpoint
+    final response = await sl<ProfileRepo>().updateNotificationPreference(
+      isDisabled: isDisabled,
+    );
+
+    response.fold(
+      (failure) {
+        PrintUtil.error("Failed to update notification preference: $failure");
+        // Revert local state on failure
+        isNotificationsDisabled = !isDisabled;
+        sl<CacheHelper>().setData(AppConstants.isNotificationsDisabledKey, !isDisabled);
+        emit(ErrorState(failure));
+        return;
+      },
+      (success) {
+        PrintUtil.success("Notification preference updated successfully");
+      },
+    );
+    */
+
+      PrintUtil.success(
+          "Notification preference updated locally to: $isDisabled");
+      emit(ProfileUpdated()); // Notify UI of successful change
+    } catch (e) {
+      PrintUtil.error("Error toggling notifications: $e");
+      // Revert local state on error
+      isNotificationsDisabled = !isDisabled;
+      await sl<CacheHelper>().saveData(
+          key: AppConstants.isNotificationsDisabledKey, value: !isDisabled);
+      emit(ErrorState("Failed to toggle notifications"));
+    } finally {
+      isLoading = false;
+    }
   }
 }
 

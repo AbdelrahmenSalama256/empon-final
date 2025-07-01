@@ -13,10 +13,10 @@ import 'package:embone/features/client/auth/view/pages/cubit/forget_password_cub
 import 'package:embone/features/client/auth/view/pages/cubit/login_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/login_state.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
+import 'package:embone/features/client/auth/view/pages/register_screen.dart';
 import 'package:embone/features/client/auth/view/pages/register_steps/otp_verification_page.dart';
 import 'package:embone/features/client/auth/view/pages/searching_account.dart';
 import 'package:embone/features/client/auth/view/pages/verification_screen.dart';
-import 'package:embone/features/client/auth/view/pages/welcom_screen.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -237,7 +237,7 @@ class _LoginPageState extends State<LoginPage>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const WelcomePage(),
+                                  builder: (context) => const RegisterPage(),
                                 ),
                               );
                             },

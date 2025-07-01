@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/widgets/custom_cached_image.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -115,13 +116,11 @@ class ProfileImagePicker extends StatelessWidget {
                 : hasNetworkImage
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(50.r),
-                        child: Image.network(
-                          networkImageUrl!,
-                          width: 100.w,
-                          height: 100.w,
+                        child: CustomCachedImage(
+                          imageUrl: networkImageUrl!,
+                          w: 100.w,
+                          h: 100.w,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              _buildPlaceholder(),
                         ),
                       )
                     : _buildPlaceholder(),

@@ -1,4 +1,5 @@
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/widgets/custom_cached_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -49,15 +50,9 @@ class ProfileSection extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                   child: ClipOval(
-                    child: Image.network(
-                      userImageUrl,
+                    child: CustomCachedImage(
+                      imageUrl: userImageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'assets/images/placholder.jpg',
-                          fit: BoxFit.cover,
-                        );
-                      },
                     ),
                   ),
                 ),

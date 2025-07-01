@@ -24,18 +24,14 @@ class NotificationHandler {
       sound: true,
     );
 
-    //! Get the token
     if (Platform.isIOS) {
       await firebaseMessaging.getAPNSToken();
-      fcmToken = await firebaseMessaging.getToken();
-    } else {
-      fcmToken = await firebaseMessaging.getToken();
     }
+    fcmToken = await firebaseMessaging.getToken();
     log('FCM Token: $fcmToken');
 
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 
-    //! Ensure notifications show in foreground for iOS
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       alert: true,
@@ -43,9 +39,9 @@ class NotificationHandler {
       sound: true,
     );
 
-    //! Handle foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (!sl<GlobalCubit>().isNotificationsDisabled) {
+      final cubit = sl<GlobalCubit>();
+      if (!cubit.isNotificationsDisabled) {
         LocalNotificationService.showBasicNotification(message);
         if (!kReleaseMode) {
           log('Notification onMessage: ${message.notification?.title}');
@@ -54,27 +50,28 @@ class NotificationHandler {
       }
     });
 
-    //! Handle taps on notifications when the app is in background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (!sl<GlobalCubit>().isNotificationsDisabled) {
+      final cubit = sl<GlobalCubit>();
+      if (!cubit.isNotificationsDisabled) {
         _handleNavigation(message.data);
       }
     });
 
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null && !sl<GlobalCubit>().isNotificationsDisabled) {
-      _handleNavigation(initialMessage.data);
+    if (initialMessage != null) {
+      final cubit = sl<GlobalCubit>();
+      if (!cubit.isNotificationsDisabled) {
+        _handleNavigation(initialMessage.data);
+      }
     }
   }
 
-  //! Handle background message
   static Future<void> handleBackgroundMessage(RemoteMessage message) async {
-    if (!sl<GlobalCubit>().isNotificationsDisabled &&
-        message.notification == null) {
+    final cubit = sl<GlobalCubit>();
+    if (!cubit.isNotificationsDisabled && message.notification != null) {
       LocalNotificationService.showBasicNotification(message);
     }
-
     if (!kReleaseMode) log('Notification: ${message.notification?.title}');
   }
 

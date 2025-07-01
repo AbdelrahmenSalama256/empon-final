@@ -266,6 +266,9 @@ class MassagesScreen extends StatelessWidget {
           fontSize: 16.sp,
           fontWeight: FontWeight.w500,
           color: Colors.black,
+          fontFamily: context.read<GlobalCubit>().language == "ar"
+              ? "Beiruti"
+              : "Poppins",
         ),
       ));
     }

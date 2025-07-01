@@ -2,8 +2,6 @@ import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/widgets/nav_bar_item.dart';
-import 'package:embone/features/business_account/dashboard/data/repo/statistics_repo.dart';
-import 'package:embone/features/business_account/dashboard/view/cubit/statistics_cubit.dart';
 import 'package:embone/features/business_account/dashboard/view/dashboard_screen.dart';
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
@@ -58,10 +56,7 @@ class _BaseScreenState extends State<BaseScreen> {
         ];
       case UserType.store:
         return [
-          HomeStoreScreen(
-            businessAccountId: context.read<GlobalCubit>().businessId,
-            isVendor: true,
-          ),
+          const HomeStoreScreen(),
           const ShopScreen(),
           const SizedBox(),
           const NotificationsPage(),
@@ -71,20 +66,10 @@ class _BaseScreenState extends State<BaseScreen> {
         ];
       case UserType.business:
         return [
-          HomeStoreScreen(
-            businessAccountId: context.read<GlobalCubit>().businessId,
-            isVendor: true,
-          ),
-          BlocProvider(
-            create: (context) => StatisticsCubit(sl<StatisticsRepo>())
-              ..fetchStatistics(context.read<GlobalCubit>().businessId),
-            child: const DashboardScreen(),
-          ),
+          const HomeStoreScreen(),
+          const DashboardScreen(),
           const SizedBox(),
-          BlocProvider(
-            create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
-            child: const NotificationsPage(),
-          ),
+          const NotificationsPage(),
           const MenuScreen(
             isVendor: true,
           ),
@@ -214,18 +199,11 @@ class _BaseScreenState extends State<BaseScreen> {
           items: _navBarsItems(context, userType),
           padding: EdgeInsets.symmetric(vertical: 10.h),
           confineToSafeArea: true,
-          onWillPop: (p0) async {
-            if (context.read<GlobalCubit>().controller.index == 0) {
-              return true;
-            } else {
-              context.read<GlobalCubit>().changeBottomNavIndex(0);
-              return false;
-            }
-          },
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
-          handleAndroidBackButtonPress: false,
+          handleAndroidBackButtonPress: true,
           resizeToAvoidBottomInset: false,
+          stateManagement: true,
           hideNavigationBarWhenKeyboardAppears: true,
           hideOnScrollSettings: const HideOnScrollSettings(
             hideNavBarOnScroll: true,
@@ -259,12 +237,14 @@ class _BaseScreenState extends State<BaseScreen> {
           onItemSelected: (index) {
             context.read<GlobalCubit>().changeBottomNavIndex(index);
             if (userType == UserType.store && index == 2) {
-              showAccountsBottomSheet(context);
-              return;
+              showAccountsBottomSheet(
+                  context); // Show bottom sheet instead of navigating
+              return; // Return early to prevent navigation
             }
             if (userType == UserType.business && index == 2) {
-              showAccountsBottomSheet(context);
-              return;
+              showAccountsBottomSheet(
+                  context); // Show bottom sheet instead of navigating
+              return; // Return early to prevent navigation
             }
           },
         );

@@ -3,7 +3,6 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
@@ -82,15 +81,15 @@ class IntroPage extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      navigateTo(context, const BaseScreen());
-                    },
-                    child: Text('guest_login'.tr(context),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: AppColors.grey,
-                            )),
-                  ),
+                  // TextButton(
+                  //   onPressed: () {
+                  //     navigateTo(context, const BaseScreen());
+                  //   },
+                  //   child: Text('guest_login'.tr(context),
+                  //       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  //             color: AppColors.grey,
+                  //           )),
+                  // ),
                 ],
               ),
             ],

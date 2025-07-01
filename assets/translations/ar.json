@@ -869,5 +869,11 @@
   "no_offers": "لا توجد عروض حتي الان",
   "no_friends_to_chat": "لا يوجد اصدقاء لمحادثتهم",
   "features": "المميزات",
-  "press_back_again_to_exit": "اضغط للرجوع مرة اخري للخروج"
+  "press_back_again_to_exit": "اضغط للرجوع مرة اخري للخروج",
+  "enable_notifications": "تفعيل الإشعارات",
+  "notifications_permission_required": "الإذن بالإشعارات مطلوب",
+  "enable_notifications_in_settings": "لتلقي الإشعارات، يرجى تمكينها في إعدادات جهازك.",
+  "open_settings": "فتح الإعدادات",
+  "notifications_disabled": "الإشعارات معطلة",
+  "enable_in_settings": "يرجى تمكين الإشعارات في إعدادات الجهاز للتحكم بها هنا"
 }

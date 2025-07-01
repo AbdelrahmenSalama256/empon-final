@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/custom_popup.dart';
@@ -52,44 +50,33 @@ class SettingsScreen extends StatelessWidget {
                 showToast(
                   context,
                   message: state.message,
-                  // color: Colors.red,
                   state: ToastStates.error,
                 );
               }
-              if (state is AccountDeletedSuccess) {
-                Navigator.pop(context);
-                showToast(
-                  context,
-                  message: state.message,
-                  // color: Colors.red,
-                  state: ToastStates.success,
+              if (state is LogoutSuccess) {
+                navigatorKey.currentState!.pushAndRemoveUntil(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const IntroPage(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    transitionDuration: const Duration(milliseconds: 300),
+                  ),
+                  (Route<dynamic> route) => false,
                 );
               }
-              navigatorKey.currentState!.pushAndRemoveUntil(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      const IntroPage(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    );
-                  },
-                  transitionDuration: const Duration(milliseconds: 300),
-                ),
-                (Route<dynamic> route) => false,
-              );
+              if (state is AccountDeletedSuccess) {
+                context.read<GlobalCubit>().logout();
+              }
             },
             builder: (context, state) {
               final cubit = context.read<GlobalCubit>();
               return SafeArea(
                 child: Column(
                   children: [
-                    // Header
-                    // SizedBox(height: 16.h),
                     const SettingsHeader(),
-
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
@@ -97,7 +84,6 @@ class SettingsScreen extends StatelessWidget {
                           child: Column(
                             children: [
                               SizedBox(height: 24.h),
-
                               state is ProfileLoading
                                   ? const Center(
                                       child: CircularProgressIndicator())
@@ -113,21 +99,17 @@ class SettingsScreen extends StatelessWidget {
                                         )
                                       : ProfileSection(
                                           userName: (cubit.userAccount
-                                                      ?.where(
-                                                        (element) =>
-                                                            element.id ==
-                                                            cubit.businessId,
-                                                      )
+                                                      ?.where((element) =>
+                                                          element.id ==
+                                                          cubit.businessId)
                                                       .first
                                                       .name ??
                                                   '')
                                               .trim(),
                                           userImageUrl: cubit.userAccount
-                                                  ?.where(
-                                                    (element) =>
-                                                        element.id ==
-                                                        cubit.businessId,
-                                                  )
+                                                  ?.where((element) =>
+                                                      element.id ==
+                                                      cubit.businessId)
                                                   .first
                                                   .logo ??
                                               'assets/images/logo.png',
@@ -135,7 +117,6 @@ class SettingsScreen extends StatelessWidget {
                                           isVendor: isVendor!,
                                           onTap: () {},
                                         ),
-                              // Edit Profile
                               SizedBox(height: isVendor != true ? 16.h : 30.h),
                               EditProfile(
                                 title: isVendor != true
@@ -152,38 +133,33 @@ class SettingsScreen extends StatelessWidget {
                                                 AccountCubit(sl<AccountRepo>()),
                                             child: cubit.userAccount != null
                                                 ? UpdateBusinessAccount(
-                                                    accountData: cubit.userAccount!
+                                                    accountData: cubit
+                                                        .userAccount!
                                                         .where((element) =>
                                                             element.id ==
                                                             cubit.businessId)
-                                                        .cast<Account>().first,
-
-                                                        
+                                                        .cast<Account>()
+                                                        .first,
                                                   )
                                                 : const SizedBox.shrink(),
-                                          ));
+                                          ),
+                                        );
                                 },
                               ),
-
                               SizedBox(height: 16.h),
                               Divider(
-                                // ignore: use_full_hex_values_for_flutter_colors
                                 color:
                                     const Color(0xffe3e3e380).withOpacity(0.3),
                                 height: 1.h,
                               ),
-
-                              // Notifications Toggle
                               SizedBox(height: 16.h),
                               const NotificationsToggle(),
                               SizedBox(height: 16.h),
                               Divider(
-                                // ignore: use_full_hex_values_for_flutter_colors
                                 color:
                                     const Color(0xffe3e3e380).withOpacity(0.3),
                                 height: 1.h,
                               ),
-                              // Adresses
                               if (isVendor != true) ...[
                                 SizedBox(height: 16.h),
                                 const AddressesSection(),
@@ -194,22 +170,16 @@ class SettingsScreen extends StatelessWidget {
                                   height: 1.h,
                                 ),
                               ],
-
-                              // Edit Profile
                               SizedBox(height: 16.h),
                               const Wallet(),
                               SizedBox(height: 16.h),
                               Divider(
-                                // ignore: use_full_hex_values_for_flutter_colors
                                 color:
                                     const Color(0xffe3e3e380).withOpacity(0.3),
                                 height: 1.h,
                               ),
-                              // Language Selector
                               SizedBox(height: 16.h),
                               const LanguageSelector(),
-
-                              // Menu Items
                               SizedBox(height: isVendor == true ? 16.h : 24.h),
                               Container(
                                 margin: isVendor == true
@@ -249,9 +219,7 @@ class SettingsScreen extends StatelessWidget {
                                       icon: "assets/images/chatting.png",
                                       onTap: () {
                                         navigateTo(
-                                          context,
-                                          const MassagesScreen(),
-                                        );
+                                            context, const MassagesScreen());
                                       },
                                       title: isVendor == true
                                           ? "chat".tr(context)
@@ -298,8 +266,6 @@ class SettingsScreen extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(height: 20.h),
-
-                              // Sign Out Button
                               SignOutButton(
                                 text: "delete_account".tr(context),
                                 onPressed: () {
