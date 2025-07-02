@@ -110,7 +110,7 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: cubit.addFeature,
-                        icon: const Icon(Icons.add),
+                        icon: const Icon(Icons.add,color:Colors.white),
                         label: Text('add_section'.tr(context)),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green),
@@ -125,7 +125,7 @@ class _ServiceDetailsSectionState extends State<ServiceDetailsSection> {
                             cubit.featureControllers.removeLast();
                             setState(() {});
                           },
-                          icon: const Icon(Icons.undo),
+                          icon: const Icon(Icons.undo,color:Colors.white),
                           label: Text('undo'.tr(context)),
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red),

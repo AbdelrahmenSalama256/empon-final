@@ -238,7 +238,7 @@ class _UpdateServiceFormState extends State<UpdateServiceForm> {
                             Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: cubit.addFeature,
-                                icon: const Icon(Icons.add),
+                                icon: const Icon(Icons.add,color: Colors.white,),
                                 label: Text('add_section'.tr(context)),
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.green),
@@ -253,7 +253,7 @@ class _UpdateServiceFormState extends State<UpdateServiceForm> {
                                     cubit.featureControllers.removeLast();
                                     setState(() {});
                                   },
-                                  icon: const Icon(Icons.undo),
+                                  icon: const Icon(Icons.undo,color: Colors.white,),
                                   label: Text('undo'.tr(context)),
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red),
@@ -271,7 +271,7 @@ class _UpdateServiceFormState extends State<UpdateServiceForm> {
                 Column(
                   children: [
                     AppButton(
-                      text: 'service_Update_subtitle'.tr(context),
+                      text: 'update_button'.tr(context),
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
                           cubit.accountId =

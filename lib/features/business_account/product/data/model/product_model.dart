@@ -34,7 +34,7 @@ class Data {
   String? discountValue;
   String? updatedAt;
   String? createdAt;
-  Details? details;
+  List<Details>? details;
   int? id;
 
   Data(
@@ -62,10 +62,15 @@ class Data {
     code = json['code'];
     discountType = json['discount_type'];
     discountValue = json['discount_value'];
-    details = Details.fromJson(json['details']);
     updatedAt = json['updated_at'];
     createdAt = json['created_at'];
     id = json['id'];
+      if (json['details'] != null && json['details'] is List) {
+      details = List<Details>.from(
+        json['details'].map((item) => Details.fromJson(item)),
+      );
+    }
+    
   }
 
 

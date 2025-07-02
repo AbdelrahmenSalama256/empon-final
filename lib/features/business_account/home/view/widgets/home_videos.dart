@@ -55,10 +55,10 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
             widget.businessAccountCubit ?? context.read<BusinessAccountCubit>();
         final account = accountCubit.accountData;
         final filteredProducts = widget.isVendor != true
-            ? account?.data.products.where((p) => p.active == 1).toList() ?? []
+            ? account?.data.products!.where((p) => p.active == 1).toList() ?? []
             : account?.data.products ?? [];
         final filteredServices = widget.isVendor != true
-            ? account?.data.services
+            ? account?.data.services!
                     .where((s) => s.active && s.approved)
                     .toList() ??
                 []

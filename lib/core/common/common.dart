@@ -39,8 +39,8 @@ void navigateReplacement({
   Navigator.pushReplacementNamed(context, route);
 }
 
-void navigatepushNamedAndRemoveUntil(
-    {required BuildContext context, required String route}) {
+void navigatepushNamedAndRemoveUntil(BuildContext context, 
+    { required String route}) {
   Navigator.pushNamedAndRemoveUntil(
     context,
     route,

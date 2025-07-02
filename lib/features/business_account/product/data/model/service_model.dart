@@ -81,7 +81,10 @@ class ServiceData {
       listImages: json['list_images'] != null
           ? List<String>.from(json['list_images'])
           : <String>[],
-      features: json['features'],
+      features: json['features'] != null
+          ? List<String>.from(json['features'].map((e) => e.toString()))
+          : <String>[],
+
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       categoties: json['category'] is List

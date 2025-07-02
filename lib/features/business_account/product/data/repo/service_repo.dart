@@ -38,7 +38,7 @@ class ServiceRepo {
           "features[]": about
         },
       );
-      return Right(ServiceModel.fromJson(response));
+      return Right(ServiceModel.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {

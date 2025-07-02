@@ -875,5 +875,21 @@
   "enable_notifications_in_settings": "لتلقي الإشعارات، يرجى تمكينها في إعدادات جهازك.",
   "open_settings": "فتح الإعدادات",
   "notifications_disabled": "الإشعارات معطلة",
-  "enable_in_settings": "يرجى تمكين الإشعارات في إعدادات الجهاز للتحكم بها هنا"
+  "enable_in_settings": "يرجى تمكين الإشعارات في إعدادات الجهاز للتحكم بها هنا",
+  "vendor_location": "عنوان المحل التجارى",
+  "select_categories":"يجب اختيار فئة واحدة على الاقل",
+  "pending_account": "الحساب التجارى الخاص بك تحت المراجعه",
+  "adopt": "اعتمد الان",
+  "nopack": "لست مشترك فى باقه",
+  "update_product_title": "تعديل المنتج",
+  "update_Service_title": "تعديل الخدمه",
+  "update_button": "تعديل",
+  "best_selling_product":"المنتج الاكثر مبيعا",
+  "no_transactions_found": "لا يوجد معاملات فالوقت الحالى",
+  "end_date":"تاريخ الانتهاء",
+  "start_date":"تاريخ البدء",
+  "min_age":"الحد الأدنى للعمر",
+  "max_age":"الحد الأقصى للعمر",
+  "all":"الجميع",
+  "succ_ads":"تم الاشتراك فى الباقة بنجاح"
 }

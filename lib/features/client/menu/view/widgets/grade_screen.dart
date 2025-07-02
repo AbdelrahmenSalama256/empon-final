@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -88,14 +89,14 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: HomeStoreNameSection(
                                 isVerified:
-                                    accountCubit.accountData!.data.verified,
+                                    accountCubit.accountData!.data.verified!,
                                 name: "${accountCubit.accountData?.data.name}",
                                 onTap: () {
                                   accountCubit.launchLocationUrl(
                                       latitude: double.parse(
-                                          accountCubit.accountData!.data.lat),
+                                          accountCubit.accountData!.data.lat!),
                                       longitude: double.parse(
-                                          accountCubit.accountData!.data.lng));
+                                          accountCubit.accountData!.data.lng!));
                                 },
                               ),
                             ),
@@ -129,7 +130,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                             GridView.builder(
                               shrinkWrap: true,
                               itemCount: accountCubit
-                                  .accountData!.data.products.length,
+                                  .accountData!.data.products!.length,
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3,
@@ -139,7 +140,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                               itemBuilder: (context, index) {
                                 bool isSelected = citiesCubit.selectedItems.contains(
                                     accountCubit
-                                        .accountData!.data.products[index].id);
+                                        .accountData!.data.products![index].id);
                                 return GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -147,13 +148,13 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                         citiesCubit.selectedItems.remove(accountCubit
                                             .accountData!
                                             .data
-                                            .products[index]
+                                            .products![index]
                                             .id);
                                       } else {
                                         citiesCubit.selectedItems.add(accountCubit
                                             .accountData!
                                             .data
-                                            .products[index]
+                                            .products![index]
                                             .id);
                                       }
                                     });
@@ -164,7 +165,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                         borderRadius: BorderRadius.circular(8),
                                         child: Image.network(
                                             accountCubit.accountData!.data
-                                                .products[index].image,
+                                                .products![index].image,
                                             fit: BoxFit.cover),
                                       ),
                                       if (isSelected)
@@ -196,13 +197,13 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                 Expanded(
                                 child: AppTextField(
                                   controller: citiesCubit.minAge!,
-                                  hintText: "min Age",
+                                  hintText: "min_age".tr(context),
                                 ),
                                 ),
                                 SizedBox(width: 12.w),
                                 Expanded(
                                 child: AppTextField(
-                                  hintText: "max Age",
+                                  hintText: "max_age".tr(context),
                                   controller: citiesCubit.maxAge!,
                                 ),
                                 ),
@@ -237,7 +238,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                   ),
                                   child: Text(
                                     selectedStartDateString.isEmpty
-                                      ? "Start Date"
+                                      ? "start_date".tr(context)
                                       : selectedStartDateString,
                                     style: TextStyle(
                                     color: selectedStartDateString.isEmpty
@@ -274,7 +275,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                   ),
                                   child: Text(
                                     selectedEndDateString.isEmpty
-                                      ? "End Date"
+                                      ? "end_date".tr(context)
                                       : selectedEndDateString,
                                     style: TextStyle(
                                     color: selectedEndDateString.isEmpty
@@ -292,7 +293,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                             StatefulBuilder(
                               builder: (context, setState) {
                               return AppDropdownField(
-                                hint: 'gander'.tr(context),
+                                hint: 'gender'.tr(context),
                                 items: items.map((item) => item.tr(context)).toList(),
                                 value: citiesCubit.slectedGander?.tr(context),
                                 onChanged: (String? value) {
@@ -335,13 +336,31 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                             ),
                             // _buildDropdowns(),
                             SizedBox(height: 12.h),
-                            AppButton(
-                              text: "chose".tr(context),
-                              onPressed:(){
-                                citiesCubit.createPackageAds(
-                                  packageId: widget.planId, 
-                                  accountId:  widget.accountId  );
-                              } ,)
+                            BlocConsumer<PackagesCubit, PackagesState>(
+                              listener: (context, state) {
+                              if (state is PackageAdsLoaded) {
+                                showToast(context,
+                                        message: "succ_ads".tr(context),
+                                        state: ToastStates.error);
+                           
+                              } else if (state is PackagesError) {
+                                showToast(context, message: state.message , state: ToastStates.error);
+                             
+                              }
+                              },
+                              builder: (context, state) {
+                              return AppButton(
+                                text: "chose".tr(context),
+                                isLoading: state is PackageAdsLoading,
+                                onPressed: () {
+                                    context.read<PackagesCubit>().createPackageAds(
+                                      packageId: widget.planId,
+                                      accountId: widget.accountId,
+                                      );
+                                  },
+                              );
+                              },
+                            )
                         ,
                           ],
                         ),

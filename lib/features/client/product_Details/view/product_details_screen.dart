@@ -1,4 +1,5 @@
 import 'package:embone/core/component/custom_loading_indicator.dart';
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/empty_massage.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_constant.dart';
@@ -9,6 +10,8 @@ import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/base/view/welcome/base_screen.dart';
+import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/business_account/product/view/update_product_buisniss_account.dart';
 import 'package:embone/features/business_account/store/view/product_inventory_screen.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
@@ -323,29 +326,67 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                             ),
                                           );
                                         },
-                                        onDelete: () => CustomPopup.show(
-                                          context: context,
-                                          type: PopupType.alert,
-                                          title: 'delete_product'.tr(context),
-                                          titleColor: const Color(0xffEC4B4B),
-                                          message: 'confirmation_message'
-                                              .tr(context),
-                                          primaryButtonText: "yes".tr(context),
-                                          secondaryButtonText: "no".tr(context),
-                                          onPrimaryButtonPressed: () {
-                                            final contextToUse = context;
-                                            final productIdToDelete =
-                                                product?.id;
-                                            cubit
-                                                .deleteProduct(
-                                                    productIdToDelete ?? 0)
-                                                .whenComplete(() {
-                                              Navigator.of(contextToUse,
-                                                      rootNavigator: true)
-                                                  .pop();
-                                            });
-                                          },
-                                        ),
+                                        onDelete: () {
+                                          CustomPopup.show(
+                                            context: context,
+                                            type: PopupType.alert,
+                                            title: 'delete_product'.tr(context),
+                                            titleColor: const Color(0xffEC4B4B),
+                                            message: 'confirmation_message'
+                                                .tr(context),
+                                            primaryButtonText:
+                                                "yes".tr(context),
+                                            secondaryButtonText:
+                                                "no".tr(context),
+                                            onPrimaryButtonPressed: () async {
+                                              Navigator.of(context)
+                                                  .pop(); // Close popup
+                                              showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (context) => const Center(
+                                                    child:
+                                                        CustomLoadingIndicator()),
+                                              );
+                                              final productIdToDelete =
+                                                  product?.id;
+                                              try {
+                                                await cubit.deleteProduct(
+                                                    productIdToDelete ?? 0);
+                                                Navigator.of(context, rootNavigator: true)
+                                                    .pop(); 
+                                                showToast(
+                                                  context,
+                                                  message:
+                                                      'product_deleted_successfully'
+                                                          .tr(context),
+                                                  state: ToastStates.success,
+                                                );
+                                                Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const HomeStoreScreen(isVendor: true,)),
+                                                  (route) => false,
+                                                );
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
+                                              } catch (e) {
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop(); // Close loading
+                                                showToast(
+                                                  context,
+                                                  message: 'delete_failed'
+                                                      .tr(context),
+                                                  state: ToastStates.error,
+                                                );
+                                              }
+                                            },
+                                          );
+                                        },
+
                                         onActive: () {
                                           cubit.updateProductStatus(
                                               product?.id ?? 0);

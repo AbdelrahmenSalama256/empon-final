@@ -53,6 +53,7 @@ class _AddProductPageState extends State<AddProductPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true, 
       body: BlocProvider(
         create: (context) => ProductCubit(sl<ProductRepo>()),
         child: SafeArea(

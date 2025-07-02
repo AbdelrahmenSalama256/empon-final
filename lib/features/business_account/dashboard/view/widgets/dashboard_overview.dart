@@ -60,11 +60,11 @@ class DashboardOverview extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: _buildCategoryChart(
-                    context, productPersenage, servicePersenage),
-              ),
-              SizedBox(width: 12.w),
+              // Expanded(
+              //   child: _buildCategoryChart(
+              //       context, productPersenage, servicePersenage),
+              // ),
+              // SizedBox(width: 12.w),
               Expanded(
                 child:
                     _buildMostSoldProductCard(context, imageUrl, productName),

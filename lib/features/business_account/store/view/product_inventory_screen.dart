@@ -1,8 +1,6 @@
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:embone/features/client/search/view/cubit/search_state.dart';
 import 'package:flutter/material.dart';
@@ -14,75 +12,77 @@ class ProductInventoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<SearchCubit>().productModel!.data;
-    return BlocProvider(
-      create: (context) => SearchCubit(sl<SearchRepo>()),
-      child: BlocBuilder<SearchCubit, SearchState>(
-        builder: (context, state) {
-          
-          return state is GoToProductLoading
-              ? const Center(child: CircularProgressIndicator())
-              
-              : Scaffold(
-                  backgroundColor: Colors.white,
-                  body: SafeArea(
-                    child: Column(
-                      children: [
-                         AppHeader(
-                          title: 'available_product_numbers'.tr(context),
-                          centerTitle: true,
-                          showBackButton: true,
-                        ),
-                        SizedBox(height: 16.h),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.w),
-                              child: Column(
-                                children: List.generate(
-                                  cubit!.variations!.length,
-                                  (index) {
-                                    final variation = cubit.variations![index];
-                                    // Group variations by color
-                                    final color = variation.color!.code;
-                                    final sameColorVariations = cubit
-                                        .variations!
-                                        .where((v) => v.color!.code == color)
-                                        .toList();
+    return BlocBuilder<SearchCubit, SearchState>(
+      builder: (context, state) {
+      final cubit = context.read<SearchCubit>().productModel?.data;
 
-                                    final filteredSizes = <String>[];
-                                    final filteredQuantities = <String>[];
+      if (state is GoToProductLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-                                    for (var v in sameColorVariations) {
-                                      filteredSizes
-                                          .add(v.attributeValue!.id.toString());
-                                      filteredQuantities
-                                          .add(v.stock.toString());
-                                    }
+      if (cubit == null || cubit.variations == null) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-                                    return Padding(
-                                      padding: EdgeInsets.only(bottom: 16.h),
-                                      child: _buildProductSection(
-                                          context: context,
-                                          sizes: filteredSizes,
-                                          quantities: filteredQuantities,
-                                          color: Color(int.parse(color!
-                                              .replaceFirst('#', '0xff'))),
-                                          name: cubit.name!,
-                                          imageUrl: cubit.image!),
-                                    );
-                                  },
-                                ),
+      return Scaffold(
+                backgroundColor: Colors.white,
+                body: SafeArea(
+                  child: Column(
+                    children: [
+                       AppHeader(
+                        title: 'available_product_numbers'.tr(context),
+                        centerTitle: true,
+                        showBackButton: true,
+                      ),
+                      SizedBox(height: 16.h),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            child: Column(
+                              children: List.generate(
+                                cubit.variations!.length,
+                                (index) {
+                                  final variation = cubit.variations![index];
+                                  // Group variations by color
+                                  final color = variation.color?.code;
+                                  final sameColorVariations = cubit
+                                      .variations!
+                                      .where((v) => v.color?.code == color)
+                                      .toList();
+    
+                                  final filteredSizes = <String>[];
+                                  final filteredQuantities = <String>[];
+    
+                                  for (var v in sameColorVariations) {
+                                    filteredSizes
+                                        .add(v.attributeValue!.id.toString());
+                                    filteredQuantities
+                                        .add(v.stock.toString());
+                                  }
+    
+                                  return Padding(
+                                    padding: EdgeInsets.only(bottom: 16.h),
+                                    child: _buildProductSection(
+                                        context: context,
+                                        sizes: filteredSizes,
+                                        quantities: filteredQuantities,
+                                        color: Color(int.parse(color!
+                                            .replaceFirst('#', '0xff'))),
+                                        name: cubit.name!,
+                                        imageUrl: cubit.image!),
+                                  );
+                                },
                               ),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-        },
-      ),
+                ),
+              );
+      },
     );
   }
 

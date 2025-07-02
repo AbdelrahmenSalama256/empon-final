@@ -120,6 +120,8 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                         children: [
                          Expanded(
                                 child: AppDropdownField(
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 16.w),
                                   hint: 'size_hint'.tr(context),
                                   value: cubit
                                       .findAttributeById(cubit.variations[index]
@@ -310,7 +312,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                       Expanded(
                         child: AppTextField(
                           controller: cubit.serviceDetailsControllers[index]['quality']!,
-                          hintText: 'price_hint'.tr(context),
+                          hintText: 'description_hint'.tr(context),
                           keyboardType: TextInputType.text,
                           validator: (value) => Validators.validateRequired(
                               value, 'description_head'.tr(context), context),
@@ -357,7 +359,7 @@ class _ProductDetailsSectionState extends State<ProductDetailsSection> {
                           cubit.removeParoductDetail();
                         });
                       },
-                      icon: const Icon(Icons.undo),
+                      icon: const Icon(Icons.undo,color: Colors.white,),
                       label: Text('undo'.tr(context)),
                       style:
                           ElevatedButton.styleFrom(backgroundColor: Colors.red),

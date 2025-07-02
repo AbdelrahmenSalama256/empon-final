@@ -41,7 +41,7 @@ class ProductRepo {
      "details":serviceDetails
 
       }, isFormData: true);
-      return Right(AddProductModel.fromJson(response));
+      return Right(AddProductModel.fromJson(response.data));
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);
     } on NoInternetException catch (e) {

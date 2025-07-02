@@ -327,7 +327,7 @@ class _UpdateProductFormState extends State<UpdateProductForm> {
                                   }),
                                   icon: const Icon(Icons.add, color: Colors.white),
                                   label: Text('add_variation'.tr(
-                                      context)), //todo : 'add_variation'.tr(context)),
+                                      context)),
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.green),
                                 ),
@@ -462,7 +462,7 @@ class _UpdateProductFormState extends State<UpdateProductForm> {
                     Column(
                       children: [
                         AppButton(
-                          text: 'update_product_button'.tr(context),
+                          text: 'update_button'.tr(context),
                           onPressed: () {
                             if (_formKey.currentState?.validate() ?? false) {
                               cubit.updateProduct(

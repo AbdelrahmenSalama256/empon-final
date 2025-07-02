@@ -853,5 +853,21 @@
   "enable_notifications_in_settings": "To receive notifications, please enable them in your device settings.",
   "open_settings": "Open Settings",
   "notifications_disabled": "Notifications are disabled",
-  "enable_in_settings": "Please enable notifications in device settings to control them here"
+  "enable_in_settings": "Please enable notifications in device settings to control them here",
+  "vendor_location": "Business Store Location",
+  "select_categories": "You Should at least one Category",
+  "pending_account" :"Your business account is under review.",
+  "adopt":"Adopt now",
+  "nopack": "not subscribed",
+  "update_product_title":"Update Product",
+  "update_Service_title":"Update Service",
+  "update_button":"Update",
+  "best_selling_product": "Best Selling Product",
+  "no_transactions_found": "No Transactions Found",
+  "end_date":"End Date",
+  "start_date":"Start Date",
+  "max_age":"Max Age",
+  "min_age":"Min Age",
+  "all":"all",
+  "succ_ads":"The package has been successfully subscribed."
 }

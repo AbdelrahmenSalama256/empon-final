@@ -1,0 +1,11 @@
+╔╣ DioError ║ Status: 400 Bad Request ║ Time: 598 ms
+║  https://empon.evyx.lol/api/accounts/step-one
+╚═════════════════════════════════════════════════════════════╝
+╔ DioExceptionType.badResponse
+║    {
+║         "success": false,
+║         "message": "لديك حساب غير مكتمل بالفعل.",
+║         "data": null
+║    }
+╚═════════════════════════════════════════════════════════════╝
+need data to check it to route user to step two 

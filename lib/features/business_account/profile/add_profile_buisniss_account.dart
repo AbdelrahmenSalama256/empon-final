@@ -163,188 +163,190 @@ class _AddProfilePhotoForBuisnissAccountPageState
                         onBackPressed: () => Navigator.pop(context),
                         style: HeaderStyle.standard,
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Question Section
-                              SizedBox(height: 20.h),
-                              QuestionWidget(
-                                question:
-                                    'add_business_account_image'.tr(context),
-                                subtitle: 'add_logo_and_cover_for_business'
-                                    .tr(context),
-                              ),
-                              SizedBox(height: 32.h),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Logo Section
-                                  Text(
-                                    'business_logo'.tr(context),
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColors.black,
-                                    ),
-                                  ),
-                                  SizedBox(height: 16.h),
-                                  GestureDetector(
-                                    onTap: () =>
-                                        _showImageSourceDialog(isLogo: true),
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          width: 100.w,
-                                          height: 100.w,
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Color(0xFFF5F5F5),
-                                          ),
-                                          child: _selectedLogo != null
-                                              ? ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          50.r),
-                                                  child: Image.file(
-                                                    _selectedLogo!,
-                                                    width: 100.w,
-                                                    height: 100.w,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                )
-                                              : Center(
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Container(
-                                                        width: 40.w,
-                                                        height: 40.w,
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color:
-                                                              Color(0xFFD9D9D9),
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 5.h),
-                                                      Container(
-                                                        width: 50.w,
-                                                        height: 20.h,
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          color:
-                                                              Color(0xFFD9D9D9),
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          10)),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                        ),
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: Container(
-                                            width: 24.w,
-                                            height: 24.w,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                color: Colors.grey.shade200,
-                                                width: 1.w,
-                                              ),
-                                            ),
-                                            child: Icon(
-                                              Icons.edit,
-                                              size: 14.w,
-                                              color: AppColors.primary,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 32.h),
-                                  // Cover Image Section
-                                  Text(
-                                    'cover_image'.tr(context),
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: AppColors.black,
-                                    ),
-                                  ),
-                                  SizedBox(height: 16.h),
-                                  GestureDetector(
-                                    onTap: () =>
-                                        _showImageSourceDialog(isLogo: false),
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 150.h,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFF5F5F5),
-                                        borderRadius:
-                                            BorderRadius.circular(15.r),
+                      SingleChildScrollView(
+                        child: Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Question Section
+                                SizedBox(height: 20.h),
+                                QuestionWidget(
+                                  question:
+                                      'add_business_account_image'.tr(context),
+                                  subtitle: 'add_logo_and_cover_for_business'
+                                      .tr(context),
+                                ),
+                                SizedBox(height: 32.h),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Logo Section
+                                    Text(
+                                      'business_logo'.tr(context),
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: AppColors.black,
                                       ),
-                                      child: _selectedCover != null
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.r),
-                                              child: Image.file(
-                                                _selectedCover!,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            )
-                                          : Center(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.image,
-                                                    size: 40.sp,
-                                                    color:
-                                                        const Color(0xFFD9D9D9),
-                                                  ),
-                                                  SizedBox(height: 8.h),
-                                                  Text(
-                                                    'upload_cover_image'
-                                                        .tr(context),
-                                                    style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      color: const Color(
-                                                          0xFFD9D9D9),
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _showImageSourceDialog(isLogo: true),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            width: 100.w,
+                                            height: 100.w,
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Color(0xFFF5F5F5),
+                                            ),
+                                            child: _selectedLogo != null
+                                                ? ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50.r),
+                                                    child: Image.file(
+                                                      _selectedLogo!,
+                                                      width: 100.w,
+                                                      height: 100.w,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  )
+                                                : Center(
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Container(
+                                                          width: 40.w,
+                                                          height: 40.w,
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            color:
+                                                                Color(0xFFD9D9D9),
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 5.h),
+                                                        Container(
+                                                          width: 50.w,
+                                                          height: 20.h,
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                            color:
+                                                                Color(0xFFD9D9D9),
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius
+                                                                        .circular(
+                                                                            10)),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                ],
+                                          ),
+                                          Positioned(
+                                            bottom: 0,
+                                            right: 0,
+                                            child: Container(
+                                              width: 24.w,
+                                              height: 24.w,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.white,
+                                                border: Border.all(
+                                                  color: Colors.grey.shade200,
+                                                  width: 1.w,
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.edit,
+                                                size: 14.w,
+                                                color: AppColors.primary,
                                               ),
                                             ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 24.h),
-                                  // Buttons
-                                AppButton(
-                                      text: 'confirm_and_create'.tr(context),
-                                      isLoading: _isLoading,
-                                      onPressed: _continueWithPhotos,
-                                      height: 50.h,
-                                      width: double.infinity,
+                                    SizedBox(height: 32.h),
+                                    // Cover Image Section
+                                    Text(
+                                      'cover_image'.tr(context),
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: AppColors.black,
+                                      ),
                                     ),
-                                
-                                ],
-                              ),
-                            ],
+                                    SizedBox(height: 16.h),
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _showImageSourceDialog(isLogo: false),
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: 150.h,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF5F5F5),
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                        ),
+                                        child: _selectedCover != null
+                                            ? ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.r),
+                                                child: Image.file(
+                                                  _selectedCover!,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              )
+                                            : Center(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.image,
+                                                      size: 40.sp,
+                                                      color:
+                                                          const Color(0xFFD9D9D9),
+                                                    ),
+                                                    SizedBox(height: 8.h),
+                                                    Text(
+                                                      'upload_cover_image'
+                                                          .tr(context),
+                                                      style: TextStyle(
+                                                        fontSize: 14.sp,
+                                                        color: const Color(
+                                                            0xFFD9D9D9),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 24.h),
+                                    // Buttons
+                                  AppButton(
+                                        text: 'confirm_and_create'.tr(context),
+                                        isLoading: _isLoading,
+                                        onPressed: _continueWithPhotos,
+                                        height: 50.h,
+                                        width: double.infinity,
+                                      ),
+                                  
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

@@ -1,12 +1,10 @@
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/core/network/local_network.dart';
-import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/business_account/product/view/add_product_buisniss_account.dart';
+import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -71,21 +69,36 @@ class CongratesScreen extends StatelessWidget {
                       onPressed: () {
                         context
                             .read<GlobalCubit>()
-                            .setUserType(UserType.business);
-                        Navigator.pop(context);
+                            .setUserType(UserType.client);
+                        navigateTo(context,const BaseScreen());
+                        showToast(
+                          context,
+                          message: 'pending_account'.tr(context),
+                          state: ToastStates.warning,
+                        );
                       },
                     ),
                   ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: AppButton(
-                      text: 'add_product'.tr(context),
-                      onPressed: () {
-
-                        navigateTo(context, AddProductPage(isService: false,isUpdate: false,businessAccountId: int.parse(sl<CacheHelper>().getData(key: AppConstants.businessAccountId))));
-                      },
-                    ),
-                  ),
+                  // SizedBox(width: 12.w),
+                  // Expanded(
+                  //   child: AppButton(
+                  //     text: 'add_product'.tr(context),
+                  //     onPressed: () {
+                  //       navigateTo(
+                  //         context,
+                  //         AddProductPage(
+                  //           isService: false,
+                  //           isUpdate: false,
+                  //           businessAccountId: int.parse(
+                  //             sl<CacheHelper>().getData(
+                  //               key: AppConstants.businessAccountId,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
               SizedBox(height: 32.h),

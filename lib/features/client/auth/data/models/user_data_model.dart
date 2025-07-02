@@ -311,6 +311,9 @@ class Account {
   final List<Product>? products;
   final int? totalFollowers;
   final List<dynamic>? followers;
+  final int? isStore;
+  final String? packageName;
+  final String? verificationRequest;
 
   Account({
     this.id,
@@ -336,6 +339,9 @@ class Account {
     this.products,
     this.totalFollowers,
     this.followers,
+    this.isStore,
+    this.packageName,
+    this.verificationRequest,
   });
 
   factory Account.fromJson(Map<String, dynamic> json) {
@@ -365,6 +371,9 @@ class Account {
           .toList(),
       totalFollowers: json['total_followers'] as int?,
       followers: json['followers'] as List<dynamic>?,
+      isStore: json['is_store'],
+      packageName: json['package_name'],
+      verificationRequest: json['verification_request_response']
     );
   }
 

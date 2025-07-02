@@ -122,7 +122,10 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        child: BlocBuilder<CategoryCubit, CategoryState>(
+                        child: BlocConsumer<CategoryCubit, CategoryState>(
+                          listener: (context, state) {
+                         
+                          },
                           builder: (context, categoryState) {
                             final categories = categoryState is CategoriesLoaded
                                 ? categoryState.categories
@@ -140,6 +143,11 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                                     icon: ''),
                               );
                             }
+                               if (state is CategoriesLoading) {
+                              return const  Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } 
 
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,6 +193,9 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                                     log(state.toString());
                                   },
                                   builder: (context, state) {
+                                    if(categories.isEmpty){
+                                      return const Center(child: CircularProgressIndicator(),);
+                                    }
                                     return AppDropdownField(
                                       hint: 'category'.tr(context),
                                       onChanged: (value) {},
@@ -243,12 +254,22 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                                           accountCubit.createAccountStepOne();
                                         },
                                       ),
-                                      if (state is AccountError &&
-                                          accountCubit.categoryIds.isEmpty)
+                                      if (state is AccountError)
                                         Padding(
                                           padding: EdgeInsets.only(top: 8.h),
                                           child: Text(
                                             state.massage,
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 12.sp,
+                                            ),
+                                          ),
+                                        ),
+                                      if (accountCubit.categoryIds.isEmpty)
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 8.h),
+                                          child: Text(
+                                            'select_categories'.tr(context),
                                             style: TextStyle(
                                               color: Colors.red,
                                               fontSize: 12.sp,

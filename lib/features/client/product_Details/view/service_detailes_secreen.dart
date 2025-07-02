@@ -1,4 +1,5 @@
 import 'package:embone/core/component/custom_loading_indicator.dart';
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/empty_massage.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_constant.dart';
@@ -9,6 +10,7 @@ import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
 import 'package:embone/features/business_account/product/view/update_product_buisniss_account.dart';
@@ -175,13 +177,42 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                                   "yes".tr(context),
                                               secondaryButtonText:
                                                   "no".tr(context),
-                                              onPrimaryButtonPressed: () {
-                                                cubit.deleteService(
-                                                    service!.id ?? 0);
-                                                Navigator.of(context,
-                                                        rootNavigator: true)
-                                                    .pop();
-                                              },
+                                                onPrimaryButtonPressed: () async {
+                                                Navigator.of(context).pop(); // Close popup
+                                                showDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  builder: (context) => const Center(
+                                                    child: CustomLoadingIndicator()),
+                                                );
+                                                final serviceIdToDelete = service?.id;
+                                                try {
+                                                  await cubit.deleteService(serviceIdToDelete ?? 0);
+                                                  Navigator.of(context, rootNavigator: true).pop(); // Close loading
+                                                  showToast(
+                                                  context,
+                                                  message: 'service_deleted_successfully'.tr(context),
+                                                  state: ToastStates.success,
+                                                  );
+                                                  Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => const HomeStoreScreen(isVendor: true,),
+                                                  ),
+                                                  (route) => false,
+                                                  );
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .pop();
+                                                } catch (e) {
+                                                  Navigator.of(context, rootNavigator: true).pop(); // Close loading
+                                                  showToast(
+                                                  context,
+                                                  message: 'delete_failed'.tr(context),
+                                                  state: ToastStates.error,
+                                                  );
+                                                }
+                                                },
                                             );
                                           },
                                           commentCount:

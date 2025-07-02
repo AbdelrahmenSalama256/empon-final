@@ -20,7 +20,7 @@ class AddServiceForm extends StatefulWidget {
 }
 
 class _AddServiceFormState extends State<AddServiceForm> {
-  final _formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class _AddServiceFormState extends State<AddServiceForm> {
           }
         },
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -53,7 +53,7 @@ class _AddServiceFormState extends State<AddServiceForm> {
               const ServiceDetailsSection(),
 
               // Submit buttons
-              ServiceSubmitButtons(formKey: _formKey),
+              ServiceSubmitButtons(formKey: formKey),
             ],
           ),
         ),

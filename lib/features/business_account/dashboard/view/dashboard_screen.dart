@@ -18,6 +18,11 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<StatisticsCubit>();
+    final businessId = context.read<GlobalCubit>().businessId;
+    final account = context
+        .read<GlobalCubit>()
+        .userAccount!
+        .firstWhere((acc) => acc.id == businessId);
     return BlocBuilder<StatisticsCubit, StatisticsState>(
       builder: (context, state) {
         if (state is StatisticsLoading) {
@@ -384,6 +389,7 @@ class DashboardScreen extends StatelessWidget {
                                       0,
                             ),
                             SizedBox(height: 24.h),
+                            account.isStore != 0?
                             DashboardOverview(
                               totalRevenue:
                                   cubit.statistics!.totalRevenue.toString(),
@@ -394,7 +400,7 @@ class DashboardScreen extends StatelessWidget {
                               servicePersenage: 50,
                               avgPrice:
                                   cubit.statistics!.avgProductPrice.toString(),
-                            ),
+                            ):const SizedBox(),
                             SizedBox(height: 24.h),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -28,15 +28,11 @@ class ProductSubmitButtons extends StatelessWidget {
         if (state is ProductLoading) {
           const Center(child: CircularProgressIndicator());
         }
-        if (state is ProductSuccess) {
-          showToast(context,
-              message: state.product.message!, state: ToastStates.success);
-          Navigator.pop(context);
-        }
+       
       },
       child: BlocBuilder<ProductCubit, ProductState>(builder: (context, state) {
         final cubit = context.read<ProductCubit>();
-if (state is ProductLoading) {
+      if (state is ProductLoading) {
          return const Center(child: CircularProgressIndicator());
         }
         return Column(
@@ -56,7 +52,17 @@ if (state is ProductLoading) {
               type: AppButtonType.secondary,
               onPressed: () {
                 context.read<GlobalCubit>().setUserType(UserType.business);
-                Navigator.pop(context);
+                 if (state is ProductSuccess) {
+                  showToast(context,
+                      message: state.product.message!,
+                      state: ToastStates.success);
+                      Navigator.pop(context);
+                  Navigator.pop(context);
+                } else if (state is ProductError) {
+                  showToast(context,
+                      message: state.error, state: ToastStates.error);
+                }
+                
               },
             ),
             SizedBox(height: 16.h),

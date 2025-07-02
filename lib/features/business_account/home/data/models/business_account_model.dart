@@ -20,34 +20,34 @@ class BusinessAccountResponse {
 
 class BusinessAccount {
   final int id;
-  final String name;
-  final String description;
-  final String email;
-  final String phone;
+  final String? name;
+  final String? description;
+  final String? email;
+  final String? phone;
   final String? videoUrl;
-  final String website;
-  final String city;
-  final String state;
-  final String country;
-  final String address;
-  final String lng;
-  final String lat;
-  final String postalCode;
+  final String? website;
+  final String? city;
+  final String? state;
+  final String? country;
+  final String? address;
+  final String? lng;
+  final String? lat;
+  final String? postalCode;
   final int? isStore;
-  final String type;
-  final bool verified;
+  final String? type;
+  final bool? verified;
   final bool? isFavourited;
   final bool? isFollowed;
   final bool? isLiked;
   final int? totalFav;
-  final bool status;
-  final String logo;
-  final String cover;
-  final int totalProducts;
-  final List<Product> products;
-  final int totalServices;
-  final List<Service> services;
-  final int totalFollowers;
+  final bool? status;
+  final String? logo;
+  final String? cover;
+  final int? totalProducts;
+  final List<Product>? products;
+  final int? totalServices;
+  final List<Service>? services;
+  final int? totalFollowers;
 
   BusinessAccount({
     required this.id,
