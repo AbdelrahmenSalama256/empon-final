@@ -98,16 +98,16 @@ class AccountRepo {
       final response = await api.post(
         '${EndPoints.updateAccountData}$id',
         data: {
-          'name': name,
-          'description': description,
-          'video_url': videoUrl,
-          'email': email,
-          'phone': phone,
-          'city_id': cityId,
-          'address': address,
-          'postal_code': postalCode,
-          'lat': lat,
-          'lng': lng,
+            if (name != null && name.isNotEmpty) 'name': name,
+            if (description != null && description.isNotEmpty) 'description': description,
+            if (videoUrl != null && videoUrl.isNotEmpty) 'video_url': videoUrl,
+            if (email != null && email.isNotEmpty) 'email': email,
+            if (phone != null && phone.isNotEmpty) 'phone': phone,
+            if (cityId != null && cityId.isNotEmpty) 'city_id': cityId,
+            if (address != null && address.isNotEmpty) 'address': address,
+            if (postalCode != null && postalCode.isNotEmpty) 'postal_code': postalCode,
+            if (lat != null && lat.isNotEmpty) 'lat': lat,
+            if (lng != null && lng.isNotEmpty) 'lng': lng,
           '_method':'PUT'
 
         },
@@ -152,5 +152,27 @@ class AccountRepo {
       return Left(e.errorModel.detail);
     }
   }
-        
+   Future<Either<String, AccountModel>> updateImageAccountData(
+    int id,
+ {required XFile logo, required XFile coverImage}
+
+  ) async {
+    try {
+      final response = await api.post(
+        '${EndPoints.updateAccountData}$id',
+        data: {
+            if (logo.path.isNotEmpty) "logo": await uploadImageToAPI(logo),
+            if (coverImage.path.isNotEmpty) "cover": await uploadImageToAPI(coverImage),
+          '_method': 'PUT'
+        },
+        isFormData: true,
+      );
+
+      return Right(AccountModel.fromJson(response.data['data']));
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    }
+  }     
 }

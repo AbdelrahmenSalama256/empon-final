@@ -39,8 +39,8 @@ class Account {
   final String type;
   final bool verified;
   final bool status;
-  final String logo;
-  final String cover;
+  final String? logo;
+  final String? cover;
   final int totalProducts;
   final List<Product> products;
   final int totalServices;
@@ -68,8 +68,8 @@ class Account {
     required this.type,
     required this.verified,
     required this.status,
-    required this.logo,
-    required this.cover,
+     this.logo,
+     this.cover,
     required this.totalProducts,
     required this.products,
     required this.totalServices,

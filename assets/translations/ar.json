@@ -886,12 +886,6 @@
   "update_button": "تعديل",
   "best_selling_product": "المنتج الاكثر مبيعا",
   "no_transactions_found": "لا يوجد معاملات فالوقت الحالى",
-  "end_date": "تاريخ الانتهاء",
-  "start_date": "تاريخ البدء",
-  "min_age": "الحد الأدنى للعمر",
-  "max_age": "الحد الأقصى للعمر",
-  "all": "الجميع",
-  "succ_ads": "تم الاشتراك فى الباقة بنجاح",
   "video_url_placeholder": "رابط الفيديو",
   "please_enter_video_url": "يرجى إدخال رابط الفيديو",
   "no_products_or_services": "لا توجد منتجات أو خدمات متاحة",
@@ -910,5 +904,14 @@
   "failed_to_check_account_status": "فشل التحقق من حالة الحساب",
   "account_unverified_title": "الحساب غير موثق",
   "account_unverified_message": "حساب عملك قيد الانتظار للتحقق. يرجى انتظار موافقة المسؤول.",
-  "loading": "جاري التحميل..."
+  "loading": "جاري التحميل...",
+  "end_date": "تاريخ الانتهاء",
+  "start_date": "تاريخ البدء",
+  "min_age": "الحد الأدنى للعمر",
+  "max_age": "الحد الأقصى للعمر",
+  "all": "الجميع",
+  "succ_ads": "تم الاشتراك فى الباقة بنجاح",
+  "update_success": "تم التحديث",
+  "update_business_account_image": "تحديث صورة المتجر",
+  "update_logo_and_cover_for_business": "تحديث صورة الغلاف للمتجر"
 }

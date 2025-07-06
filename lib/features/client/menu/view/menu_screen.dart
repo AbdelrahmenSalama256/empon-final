@@ -729,20 +729,70 @@ class MenuScreen extends StatelessWidget {
                                                             listener: (context,
                                                                 accountState) {},
                                                             child: Builder(
-                                                              builder:
-                                                                  (context) {
-                                                                if (accountState
-                                                                    is StoreRequestError) {
-                                                                  showToast(
-                                                                      context,
-                                                                      message:
-                                                                          accountState
-                                                                              .message,
-                                                                      state: ToastStates
-                                                                          .error);
-                                                                }
-                                                                return GestureDetector(
-                                                                  onTap: () {
+                                                                builder:
+                                                                    (context) {
+                                                              if (accountState
+                                                                  is StoreRequestError) {
+                                                                showToast(
+                                                                    context,
+                                                                    message:
+                                                                        accountState
+                                                                            .message,
+                                                                    state: ToastStates
+                                                                        .error);
+                                                              }
+                                                              return GestureDetector(
+                                                                onTap: () {
+                                                                  context
+                                                                      .read<
+                                                                          AccountCubit>()
+                                                                      .sendVerficationRequest(
+                                                                          accountId:
+                                                                              cubit.businessId!);
+
+                                                                  CustomPopup
+                                                                      .show(
+                                                                    context:
+                                                                        context,
+                                                                    type: PopupType
+                                                                        .success,
+                                                                    title: "request_sent_successfully"
+                                                                        .tr(context),
+                                                                    message:
+                                                                        "request_under_review"
+                                                                            .tr(context),
+                                                                  );
+                                                                },
+                                                                child:
+                                                                    ApprovalItem(
+                                                                  title: 'identity_verification_request'
+                                                                      .tr(context),
+                                                                  status: ApprovalStatus
+                                                                      .approved,
+                                                                  approveButtonText: accountData
+                                                                          .verified!
+                                                                      ? accountData
+                                                                          .verificationRequest!
+                                                                          .tr(
+                                                                              context)
+                                                                      : 'adopt'.tr(
+                                                                          context),
+                                                                  approveButtonColor: accountData.verificationRequest?.tr(
+                                                                              context) ==
+                                                                          "pending"
+                                                                      ? Colors
+                                                                          .red
+                                                                      : Colors
+                                                                          .green,
+                                                                  icon: Image
+                                                                      .asset(
+                                                                    "assets/images/verify.png",
+                                                                    width: 24.w,
+                                                                    height:
+                                                                        24.h,
+                                                                  ),
+                                                                  onApprove:
+                                                                      () {
                                                                     context
                                                                         .read<
                                                                             AccountCubit>()
@@ -763,58 +813,9 @@ class MenuScreen extends StatelessWidget {
                                                                               .tr(context),
                                                                     );
                                                                   },
-                                                                  child:
-                                                                      ApprovalItem(
-                                                                    title: 'identity_verification_request'
-                                                                        .tr(context),
-                                                                    status: ApprovalStatus
-                                                                        .approved,
-                                                                    approveButtonText: accountData
-                                                                            .verified!
-                                                                        ? accountData
-                                                                            .verificationRequest!
-                                                                            .tr(
-                                                                                context)
-                                                                        : 'adopt'
-                                                                            .tr(context),
-                                                                    approveButtonColor: accountData.verificationRequest?.tr(context) ==
-                                                                            "pending"
-                                                                        ? Colors
-                                                                            .red
-                                                                        : Colors
-                                                                            .green,
-                                                                    icon: Image
-                                                                        .asset(
-                                                                      "assets/images/verify.png",
-                                                                      width:
-                                                                          24.w,
-                                                                      height:
-                                                                          24.h,
-                                                                    ),
-                                                                    onApprove:
-                                                                        () {
-                                                                      context
-                                                                          .read<
-                                                                              AccountCubit>()
-                                                                          .sendVerficationRequest(
-                                                                              accountId: cubit.businessId!);
-
-                                                                      CustomPopup
-                                                                          .show(
-                                                                        context:
-                                                                            context,
-                                                                        type: PopupType
-                                                                            .success,
-                                                                        title: "request_sent_successfully"
-                                                                            .tr(context),
-                                                                        message:
-                                                                            "request_under_review".tr(context),
-                                                                      );
-                                                                    },
-                                                                  ),
-                                                                );
-                                                              },
-                                                            ),
+                                                                ),
+                                                              );
+                                                            }),
                                                           );
 
                                                           CustomPopup.show(

@@ -864,12 +864,6 @@
   "update_button": "Update",
   "best_selling_product": "Best Selling Product",
   "no_transactions_found": "No Transactions Found",
-  "end_date": "End Date",
-  "start_date": "Start Date",
-  "max_age": "Max Age",
-  "min_age": "Min Age",
-  "all": "all",
-  "succ_ads": "The package has been successfully subscribed.",
   "video_url_placeholder": "Enter Video URL",
   "please_enter_video_url": "Please enter the video URL",
   "no_products_or_services": "No products or services available",
@@ -889,5 +883,14 @@
   "failed_to_check_account_status": "Failed to check account status",
   "account_unverified_title": "Account Not Verified",
   "account_unverified_message": "Your business account is pending verification. Please wait for admin approval.",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "end_date": "End Date",
+  "start_date": "Start Date",
+  "max_age": "Max Age",
+  "min_age": "Min Age",
+  "all": "all",
+  "succ_ads": "The package has been successfully subscribed.",
+  "update_success": "updated successfully",
+  "update_business_account_image": "Update Business Image",
+  "update_logo_and_cover_for_business": "Update Business Cover"
 }

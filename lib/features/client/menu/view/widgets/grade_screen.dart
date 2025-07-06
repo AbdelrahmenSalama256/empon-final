@@ -4,13 +4,17 @@ import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_dropdown.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/home/view/cubit/account_cubit.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_header.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_hero.dart';
 import 'package:embone/features/business_account/home/view/widgets/home_store_name_section.dart';
 import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
+import 'package:embone/features/client/checkout/view/empon_wallet_screen.dart';
+import 'package:embone/features/client/menu/data/repo/wallet_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/packages_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/packages_state.dart';
+import 'package:embone/features/client/menu/view/cubit/wallet_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -359,7 +363,22 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                     showToast(context,
                                         message: "succ_ads".tr(context),
                                         state: ToastStates.error);
-                                        
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => BlocProvider(
+                                          create: (_) =>
+                                              WalletCubit(sl<WalletRepo>()),
+                                          child: EmponWalletScreen(
+                                            grandTotal: double.tryParse(state
+                                                    .res
+                                                    .userPackage
+                                                    .packageInfo
+                                                    .price) ??
+                                                0.0,
+                                          ),
+                                        ),
+                                      ),
+                                    );
                                   } else if (state is PackagesError) {
                                     showToast(context,
                                         message: state.message,

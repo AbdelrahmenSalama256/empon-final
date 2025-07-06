@@ -25,7 +25,7 @@ class AccountModel {
   final String website;
   final String email;
   final String phone;
-  final String cityId;
+  final int cityId;
   final String address;
   final String postalCode;
   final String lat;
@@ -63,7 +63,7 @@ class AccountModel {
       website: json['website'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      cityId: json['city_id'] ?? '',
+      cityId: json['city_id'] ?? 0,
       address: json['address'] ?? '',
       postalCode: json['postal_code'] ?? '',
       lat: json['lat'] ?? '',

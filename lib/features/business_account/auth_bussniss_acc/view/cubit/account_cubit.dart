@@ -331,13 +331,13 @@ List<LocationModel> getFilteredStates() {
   void initControllers({Account? model}) {
     if (model != null) {
       emit(AccountLoading());
-      nameController.text = model.name!;
-      descriptionController.text = model.description!;
-      videoUrlController.text = model.videoUrl!;
-      emailController.text = model.email! ;
-      phoneController.text = model.phone! ;
-      addressController.text = model.address!;
-      postalCodeController.text = model.postalCode!;
+      nameController.text = model.name?? "";
+      descriptionController.text = model.description??"";
+      videoUrlController.text = model.videoUrl??"";
+      emailController.text = model.email?? "" ;
+      phoneController.text = model.phone??"" ;
+      addressController.text = model.address??"";
+      postalCodeController.text = model.postalCode??"";
       latController.text = model.lat.toString();
       lngController.text = model.lng.toString() ;
       city = model.city!;
@@ -365,4 +365,24 @@ List<LocationModel> getFilteredStates() {
     }
   }
 
+  Future<void> updateImageAccount({required int accountId}) async {
+    emit(AccountLoading());
+
+    final response = await accountRepo.updateImageAccountData(
+        accountId,
+        logo: files.isNotEmpty ? files[0] : XFile(''),
+        coverImage: files.length > 1 ? files[1] : XFile('')
+        );
+
+    response.fold(
+      (l) {
+        Print.error('API Error (Update): $l');
+        emit(AccountError(massage: l));
+      },
+      (r) {
+        emit(AccountSuccess());
+      },
+    );
+  }
+  
 }
