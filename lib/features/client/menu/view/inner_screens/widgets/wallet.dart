@@ -16,25 +16,28 @@ class Wallet extends StatelessWidget {
       onTap: () {
         navigateTo(context, const WalletSummaryScreen());
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              SvgPicture.asset("assets/images/svg/wallet_outline.svg",
-                  width: 24.sp),
-              SizedBox(width: 12.w),
-              Text(
-                "wallet".tr(context),
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          Icon(
-            Icons.chevron_right,
-            size: 24.sp,
-          ),
-        ],
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                SvgPicture.asset("assets/images/svg/wallet_outline.svg",
+                    width: 24.sp),
+                SizedBox(width: 12.w),
+                Text(
+                  "wallet".tr(context),
+                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: 24.sp,
+            ),
+          ],
+        ),
       ),
     );
   }

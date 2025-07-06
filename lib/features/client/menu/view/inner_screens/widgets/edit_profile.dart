@@ -17,24 +17,28 @@ class EditProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap, // Use the provided onTap callback
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Icon(CupertinoIcons.person, size: 24.sp),
-              SizedBox(width: 12.w),
-              Text(
-                "$title".tr(context),
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          Icon(
-            Icons.chevron_right,
-            size: 24.sp,
-          ),
-        ],
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(CupertinoIcons.person, size: 24.sp),
+                SizedBox(width: 12.w),
+                Text(
+                  "$title".tr(context),
+                  style:
+                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: 24.sp,
+            ),
+          ],
+        ),
       ),
     );
   }

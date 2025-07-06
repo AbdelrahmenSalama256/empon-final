@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types
 
 import 'package:embone/core/component/custom_loading_indicator.dart';
+import 'package:embone/core/component/empty_massage.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
@@ -30,7 +31,11 @@ class notificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<NotificationsCubit, NotificationsState>(
       builder: (context, state) {
-        final notifications = context.read<NotificationsCubit>().notificationsModel?.notifications ?? [];
+        final notifications = context
+                .read<NotificationsCubit>()
+                .notificationsModel
+                ?.notifications ??
+            [];
         return Scaffold(
           backgroundColor: AppColors.white,
           body: SafeArea(
@@ -52,7 +57,9 @@ class notificationsPageState extends State<NotificationsPage> {
                   child: state is NotificationsLoading
                       ? const Center(child: CustomLoadingIndicator())
                       : state is NotificationsError
-                          ? Center(child: Text(state.message))
+                          ? Center(
+                              child: EmptyMessageWidget(
+                                  message: state.message.tr(context)))
                           : notifications.isEmpty
                               ? _buildEmptyState()
                               : ListView.builder(
@@ -91,12 +98,18 @@ class notificationsPageState extends State<NotificationsPage> {
           SizedBox(height: 16.h),
           Text(
             'nonotifications'.tr(context),
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: AppColors.textPrimary),
+            style: Theme.of(context)
+                .textTheme
+                .headlineMedium
+                ?.copyWith(color: AppColors.textPrimary),
           ),
           SizedBox(height: 8.h),
           Text(
             'newnotifications_will_appear'.tr(context),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey),
           ),
         ],
       ),

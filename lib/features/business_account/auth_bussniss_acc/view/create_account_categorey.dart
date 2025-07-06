@@ -1,21 +1,22 @@
 import 'dart:developer';
 
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/data/model/category_model.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/category_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/business_account_success_page.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/category_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
-import 'package:embone/features/business_account/auth_bussniss_acc/data/model/category_model.dart';
 
 import '../../../../core/component/widgets/app_dropdown.dart';
 import 'cubit/account_state.dart';
@@ -42,6 +43,11 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                   ),
                 ),
               );
+            }
+            if (state is AccountError) {
+              log(state.massage);
+              showToast(context,
+                  message: state.massage, state: ToastStates.error);
             }
           },
           child: BlocBuilder<AccountCubit, AccountState>(
@@ -123,9 +129,7 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: BlocConsumer<CategoryCubit, CategoryState>(
-                          listener: (context, state) {
-                         
-                          },
+                          listener: (context, state) {},
                           builder: (context, categoryState) {
                             final categories = categoryState is CategoriesLoaded
                                 ? categoryState.categories
@@ -143,11 +147,11 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                                     icon: ''),
                               );
                             }
-                               if (state is CategoriesLoading) {
-                              return const  Center(
+                            if (state is CategoriesLoading) {
+                              return const Center(
                                 child: CircularProgressIndicator(),
                               );
-                            } 
+                            }
 
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,8 +197,10 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                                     log(state.toString());
                                   },
                                   builder: (context, state) {
-                                    if(categories.isEmpty){
-                                      return const Center(child: CircularProgressIndicator(),);
+                                    if (categories.isEmpty) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
                                     }
                                     return AppDropdownField(
                                       hint: 'category'.tr(context),
@@ -205,6 +211,8 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                                           .map((c) => c.name)
                                           .toList(),
                                       isMultiSelect: true,
+                                      contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 12.w, vertical: 12.h),
                                       items: categories
                                           .map((c) => c.name)
                                           .toList(),
@@ -231,13 +239,6 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                                         accountCubit
                                             .updateCategoryIds(newCategoryIds);
                                       },
-                                      validator: (value) {
-                                        if (accountCubit.categoryIds.isEmpty) {
-                                          return 'please_select_category'
-                                              .tr(context);
-                                        }
-                                        return null;
-                                      },
                                       showErrorBorder: true,
                                     );
                                   },
@@ -250,8 +251,20 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
                                       AppButton(
                                         text: 'create_business_account'
                                             .tr(context),
+                                        isLoading: state is AccountLoading,
                                         onPressed: () {
-                                          accountCubit.createAccountStepOne();
+                                          if (state is! AccountLoading &&
+                                              accountCubit
+                                                  .categoryIds.isNotEmpty) {
+                                            accountCubit.createAccountStepOne();
+                                          } else {
+                                            showToast(
+                                              context,
+                                              message: 'select_categories'
+                                                  .tr(context),
+                                              state: ToastStates.error,
+                                            );
+                                          }
                                         },
                                       ),
                                       if (state is AccountError)

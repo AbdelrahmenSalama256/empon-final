@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/custom_popup.dart';
@@ -9,9 +10,16 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account_add_settings.dart';
+import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
+import 'package:embone/features/client/menu/data/repo/account_repo.dart';
+import 'package:embone/features/client/menu/view/cubit/accounts_cubit.dart';
+import 'package:embone/features/client/menu/view/cubit/accounts_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../../business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 
 void showAccountsBottomSheet(BuildContext context) {
   showModalBottomSheet(
@@ -20,7 +28,13 @@ void showAccountsBottomSheet(BuildContext context) {
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
     ),
-    builder: (context) => const AccountsBottomSheetContent(),
+    builder: (context) => BlocProvider(
+      create: (context) => AccountCubit(sl<AccountRepo>()),
+      child: BlocProvider(
+        create: (context) => AccountsCubit(sl<AccountsRepo>()),
+        child: const AccountsBottomSheetContent(),
+      ),
+    ),
   );
 }
 
@@ -56,154 +70,215 @@ class _AccountsBottomSheetContentState
 
     return Container(
       padding: EdgeInsets.all(16.w),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Drag handle
-            Container(
-              width: 40.w,
-              height: 4.h,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2.r),
-              ),
-            ),
-            SizedBox(height: 16.h),
+      child: BlocConsumer<AccountsCubit, AccountsState>(
+        listener: (context, state) {
+          if (state is AccountError) {
+            showToast(context, message: state.error, state: ToastStates.error);
+          }
+        },
+        builder: (context, state) {
+          final accountsCubit = context.read<AccountsCubit>();
 
-            // User profile section
-            GestureDetector(
-              onTap: () {
-                cubit.setUserType(UserType.client);
-                cubit.setBusinessId(
-                    null); // Clear businessId when switching to client
-                setState(() {
-                  _selectedAccountIndex = -1;
-                });
-                Navigator.pop(context);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        radius: 16.r,
-                        backgroundImage: cubit.userAvatar != null
-                            ? NetworkImage(cubit.userAvatar!)
-                            : const AssetImage('assets/images/logo.png')
-                                as ImageProvider,
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        cubit.userName ?? 'User',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (_selectedAccountIndex == -1)
-                    Container(
-                      width: 24.w,
-                      height: 24.w,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 16.sp,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            SizedBox(height: 24.h),
-
-            // Business accounts title
-            if (accounts.isNotEmpty)
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  'business_accounts_title'.tr(context),
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Drag handle
+                Container(
+                  width: 40.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
-              ),
-            SizedBox(height: accounts.isNotEmpty ? 16.h : 0),
+                SizedBox(height: 16.h),
 
-            // Business accounts list
-            ...List.generate(
-              accounts.length,
-              (index) => BusinessAccountOption(
-                name: accounts[index].name ?? 'Business Account',
-                imagePath: accounts[index].logo != null
-                    ? accounts[index].logo!
-                    : 'assets/images/logo.png',
-                labelText: (accounts[index].status ?? false)
-                    ? 'active'.tr(context)
-                    : 'inactive'.tr(context),
-                labelColor: (accounts[index].status ?? false)
-                    ? AppColors.secondary
-                    : AppColors.red,
-                isSelected: _selectedAccountIndex == index,
-                onTap: () {
-                  if (accounts[index].status == true) {
+                // User profile section
+                GestureDetector(
+                  onTap: () {
+                    cubit.setUserType(UserType.client);
+                    cubit.setBusinessId(
+                        null); // Clear businessId when switching to client
                     setState(() {
-                      _selectedAccountIndex = index;
+                      _selectedAccountIndex = -1;
                     });
-                    cubit.setUserType(UserType.business);
-                    cubit
-                        .setBusinessId(accounts[index].id); // Update businessId
-                    sl<CacheHelper>().setData(AppConstants.businessAccountId,
-                        accounts[index].id.toString());
-                    log('Selected businessId: ${accounts[index].id}');
-                    setState(() {
-                      Navigator.pop(context);
-                    });
-                  } else {
-                    CustomPopup.show(
-                      context: context,
-                      title: 'inactive_account_title'.tr(context),
-                      message: 'inactive_account_message'.tr(context),
-                      type: PopupType.alert,
-                      primaryButtonText: 'ok'.tr(context),
-                      onPrimaryButtonPressed: () {
-                        cubit.setUserType(UserType.client);
-                        cubit.setBusinessId(null); // Clear businessId
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 16.r,
+                            backgroundImage: cubit.userAvatar != null
+                                ? NetworkImage(cubit.userAvatar!)
+                                : const AssetImage('assets/images/logo.png')
+                                    as ImageProvider,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            cubit.userName ?? 'User',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_selectedAccountIndex == -1)
+                        Container(
+                          width: 24.w,
+                          height: 24.w,
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 16.sp,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 24.h),
+
+                // Business accounts title
+                if (accounts.isNotEmpty)
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      'business_accounts_title'.tr(context),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                SizedBox(height: accounts.isNotEmpty ? 16.h : 0),
+
+                // Business accounts list
+                ...List.generate(
+                  accounts.length,
+                  (index) => BusinessAccountOption(
+                      name: accounts[index].name ?? 'Business Account',
+                      imagePath: accounts[index].logo != null
+                          ? accounts[index].logo!
+                          : 'assets/images/logo.png',
+                      labelText:
+                          accountsCubit.accountStatus?.data.isCompleted == true
+                              ? accounts[index].status == true
+                                  ? 'active'.tr(context)
+                                  : 'inactive'.tr(context)
+                              : state is AccountLoading
+                                  ? 'loading'.tr(context)
+                                  : state is AccountError
+                                      ? state.error
+                                      : 'pending'.tr(context),
+                      labelColor: (accounts[index].status ?? false)
+                          ? AppColors.secondary
+                          : AppColors.red,
+                      isSelected: ((accountsCubit
+                                      .accountStatus?.data.isCompleted ==
+                                  false ||
+                              accountsCubit.accountStatus?.data.isVerified ==
+                                  false))
+                          ? false
+                          : _selectedAccountIndex == index,
+                      onTap: () async {
                         setState(() {
-                          _selectedAccountIndex = -1;
+                          _selectedAccountIndex = index;
                         });
-                        Navigator.of(context, rootNavigator: true)
-                            .pop(); // Close the popup
-                        Navigator.pop(context);
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-            SizedBox(height: 16.h),
 
-            // Add store option
-            AddStoreOption(
-              onTap: () {
-                Navigator.pop(context); // Close the bottom sheet first
-                navigateTo(context, const CreateBusinessAccountTypePage());
-              },
+                        await accountsCubit
+                            .fetchAccountStatus(accounts[index].id ?? 0);
+
+                        final status = accountsCubit.accountStatus?.data;
+
+                        if (status?.isCompleted == false) {
+                          Navigator.pop(context);
+                          navigateTo(
+                              context,
+                              BlocProvider(
+                                create: (context) =>
+                                    AccountCubit(sl<AccountRepo>()),
+                                child: const CreateBusinessAccountSettings(),
+                              ));
+                          return;
+                        }
+
+                        if (status?.isVerified == false) {
+                          CustomPopup.show(
+                            context: context,
+                            title: 'inactive_account_title'.tr(context),
+                            message: 'inactive_account_message'.tr(context),
+                            type: PopupType.alert,
+                            primaryButtonText: 'ok'.tr(context),
+                            onPrimaryButtonPressed: () {
+                              cubit.setUserType(UserType.client);
+                              cubit.setBusinessId(null);
+                              setState(() {
+                                _selectedAccountIndex = -1;
+                              });
+                              Navigator.of(context, rootNavigator: true).pop();
+                              Navigator.pop(context);
+                            },
+                          );
+                        } else if (state is AccountError) {
+                          showToast(
+                            context,
+                            message: state.error,
+                            state: ToastStates.error,
+                          );
+                        } else if (accounts[index].status == false) {
+                          CustomPopup.show(
+                            context: context,
+                            title: 'inactive_account_title'.tr(context),
+                            message: 'inactive_account_message'.tr(context),
+                            type: PopupType.alert,
+                            primaryButtonText: 'ok'.tr(context),
+                            onPrimaryButtonPressed: () {
+                              cubit.setUserType(UserType.client);
+                              // cubit.setBusinessId(null);
+                              setState(() {
+                                _selectedAccountIndex = -1;
+                              });
+                              Navigator.of(context, rootNavigator: true).pop();
+                              Navigator.pop(context);
+                            },
+                          );
+                        } else {
+                          cubit.setUserType(UserType.business);
+                          cubit.setBusinessId(accounts[index].id);
+                          sl<CacheHelper>().setData(
+                            AppConstants.businessAccountId,
+                            accounts[index].id.toString(),
+                          );
+                          log('Selected businessId: ${accounts[index].id}');
+                        }
+                      }),
+                ),
+                SizedBox(height: 16.h),
+
+                // Add store option
+                AddStoreOption(
+                  onTap: () {
+                    Navigator.pop(context); // Close the bottom sheet first
+                    navigateTo(context, const CreateBusinessAccountTypePage());
+                  },
+                ),
+                SizedBox(height: 16.h),
+              ],
             ),
-            SizedBox(height: 16.h),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -232,8 +307,9 @@ class BusinessAccountOption extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8.h),
+        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
         decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
           boxShadow: const [
             BoxShadow(
               color: Color(0x0F000000),
@@ -242,7 +318,9 @@ class BusinessAccountOption extends StatelessWidget {
               spreadRadius: 0,
             ),
           ],
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: isSelected
+              ? BorderRadius.circular(100.r)
+              : BorderRadius.circular(8.r),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -268,10 +346,13 @@ class BusinessAccountOption extends StatelessWidget {
               ),
             ),
             const Spacer(),
+            // SizedBox(
+            //   width: 12.w,
+            // ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
-              width: 70.w,
-              height: 30.w,
+              // width: 70.w,
+              // height: 30.w,
               decoration: BoxDecoration(
                 color: labelColor,
                 borderRadius: BorderRadius.circular(12.r),
@@ -280,13 +361,15 @@ class BusinessAccountOption extends StatelessWidget {
                   width: 1.5,
                 ),
               ),
-              child: Center(
-                child: Text(
-                  labelText,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
+              child: Expanded(
+                child: Center(
+                  child: Text(
+                    labelText,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),

@@ -103,6 +103,7 @@ class HomeStoreScreen extends StatelessWidget {
                                           ),
                                         )
                                       : HomeStoreContent(
+                                          // Remove the Expanded from HomeStoreContent
                                           globalCubit: globalCubit,
                                           businessAccountCubit: accountCubit,
                                           isVendor: isVendor,

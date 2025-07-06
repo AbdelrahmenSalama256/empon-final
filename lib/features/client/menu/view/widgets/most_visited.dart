@@ -1,3 +1,4 @@
+import 'package:embone/core/constants/widgets/custom_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -21,19 +22,12 @@ class VisitedItem extends StatelessWidget {
         width: 70.w,
         child: Column(
           children: [
-            Container(
-              width: 60.w,
-              height: 60.h,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: imageUrl == null || imageUrl.isEmpty
-                      ? const AssetImage('assets/images/placholder.jpg')
-                      : NetworkImage(imageUrl) as ImageProvider,
-                  fit: BoxFit.cover,
-                ),
-              ),
+            CustomCachedImage(
+              imageUrl: imageUrl.isEmpty ? null : imageUrl,
+              h: 60.h,
+              w: 60.w,
+              borderRadius: 30.r,
+              fit: BoxFit.cover,
             ),
             SizedBox(height: 8.h),
             Text(

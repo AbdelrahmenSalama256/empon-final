@@ -389,18 +389,20 @@ class DashboardScreen extends StatelessWidget {
                                       0,
                             ),
                             SizedBox(height: 24.h),
-                            account.isStore != 0?
-                            DashboardOverview(
-                              totalRevenue:
-                                  cubit.statistics!.totalRevenue.toString(),
-                              imageUrl: cubit.statistics!.mostSoldProduct.image,
-                              productName:
-                                  cubit.statistics!.mostSoldProduct.name,
-                              productPersenage: 50,
-                              servicePersenage: 50,
-                              avgPrice:
-                                  cubit.statistics!.avgProductPrice.toString(),
-                            ):const SizedBox(),
+                            account.isStore != 0
+                                ? DashboardOverview(
+                                    totalRevenue: cubit.statistics!.totalRevenue
+                                        .toString(),
+                                    imageUrl:
+                                        "${cubit.statistics?.mostSoldProduct?.image}",
+                                    productName:
+                                        "${cubit.statistics?.mostSoldProduct?.name}",
+                                    productPersenage: 50,
+                                    servicePersenage: 50,
+                                    avgPrice: cubit.statistics!.avgProductPrice
+                                        .toString(),
+                                  )
+                                : const SizedBox(),
                             SizedBox(height: 24.h),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

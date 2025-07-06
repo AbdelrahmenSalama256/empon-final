@@ -23,85 +23,90 @@ class CongratesScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'congrates'.tr(context),
-                        style: TextStyle(
-                          fontSize: 34.sp,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
+                child: SingleChildScrollView(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'congrates'.tr(context),
+                          style: TextStyle(
+                            fontSize: 34.sp,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 32.h),
-                      // Success icon
-                      SvgPicture.asset(
-                        'assets/images/svg/congrates.svg',
-                        width: double.infinity,
-                        height: 324.h,
-                        fit: BoxFit.contain,
-                      ),
-                      SizedBox(height: 16.h),
-                      Text(
-                        'store_note'.tr(context),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xffA0A0A0),
-                          height: 1.5.h,
+                        SizedBox(height: 32.h),
+                        // Success icon
+                        SvgPicture.asset(
+                          'assets/images/svg/congrates.svg',
+                          width: double.infinity,
+                          height: 324.h,
+                          fit: BoxFit.contain,
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 16.h),
+                        Text(
+                          'store_note'.tr(context),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xffA0A0A0),
+                            height: 1.5.h,
+                          ),
+                        ),
+                        SizedBox(height: 16.h),
+                        // Bottom buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppButton(
+                                text: 'home'.tr(context),
+                                type: AppButtonType.secondary,
+                                onPressed: () {
+                                  context
+                                      .read<GlobalCubit>()
+                                      .setUserType(UserType.client);
+                                  context.read<GlobalCubit>().getUserProfile();
+
+                                  navigateTo(context, const BaseScreen());
+                                  showToast(
+                                    context,
+                                    message: 'pending_account'.tr(context),
+                                    state: ToastStates.warning,
+                                  );
+                                },
+                              ),
+                            ),
+                            // SizedBox(width: 12.w),
+                            // Expanded(
+                            //   child: AppButton(
+                            //     text: 'add_product'.tr(context),
+                            //     onPressed: () {
+                            //       navigateTo(
+                            //         context,
+                            //         AddProductPage(
+                            //           isService: false,
+                            //           isUpdate: false,
+                            //           businessAccountId: int.parse(
+                            //             sl<CacheHelper>().getData(
+                            //               key: AppConstants.businessAccountId,
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       );
+                            //     },
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                        SizedBox(height: 32.h),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              // Bottom buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: AppButton(
-                      text: 'home'.tr(context),
-                      type: AppButtonType.secondary,
-                      onPressed: () {
-                        context
-                            .read<GlobalCubit>()
-                            .setUserType(UserType.client);
-                        navigateTo(context,const BaseScreen());
-                        showToast(
-                          context,
-                          message: 'pending_account'.tr(context),
-                          state: ToastStates.warning,
-                        );
-                      },
-                    ),
-                  ),
-                  // SizedBox(width: 12.w),
-                  // Expanded(
-                  //   child: AppButton(
-                  //     text: 'add_product'.tr(context),
-                  //     onPressed: () {
-                  //       navigateTo(
-                  //         context,
-                  //         AddProductPage(
-                  //           isService: false,
-                  //           isUpdate: false,
-                  //           businessAccountId: int.parse(
-                  //             sl<CacheHelper>().getData(
-                  //               key: AppConstants.businessAccountId,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
-                ],
-              ),
-              SizedBox(height: 32.h),
             ],
           ),
         ),

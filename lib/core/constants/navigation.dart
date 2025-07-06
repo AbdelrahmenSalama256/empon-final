@@ -62,7 +62,7 @@ void navigateAndFinish(context, Widget) => Navigator.pushAndRemoveUntil(
 // Navigation without bottom nav bar (regular navigation)
 void navigateWithoutNav(BuildContext context, Widget screen,
     {String? receiverId, String? name, String? online, String? image}) {
-  navigatorKey.currentState!.push(
+  navigatorKey.currentState?.push(
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => screen,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -79,7 +79,7 @@ void navigateWithoutNav(BuildContext context, Widget screen,
 // Replacement navigation with bottom nav bar
 void navigateReplacWithNav(BuildContext context, Widget screen,
     {bool withNavBar = true}) {
-  navigatorKey.currentState!.pushReplacement(
+  navigatorKey.currentState?.pushReplacement(
     PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 500),
       pageBuilder: (context, animation, secondaryAnimation) => screen,
@@ -113,7 +113,7 @@ void navigateReplacWithoutNav(BuildContext context, Widget screen) {
 // Navigate and finish all with bottom nav bar (alternative implementation)
 void navigateAndFinishWithNav(BuildContext context, Widget screen,
     {bool withNavBar = true}) {
-  navigatorKey.currentState!.pushAndRemoveUntil(
+  navigatorKey.currentState?.pushAndRemoveUntil(
     PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 500),
       pageBuilder: (context, animation, secondaryAnimation) => screen,

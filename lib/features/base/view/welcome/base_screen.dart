@@ -1,11 +1,15 @@
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/base/view/welcome/guest_registerd.dart';
+import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/base/view/widgets/nav_bar_item.dart';
 import 'package:embone/features/business_account/dashboard/data/repo/statistics_repo.dart';
 import 'package:embone/features/business_account/dashboard/view/cubit/statistics_cubit.dart';
 import 'package:embone/features/business_account/dashboard/view/dashboard_screen.dart';
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
+import 'package:embone/features/client/auth/view/pages/login_screen.dart';
 import 'package:embone/features/client/cart/data/repo/cart_repo.dart';
 import 'package:embone/features/client/cart/view/cart_screen.dart';
 import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
@@ -26,7 +30,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class BaseScreen extends StatefulWidget {
-  const BaseScreen({super.key});
+  final bool? isGuest;
+  const BaseScreen({super.key, this.isGuest});
 
   @override
   State<BaseScreen> createState() => _BaseScreenState();
@@ -34,6 +39,40 @@ class BaseScreen extends StatefulWidget {
 
 class _BaseScreenState extends State<BaseScreen> {
   List<Widget> _getScreens(UserType userType) {
+    if (widget.isGuest == true) {
+      return [
+        BlocProvider(
+          create: (context) => HomeCubit(sl<HomeRepo>())..init(),
+          child: const HomeScreen(),
+        ),
+        GuestRestrictedScreen(
+          isGuest: widget.isGuest ?? false,
+          message: "please_login_to_access_your_cart",
+          child: BlocProvider(
+            create: (context) => CartCubit(sl<CartRepo>()),
+            child: const CartScreen(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ShopCubit(sl<ShopRepo>()),
+          child: const ShopScreen(),
+        ),
+        GuestRestrictedScreen(
+          isGuest: widget.isGuest ?? false,
+          message: "please_login_to_view_notifications",
+          child: BlocProvider(
+            create: (context) =>
+                NotificationsCubit(sl<NotificationsRepo>())..init(),
+            child: const NotificationsPage(),
+          ),
+        ),
+        GuestRestrictedScreen(
+          isGuest: widget.isGuest ?? false,
+          message: "please_login_to_access_menu",
+          child: const MenuScreen(),
+        ),
+      ];
+    }
     switch (userType) {
       case UserType.client:
         return [
@@ -92,24 +131,9 @@ class _BaseScreenState extends State<BaseScreen> {
             create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
             child: const NotificationsPage(),
           ),
-          const MenuScreen(
-            isVendor: true,
-          ),
+          const IntroPage(),
         ];
     }
-  }
-
-  void navigateTo(BuildContext context, Widget screen) {
-    PersistentNavBarNavigator.pushNewScreen(
-      context,
-      screen: screen,
-      withNavBar: true,
-      pageTransitionAnimation: PageTransitionAnimation.cupertino,
-    );
-  }
-
-  void pop(BuildContext context) {
-    Navigator.of(context).pop();
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems(
@@ -131,8 +155,8 @@ class _BaseScreenState extends State<BaseScreen> {
             context: context,
             iconPath: "assets/images/svg/nav/shop.svg",
             labelKey: '',
-            isCenterItem: true, // Circular shop item
-            iconSize: 50.0, // Larger size for shop
+            isCenterItem: true,
+            iconSize: 50.0,
           ),
           buildNavBarItem(
             context: context,
@@ -208,6 +232,41 @@ class _BaseScreenState extends State<BaseScreen> {
     }
   }
 
+  void _handleGuestNavigation(int index, BuildContext context) {
+    if (index == 1 || index == 3 || index == 4) {
+      // Cart, Notifications, Menu
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('login_required'.tr(context)),
+          content: Text('please_login_to_access_feature'.tr(context)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('cancel'.tr(context)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                navigateToLogin(context);
+              },
+              child: Text('login'.tr(context)),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void navigateToLogin(BuildContext context) {
+    PersistentNavBarNavigator.pushNewScreen(
+      context,
+      screen: const LoginPage(),
+      withNavBar: false,
+      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GlobalCubit, GlobalState>(
@@ -257,16 +316,21 @@ class _BaseScreenState extends State<BaseScreen> {
           navBarStyle: NavBarStyle.style15,
           navBarHeight: 80.h,
           onItemSelected: (index) {
-            context.read<GlobalCubit>().changeBottomNavIndex(index);
-            if (userType == UserType.store && index == 2) {
-              showAccountsBottomSheet(
-                  context); // Show bottom sheet instead of navigating
-              return; // Return early to prevent navigation
+            if (widget.isGuest == true) {
+              _handleGuestNavigation(index, context);
+              return;
             }
+
+            context.read<GlobalCubit>().changeBottomNavIndex(index);
+
+            if (userType == UserType.store && index == 2) {
+              showAccountsBottomSheet(context);
+              return;
+            }
+
             if (userType == UserType.business && index == 2) {
-              showAccountsBottomSheet(
-                  context); // Show bottom sheet instead of navigating
-              return; // Return early to prevent navigation
+              showAccountsBottomSheet(context);
+              return;
             }
           },
         );

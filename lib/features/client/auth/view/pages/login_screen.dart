@@ -202,7 +202,10 @@ class _LoginPageState extends State<LoginPage>
                             text: 'sign_in'.tr(context),
                             isLoading: state is LoginLoading,
                             onPressed: () {
-                              cubit.login();
+                              if (cubit.formKey.currentState?.validate() ??
+                                  false) {
+                                cubit.login();
+                              }
                             },
                             // height: 56.h,
                           ),

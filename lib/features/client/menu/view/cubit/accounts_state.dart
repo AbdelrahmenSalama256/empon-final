@@ -15,3 +15,5 @@ final class AccountError extends AccountsState {
   final String error;
   AccountError(this.error);
 }
+
+final class AccountStatusLoaded extends AccountsState {}

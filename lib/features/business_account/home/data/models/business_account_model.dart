@@ -48,6 +48,7 @@ class BusinessAccount {
   final int? totalServices;
   final List<Service>? services;
   final int? totalFollowers;
+  final List<Follower>? followers; // Added followers list
 
   BusinessAccount({
     required this.id,
@@ -79,6 +80,7 @@ class BusinessAccount {
     required this.totalServices,
     required this.services,
     required this.totalFollowers,
+    this.followers, // Nullable list of followers
   });
 
   factory BusinessAccount.fromJson(Map<String, dynamic> json) {
@@ -114,6 +116,49 @@ class BusinessAccount {
       services:
           (json['services'] as List).map((e) => Service.fromJson(e)).toList(),
       totalFollowers: json['total_followers'],
+      followers: (json['followers'] as List?)
+          ?.map((e) => Follower.fromJson(e))
+          .toList(), // Parse followers
+    );
+  }
+}
+
+class Follower {
+  final int id;
+  final User user;
+  final String createdAt;
+
+  Follower({
+    required this.id,
+    required this.user,
+    required this.createdAt,
+  });
+
+  factory Follower.fromJson(Map<String, dynamic> json) {
+    return Follower(
+      id: json['id'],
+      user: User.fromJson(json['user']),
+      createdAt: json['created_at'],
+    );
+  }
+}
+
+class User {
+  final int id;
+  final String name;
+  final String? image;
+
+  User({
+    required this.id,
+    required this.name,
+    this.image,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'],
+      name: json['name'],
+      image: json['image'],
     );
   }
 }

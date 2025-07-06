@@ -3,6 +3,7 @@ import 'package:embone/core/constants/widgets/errors/exceptions.dart';
 import 'package:embone/core/database/api/api_consumer.dart';
 import 'package:embone/core/database/api/end_points.dart';
 import 'package:embone/features/client/menu/data/model/account_model.dart';
+import 'package:embone/features/client/menu/data/model/account_status_checker.dart';
 
 class AccountsRepo {
   final ApiConsumer api;
@@ -14,6 +15,22 @@ class AccountsRepo {
     try {
       final response = await api.get('${EndPoints.accounts}/$accountId');
       final accountData = AccountResponseModel.fromJson(response.data);
+      return Right(accountData);
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left('Failed to fetch account details: $e');
+    }
+  }
+
+  Future<Either<String, AccountStatusChecker>> fetchAccountStatus(
+      int accountId) async {
+    try {
+      final response =
+          await api.get('${EndPoints.createAccount}/status/$accountId');
+      final accountData = AccountStatusChecker.fromJson(response.data);
       return Right(accountData);
     } on ServerException catch (e) {
       return Left(e.errorModel.detail);

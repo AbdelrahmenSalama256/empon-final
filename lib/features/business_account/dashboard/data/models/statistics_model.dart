@@ -28,7 +28,7 @@ class StatisticsData {
   final int totalProductLikes;
   final Map<String, int> visitorsCountForYear;
   final double totalRevenue;
-  final MostSoldProduct mostSoldProduct;
+  final MostSoldProduct? mostSoldProduct;
   final List<WalletTransaction> walletTransactions;
 
   StatisticsData({
@@ -41,31 +41,34 @@ class StatisticsData {
     required this.totalProductLikes,
     required this.visitorsCountForYear,
     required this.totalRevenue,
-    required this.mostSoldProduct,
+    this.mostSoldProduct,
     required this.walletTransactions,
   });
 
   factory StatisticsData.fromJson(Map<String, dynamic> json) {
     return StatisticsData(
-      account: Account.fromJson(json['account']),
-      totalFollowers: json['total_followers'],
-      totalSubscriptions: json['total_ads'],
-      totalFavorites: json['total_favorites'],
-      avgProductPrice: (json['avg_product_price'] as num).toDouble(),
-      recentViews: json['recent_views'],
-      totalProductLikes: json['total_engagements'],
-      visitorsCountForYear: Map<String, int>.from(
-        (json['visitors_count_for_this_year'] as Map<String, dynamic>).map(
-          (k, v) => MapEntry(k, v as int),
+        account: Account.fromJson(json['account']),
+        totalFollowers: json['total_followers'],
+        totalSubscriptions: json['total_ads'],
+        totalFavorites: json['total_favorites'],
+        avgProductPrice: (json['avg_product_price'] as num).toDouble(),
+        recentViews: json['recent_views'],
+        totalProductLikes: json['total_engagements'],
+        visitorsCountForYear: Map<String, int>.from(
+          (json['visitors_count_for_this_year'] as Map<String, dynamic>).map(
+            (k, v) => MapEntry(k, v as int),
+          ),
         ),
-      ),
-      totalRevenue: (json['total_revenue'] as num).toDouble(),
-      mostSoldProduct: MostSoldProduct.fromJson(json['most_sold_product']),
-      walletTransactions: (json['wallet_transactions']!=null && json['wallet_transactions'] is List)
-          ? (json['wallet_transactions'] as List) 
-          .map((e) => WalletTransaction.fromJson(e))
-          .toList():[]
-    );
+        totalRevenue: (json['total_revenue'] as num).toDouble(),
+        mostSoldProduct: json['most_sold_product'] != null
+            ? MostSoldProduct.fromJson(json['most_sold_product'])
+            : null,
+        walletTransactions: (json['wallet_transactions'] != null &&
+                json['wallet_transactions'] is List)
+            ? (json['wallet_transactions'] as List)
+                .map((e) => WalletTransaction.fromJson(e))
+                .toList()
+            : []);
   }
 }
 
@@ -74,7 +77,7 @@ class Account {
   final String logo;
   final String cover;
 
-  Account( {
+  Account({
     required this.name,
     required this.logo,
     required this.cover,
@@ -87,9 +90,7 @@ class Account {
       cover: json['cover'],
     );
   }
-    
-  }
-
+}
 
 class MostSoldProduct {
   final int id;

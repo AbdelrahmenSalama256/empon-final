@@ -17,7 +17,7 @@ class HomeVideoGridImages extends StatefulWidget {
   final String? videoUrl;
   final bool? isVendor;
   final int? businessAccountId;
-  final BusinessAccountCubit? businessAccountCubit; // Optional Cubit instance
+  final BusinessAccountCubit? businessAccountCubit;
   const HomeVideoGridImages({
     super.key,
     this.videoUrl,
@@ -37,7 +37,8 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+        length: 2, vsync: this); // Initialize with 2 tabs by default
   }
 
   @override
@@ -64,242 +65,154 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
                 []
             : account?.data.services ?? [];
 
+        // Determine tab visibility and controller length based on data
+        final hasProducts = filteredProducts.isNotEmpty;
+        final hasServices = filteredServices.isNotEmpty;
+        final tabCount = (hasProducts ? 1 : 0) + (hasServices ? 1 : 0);
+
+        // Update tab controller length dynamically if needed
+        if (_tabController.length != tabCount && tabCount > 0) {
+          _tabController.dispose();
+          _tabController = TabController(length: tabCount, vsync: this);
+        }
+
         return SafeArea(
           child: Column(
             children: [
-              // Video Player Component
               state is BusinessAccountLoading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        color: AppColors.primaryColor,
-                      ),
+                          color: AppColors.primaryColor),
                     )
-                  :
-                  // : ClipRRect(
-                  //     borderRadius: BorderRadius.circular(16.r),
-                  //     child: AspectRatio(
-                  //       aspectRatio: 16 / 9,
-                  //       child: Stack(
-                  //         alignment: Alignment.center,
-                  //         children: [
-                  //           _controller.value.isInitialized
-                  //               ? VideoPlayer(_controller)
-                  //               : Container(
-                  //                   color: Colors.black,
-                  //                   child: const Center(
-                  //                     child: CircularProgressIndicator(
-                  //                       color: Colors.white,
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //           GestureDetector(
-                  //             onTap: _togglePlayPause,
-                  //             child: Container(
-                  //               width: 50.w,
-                  //               height: 50.w,
-                  //               decoration: const BoxDecoration(
-                  //                 color: Color.fromRGBO(0, 0, 0, 0.5),
-                  //                 shape: BoxShape.circle,
-                  //               ),
-                  //               child: Icon(
-                  //                 _isPlaying ? Icons.pause : Icons.play_arrow,
-                  //                 color: Colors.white,
-                  //                 size: 30.sp,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //           Positioned(
-                  //             bottom: 0,
-                  //             left: 0,
-                  //             right: 0,
-                  //             child: Container(
-                  //               padding: EdgeInsets.symmetric(
-                  //                   horizontal: 12.w, vertical: 8.h),
-                  //               decoration: const BoxDecoration(
-                  //                 gradient: LinearGradient(
-                  //                   begin: Alignment.topCenter,
-                  //                   end: Alignment.bottomCenter,
-                  //                   colors: [
-                  //                     Colors.transparent,
-                  //                     Color.fromRGBO(0, 0, 0, 0.7),
-                  //                   ],
-                  //                 ),
-                  //               ),
-                  //               child: Column(
-                  //                 children: [
-                  //                   SliderTheme(
-                  //                     data: SliderThemeData(
-                  //                       trackHeight: 4.h,
-                  //                       thumbShape: RoundSliderThumbShape(
-                  //                           enabledThumbRadius: 6.r),
-                  //                       overlayShape: RoundSliderOverlayShape(
-                  //                           overlayRadius: 14.r),
-                  //                       activeTrackColor: Colors.red,
-                  //                       inactiveTrackColor: Colors.grey[600],
-                  //                       thumbColor: Colors.red,
-                  //                       overlayColor: const Color.fromRGBO(
-                  //                           255, 0, 0, 0.2),
-                  //                     ),
-                  //                     child: Slider(
-                  //                       value: _currentPosition.isFinite
-                  //                           ? _currentPosition.clamp(0.0, 1.0)
-                  //                           : 0.0,
-                  //                       onChanged: (value) {
-                  //                         setState(() {
-                  //                           _currentPosition = value;
-                  //                           final newPosition = value *
-                  //                               _controller.value.duration
-                  //                                   .inMilliseconds;
-                  //                           _controller.seekTo(Duration(
-                  //                               milliseconds:
-                  //                                   newPosition.round()));
-                  //                         });
-                  //                       },
-                  //                     ),
-                  //                   ),
-                  //                   Row(
-                  //                     mainAxisAlignment:
-                  //                         MainAxisAlignment.spaceBetween,
-                  //                     children: [
-                  //                       Text(
-                  //                         _currentPositionText,
-                  //                         style: TextStyle(
-                  //                             color: Colors.white,
-                  //                             fontSize: 12.sp),
-                  //                       ),
-                  //                       Text(
-                  //                         _totalDurationText,
-                  //                         style: TextStyle(
-                  //                             color: Colors.white,
-                  //                             fontSize: 12.sp),
-                  //                       ),
-                  //                     ],
-                  //                   ),
-                  //                 ],
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
+                  : VideosTab(videoUrl: widget.videoUrl),
+              SizedBox(height: 10.h),
 
-                  SizedBox(height: 10.h),
-
-              VideosTab(
-                videoUrl: widget.videoUrl,
-              ),
-
-              // Tabs
-              Container(
-                height: 50.h,
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(15.r),
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  labelColor: AppColors.white,
-                  unselectedLabelColor: const Color(0xff152354),
-                  indicator: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.circular(10.r),
+              // Conditionally show TabBar based on content
+              if (hasProducts || hasServices)
+                Container(
+                  height: 50.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(15.r),
                   ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelStyle: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  dividerColor: Colors.transparent,
-                  dividerHeight: 0,
-                  padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 7.h),
-                  tabs: [
-                    Tab(
-                      child: Center(
-                        widthFactor: 15.w,
-                        child: Text(
-                          "products".tr(context),
-                          style: TextStyle(
-                            fontFamily:
-                                context.read<GlobalCubit>().language == "ar"
-                                    ? 'Beiruti'
-                                    : "Poppins",
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: AppColors.white,
+                    unselectedLabelColor: const Color(0xff152354),
+                    indicator: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
-                    Tab(
-                      child: Center(
-                        widthFactor: 15.w,
-                        child: Text(
-                          "services".tr(context),
-                          style: TextStyle(
-                            fontFamily:
-                                context.read<GlobalCubit>().language == "ar"
-                                    ? 'Beiruti'
-                                    : "Poppins",
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Tab Content
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildGridView(
-                      filteredProducts.map((p) => p.image).toList(),
-                      filteredProducts.map((p) => p.id).toList(),
-                      filteredProducts.length,
-                      (index) {
-                        if (filteredProducts.isNotEmpty) {
-                          navigateTo(
-                            context,
-                            BlocProvider(
-                              create: (context) =>
-                                  SearchCubit(sl<SearchRepo>()),
-                              child: ProductDetailPage(
-                                isVendor: widget.isVendor ?? false,
-                                productId: filteredProducts[index].id,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelStyle:
+                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+                    dividerColor: Colors.transparent,
+                    dividerHeight: 0,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 7.w, vertical: 7.h),
+                    tabs: [
+                      if (hasProducts)
+                        Tab(
+                          child: Center(
+                            widthFactor: 15.w,
+                            child: Text(
+                              "products".tr(context),
+                              style: TextStyle(
+                                fontFamily:
+                                    context.read<GlobalCubit>().language == "ar"
+                                        ? 'Beiruti'
+                                        : "Poppins",
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                          );
-                        }
-                      },
-                      filteredProducts.map((p) => p.active == 1).toList(),
-                    ),
-                    _buildGridView(
-                      filteredServices.map((s) => s.mainImage).toList(),
-                      filteredServices.map((s) => s.id).toList(),
-                      filteredServices.length,
-                      (index) {
-                        if (filteredServices.isNotEmpty) {
-                          navigateTo(
-                            context,
-                            BlocProvider(
-                              create: (context) =>
-                                  SearchCubit(sl<SearchRepo>()),
-                              child: ServiceDetailPage(
-                                isVendor: widget.isVendor ?? false,
-                                serviceId: filteredServices[index].id,
+                          ),
+                        ),
+                      if (hasServices)
+                        Tab(
+                          child: Center(
+                            widthFactor: 15.w,
+                            child: Text(
+                              "services".tr(context),
+                              style: TextStyle(
+                                fontFamily:
+                                    context.read<GlobalCubit>().language == "ar"
+                                        ? 'Beiruti'
+                                        : "Poppins",
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                          );
-                        }
-                      },
-                      filteredServices.map((s) => s.approved).toList(),
-                    ),
-                  ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
+
+              // Conditionally show TabBarView or empty message
+              if (hasProducts || hasServices)
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      if (hasProducts)
+                        _buildGridView(
+                          filteredProducts.map((p) => p.image).toList(),
+                          filteredProducts.map((p) => p.id).toList(),
+                          filteredProducts.length,
+                          (index) {
+                            if (filteredProducts.isNotEmpty) {
+                              navigateTo(
+                                context,
+                                BlocProvider(
+                                  create: (context) =>
+                                      SearchCubit(sl<SearchRepo>()),
+                                  child: ProductDetailPage(
+                                    isVendor: widget.isVendor ?? false,
+                                    productId: filteredProducts[index].id,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          filteredProducts.map((p) => p.active == 1).toList(),
+                        ),
+                      if (hasServices)
+                        _buildGridView(
+                          filteredServices.map((s) => s.mainImage).toList(),
+                          filteredServices.map((s) => s.id).toList(),
+                          filteredServices.length,
+                          (index) {
+                            if (filteredServices.isNotEmpty) {
+                              navigateTo(
+                                context,
+                                BlocProvider(
+                                  create: (context) =>
+                                      SearchCubit(sl<SearchRepo>()),
+                                  child: ServiceDetailPage(
+                                    isVendor: widget.isVendor ?? false,
+                                    serviceId: filteredServices[index].id,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          filteredServices.map((s) => s.approved).toList(),
+                        ),
+                    ],
+                  ),
+                )
+              else
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
+                  child: Center(
+                    child: Text(
+                      "no_products_or_services".tr(context),
+                      style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                    ),
+                  ),
+                ),
             ],
           ),
         );
@@ -314,70 +227,74 @@ class _HomeVideoGridImagesState extends State<HomeVideoGridImages>
     void Function(int)? onTap, [
     List<bool>? hastag,
   ]) {
-    return GridView.builder(
-      padding: EdgeInsets.all(12.w),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: 1,
-        crossAxisSpacing: 8.w,
-        mainAxisSpacing: 8.h,
-      ),
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        return InkWell(
-          onTap: onTap != null ? () => onTap(index) : null,
-          borderRadius: BorderRadius.circular(8.r),
-          child: ClipRRect(
+    return SizedBox(
+      height:
+          MediaQuery.of(context).size.height * 0.4, // Match TabBarView height
+      child: GridView.builder(
+        physics:
+            const NeverScrollableScrollPhysics(), // Disable scrolling if inside a scrollable
+        padding: EdgeInsets.all(12.w),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 1,
+          crossAxisSpacing: 8.w,
+          mainAxisSpacing: 8.h,
+        ),
+        shrinkWrap: true,
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          return InkWell(
+            onTap: onTap != null ? () => onTap(index) : null,
             borderRadius: BorderRadius.circular(8.r),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                images != null && images.isNotEmpty && index < images.length
-                    ? Image.network(
-                        images[index],
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Image.asset(
-                          'assets/images/test-product-1.png',
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.r),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  images != null && images.isNotEmpty && index < images.length
+                      ? Image.network(
+                          images[index],
                           fit: BoxFit.cover,
-                        ),
-                      )
-                    : Image.asset(
-                        'assets/images/test-product-1.png',
-                        fit: BoxFit.cover,
-                      ),
-                if (hastag != null &&
-                    hastag.isNotEmpty &&
-                    index < hastag.length)
-                  Positioned(
-                    top: 8.h,
-                    right: 8.w,
-                    child: widget.isVendor != true
-                        ? const SizedBox()
-                        : Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8.w, vertical: 4.h),
-                            decoration: BoxDecoration(
-                              color: hastag[index] ? Colors.green : Colors.red,
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                            child: Text(
-                              hastag[index]
-                                  ? "available".tr(context)
-                                  : "pending".tr(context),
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.bold,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset('assets/images/test-product-1.png',
+                                  fit: BoxFit.cover),
+                        )
+                      : Image.asset('assets/images/test-product-1.png',
+                          fit: BoxFit.cover),
+                  if (hastag != null &&
+                      hastag.isNotEmpty &&
+                      index < hastag.length)
+                    Positioned(
+                      top: 8.h,
+                      right: 8.w,
+                      child: widget.isVendor != true
+                          ? const SizedBox()
+                          : Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w, vertical: 4.h),
+                              decoration: BoxDecoration(
+                                color:
+                                    hastag[index] ? Colors.green : Colors.red,
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                              child: Text(
+                                hastag[index]
+                                    ? "available".tr(context)
+                                    : "pending".tr(context),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                  ),
-              ],
+                    ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
@@ -393,27 +310,23 @@ class VideosTab extends StatelessWidget {
 
     if (videoId == null) {
       return Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 20.w,
-          vertical: 15.h,
-        ),
-        child: const Center(
-          child: Text('لا توجد فيديوهات'),
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+        child: const Center(child: Text('لا توجد فيديوهات')),
       );
     }
 
     YoutubePlayerController controller = YoutubePlayerController(
       initialVideoId: videoId,
       flags: const YoutubePlayerFlags(
-          autoPlay: false,
-          mute: false,
-          enableCaption: false,
-          showLiveFullscreenButton: true,
-          hideControls: true),
+        autoPlay: false,
+        mute: false,
+        enableCaption: false,
+        showLiveFullscreenButton: true,
+      ),
     );
 
-    return Center(
+    return AspectRatio(
+      aspectRatio: 16 / 9, // Standard YouTube aspect ratio
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16.r),
         child: YoutubePlayer(

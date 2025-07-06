@@ -18,7 +18,8 @@ class MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap, // Call the onTap callback when tapped
-      child: Padding(
+      child: Container(
+        color: Colors.transparent,
         padding: EdgeInsets.symmetric(
             vertical: 16.h,
             // horizontal: 16.w,

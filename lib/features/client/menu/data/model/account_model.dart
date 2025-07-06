@@ -30,6 +30,9 @@ class Account {
   final String state;
   final String country;
   final String address;
+  final bool? isCompleted;
+  final bool? isVerified;
+
   final double lng;
   final double lat;
   final String postalCode;
@@ -60,6 +63,8 @@ class Account {
     required this.lng,
     required this.lat,
     required this.postalCode,
+    this.isCompleted,
+    this.isVerified,
     required this.type,
     required this.verified,
     required this.status,
@@ -83,6 +88,8 @@ class Account {
       videoUrl: json['video_url'],
       website: json['website'],
       city: json['city'],
+      isCompleted: json['is_completed'],
+      isVerified: json['is_verified'],
       state: json['state'],
       country: json['country'],
       address: json['address'],

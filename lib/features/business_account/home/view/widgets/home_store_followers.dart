@@ -1,18 +1,28 @@
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/widgets/custom_cached_image.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/features/business_account/home/view/cubit/account_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeStoreFollowers extends StatelessWidget {
   final int followersCount;
-  final String logo;
-  const HomeStoreFollowers(
-      {super.key, required this.followersCount, required this.logo});
+  final BusinessAccountCubit?
+      businessAccountCubit; // Optional cubit for dynamic data
+  const HomeStoreFollowers({
+    super.key,
+    required this.followersCount,
+    this.businessAccountCubit,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final accountCubit =
+        businessAccountCubit ?? context.read<BusinessAccountCubit>();
+    final followers = accountCubit.accountData?.data.followers ?? [];
+
     return Row(
       children: [
         Visibility(
@@ -20,29 +30,25 @@ class HomeStoreFollowers extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              logo != null
-                  ? Image.network(
-                      logo,
-                      width: 36.w,
-                      height: 36.h,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 40.w,
-                          height: 40.h,
-                          decoration: const BoxDecoration(
-                            color: AppColors.lightGrey,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.person,
-                            color: AppColors.primary,
-                            size: 24.sp,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
+              // Main logo (first follower or account logo if no followers)
+              if (followers.isNotEmpty)
+                CustomCachedImage(
+                  imageUrl: followers[0].user.image ??
+                      accountCubit.accountData?.data.logo ??
+                      '',
+                  h: 36.h,
+                  w: 36.w,
+                  borderRadius: 100.r,
+                  fit: BoxFit.cover,
+                )
+              else if (accountCubit.accountData?.data.logo != null)
+                Image.network(
+                  accountCubit.accountData!.data.logo!,
+                  width: 36.w,
+                  height: 36.h,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
                       width: 40.w,
                       height: 40.h,
                       decoration: const BoxDecoration(
@@ -54,25 +60,38 @@ class HomeStoreFollowers extends StatelessWidget {
                         color: AppColors.primary,
                         size: 24.sp,
                       ),
-                    ),
-              for (int i = 0; i < 3; i++)
+                    );
+                  },
+                )
+              else
+                Container(
+                  width: 40.w,
+                  height: 40.h,
+                  decoration: const BoxDecoration(
+                    color: AppColors.lightGrey,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.person,
+                    color: AppColors.primary,
+                    size: 24.sp,
+                  ),
+                ),
+              // Additional follower logos (up to 3)
+              for (int i = 1; i < followers.length && i < 4; i++)
                 Positioned.directional(
-                  start: i * 25.w,
+                  start: (i - 1) * 25.w,
                   textDirection: context.read<GlobalCubit>().language == "ar"
                       ? TextDirection.rtl
                       : TextDirection.ltr,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20.w),
-                    width: 36.w,
-                    height: 36.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.w),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/brand-logo.png'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                  child: CustomCachedImage(
+                    imageUrl: followers[0].user.image ??
+                        accountCubit.accountData?.data.logo ??
+                        '',
+                    h: 36.h,
+                    w: 36.w,
+                    borderRadius: 100.r,
+                    fit: BoxFit.cover,
                   ),
                 ),
             ],

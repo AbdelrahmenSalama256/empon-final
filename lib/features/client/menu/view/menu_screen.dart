@@ -403,7 +403,7 @@ class MenuScreen extends StatelessWidget {
                                                       state is BusinessLoading
                                                           ? const Center(
                                                               child:
-                                                                  CustomLoadingIndicator(),
+                                                                  LinearProgressIndicator(),
                                                             )
                                                           : businessCubit
                                                                   .businesses
@@ -557,15 +557,16 @@ class MenuScreen extends StatelessWidget {
                                                                   ),
                                                                 );
                                                               },
-
                                                               title: "current_plan"
                                                                   .tr(context),
                                                               icon:
                                                                   "assets/images/plan_brand.png",
                                                               color: Colors
                                                                   .red.shade100,
-                                                              subTitle:
-                                                                  accountData?.packageName ??'nopack'.tr(context),
+                                                              subTitle: accountData
+                                                                      ?.packageName ??
+                                                                  'nopack'.tr(
+                                                                      context),
                                                               subTitleColor: Colors
                                                                   .lightGreenAccent,
                                                             ),
@@ -658,31 +659,40 @@ class MenuScreen extends StatelessWidget {
                                                                 width: 24.w,
                                                                 height: 24.h,
                                                               ),
-                                                              approveButtonText: accountData.isStore == 0? 'adopt'.tr(context):'pending'.tr(context) ,
+                                                              approveButtonText: accountData
+                                                                          .isStore ==
+                                                                      0
+                                                                  ? 'adopt'.tr(
+                                                                      context)
+                                                                  : 'pending'.tr(
+                                                                      context),
                                                               onApprove: () {
-                                                                if(accountData.isStore ==0){
+                                                                if (accountData
+                                                                        .isStore ==
+                                                                    0) {
                                                                   context
                                                                       .read<
                                                                           AccountCubit>()
                                                                       .sendStoreRequest(
                                                                           accountId:
                                                                               cubit.businessId!);
-                                                                }else{
-                                                                  return ;
+                                                                } else {
+                                                                  return;
                                                                 }
-                                                              accountData.isStore !=1?
-                                                                CustomPopup
-                                                                    .show(
-                                                                  context:
-                                                                      context,
-                                                                  type: PopupType
-                                                                      .success,
-                                                                  title: "request_sent_successfully"
-                                                                      .tr(context),
-                                                                  message:
-                                                                      "request_under_review"
-                                                                          .tr(context),
-                                                                ): const SizedBox();
+                                                                accountData.isStore !=
+                                                                        1
+                                                                    ? CustomPopup
+                                                                        .show(
+                                                                        context:
+                                                                            context,
+                                                                        type: PopupType
+                                                                            .success,
+                                                                        title: "request_sent_successfully"
+                                                                            .tr(context),
+                                                                        message:
+                                                                            "request_under_review".tr(context),
+                                                                      )
+                                                                    : const SizedBox();
                                                               })
                                                           : const SizedBox(),
                                                       // Second approval item example
@@ -693,63 +703,112 @@ class MenuScreen extends StatelessWidget {
                                                                 .tr(context),
                                                         status: ApprovalStatus
                                                             .approved,
-                                                        approveButtonText: accountData.verified!?accountData.verificationRequest!: 'adopt'.tr(
+                                                        approveButtonText:
+                                                            accountData
+                                                                    .verified!
+                                                                ? accountData
+                                                                    .verificationRequest!
+                                                                    .tr(context)
+                                                                : 'adopt'.tr(
                                                                     context),
                                                         approveButtonColor:
-                                                                accountData
-                                                                    .verificationRequest=="pending"? Colors.red: Colors.green,
+                                                            accountData.verificationRequest ==
+                                                                    "pending".tr(
+                                                                        context)
+                                                                ? Colors.red
+                                                                : Colors.green,
                                                         icon: Image.asset(
                                                           "assets/images/verify.png",
                                                           width: 24.w,
                                                           height: 24.h,
                                                         ),
                                                         onApprove: () {
-                                                          BlocListener<AccountCubit, AccountState>(
-                                                            listener: (context, accountState) {
-                                                             
-                                                            },
+                                                          BlocListener<
+                                                              AccountCubit,
+                                                              AccountState>(
+                                                            listener: (context,
+                                                                accountState) {},
                                                             child: Builder(
-                                                              builder: (context) {
-                                                                 if (accountState is StoreRequestError) {
-                                                                showToast(context, message: accountState.message, state: ToastStates.error);
-                                                              }
+                                                              builder:
+                                                                  (context) {
+                                                                if (accountState
+                                                                    is StoreRequestError) {
+                                                                  showToast(
+                                                                      context,
+                                                                      message:
+                                                                          accountState
+                                                                              .message,
+                                                                      state: ToastStates
+                                                                          .error);
+                                                                }
                                                                 return GestureDetector(
                                                                   onTap: () {
                                                                     context
-                                                                        .read<AccountCubit>()
-                                                                        .sendVerficationRequest(accountId: cubit.businessId!);
+                                                                        .read<
+                                                                            AccountCubit>()
+                                                                        .sendVerficationRequest(
+                                                                            accountId:
+                                                                                cubit.businessId!);
 
-                                                                    CustomPopup.show(
-                                                                      context: context,
-                                                                      type: PopupType.success,
-                                                                      title: "request_sent_successfully".tr(context),
-                                                                      message: "request_under_review".tr(context),
+                                                                    CustomPopup
+                                                                        .show(
+                                                                      context:
+                                                                          context,
+                                                                      type: PopupType
+                                                                          .success,
+                                                                      title: "request_sent_successfully"
+                                                                          .tr(context),
+                                                                      message:
+                                                                          "request_under_review"
+                                                                              .tr(context),
                                                                     );
                                                                   },
-                                                                  child: ApprovalItem(
-                                                                    title: 'identity_verification_request'.tr(context),
-                                                                    status: ApprovalStatus.approved,
-                                                                    approveButtonText: accountData.verified!
-                                                                        ? accountData.verificationRequest!
-                                                                        : 'adopt'.tr(context),
-                                                                    approveButtonColor: accountData.verificationRequest == "pending"
-                                                                        ? Colors.red
-                                                                        : Colors.green,
-                                                                    icon: Image.asset(
+                                                                  child:
+                                                                      ApprovalItem(
+                                                                    title: 'identity_verification_request'
+                                                                        .tr(context),
+                                                                    status: ApprovalStatus
+                                                                        .approved,
+                                                                    approveButtonText: accountData
+                                                                            .verified!
+                                                                        ? accountData
+                                                                            .verificationRequest!
+                                                                            .tr(
+                                                                                context)
+                                                                        : 'adopt'
+                                                                            .tr(context),
+                                                                    approveButtonColor: accountData.verificationRequest?.tr(context) ==
+                                                                            "pending"
+                                                                        ? Colors
+                                                                            .red
+                                                                        : Colors
+                                                                            .green,
+                                                                    icon: Image
+                                                                        .asset(
                                                                       "assets/images/verify.png",
-                                                                      width: 24.w,
-                                                                      height: 24.h,
+                                                                      width:
+                                                                          24.w,
+                                                                      height:
+                                                                          24.h,
                                                                     ),
-                                                                    onApprove: () {
+                                                                    onApprove:
+                                                                        () {
                                                                       context
-                                                                          .read<AccountCubit>()
-                                                                          .sendVerficationRequest(accountId: cubit.businessId!);
+                                                                          .read<
+                                                                              AccountCubit>()
+                                                                          .sendVerficationRequest(
+                                                                              accountId: cubit.businessId!);
 
-                                                                      CustomPopup.show(
-                                                                        context: context,
-                                                                        type: PopupType.success,
-                                                                        title: "request_sent_successfully".tr(context),
-                                                                        message: "request_under_review".tr(context),
+                                                                      CustomPopup
+                                                                          .show(
+                                                                        context:
+                                                                            context,
+                                                                        type: PopupType
+                                                                            .success,
+                                                                        title: "request_sent_successfully"
+                                                                            .tr(context),
+                                                                        message:
+                                                                            "request_under_review".tr(context),
                                                                       );
                                                                     },
                                                                   ),

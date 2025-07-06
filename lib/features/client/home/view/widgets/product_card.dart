@@ -350,18 +350,21 @@ class _AnimatedProductCardState extends State<ProductCard>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               if (widget.badge != null)
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(6.r),
-                  ),
-                  child: Text(
-                    widget.badge!,
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.primary,
+                Expanded(
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                    child: Text(
+                      widget.badge!,
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -428,12 +431,14 @@ class _AnimatedProductCardState extends State<ProductCard>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               if (widget.badge != null)
-                Text(
-                  widget.badge!,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.black,
+                Expanded(
+                  child: Text(
+                    widget.badge!,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.black,
+                    ),
                   ),
                 ),
               if (widget.actionText != null)

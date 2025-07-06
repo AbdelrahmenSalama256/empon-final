@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
+import 'package:embone/features/client/menu/data/model/account_status_checker.dart';
 import 'package:embone/features/client/menu/data/repo/account_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/accounts_state.dart';
 
@@ -8,6 +9,7 @@ import '../../data/model/account_model.dart';
 class AccountsCubit extends Cubit<AccountsState> {
   final AccountsRepo accountRepo;
   AccountResponseModel? account;
+  AccountStatusChecker? accountStatus;
   AccountsCubit(this.accountRepo) : super(AccountsInitial());
   void init(int accountId) {
     fetchAccountDetails(accountId);
@@ -23,6 +25,20 @@ class AccountsCubit extends Cubit<AccountsState> {
         Print.info(
             'Account details fetched successfully: ${accountResponse.data}');
         emit(AccountLoaded(accountResponse.data));
+      },
+    );
+  }
+
+  Future<void> fetchAccountStatus(int accountId) async {
+    emit(AccountLoading());
+    final result = await accountRepo.fetchAccountStatus(accountId);
+    result.fold(
+      (error) => emit(AccountError(error)),
+      (accountResponse) {
+        accountStatus = accountResponse;
+        Print.info(
+            'Account Status fetched successfully: ${accountResponse.data}');
+        emit(AccountStatusLoaded());
       },
     );
   }

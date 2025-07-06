@@ -3,6 +3,7 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/register_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
@@ -41,7 +42,7 @@ class IntroPage extends StatelessWidget {
                           style: Theme.of(context).textTheme.displayLarge,
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Text(
@@ -53,44 +54,52 @@ class IntroPage extends StatelessWidget {
                             textAlign: TextAlign.center,
                           ),
                         ),
+                        SizedBox(height: 16.h),
+                        Column(
+                          children: [
+                            AppButton(
+                              text: 'login'.tr(context),
+                              onPressed: () {
+                                navigateTo(context, const LoginPage());
+                              },
+                            ),
+                            SizedBox(height: 16.h),
+                            AppButton(
+                              text: 'register'.tr(context),
+                              type: AppButtonType.secondary,
+                              onPressed: () {
+                                navigateTo(
+                                    context,
+                                    BlocProvider(
+                                      create: (context) =>
+                                          RegisterCubit(sl<RegisterRepo>()),
+                                      child: const RegisterPage(),
+                                    ));
+                              },
+                            ),
+                            SizedBox(height: 16.h),
+                            TextButton(
+                              onPressed: () {
+                                navigateTo(
+                                    context,
+                                    const BaseScreen(
+                                      isGuest: true,
+                                    ));
+                              },
+                              child: Text('guest_login'.tr(context),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        color: AppColors.grey,
+                                      )),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 ),
-              ),
-              Column(
-                children: [
-                  AppButton(
-                    text: 'login'.tr(context),
-                    onPressed: () {
-                      navigateTo(context, const LoginPage());
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  AppButton(
-                    text: 'register'.tr(context),
-                    type: AppButtonType.secondary,
-                    onPressed: () {
-                      navigateTo(
-                          context,
-                          BlocProvider(
-                            create: (context) =>
-                                RegisterCubit(sl<RegisterRepo>()),
-                            child: const RegisterPage(),
-                          ));
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  // TextButton(
-                  //   onPressed: () {
-                  //     navigateTo(context, const BaseScreen());
-                  //   },
-                  //   child: Text('guest_login'.tr(context),
-                  //       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  //             color: AppColors.grey,
-                  //           )),
-                  // ),
-                ],
               ),
             ],
           ),

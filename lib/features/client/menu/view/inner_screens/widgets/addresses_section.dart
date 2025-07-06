@@ -16,25 +16,29 @@ class AddressesSection extends StatelessWidget {
       onTap: () {
         navigateTo(context, const AddressesScreen());
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              SvgPicture.asset("assets/images/svg/location_on.svg",
-                  width: 24.sp),
-              SizedBox(width: 12.w),
-              Text(
-                "addresses".tr(context),
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          Icon(
-            Icons.chevron_right,
-            size: 24.sp,
-          ),
-        ],
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                SvgPicture.asset("assets/images/svg/location_on.svg",
+                    width: 24.sp),
+                SizedBox(width: 12.w),
+                Text(
+                  "addresses".tr(context),
+                  style:
+                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: 24.sp,
+            ),
+          ],
+        ),
       ),
     );
   }
