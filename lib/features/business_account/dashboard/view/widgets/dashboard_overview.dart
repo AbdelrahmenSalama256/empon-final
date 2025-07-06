@@ -1,5 +1,5 @@
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:fl_chart/fl_chart.dart';
+// import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -187,99 +187,101 @@ class DashboardOverview extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryChart(
-      BuildContext context, int productPersenage, int servicePersenage) {
-    return Container(
-      height: 200.h,
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE3F6E8),
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Column(
-        children: [
-          Text(
-            'sales_by_category'.tr(context),
-            style: TextStyle(
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
-              fontSize: 14.sp,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          SizedBox(height: 10.h),
-          Expanded(
-            child: PieChart(
-              PieChartData(
-                centerSpaceRadius: 25.w,
-                sectionsSpace: 1,
-                sections: [
-                  PieChartSectionData(
-                    color: Colors.green,
-                    value: productPersenage.toDouble(),
-                    title: '$productPersenage%',
-                    radius: 28.r,
-                    titleStyle: TextStyle(color: Colors.white, fontSize: 12.sp),
-                  ),
-                  PieChartSectionData(
-                    color: Colors.green[200],
-                    value: servicePersenage.toDouble(),
-                    title: '$servicePersenage%',
-                    radius: 28.r,
-                    titleStyle: TextStyle(color: Colors.white, fontSize: 12.sp),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: 10.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _LegendItem(
-                label: 'products'.tr(context),
-                color: Colors.green,
-              ),
-              SizedBox(width: 10.w),
-              _LegendItem(
-                label: 'services'.tr(context), // Fixed typo 'servises'
-                color: Colors.green[200]!,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildCategoryChart(
+  //     BuildContext context, int productPersenage, int servicePersenage) {
+  //   return Container(
+  //     height: 200.h,
+  //     padding: EdgeInsets.all(12.w),
+  //     decoration: BoxDecoration(
+  //       color: const Color(0xFFE3F6E8),
+  //       borderRadius: BorderRadius.circular(16.r),
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         Text(
+  //           'sales_by_category'.tr(context),
+  //           style: TextStyle(
+  //             color: Colors.green,
+  //             fontWeight: FontWeight.bold,
+  //             fontSize: 14.sp,
+  //           ),
+  //           maxLines: 1,
+  //           overflow: TextOverflow.ellipsis,
+  //         ),
+  //         SizedBox(height: 10.h),
+  //         Expanded(
+  //           child: PieChart(
+  //             PieChartData(
+  //               centerSpaceRadius: 25.w,
+  //               sectionsSpace: 1,
+  //               sections: [
+  //                 PieChartSectionData(
+  //                   color: Colors.green,
+  //                   value: productPersenage.toDouble(),
+  //                   title: '$productPersenage%',
+  //                   radius: 28.r,
+  //                   titleStyle: TextStyle(color: Colors.white, fontSize: 12.sp),
+  //                 ),
+  //                 PieChartSectionData(
+  //                   color: Colors.green[200],
+  //                   value: servicePersenage.toDouble(),
+  //                   title: '$servicePersenage%',
+  //                   radius: 28.r,
+  //                   titleStyle: TextStyle(color: Colors.white, fontSize: 12.sp),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //         SizedBox(height: 10.h),
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             _LegendItem(
+  //               label: 'products'.tr(context),
+  //               color: Colors.green,
+  //             ),
+  //             SizedBox(width: 10.w),
+  //             _LegendItem(
+  //               label: 'services'.tr(context), // Fixed typo 'servises'
+  //               color: Colors.green[200]!,
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+
 }
 
-class _LegendItem extends StatelessWidget {
-  final String label;
-  final Color color;
+// class _LegendItem extends StatelessWidget {
+//   final String label;
+//   final Color color;
 
-  const _LegendItem({
-    required this.label,
-    required this.color,
-  });
+//   const _LegendItem({
+//     required this.label,
+//     required this.color,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 12.w,
-          height: 12.h,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-        ),
-        SizedBox(width: 5.w),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12.sp), // Reduced font size
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       children: [
+//         Container(
+//           width: 12.w,
+//           height: 12.h,
+//           decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+//         ),
+//         SizedBox(width: 5.w),
+//         Text(
+//           label,
+//           style: TextStyle(fontSize: 12.sp), // Reduced font size
+//           maxLines: 1,
+//           overflow: TextOverflow.ellipsis,
+//         ),
+//       ],
+//     );
+//   }
+// }

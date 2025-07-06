@@ -10,7 +10,6 @@ import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:embone/features/business_account/home/view/home_buisniss.dart';
 import 'package:embone/features/business_account/product/view/update_product_buisniss_account.dart';
 import 'package:embone/features/business_account/store/view/product_inventory_screen.dart';

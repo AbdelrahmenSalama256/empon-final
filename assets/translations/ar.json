@@ -891,5 +891,8 @@
   "min_age":"الحد الأدنى للعمر",
   "max_age":"الحد الأقصى للعمر",
   "all":"الجميع",
-  "succ_ads":"تم الاشتراك فى الباقة بنجاح"
+  "succ_ads":"تم الاشتراك فى الباقة بنجاح",
+  "update_success": "تم التحديث",
+  "update_business_account_image":"تحديث صورة المتجر",
+  "update_logo_and_cover_for_business":"تحديث صورة الغلاف للمتجر"
 }

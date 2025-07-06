@@ -869,5 +869,8 @@
   "max_age":"Max Age",
   "min_age":"Min Age",
   "all":"all",
-  "succ_ads":"The package has been successfully subscribed."
+  "succ_ads":"The package has been successfully subscribed.",
+  "update_success": "updated successfully",
+  "update_business_account_image": "Update Business Image",
+  "update_logo_and_cover_for_business": "Update Business Cover"
 }
