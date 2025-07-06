@@ -99,69 +99,87 @@ class SettingsScreen extends StatelessWidget {
                                           onTap: () {},
                                         )
                                       : Row(
-                                        children: [
-                                          BlocProvider(
-                                          create: (context) => AccountCubit(sl<AccountRepo>()),
-                                          child: Builder(
-                                            builder: (context) {
-                                            return CircleAvatar(
-                                              radius: 32.r,
-                                              backgroundImage: NetworkImage(
-                                              cubit.userAccount
-                                                  ?.where((element) => element.id == cubit.businessId)
-                                                  .first
-                                                  .logo ??
-                                                'assets/images/logo.png',
-                                              ),
-                                              backgroundColor: Colors.grey[200],
-                                            );
-                                            },
-                                          ),
-                                          ),
-                                          SizedBox(width: 16.w),
-                                          Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                            Text(
-                                              (cubit.userAccount
-                                                    ?.where((element) => element.id == cubit.businessId)
-                                                    .first
-                                                    .name ??
-                                                  '')
-                                                .trim(),
-                                              style: TextStyle(
-                                              fontSize: 18.sp,
-                                              fontWeight: FontWeight.bold,
+                                          children: [
+                                            BlocProvider(
+                                              create: (context) => AccountCubit(
+                                                  sl<AccountRepo>()),
+                                              child: Builder(
+                                                builder: (context) {
+                                                  return CircleAvatar(
+                                                    radius: 32.r,
+                                                    backgroundImage:
+                                                        NetworkImage(
+                                                      cubit.userAccount
+                                                              ?.where((element) =>
+                                                                  element.id ==
+                                                                  cubit
+                                                                      .businessId)
+                                                              .first
+                                                              .logo ??
+                                                          'assets/images/logo.png',
+                                                    ),
+                                                    backgroundColor:
+                                                        Colors.grey[200],
+                                                  );
+                                                },
                                               ),
                                             ),
-                                            ],
-                                          ),
-                                          ),
-                                          BlocProvider(
-                                          create: (context) => AccountCubit(sl<AccountRepo>()),
-                                          child: Builder(
-                                            builder: (context) {
-                                            final accountCubit = context.read<AccountCubit>();
-                                            return IconButton(
-                                              icon: const Icon(Icons.edit),
-                                              onPressed: () {
-                                              navigateTo(
-                                                context,
-                                                UpdateProfilePhotoForBuisnissAccountPage(
-                                                cubit: accountCubit,
-                                                accountData: cubit.userAccount!
-                                                  .where((element) => element.id == cubit.businessId)
-                                                  .first,
-                                                ),
-                                              );
-                                              },
-                                            );
-                                            },
-                                          ),
-                                          ),
-                                        ],
-                                        
+                                            SizedBox(width: 16.w),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    (cubit.userAccount
+                                                                ?.where((element) =>
+                                                                    element
+                                                                        .id ==
+                                                                    cubit
+                                                                        .businessId)
+                                                                .first
+                                                                .name ??
+                                                            '')
+                                                        .trim(),
+                                                    style: TextStyle(
+                                                      fontSize: 18.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            BlocProvider(
+                                              create: (context) => AccountCubit(
+                                                  sl<AccountRepo>()),
+                                              child: Builder(
+                                                builder: (context) {
+                                                  final accountCubit = context
+                                                      .read<AccountCubit>();
+                                                  return IconButton(
+                                                    icon:
+                                                        const Icon(Icons.edit),
+                                                    onPressed: () {
+                                                      navigateTo(
+                                                        context,
+                                                        UpdateProfilePhotoForBuisnissAccountPage(
+                                                          cubit: accountCubit,
+                                                          accountData: cubit
+                                                              .userAccount!
+                                                              .where((element) =>
+                                                                  element.id ==
+                                                                  cubit
+                                                                      .businessId)
+                                                              .first,
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ],
                                         ),
                               SizedBox(height: isVendor != true ? 16.h : 30.h),
                               EditProfile(
