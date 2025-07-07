@@ -102,3 +102,5 @@ class AccountDeletedSuccess extends GlobalState {
   final String message;
   AccountDeletedSuccess(this.message);
 }
+
+class UserTypeSwitchingState extends GlobalState {}

@@ -1,3 +1,5 @@
+import 'package:embone/core/component/custom_toast.dart';
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -18,10 +20,12 @@ class ChatConversationScreen extends StatefulWidget {
   final String? name;
   final String? image;
   final String? online;
+  final ChatCubit? chatCubit;
 
   const ChatConversationScreen({
     super.key,
     this.receiverId,
+    this.chatCubit,
     this.name,
     this.image,
     this.online,
@@ -33,7 +37,9 @@ class ChatConversationScreen extends StatefulWidget {
 
 class _ChatConversationScreenState extends State<ChatConversationScreen> {
   final ScrollController _scrollController = ScrollController();
-  late ChatCubit _chatCubit;
+  late ChatCubit _chatCubit = widget.chatCubit ??
+      ChatCubit(sl<ChatRepo>(), widget.receiverId,
+          int.parse(context.read<GlobalCubit>().userId.toString()));
 
   @override
   void initState() {
@@ -43,9 +49,8 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 
     if (widget.receiverId != null) {
       _chatCubit.fetchMessages(widget.receiverId!);
-      // _chatCubit.initializeWebSocket();
+      _chatCubit.initializeWebSocket();
     } else {
-      // Handle case where receiverId is null
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('receiver_id_required'.tr(context))),
       );
@@ -172,9 +177,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
             onPressed: () {
               Navigator.pop(context);
               if (widget.receiverId != null) {
-                _chatCubit.clearChat(
-                  receiveID: widget.receiverId ?? 0,
-                );
+                _chatCubit.clearChat(receiveID: widget.receiverId!);
               }
             },
             child: Text(
@@ -200,7 +203,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
     }
 
     return BlocProvider.value(
-      value: _chatCubit,
+      value: _chatCubit..initializeWebSocket(),
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
@@ -221,7 +224,11 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
               } else if (state is ChatMessageDeleted) {
                 _scrollToBottomDelayed();
               } else if (state is ChatCleared) {
-                _scrollToBottom(); // Scroll to bottom after chat is cleared
+                _scrollToBottom(); // Scroll to bottom to show empty chat
+                Navigator.pop(context); // Pop back to MassagesScreen
+              } else if (state is ChatCleareError) {
+                showToast(context,
+                    message: state.error.toString(), state: ToastStates.error);
               }
             },
             builder: (context, state) {
@@ -265,6 +272,12 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   if (hasFocus)
                     FocusOverlay(
                       onTap: cubit.clearFocus,
+                    ),
+                  if (state is ChatCleareLoading)
+                    const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
                     ),
                 ],
               );

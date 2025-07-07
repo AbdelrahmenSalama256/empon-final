@@ -161,34 +161,37 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                         onRefresh: () async {
                           cubit.fetchOrders();
                         },
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: const [
-                            OrdersList(
-                              key: ValueKey('pending'),
-                              status: "pending",
-                              statusColor: Color(0xffFFA500),
-                              showCancelButton: false,
-                            ),
-                            OrdersList(
-                              key: ValueKey('delivered'),
-                              status: "delivered",
-                              statusColor: Color(0xff64B95C),
-                              showCancelButton: false,
-                            ),
-                            OrdersList(
-                              key: ValueKey('in_delivery'),
-                              status: "in_delivery",
-                              statusColor: AppColors.primary,
-                              showCancelButton: true,
-                            ),
-                            OrdersList(
-                              key: ValueKey('cancelled'),
-                              status: "cancelled",
-                              statusColor: Color(0xffEC4B4B),
-                              showCancelButton: false,
-                            ),
-                          ],
+                        child: Container(
+                          color: Colors.black.withOpacity(0.1),
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: const [
+                              OrdersList(
+                                key: ValueKey('pending'),
+                                status: "pending",
+                                statusColor: Color(0xffFFA500),
+                                showCancelButton: false,
+                              ),
+                              OrdersList(
+                                key: ValueKey('delivered'),
+                                status: "delivered",
+                                statusColor: Color(0xff64B95C),
+                                showCancelButton: false,
+                              ),
+                              OrdersList(
+                                key: ValueKey('in_delivery'),
+                                status: "in_delivery",
+                                statusColor: AppColors.primary,
+                                showCancelButton: true,
+                              ),
+                              OrdersList(
+                                key: ValueKey('cancelled'),
+                                status: "cancelled",
+                                statusColor: Color(0xffEC4B4B),
+                                showCancelButton: false,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

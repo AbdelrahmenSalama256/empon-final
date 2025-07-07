@@ -111,11 +111,20 @@ class GlobalCubit extends Cubit<GlobalState> {
     }
   }
 
-  void setUserType(UserType type) {
+  void setUserType(UserType type) async {
     if (type != userType) {
+      emit(UserTypeSwitchingState());
+
+      await Future.delayed(const Duration(milliseconds: 800));
+
       userType = type;
       sl<CacheHelper>().setData(AppConstants.userType, type.name);
       log(userType.toString());
+
+      if (type == UserType.business) {
+        _initializeBusinessId();
+      }
+
       emit(UserTypeChangedState());
     }
   }
@@ -465,7 +474,6 @@ class GlobalCubit extends Cubit<GlobalState> {
         sl<CacheHelper>().removeData(key: AppConstants.userProfile);
         sl<CacheHelper>().removeData(key: AppConstants.token);
         PrintUtil.success("User Account Deleted successfully: $message");
-        // Trigger logout to handle navigation
         logout();
       },
     );

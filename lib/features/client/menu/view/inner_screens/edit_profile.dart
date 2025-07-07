@@ -317,11 +317,17 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                             ),
                           ),
                           SizedBox(height: 10.h),
-                          GenderSelectionCard(
-                            selectedGender: cubit.selectedGender,
-                            onGenderChanged: (Gender value) {
-                              cubit.setGender(value);
-                            },
+                          AbsorbPointer(
+                            absorbing: true,
+                            child: Opacity(
+                              opacity: 0.5,
+                              child: GenderSelectionCard(
+                                selectedGender: cubit.selectedGender,
+                                onGenderChanged: (Gender value) {
+                                  cubit.setGender(value);
+                                },
+                              ),
+                            ),
                           ),
                           SizedBox(height: 24.h),
                           Text(

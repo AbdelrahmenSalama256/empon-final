@@ -2,7 +2,6 @@ import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -36,163 +35,195 @@ class MassagesScreen extends StatelessWidget {
 
           return Scaffold(
             backgroundColor: Colors.white,
-            body: SafeArea(
-              child: Column(
-                children: [
-                  // Header
-                  AppHeader(
-                    title: 'chat'.tr(context),
-                    centerTitle: true,
-                    showBackButton: true,
-                  ),
-
-                  // Search Bar
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    child: AppTextField(
-                      controller: cubit.searchController,
-                      hintText: 'search'.tr(context),
-                      labelText: 'search'.tr(context),
-                      prefixIcon: Icon(
-                        CupertinoIcons.search,
-                        // ignore: deprecated_member_use
-                        color: const Color(0xff8F95AB).withOpacity(0.7),
-                        size: 24.sp,
-                      ),
-                      onChanged: (p0) {
-                        cubit.filterContacts(p0);
-                      },
+            body: BlocListener<ChatCubit, ChatState>(
+              listener: (context, state) {
+                if (state is ChatCleared) {
+                  cubit.fetchChatContacts();
+                }
+              },
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    // Header
+                    AppHeader(
+                      title: 'chat'.tr(context),
+                      centerTitle: true,
+                      showBackButton: true,
                     ),
-                  ),
 
-                  SizedBox(height: 16.h),
+                    // Search Bar
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: AppTextField(
+                        controller: cubit.searchController,
+                        hintText: 'search'.tr(context),
+                        labelText: 'search'.tr(context),
+                        prefixIcon: Icon(
+                          CupertinoIcons.search,
+                          // ignore: deprecated_member_use
+                          color: const Color(0xff8F95AB).withOpacity(0.7),
+                          size: 24.sp,
+                        ),
+                        onChanged: (p0) {
+                          cubit.filterContacts(p0);
+                        },
+                      ),
+                    ),
 
-                  // Add Friends Section
-                  if (cubit.searchController.text.isEmpty) ...[
-                    contacts.isNotEmpty
-                        ? Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 8.h),
-                            child: Align(
-                              alignment: AlignmentDirectional.centerStart,
-                              child: Text(
-                                'add_friends_to_chat'.tr(context),
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
+                    SizedBox(height: 16.h),
+
+                    // Add Friends Section
+                    if (cubit.searchController.text.isEmpty) ...[
+                      contacts.isNotEmpty
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 8.h),
+                              child: Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: Text(
+                                  'add_friends_to_chat'.tr(context),
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                    SizedBox(height: 8.h),
-                  ],
+                            )
+                          : const SizedBox.shrink(),
+                      SizedBox(height: 8.h),
+                    ],
 
-                  Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: () async {
-                        cubit.fetchChatContacts();
-                      },
-                      child: state is ChatContactLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : contacts.isEmpty
-                              ? Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        CupertinoIcons.chat_bubble,
-                                        size: 60.sp,
-                                        color: Colors.grey.withOpacity(0.5),
-                                      ),
-                                      SizedBox(height: 16.h),
-                                      Text(
-                                        'no_friends_to_chat'.tr(context),
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
-                                          color: Colors.grey,
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          cubit.fetchChatContacts();
+                        },
+                        child: state is ChatContactLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : contacts.isEmpty
+                                ? Center(
+                                    child: ListView(
+                                      shrinkWrap: true,
+                                      // mainAxisAlignment:
+                                      // MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          CupertinoIcons.chat_bubble,
+                                          size: 60.sp,
+                                          color: Colors.grey.withOpacity(0.5),
                                         ),
-                                      ),
-                                      SizedBox(height: 24.h),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 32.w,
-                                          vertical: 12.h,
+                                        SizedBox(height: 16.h),
+                                        Center(
+                                          child: Text(
+                                            'no_friends_to_chat'.tr(context),
+                                            style: TextStyle(
+                                              fontSize: 16.sp,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
                                         ),
-                                        child: AppButton(
-                                          onPressed: () {
-                                            navigateTo(
-                                                context, const FollowersPage());
-                                          },
-                                          text:
-                                              'add_friends_to_chat'.tr(context),
+                                        SizedBox(height: 24.h),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 32.w,
+                                            vertical: 12.h,
+                                          ),
+                                          child: AppButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const FollowersPage()),
+                                              ).whenComplete(() {
+                                                cubit.fetchChatContacts();
+                                              });
+                                            },
+                                            text: 'add_friends_to_chat'
+                                                .tr(context),
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : ListView.builder(
-                                  itemCount: contacts.length,
-                                  itemBuilder: (context, index) {
-                                    final contact = contacts[index];
-                                    return GestureDetector(
-                                      onLongPress: () {
-                                        cubit.selectContact(contact);
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 5,
-                                            child: _buildContactItem(
+                                      ],
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: contacts.length,
+                                    itemBuilder: (context, index) {
+                                      final contact = contacts[index];
+                                      return GestureDetector(
+                                        onLongPress: () {
+                                          cubit.selectContact(contact);
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 5,
+                                              child: _buildContactItem(
                                                 context,
                                                 contact,
-                                                cubit.searchController.text),
-                                          ),
-                                          AnimatedContainer(
-                                            duration: const Duration(
-                                                milliseconds: 300),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 5.w, vertical: 5.h),
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 5.w),
-                                            width: cubit.selectedContact?.id ==
-                                                    contact.id
-                                                ? 35.w
-                                                : 0,
-                                            height: cubit.selectedContact?.id ==
-                                                    contact.id
-                                                ? 35.w
-                                                : 0,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(5.r),
-                                              color: AppColors.primary,
+                                                cubit.searchController.text,
+                                                cubit,
+                                              ),
                                             ),
-                                            child: cubit.selectedContact?.id ==
-                                                    contact.id
-                                                ? GestureDetector(
-                                                    onTap: () {
-                                                      cubit.clearChat(
-                                                          receiveID:
-                                                              contacts[index]
-                                                                  .id);
-                                                    },
-                                                    child: Icon(
-                                                      CupertinoIcons.delete,
-                                                      size: 20.sp,
-                                                      color: AppColors.white,
-                                                    ),
-                                                  )
-                                                : null,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
+                                            AnimatedContainer(
+                                              duration: const Duration(
+                                                  milliseconds: 300),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 5.w,
+                                                  vertical: 5.h),
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 5.w),
+                                              width:
+                                                  cubit.selectedContact?.id ==
+                                                          contact.id
+                                                      ? 35.w
+                                                      : 0,
+                                              height:
+                                                  cubit.selectedContact?.id ==
+                                                          contact.id
+                                                      ? 35.w
+                                                      : 0,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5.r),
+                                                color: AppColors.primary,
+                                              ),
+                                              child: cubit.selectedContact
+                                                          ?.id ==
+                                                      contact.id
+                                                  ? GestureDetector(
+                                                      onTap: () {
+                                                        cubit.clearChat(
+                                                            receiveID:
+                                                                contacts[index]
+                                                                    .id);
+                                                      },
+                                                      child: state
+                                                              is ChatCleareLoading
+                                                          ? const CircularProgressIndicator(
+                                                              backgroundColor:
+                                                                  AppColors
+                                                                      .white,
+                                                            )
+                                                          : Icon(
+                                                              CupertinoIcons
+                                                                  .delete,
+                                                              size: 20.sp,
+                                                              color: AppColors
+                                                                  .white,
+                                                            ),
+                                                    )
+                                                  : null,
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -205,6 +236,7 @@ class MassagesScreen extends StatelessWidget {
     BuildContext context,
     ChatContact contact,
     String searchQuery,
+    ChatCubit chatCubit,
   ) {
     final name = contact.fullName;
     List<TextSpan> nameSpans = [];
@@ -223,6 +255,9 @@ class MassagesScreen extends StatelessWidget {
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
               color: Colors.black,
+              fontFamily: context.read<GlobalCubit>().language == "ar"
+                  ? "Beiruti"
+                  : "Poppins",
             ),
           ));
         }
@@ -234,6 +269,9 @@ class MassagesScreen extends StatelessWidget {
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
             color: AppColors.primary,
+            fontFamily: context.read<GlobalCubit>().language == "ar"
+                ? "Beiruti"
+                : "Poppins",
             backgroundColor: AppColors.primary.withOpacity(0.1),
           ),
         ));
@@ -245,6 +283,9 @@ class MassagesScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w500,
+              fontFamily: context.read<GlobalCubit>().language == "ar"
+                  ? "Beiruti"
+                  : "Poppins",
               color: Colors.black,
             ),
           ));
@@ -256,6 +297,9 @@ class MassagesScreen extends StatelessWidget {
             fontSize: 16.sp,
             fontWeight: FontWeight.w500,
             color: Colors.black,
+            fontFamily: context.read<GlobalCubit>().language == "ar"
+                ? "Beiruti"
+                : "Poppins",
           ),
         ));
       }
@@ -275,11 +319,13 @@ class MassagesScreen extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        navigatorKey.currentState!.push(
+        navigatorKey.currentState!
+            .push(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
                 ChatConversationScreen(
               receiverId: contact.id,
+              chatCubit: chatCubit,
               name: contact.name,
               online: contact.isOnline == 1
                   ? "online".tr(context)
@@ -295,6 +341,11 @@ class MassagesScreen extends StatelessWidget {
             },
             transitionDuration: const Duration(milliseconds: 300),
           ),
+        )
+            .whenComplete(
+          () {
+            chatCubit.fetchChatContacts();
+          },
         );
       },
       child: Container(

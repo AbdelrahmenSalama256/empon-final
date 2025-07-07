@@ -1,4 +1,3 @@
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/order/data/model/order_model.dart';
 import 'package:embone/features/client/order/view/cubit/orders_cubit.dart';
@@ -24,7 +23,6 @@ class OrdersList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
-        PrintUtil.debug('OrdersList rebuild: status=$status, state=$state');
         List<OrderModel> orders = [];
         if (state is OrderLoaded || state is OrderCanceled) {
           orders = context.read<OrdersCubit>().getOrdersByStatus(status);

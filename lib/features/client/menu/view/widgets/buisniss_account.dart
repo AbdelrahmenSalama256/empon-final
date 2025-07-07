@@ -1,7 +1,8 @@
-import 'package:embone/core/constants/navigation.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BusinessAccountSection extends StatelessWidget {
@@ -11,7 +12,13 @@ class BusinessAccountSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        navigateWithoutNav(context, const CreateBusinessAccountTypePage());
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const CreateBusinessAccountTypePage()),
+        ).whenComplete(() {
+          context.read<GlobalCubit>().getUserProfile();
+        });
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

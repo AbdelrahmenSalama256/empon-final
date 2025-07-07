@@ -30,9 +30,7 @@ class ChatCubit extends Cubit<ChatState> {
   TextEditingController searchController = TextEditingController();
 
   ChatCubit(this.chatRepo, this.receiverId, this.currentUserId)
-      : super(ChatInitial()) {
-    initializeWebSocket();
-  }
+      : super(ChatInitial());
 
   void initializeWebSocket() {
     if (receiverId != null) {
@@ -59,7 +57,11 @@ class ChatCubit extends Cubit<ChatState> {
         onDone: () {
           emit(MassageSentError('WebSocket connection closed'));
           PrintUtil.error('WebSocket connection closed');
-          initializeWebSocket();
+          // initializeWebSocket();
+          // Future.delayed(
+          //   const Duration(seconds: 5),
+          //   () => initializeWebSocket(),
+          // );
         },
       );
     }
@@ -352,9 +354,19 @@ class ChatCubit extends Cubit<ChatState> {
     result.fold(
       (error) => emit(ChatCleareError(error)),
       (_) {
-        messages.clear();
-        contacts.removeAt(receiveID);
-        fetchChatContacts();
+        // messages.clear();
+        // contacts.removeAt(receiveID);
+// Find the index of the contact with the given receiveID
+        final contactIndex =
+            contacts.indexWhere((contact) => contact.id == receiveID);
+        if (contactIndex != -1) {
+          // Clear messages for this contact (assuming messages are stored per contact)
+          messages.removeWhere((msg) =>
+              msg.senderId == currentUserId && msg.receiverId == receiveID ||
+              msg.senderId == receiveID && msg.receiverId == currentUserId);
+
+          contacts.removeAt(contactIndex);
+        }
         emit(ChatCleared());
       },
     );

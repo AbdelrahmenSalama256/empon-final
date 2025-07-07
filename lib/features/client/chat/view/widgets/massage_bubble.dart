@@ -144,8 +144,8 @@ class _MessageBubbleState extends State<MessageBubble>
               children: [
                 if (_isSwipingToReply && !widget.isBlurred)
                   Positioned(
-                    left: isMe ? null : 20.w,
-                    right: isMe ? 20.w : null,
+                    right: isMe ? null : 20.w,
+                    left: isMe ? 20.w : null,
                     top: 0,
                     bottom: 0,
                     child: Center(

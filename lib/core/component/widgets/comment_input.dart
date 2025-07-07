@@ -6,11 +6,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CommentInput extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback? onSubmit;
+  final bool isLoading;
 
   const CommentInput({
     super.key,
     required this.controller,
     this.onSubmit,
+    this.isLoading = false,
   });
 
   @override
@@ -82,6 +84,7 @@ class CommentInput extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.r),
                       height: 40.h,
                       width: 61.w,
+                      isLoading: isLoading,
                       backgroundColor: const Color(0xffBDBDBD),
                       onPressed: () {
                         if (controller.text.isNotEmpty && onSubmit != null) {

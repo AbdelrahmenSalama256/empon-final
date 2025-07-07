@@ -892,5 +892,9 @@
   "succ_ads": "The package has been successfully subscribed.",
   "update_success": "updated successfully",
   "update_business_account_image": "Update Business Image",
-  "update_logo_and_cover_for_business": "Update Business Cover"
+  "update_logo_and_cover_for_business": "Update Business Cover",
+  "no_related_products": "No related products found",
+  "maximum_quantity_reached": "Maximum quantity reached",
+  "switching_account": "Switching Account",
+  "please_wait": "Please wait..."
 }

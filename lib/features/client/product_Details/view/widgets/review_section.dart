@@ -138,6 +138,7 @@ class _ReviewsSectionState extends State<ReviewsSection> {
             child: CommentInput(
               controller: widget.commentController,
               onSubmit: _addComment,
+              isLoading: widget.cubit.state is CommentLoading,
             ),
           ),
       ],

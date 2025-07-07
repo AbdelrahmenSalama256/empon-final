@@ -6,6 +6,7 @@ import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/constants/custom_popup.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
@@ -15,6 +16,9 @@ import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/ac
 import 'package:embone/features/client/menu/data/repo/account_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/accounts_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/accounts_state.dart';
+import 'package:embone/features/client/menu/view/inner_screens/widgets/add_store_button.dart';
+import 'package:embone/features/client/menu/view/inner_screens/widgets/business_account_option.dart';
+import 'package:embone/features/client/menu/view/widgets/user_type_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,25 +52,59 @@ class AccountsBottomSheetContent extends StatefulWidget {
 
 class _AccountsBottomSheetContentState
     extends State<AccountsBottomSheetContent> {
-  late int _selectedAccountIndex; // Initialize dynamically
+  late int _selectedAccountIndex;
+  bool _isLoading = false; // Add loading state
 
   @override
   void initState() {
     super.initState();
     final cubit = context.read<GlobalCubit>();
-    // Initialize _selectedAccountIndex based on current userType and businessId
     _selectedAccountIndex = cubit.userType == UserType.business &&
             cubit.businessId != null &&
             cubit.userAccount != null
         ? cubit.userAccount!
             .indexWhere((account) => account.id == cubit.businessId)
-        : -1; // -1 for personal account
+        : -1;
+  }
+
+  // Method to handle user type switching with loading
+  Future<void> _switchToUserType(UserType userType, {int? businessId}) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final cubit = context.read<GlobalCubit>();
+
+    // Add delay for loading animation
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    cubit.setUserType(userType);
+    cubit.setBusinessId(businessId);
+
+    if (businessId != null) {
+      sl<CacheHelper>().setData(
+        AppConstants.businessAccountId,
+        businessId.toString(),
+      );
+      log('Selected businessId: $businessId');
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<GlobalCubit>();
     final accounts = cubit.userAccount ?? [];
+
+    // Show loading overlay when switching user types
+    if (_isLoading || cubit.state is UserTypeSwitchingState) {
+      return const UserTypeSwitchLoader();
+    }
 
     return Container(
       padding: EdgeInsets.all(16.w),
@@ -78,7 +116,6 @@ class _AccountsBottomSheetContentState
         },
         builder: (context, state) {
           final accountsCubit = context.read<AccountsCubit>();
-
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -94,61 +131,72 @@ class _AccountsBottomSheetContentState
                   ),
                 ),
                 SizedBox(height: 16.h),
-
                 // User profile section
                 GestureDetector(
-                  onTap: () {
-                    cubit.setUserType(UserType.client);
-                    cubit.setBusinessId(
-                        null); // Clear businessId when switching to client
+                  onTap: () async {
                     setState(() {
                       _selectedAccountIndex = -1;
                     });
-                    Navigator.pop(context);
+                    await _switchToUserType(UserType.client);
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            radius: 16.r,
-                            backgroundImage: cubit.userAvatar != null
-                                ? NetworkImage(cubit.userAvatar!)
-                                : const AssetImage('assets/images/logo.png')
-                                    as ImageProvider,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            cubit.userName ?? 'User',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w500,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                    decoration: BoxDecoration(
+                      color: _selectedAccountIndex == -1
+                          ? AppColors.primary.withOpacity(0.1)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(8.r),
+                      border: Border.all(
+                        color: _selectedAccountIndex == -1
+                            ? AppColors.primary
+                            : Colors.grey[300]!,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 16.r,
+                              backgroundImage: cubit.userAvatar != null
+                                  ? NetworkImage(cubit.userAvatar!)
+                                  : const AssetImage('assets/images/logo.png')
+                                      as ImageProvider,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              cubit.userName ?? 'User',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_selectedAccountIndex == -1)
+                          Container(
+                            width: 24.w,
+                            height: 24.w,
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 16.sp,
                             ),
                           ),
-                        ],
-                      ),
-                      if (_selectedAccountIndex == -1)
-                        Container(
-                          width: 24.w,
-                          height: 24.w,
-                          decoration: const BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 16.sp,
-                          ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: 24.h),
-
                 // Business accounts title
                 if (accounts.isNotEmpty)
                   Align(
@@ -163,7 +211,6 @@ class _AccountsBottomSheetContentState
                     ),
                   ),
                 SizedBox(height: accounts.isNotEmpty ? 16.h : 0),
-
                 // Business accounts list
                 ...List.generate(
                   accounts.length,
@@ -173,7 +220,7 @@ class _AccountsBottomSheetContentState
                           ? accounts[index].logo!
                           : 'assets/images/logo.png',
                       labelText:
-                          accountsCubit.accountStatus?.data.isCompleted == true
+                          accountsCubit.accountStatus?.data?.isCompleted == true
                               ? accounts[index].status == true
                                   ? 'active'.tr(context)
                                   : 'inactive'.tr(context)
@@ -186,9 +233,9 @@ class _AccountsBottomSheetContentState
                           ? AppColors.secondary
                           : AppColors.red,
                       isSelected: ((accountsCubit
-                                      .accountStatus?.data.isCompleted ==
+                                      .accountStatus?.data?.isCompleted ==
                                   false ||
-                              accountsCubit.accountStatus?.data.isVerified ==
+                              accountsCubit.accountStatus?.data?.isVerified ==
                                   false))
                           ? false
                           : _selectedAccountIndex == index,
@@ -196,12 +243,9 @@ class _AccountsBottomSheetContentState
                         setState(() {
                           _selectedAccountIndex = index;
                         });
-
                         await accountsCubit
                             .fetchAccountStatus(accounts[index].id ?? 0);
-
                         final status = accountsCubit.accountStatus?.data;
-
                         if (status?.isCompleted == false) {
                           Navigator.pop(context);
                           navigateTo(
@@ -213,7 +257,6 @@ class _AccountsBottomSheetContentState
                               ));
                           return;
                         }
-
                         if (status?.isVerified == false) {
                           CustomPopup.show(
                             context: context,
@@ -222,13 +265,11 @@ class _AccountsBottomSheetContentState
                             type: PopupType.alert,
                             primaryButtonText: 'ok'.tr(context),
                             onPrimaryButtonPressed: () {
-                              cubit.setUserType(UserType.client);
-                              cubit.setBusinessId(null);
                               setState(() {
                                 _selectedAccountIndex = -1;
                               });
                               Navigator.of(context, rootNavigator: true).pop();
-                              Navigator.pop(context);
+                              _switchToUserType(UserType.client);
                             },
                           );
                         } else if (state is AccountError) {
@@ -245,32 +286,24 @@ class _AccountsBottomSheetContentState
                             type: PopupType.alert,
                             primaryButtonText: 'ok'.tr(context),
                             onPrimaryButtonPressed: () {
-                              cubit.setUserType(UserType.client);
-                              // cubit.setBusinessId(null);
                               setState(() {
                                 _selectedAccountIndex = -1;
                               });
                               Navigator.of(context, rootNavigator: true).pop();
-                              Navigator.pop(context);
+                              _switchToUserType(UserType.client);
                             },
                           );
                         } else {
-                          cubit.setUserType(UserType.business);
-                          cubit.setBusinessId(accounts[index].id);
-                          sl<CacheHelper>().setData(
-                            AppConstants.businessAccountId,
-                            accounts[index].id.toString(),
-                          );
-                          log('Selected businessId: ${accounts[index].id}');
+                          await _switchToUserType(UserType.business,
+                              businessId: accounts[index].id);
                         }
                       }),
                 ),
                 SizedBox(height: 16.h),
-
                 // Add store option
                 AddStoreOption(
                   onTap: () {
-                    Navigator.pop(context); // Close the bottom sheet first
+                    Navigator.pop(context);
                     navigateTo(context, const CreateBusinessAccountTypePage());
                   },
                 ),
@@ -279,196 +312,6 @@ class _AccountsBottomSheetContentState
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class BusinessAccountOption extends StatelessWidget {
-  final String name;
-  final String imagePath;
-  final bool isSelected;
-  final String labelText;
-  final Color labelColor;
-  final VoidCallback onTap;
-
-  const BusinessAccountOption({
-    super.key,
-    required this.name,
-    required this.imagePath,
-    required this.isSelected,
-    required this.labelText,
-    required this.labelColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x0F000000),
-              offset: Offset(0, 1),
-              blurRadius: 5,
-              spreadRadius: 0,
-            ),
-          ],
-          borderRadius: isSelected
-              ? BorderRadius.circular(100.r)
-              : BorderRadius.circular(8.r),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // Store logo
-            imagePath.startsWith('http')
-                ? CircleAvatar(
-                    radius: 30.r,
-                    backgroundImage: NetworkImage(imagePath),
-                  )
-                : CircleAvatar(
-                    radius: 30.r,
-                    backgroundImage: const AssetImage('assets/images/logo.png')
-                        as ImageProvider,
-                  ),
-            SizedBox(width: 12.w),
-            // Store name
-            Text(
-              name,
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const Spacer(),
-            // SizedBox(
-            //   width: 12.w,
-            // ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
-              // width: 70.w,
-              // height: 30.w,
-              decoration: BoxDecoration(
-                color: labelColor,
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(
-                  color: isSelected ? AppColors.primary : Colors.grey[300]!,
-                  width: 1.5,
-                ),
-              ),
-              child: Expanded(
-                child: Center(
-                  child: Text(
-                    labelText,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 12.w),
-            // Selection indicator
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              width: 24.w,
-              height: 24.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primary,
-                  width: 1.5,
-                ),
-                color: Colors.white,
-              ),
-              child: isSelected
-                  ? Center(
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        width: 24.w,
-                        height: 24.w,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.primary,
-                          border: Border.all(
-                            color: AppColors.primary,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.check,
-                          color: Colors.white,
-                          size: 12.sp,
-                        ),
-                      ),
-                    )
-                  : null,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class AddStoreOption extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const AddStoreOption({
-    super.key,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.h),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Add icon
-            Container(
-              width: 22.w,
-              height: 22.w,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xffF0F2F9),
-              ),
-              child: Icon(
-                Icons.add,
-                color: Colors.black,
-                size: 16.sp,
-              ),
-            ),
-            SizedBox(
-              width: 12.w,
-            ),
-            // Text
-            Text(
-              "create_business_account".tr(context),
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-
-            // Empty space to maintain alignment
-            SizedBox(width: 24.w),
-          ],
-        ),
       ),
     );
   }

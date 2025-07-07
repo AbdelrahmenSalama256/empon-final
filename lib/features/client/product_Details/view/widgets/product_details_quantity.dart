@@ -1,3 +1,4 @@
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
@@ -96,13 +97,9 @@ class QuantitySelectorSection extends StatelessWidget {
                         } else {
                           PrintUtil.info(
                               'Maximum quantity ($maxQuantity) reached');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('Maximum stock ($maxQuantity) reached'),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
+                          showToast(context,
+                              message: "max",
+                              state: ToastStates.error);
                         }
                       },
                     ),

@@ -69,7 +69,7 @@ class _BaseScreenState extends State<BaseScreen> {
         GuestRestrictedScreen(
           isGuest: widget.isGuest ?? false,
           message: "please_login_to_access_menu",
-          child: const MenuScreen(),
+          child: const IntroPage(),
         ),
       ];
     }
@@ -131,7 +131,9 @@ class _BaseScreenState extends State<BaseScreen> {
             create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
             child: const NotificationsPage(),
           ),
-          const IntroPage(),
+          const MenuScreen(
+            isVendor: true,
+          ),
         ];
     }
   }

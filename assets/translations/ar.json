@@ -913,5 +913,9 @@
   "succ_ads": "تم الاشتراك فى الباقة بنجاح",
   "update_success": "تم التحديث",
   "update_business_account_image": "تحديث صورة المتجر",
-  "update_logo_and_cover_for_business": "تحديث صورة الغلاف للمتجر"
+  "update_logo_and_cover_for_business": "تحديث صورة الغلاف للمتجر",
+  "no_related_products": "لا توجد منتجات ذات صلة",
+  "maximum_quantity_reached": "لقد وصلت إلى الحد الأقصى للكمية المتاحة لهذا المنتج",
+  "switching_account": "تبديل الحساب",
+  "please_wait": "يرجى الانتظار..."
 }

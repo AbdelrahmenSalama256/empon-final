@@ -131,7 +131,7 @@ class ChatAppBar extends StatelessWidget {
             ),
             onSelected: (value) {
               switch (value) {
-                case 'clear':
+                case 'clear_chat':
                   onClearChat();
                   break;
               }

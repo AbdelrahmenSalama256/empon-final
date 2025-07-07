@@ -1,20 +1,26 @@
 class AccountStatusChecker {
   final bool success;
   final String? message;
-  final Account data;
+  final Account? data;
 
   AccountStatusChecker({
     required this.success,
     this.message,
-    required this.data,
+    this.data,
   });
 
   factory AccountStatusChecker.fromJson(Map<String, dynamic> json) {
     return AccountStatusChecker(
-      success: json['success'],
-      message: json['message'],
-      data: Account.fromJson(json['data']),
-    );
+        success: json['success'],
+        message: json['message'],
+        data: _parseData(json['data']));
+  }
+  static Account? _parseData(dynamic data) {
+    if (data == null) return null;
+    if (data is Map<String, dynamic>) {
+      return Account.fromJson(data);
+    }
+    return null;
   }
 }
 
