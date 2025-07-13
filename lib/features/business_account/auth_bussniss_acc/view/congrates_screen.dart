@@ -4,7 +4,7 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/base/view/welcome/base_screen.dart';
+import 'package:embone/features/client/menu/view/menu_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,7 +70,7 @@ class CongratesScreen extends StatelessWidget {
                                       .setUserType(UserType.client);
                                   context.read<GlobalCubit>().getUserProfile();
 
-                                  navigateTo(context, const BaseScreen());
+                                  navigateTo(context, const MenuScreen(isVendor: false));
                                   showToast(
                                     context,
                                     message: 'pending_account'.tr(context),

@@ -133,7 +133,7 @@ class _AddProfilePhotoForBuisnissAccountPageState
               _isLoading = false;
             });
 showToast(context,
-          message:'success'.tr(context),
+          message:'request_sent_successfully'.tr(context),
           state: ToastStates.success);
           
             Navigator.pushReplacement(

@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 
+import '../../../../core/component/custom_toast.dart';
 import 'cubit/account_state.dart';
 
 class CreateBusinessAccountSettings extends StatelessWidget {
@@ -55,6 +56,16 @@ class CreateBusinessAccountSettings extends StatelessWidget {
                           child: AppButton(
                             text: 'next'.tr(context),
                             onPressed: () {
+                              if (cubit.descriptionController.text.isEmpty
+                                  || cubit.phoneController.text.isEmpty
+                                  || cubit.emailController.text.isEmpty) {
+                                showToast(
+                                  context,
+                                  message: 'required_fields_missing'.tr(context),
+                                  state: ToastStates.error,
+                                );
+                                return;
+                              }else{
                               cubit.updateDescription(
                                   cubit.descriptionController.text);
                               cubit.updateVideoUrl(
@@ -67,7 +78,7 @@ class CreateBusinessAccountSettings extends StatelessWidget {
                                     cubit: cubit,
                                   ),
                                 ),
-                              );
+                              );}
                             },
                           ),
                         ),
