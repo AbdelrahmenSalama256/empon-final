@@ -80,6 +80,8 @@ class _LoginPageState extends State<LoginPage>
             showToast(context,
                 message: state.message, state: ToastStates.error);
           } else if (state is LoginSuccess) {
+            context.read<GlobalCubit>().changeBottomNavIndex(0);
+
             if (state.isVerified) {
               context.read<GlobalCubit>().getUserProfile();
 

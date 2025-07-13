@@ -4,7 +4,11 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/app/embone.dart';
+import '../../../../core/cubit/global_cubit.dart';
 
 class GuestRestrictedScreen extends StatelessWidget {
   final String message;
@@ -47,9 +51,21 @@ class GuestRestrictedScreen extends StatelessWidget {
                   SizedBox(height: 20.h),
                   AppButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const LoginPage(),
+                      context.read<GlobalCubit>().changeBottomNavIndex(0);
+
+                      navigatorKey.currentState!.push(
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const LoginPage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          transitionDuration: const Duration(milliseconds: 300),
                         ),
                       );
                     },

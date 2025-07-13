@@ -98,7 +98,7 @@ class _OffersScreenState extends State<OffersScreen> {
             }
           },
           child: Scaffold(
-            backgroundColor: Colors.grey.shade50,
+            backgroundColor: Colors.white,
             body: SafeArea(
               child: Column(
                 children: [
@@ -183,9 +183,10 @@ class _OffersScreenState extends State<OffersScreen> {
                               price: double.tryParse(offer.offerPrice) ?? 0.0,
                               originalPrice:
                                   double.tryParse(offer.originalPrice),
-                              badge: offer.status == 'pending'
-                                  ? 'Pending'
-                                  : offer.status,
+                              badge: offer.status.tr(context) ==
+                                      'pending'.tr(context)
+                                  ? 'pending'.tr(context)
+                                  : offer.status.tr(context),
                               actionText: 'add_to_cart'.tr(context),
                               isFavorite: GlobalState is WishlistError
                                   ? false

@@ -136,7 +136,7 @@ class ServiceCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                "${service.account?.name}",
+                service.account?.name ?? "unknown".tr(context),
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,

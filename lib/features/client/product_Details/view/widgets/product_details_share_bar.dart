@@ -629,7 +629,7 @@ class NonVendorInteractionView extends StatelessWidget {
                       icon: isThumbsUp ? thumbsUpSelectedIcon : thumbsUpIcon,
                       onTap: () {
                         animateIcon(3);
-                        if (onThumbsUp != null) onThumbsUp!();
+                        onThumbsUp;
                       },
                       index: 3,
                       color: isThumbsUp ? thumbsUpColor : null,
