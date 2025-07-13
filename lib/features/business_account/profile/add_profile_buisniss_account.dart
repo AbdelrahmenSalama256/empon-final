@@ -132,6 +132,10 @@ class _AddProfilePhotoForBuisnissAccountPageState
             setState(() {
               _isLoading = false;
             });
+showToast(context,
+          message:'success'.tr(context),
+          state: ToastStates.success);
+          
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -142,9 +146,10 @@ class _AddProfilePhotoForBuisnissAccountPageState
             setState(() {
               _isLoading = false;
             });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.massage)),
-            );
+             showToast(context,
+          message: state.massage,
+          state: ToastStates.error);
+
           }
         },
         builder: (context, state) {
