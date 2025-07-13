@@ -14,74 +14,72 @@ class ProductInventoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SearchCubit, SearchState>(
       builder: (context, state) {
-      final cubit = context.read<SearchCubit>().productModel?.data;
+        final cubit = context.read<SearchCubit>().productModel?.data;
 
-      if (state is GoToProductLoading) {
-        return const Center(child: CircularProgressIndicator());
-      }
+        if (state is GoToProductLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-      if (cubit == null || cubit.variations == null) {
-        return const Center(child: CircularProgressIndicator());
-      }
+        if (cubit == null || cubit.variations == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-      return Scaffold(
-                backgroundColor: Colors.white,
-                body: SafeArea(
-                  child: Column(
-                    children: [
-                       AppHeader(
-                        title: 'available_product_numbers'.tr(context),
-                        centerTitle: true,
-                        showBackButton: true,
-                      ),
-                      SizedBox(height: 16.h),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            child: Column(
-                              children: List.generate(
-                                cubit.variations!.length,
-                                (index) {
-                                  final variation = cubit.variations![index];
-                                  // Group variations by color
-                                  final color = variation.color?.code;
-                                  final sameColorVariations = cubit
-                                      .variations!
-                                      .where((v) => v.color?.code == color)
-                                      .toList();
-    
-                                  final filteredSizes = <String>[];
-                                  final filteredQuantities = <String>[];
-    
-                                  for (var v in sameColorVariations) {
-                                    filteredSizes
-                                        .add(v.attributeValue!.id.toString());
-                                    filteredQuantities
-                                        .add(v.stock.toString());
-                                  }
-    
-                                  return Padding(
-                                    padding: EdgeInsets.only(bottom: 16.h),
-                                    child: _buildProductSection(
-                                        context: context,
-                                        sizes: filteredSizes,
-                                        quantities: filteredQuantities,
-                                        color: Color(int.parse(color!
-                                            .replaceFirst('#', '0xff'))),
-                                        name: cubit.name!,
-                                        imageUrl: cubit.image!),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Column(
+              children: [
+                AppHeader(
+                  title: 'available_product_numbers'.tr(context),
+                  centerTitle: true,
+                  showBackButton: true,
+                ),
+                SizedBox(height: 16.h),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Column(
+                        children: List.generate(
+                          cubit.variations!.length,
+                          (index) {
+                            final variation = cubit.variations![index];
+                            // Group variations by color
+                            final color = variation.color?.code;
+                            final sameColorVariations = cubit.variations!
+                                .where((v) => v.color?.code == color)
+                                .toList();
+
+                            final filteredSizes = <String>[];
+                            final filteredQuantities = <String>[];
+
+                            for (var v in sameColorVariations) {
+                              filteredSizes
+                                  .add(v.attributeValue!.id.toString());
+                              filteredQuantities.add(v.stock.toString());
+                            }
+
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: 16.h),
+                              child: _buildProductSection(
+                                  context: context,
+                                  sizes: filteredSizes,
+                                  quantities: filteredQuantities,
+                                  color: Color(int.parse(
+                                      color!.replaceFirst('#', '0xff'))),
+                                  name: cubit.name!,
+                                  imageUrl: cubit.image!),
+                            );
+                          },
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              );
+              ],
+            ),
+          ),
+        );
       },
     );
   }
