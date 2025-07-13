@@ -32,7 +32,6 @@ import '../../../client/menu/view/widgets/sign_out.dart';
 import '../../../client/menu/view/widgets/user_type_loading.dart';
 import 'inner_screens/widgets/accounts_bottom_sheet.dart';
 import 'widgets/menu_approval_items.dart';
-// Import the new widgets
 import 'widgets/menu_header.dart';
 import 'widgets/menu_most_visited.dart';
 import 'widgets/menu_quick_access.dart';
@@ -110,232 +109,220 @@ class MenuScreen extends StatelessWidget {
                                         },
                                       );
                                     },
-                                    child: SingleChildScrollView(
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 8.w, vertical: 8.h),
-                                        child: Column(
-                                          crossAxisAlignment: isVendor != true
-                                              ? CrossAxisAlignment.start
-                                              : CrossAxisAlignment.center,
-                                          children: [
-                                            isVendor != true
-                                                ? SizedBox(height: 0.h)
-                                                : SizedBox(height: 24.h),
-                                            isVendor != true
-                                                ? ProfileSection(
+                                    child: ListView(
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8.w, vertical: 8.h),
+                                      children: [
+                                        isVendor != true
+                                            ? SizedBox(height: 0.h)
+                                            : SizedBox(height: 24.h),
+                                        isVendor != true
+                                            ? ProfileSection(
+                                                userName: cubit.userName ?? '',
+                                                userImageUrl:
+                                                    "${cubit.userAvatar}",
+                                                subtitle:
+                                                    'user_account'.tr(context),
+                                                isVendor: isVendor!,
+                                                onTap: () {
+                                                  if (cubit.userType ==
+                                                      UserType.client) {
+                                                    navigateTo(context,
+                                                        const SettingsScreen());
+                                                  } else {
+                                                    showAccountsBottomSheet(
+                                                        context);
+                                                  }
+                                                },
+                                              )
+                                            : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  ProfileSection(
                                                     userName:
                                                         cubit.userName ?? '',
-                                                    userImageUrl:
-                                                        "${cubit.userAvatar}",
+                                                    userImageUrl: cubit
+                                                            .userAvatar ??
+                                                        'assets/images/logo.png',
                                                     subtitle: 'user_account'
                                                         .tr(context),
                                                     isVendor: isVendor!,
                                                     onTap: () {
-                                                      if (cubit.userType ==
-                                                          UserType.client) {
-                                                        navigateTo(context,
-                                                            const SettingsScreen());
-                                                      } else {
-                                                        showAccountsBottomSheet(
-                                                            context);
-                                                      }
+                                                      context
+                                                          .read<GlobalCubit>()
+                                                          .setUserType(
+                                                              UserType.client);
                                                     },
-                                                  )
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      ProfileSection(
-                                                        userName:
-                                                            cubit.userName ??
-                                                                '',
-                                                        userImageUrl: cubit
-                                                                .userAvatar ??
-                                                            'assets/images/logo.png',
-                                                        subtitle: 'user_account'
-                                                            .tr(context),
-                                                        isVendor: isVendor!,
-                                                        onTap: () {
-                                                          context
-                                                              .read<
-                                                                  GlobalCubit>()
-                                                              .setUserType(
-                                                                  UserType
-                                                                      .client);
-                                                        },
-                                                      ),
-                                                      SizedBox(width: 10.w),
-                                                      ProfileSection(
-                                                        userName: accountData
-                                                                ?.name ??
-                                                            'business_account'
-                                                                .tr(context),
-                                                        userImageUrl:
-                                                            "${accountData?.logo}",
-                                                        isVendor: true,
-                                                        subtitle:
-                                                            'business_account'
-                                                                .tr(context),
-                                                        borderColor:
-                                                            Colors.green,
-                                                        onTap: () {
-                                                          navigateTo(
-                                                              context,
-                                                              SettingsScreen(
-                                                                isVendor:
-                                                                    isVendor,
-                                                              ));
-                                                        },
-                                                      ),
-                                                      SizedBox(width: 15.w),
-                                                      ProfileSection(
-                                                        userName:
-                                                            'add_new_buisniss_account'
-                                                                .tr(context),
-                                                        userImageUrl: '',
-                                                        isVendor: isVendor!,
-                                                        onTap: () {
-                                                          navigateTo(
-                                                            context,
-                                                            const CreateBusinessAccountTypePage(),
-                                                          );
-                                                        },
-                                                        isAddNew: true,
-                                                      ),
-                                                    ],
                                                   ),
-                                            SizedBox(height: 32.h.h),
-                                            isVendor != true
-                                                ? MenuMostVisited(
-                                                    isVendor: isVendor,
-                                                    businessCubit:
-                                                        businessCubit,
-                                                  )
-                                                : SizedBox(height: 0.h),
-                                            MenuQuickAccess(
-                                              isVendor: isVendor,
-                                              cubit: cubit,
-                                              accountData: accountData,
-                                            ),
-                                            SizedBox(height: 32.h.h),
-                                            isVendor == true
-                                                ? MenuApprovalItems(
-                                                    accountData: accountData,
-                                                    cubit: cubit,
-                                                  )
-                                                : SizedBox(height: 0.h),
-                                            isVendor == true
-                                                ? ExpansionTile(
-                                                    title: Text(
-                                                      'store_plans'.tr(context),
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 14.sp),
+                                                  SizedBox(width: 10.w),
+                                                  ProfileSection(
+                                                    userName:
+                                                        accountData?.name ??
+                                                            'business_account'
+                                                                .tr(context),
+                                                    userImageUrl:
+                                                        "${accountData?.logo}",
+                                                    isVendor: true,
+                                                    subtitle: 'business_account'
+                                                        .tr(context),
+                                                    borderColor: Colors.green,
+                                                    onTap: () {
+                                                      navigateTo(
+                                                          context,
+                                                          SettingsScreen(
+                                                            isVendor: isVendor,
+                                                          ));
+                                                    },
+                                                  ),
+                                                  SizedBox(width: 15.w),
+                                                  ProfileSection(
+                                                    userName:
+                                                        'add_new_buisniss_account'
+                                                            .tr(context),
+                                                    userImageUrl: '',
+                                                    isVendor: isVendor!,
+                                                    onTap: () {
+                                                      navigateTo(
+                                                        context,
+                                                        const CreateBusinessAccountTypePage(),
+                                                      );
+                                                    },
+                                                    isAddNew: true,
+                                                  ),
+                                                ],
+                                              ),
+                                        SizedBox(height: 32.h),
+                                        isVendor != true
+                                            ? MenuMostVisited(
+                                                isVendor: isVendor,
+                                                businessCubit: businessCubit,
+                                              )
+                                            : SizedBox(height: 0.h),
+                                        MenuQuickAccess(
+                                          isVendor: isVendor,
+                                          cubit: cubit,
+                                          accountData: accountData,
+                                        ),
+                                        SizedBox(height: 32.h),
+                                        isVendor == true
+                                            ? MenuApprovalItems(
+                                                accountData: accountData,
+                                                cubit: cubit,
+                                              )
+                                            : SizedBox(height: 0.h),
+                                        isVendor == true
+                                            ? ExpansionTile(
+                                                title: Text(
+                                                  'store_plans'.tr(context),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14.sp),
+                                                ),
+                                                children: [
+                                                  BlocProvider(
+                                                    create: (context) =>
+                                                        PackagesCubit(
+                                                            sl<PackagesRepo>())
+                                                          ..fetchPackages(),
+                                                    child: BlocBuilder<
+                                                        PackagesCubit,
+                                                        PackagesState>(
+                                                      builder: (context,
+                                                          packageState) {
+                                                        return packageState
+                                                                is PackagesLoading
+                                                            ? const Center(
+                                                                child:
+                                                                    CustomLoadingIndicator())
+                                                            : const PlanSection();
+                                                      },
                                                     ),
-                                                    children: [
-                                                      BlocProvider(
-                                                        create: (context) =>
-                                                            PackagesCubit(sl<
-                                                                PackagesRepo>())
-                                                              ..fetchPackages(),
-                                                        child: BlocBuilder<
-                                                            PackagesCubit,
-                                                            PackagesState>(
-                                                          builder: (context,
-                                                              packageState) {
-                                                            return packageState
-                                                                    is PackagesLoading
-                                                                ? const Center(
-                                                                    child:
-                                                                        CustomLoadingIndicator())
-                                                                : const PlanSection();
-                                                          },
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 16.h),
-                                                    ],
-                                                  )
-                                                : const SizedBox(),
-                                            SizedBox(height: 15.h),
-                                            MenuItem(
-                                              onTap: () {
-                                                navigateTo(context,
-                                                    const HelpSupportPage());
-                                              },
-                                              title: "help_support".tr(context),
-                                              icon: "assets/images/help.png",
-                                            ),
-                                            SizedBox(height: 16.h),
-                                            isVendor != true
+                                                  ),
+                                                  SizedBox(height: 16.h),
+                                                ],
+                                              )
+                                            : const SizedBox(),
+                                        SizedBox(height: 15.h),
+                                        MenuItem(
+                                          onTap: () {
+                                            navigateTo(context,
+                                                const HelpSupportPage());
+                                          },
+                                          title: "help_support".tr(context),
+                                          icon: "assets/images/help.png",
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        isVendor != true
+                                            ? cubit.userAccount!.isEmpty
                                                 ? const BusinessAccountSection()
-                                                : const SizedBox(),
-                                            isVendor != true
-                                                ? SizedBox(height: 30.h)
-                                                : const SizedBox(),
-                                            state is LogoutLoading
-                                                ? const Center(
-                                                    child:
-                                                        LinearProgressIndicator())
-                                                : SignOutButton(
-                                                    onPressed: () {
-                                                      if (cubit.userType ==
-                                                          UserType.business) {
-                                                        context
+                                                : const SizedBox.shrink()
+                                            : const SizedBox(),
+                                        isVendor != true
+                                            ? SizedBox(
+                                                height:
+                                                    cubit.userAccount!.isEmpty
+                                                        ? 30.h
+                                                        : 20.h)
+                                            : const SizedBox(),
+                                        state is LogoutLoading
+                                            ? const Center(
+                                                child:
+                                                    LinearProgressIndicator())
+                                            : SignOutButton(
+                                                onPressed: () {
+                                                  if (cubit.userType ==
+                                                      UserType.business) {
+                                                    context
+                                                        .read<GlobalCubit>()
+                                                        .setUserType(
+                                                            UserType.client);
+                                                  } else {
+                                                    cubit.userType ==
+                                                            UserType.client
+                                                        ? CustomPopup.show(
+                                                            type:
+                                                                PopupType.alert,
+                                                            context: context,
+                                                            titleColor:
+                                                                const Color(
+                                                                    0xffEC4B4B),
+                                                            title: "sign_out"
+                                                                .tr(context),
+                                                            message:
+                                                                "sign_out_confirmation"
+                                                                    .tr(context),
+                                                            primaryButtonText:
+                                                                "yes".tr(
+                                                                    context),
+                                                            secondaryButtonText:
+                                                                "no".tr(
+                                                                    context),
+                                                            onPrimaryButtonPressed:
+                                                                () {
+                                                              cubit.logout();
+                                                            },
+                                                            onSecondaryButtonPressed:
+                                                                () {
+                                                              Navigator.of(
+                                                                      context,
+                                                                      rootNavigator:
+                                                                          true)
+                                                                  .pop();
+                                                            },
+                                                          )
+                                                        : context
                                                             .read<GlobalCubit>()
                                                             .setUserType(
                                                                 UserType
                                                                     .client);
-                                                      } else {
-                                                        cubit.userType ==
-                                                                UserType.client
-                                                            ? CustomPopup.show(
-                                                                type: PopupType
-                                                                    .alert,
-                                                                context:
-                                                                    context,
-                                                                titleColor:
-                                                                    const Color(
-                                                                        0xffEC4B4B),
-                                                                title: "sign_out"
-                                                                    .tr(context),
-                                                                message:
-                                                                    "sign_out_confirmation"
-                                                                        .tr(context),
-                                                                primaryButtonText:
-                                                                    "yes".tr(
-                                                                        context),
-                                                                secondaryButtonText:
-                                                                    "no".tr(
-                                                                        context),
-                                                                onPrimaryButtonPressed:
-                                                                    () {
-                                                                  cubit
-                                                                      .logout();
-                                                                },
-                                                                onSecondaryButtonPressed:
-                                                                    () {
-                                                                  Navigator.of(
-                                                                          context,
-                                                                          rootNavigator:
-                                                                              true)
-                                                                      .pop();
-                                                                },
-                                                              )
-                                                            : context
-                                                                .read<
-                                                                    GlobalCubit>()
-                                                                .setUserType(
-                                                                    UserType
-                                                                        .client);
-                                                      }
-                                                    },
-                                                  ),
-                                            SizedBox(height: 30.h),
-                                          ],
-                                        ),
-                                      ),
+                                                  }
+                                                },
+                                              ),
+                                        SizedBox(height: 30.h),
+                                      ],
                                     ),
                                   ),
                                 ),

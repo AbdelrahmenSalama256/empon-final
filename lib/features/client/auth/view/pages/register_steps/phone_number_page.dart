@@ -14,6 +14,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../../core/utils/validator.dart';
+
 class PhoneNumberPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
@@ -155,7 +157,8 @@ class _PhoneNumberPageState extends State<PhoneNumberPage> {
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
-                              
+                              validator: (value) =>
+                                  Validators.validatePhone(value, context),
                             ),
                             SizedBox(height: 16.h),
                             AppButton(
@@ -169,7 +172,13 @@ class _PhoneNumberPageState extends State<PhoneNumberPage> {
                                       state: ToastStates.error);
                                   return;
                                 }
-                                cubit.verifyPhoneNumber(context);
+                                if (fullPhone.length == 10) {
+                                  cubit.verifyPhoneNumber(context);
+                                } else {
+                                  showToast(context,
+                                      message: 'phone_required'.tr(context),
+                                      state: ToastStates.error);
+                                }
                               },
                               height: 50.h,
                               width: double.infinity,

@@ -1,9 +1,10 @@
 import 'package:embone/core/component/widgets/app_button.dart';
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CommentInput extends StatelessWidget {
+class CommentInput extends StatefulWidget {
   final TextEditingController controller;
   final VoidCallback? onSubmit;
   final bool isLoading;
@@ -15,6 +16,11 @@ class CommentInput extends StatelessWidget {
     this.isLoading = false,
   });
 
+  @override
+  State<CommentInput> createState() => _CommentInputState();
+}
+
+class _CommentInputState extends State<CommentInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,7 +35,7 @@ class CommentInput extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             child: TextField(
-              controller: controller,
+              controller: widget.controller,
               decoration: InputDecoration(
                 hintText: 'write_comment_here'.tr(context),
                 hintStyle: TextStyle(
@@ -47,10 +53,13 @@ class CommentInput extends StatelessWidget {
               ),
               textInputAction: TextInputAction.done,
               onSubmitted: (value) {
-                if (value.isNotEmpty && onSubmit != null) {
-                  onSubmit!();
-                  controller.clear();
+                if (value.isNotEmpty && widget.onSubmit != null) {
+                  widget.onSubmit!();
+                  widget.controller.clear();
                 }
+              },
+              onChanged: (value) {
+                setState(() {});
               },
             ),
           ),
@@ -84,12 +93,15 @@ class CommentInput extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.r),
                       height: 40.h,
                       width: 61.w,
-                      isLoading: isLoading,
-                      backgroundColor: const Color(0xffBDBDBD),
+                      isLoading: widget.isLoading,
+                      backgroundColor: widget.controller.text.isEmpty
+                          ? const Color(0xffBDBDBD)
+                          : AppColors.primary,
                       onPressed: () {
-                        if (controller.text.isNotEmpty && onSubmit != null) {
-                          onSubmit!();
-                          controller.clear();
+                        if (widget.controller.text.isNotEmpty &&
+                            widget.onSubmit != null) {
+                          widget.onSubmit!();
+                          widget.controller.clear();
                         }
                       },
                       text: 'send'.tr(context),

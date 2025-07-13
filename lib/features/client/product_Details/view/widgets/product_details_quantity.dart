@@ -98,7 +98,7 @@ class QuantitySelectorSection extends StatelessWidget {
                           PrintUtil.info(
                               'Maximum quantity ($maxQuantity) reached');
                           showToast(context,
-                              message: "max",
+                              message: "maximum_quantity_reached".tr(context),
                               state: ToastStates.error);
                         }
                       },
