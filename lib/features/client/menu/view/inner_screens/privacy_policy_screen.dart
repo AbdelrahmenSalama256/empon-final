@@ -1,3 +1,4 @@
+import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
@@ -84,29 +85,37 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                           centerTitle: true,
                           style: HeaderStyle.standard,
                         ),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            controller: _scrollController,
-                            padding: EdgeInsets.all(16.w),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildIntroductionCard(),
-                                SizedBox(height: 16.h),
-                                if (state is PrivacyPolicyLoaded)
-                                  _buildLastUpdatedCard(privacyPolicyCubit
-                                      .privacyPolicy!.lastUpdated),
-                                SizedBox(height: 16.h),
-                                ..._buildPrivacyPolicySections(
-                                    privacyPolicyCubit.privacyPolicy?.content ??
-                                        'Loading...'),
-                                SizedBox(height: 24.h),
-                                _buildContactCard(faqcubit),
-                                SizedBox(height: 100.h),
-                              ],
-                            ),
-                          ),
-                        ),
+                        state is PrivacyPolicyLoading
+                            ? const Expanded(
+                                child: Center(
+                                  child: CustomLoadingIndicator(),
+                                ),
+                              )
+                            : Expanded(
+                                child: SingleChildScrollView(
+                                  controller: _scrollController,
+                                  padding: EdgeInsets.all(16.w),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _buildIntroductionCard(),
+                                      SizedBox(height: 16.h),
+                                      if (state is PrivacyPolicyLoaded)
+                                        // // _buildLastUpdatedCard(privacyPolicyCubit
+                                        // //     .privacyPolicy!.lastUpdated),
+                                        // SizedBox(height: 16.h),
+                                        ..._buildPrivacyPolicySections(
+                                            privacyPolicyCubit
+                                                    .privacyPolicy?.content ??
+                                                'Loading...'),
+                                      SizedBox(height: 24.h),
+                                      _buildContactCard(faqcubit),
+                                      SizedBox(height: 100.h),
+                                    ],
+                                  ),
+                                ),
+                              ),
                       ],
                     );
                   },

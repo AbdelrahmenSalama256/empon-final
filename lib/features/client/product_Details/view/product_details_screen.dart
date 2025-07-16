@@ -352,8 +352,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                               try {
                                                 await cubit.deleteProduct(
                                                     productIdToDelete ?? 0);
-                                                Navigator.of(context, rootNavigator: true)
-                                                    .pop(); 
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
                                                 showToast(
                                                   context,
                                                   message:
@@ -365,7 +366,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          const HomeStoreScreen(isVendor: true,)),
+                                                          const HomeStoreScreen(
+                                                            isVendor: true,
+                                                          )),
                                                   (route) => false,
                                                 );
                                                 Navigator.of(context,

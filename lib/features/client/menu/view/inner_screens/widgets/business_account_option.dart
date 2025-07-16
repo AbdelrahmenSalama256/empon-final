@@ -9,10 +9,12 @@ class BusinessAccountOption extends StatelessWidget {
   final String labelText;
   final Color labelColor;
   final VoidCallback onTap;
+  final bool showLabel;
 
   const BusinessAccountOption({
     super.key,
     required this.name,
+    this.showLabel = false,
     required this.imagePath,
     required this.isSelected,
     required this.labelText,
@@ -71,26 +73,26 @@ class BusinessAccountOption extends StatelessWidget {
             ),
             SizedBox(width: 8.w),
             // Status label
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
-              constraints: BoxConstraints(maxWidth: 100.w),
-              decoration: BoxDecoration(
-                color: labelColor,
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Center(
+            if (showLabel &&
+                labelText != null) // Only show if showLabel is true
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: labelColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4.r),
+                  border: Border.all(
+                    color: labelColor,
+                    width: 1,
+                  ),
+                ),
                 child: Text(
                   labelText,
-                  maxLines: 1,
                   style: TextStyle(
-                    color: Colors.white,
                     fontSize: 12.sp,
-                    overflow: TextOverflow.ellipsis,
-                    fontWeight: FontWeight.w500,
+                    color: labelColor,
                   ),
                 ),
               ),
-            ),
             SizedBox(width: 12.w),
             // Selection indicator
             AnimatedContainer(
