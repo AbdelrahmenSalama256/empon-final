@@ -28,7 +28,6 @@ class ServiceSubmitButtons extends StatelessWidget {
             state: ToastStates.success,
           );
           Navigator.pop(context);
-          Navigator.pop(context);
         } else if (state is ServiceError) {
           showToast(
             context,

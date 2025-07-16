@@ -62,7 +62,7 @@ class Validators {
       return 'phone_required'.tr(context);
     }
 
-    final phoneRegExp = RegExp(r'^\+?[0-9]{10,15}$');
+    final phoneRegExp = RegExp(r'^\+?[0-9]{11,15}$');
     if (!phoneRegExp.hasMatch(value)) {
       return 'invalid_phone'.tr(context);
     }

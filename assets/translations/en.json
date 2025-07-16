@@ -896,5 +896,13 @@
   "no_related_products": "No related products found",
   "maximum_quantity_reached": "Maximum quantity reached",
   "switching_account": "Switching Account",
-  "please_wait": "Please wait..."
+  "please_wait": "Please wait...",
+  "enter_min_max_age": "Please enter both min and max age",
+  "min_age_less_than_max": "Min age must be less than or equal to max age",
+  "select_start_end_date": "Please select both start and end dates",
+  "start_before_end": "Start date must be before or same as end date",
+  "select_one_product": "Please select at least one product",
+  "select_city": "Please select a city",
+  "please_select_size": "Please select a size for each variation",
+  "please_select_color": "Please select a color for each variation"
 }

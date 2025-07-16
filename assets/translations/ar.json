@@ -916,5 +916,14 @@
   "no_related_products": "لا توجد منتجات ذات صلة",
   "maximum_quantity_reached": "لقد وصلت إلى الحد الأقصى للكمية المتاحة لهذا المنتج",
   "switching_account": "تبديل الحساب",
-  "please_wait": "يرجى الانتظار..."
+  "please_wait": "يرجى الانتظار...",
+  "enter_min_max_age": "يرجى إدخال العمر الأدنى والأقصى",
+  "min_age_less_than_max": "يجب أن يكون العمر الأدنى أقل من أو يساوي العمر الأقصى",
+  "select_start_end_date": "يرجى اختيار تاريخ البدء والانتهاء",
+  "start_before_end": "يجب أن يكون تاريخ البدء قبل أو مساوي لتاريخ الانتهاء",
+  "select_one_product": "يرجى اختيار منتج واحد على الأقل",
+  "select_city": "يرجى اختيار المدينة",
+    "please_select_size": "يرجى اختيار حجم لكل نوع",
+    "please_select_color": "يرجى اختيار لون لكل نوع"
+  
 }

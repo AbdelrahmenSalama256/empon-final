@@ -146,8 +146,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                           onActive: () {
                                             cubit.updateServiceStatus(
                                                 service!.id ?? 0);
-                                            cubit.goToService(
-                                                id: service.id ?? 0);
+                                                
+                                          setState(() {
+                                            service.active = service.active == true ? false : true;
+                                          });
                                           },
                                           isVendor: widget.isVendor,
                                           likeCount: service?.likes ?? 0,

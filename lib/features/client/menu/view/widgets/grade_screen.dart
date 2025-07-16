@@ -47,6 +47,60 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
     return '${selectedEndDate!.year}-${selectedEndDate!.month.toString().padLeft(2, '0')}-${selectedEndDate!.day.toString().padLeft(2, '0')}';
   }
 
+bool validateInputs() {
+    final citiesCubit = context.read<PackagesCubit>();
+    final minAge = int.tryParse(citiesCubit.minAge!.text);
+    final maxAge = int.tryParse(citiesCubit.maxAge!.text);
+
+    if (minAge == null || maxAge == null) {
+      showToast(context,
+          message: "enter_min_max_age".tr(context), state: ToastStates.error);
+      return false;
+    }
+
+    if (minAge > maxAge) {
+      showToast(context,
+          message: "min_age_less_than_max".tr(context),
+          state: ToastStates.error);
+      return false;
+    }
+
+    if (selectedStartDate == null || selectedEndDate == null) {
+      showToast(context,
+          message: "select_start_end_date".tr(context),
+          state: ToastStates.error);
+      return false;
+    }
+
+    if (selectedStartDate!.isAfter(selectedEndDate!)) {
+      showToast(context,
+          message: "start_before_end".tr(context), state: ToastStates.error);
+      return false;
+    }
+
+    if (citiesCubit.selectedItems.isEmpty) {
+      showToast(context,
+          message: "select_one_product".tr(context), state: ToastStates.error);
+      return false;
+    }
+
+    if (citiesCubit.slectedGander == null) {
+      showToast(context,
+          message: "select_gender".tr(context), state: ToastStates.error);
+      return false;
+    }
+
+    if (citiesCubit.selectedCityId == null) {
+      showToast(context,
+          message: "select_city".tr(context), state: ToastStates.error);
+      return false;
+    }
+
+    return true;
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     final accountCubit = context.read<BusinessAccountCubit>();
@@ -362,7 +416,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                   if (state is PackageAdsLoaded) {
                                     showToast(context,
                                         message: "succ_ads".tr(context),
-                                        state: ToastStates.error);
+                                        state: ToastStates.success);
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => BlocProvider(
@@ -379,7 +433,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                         ),
                                       ),
                                     );
-                                  } else if (state is PackagesError) {
+                                  } else if (state is PackageAdsError) {
                                     showToast(context,
                                         message: state.message,
                                         state: ToastStates.error);
@@ -390,6 +444,7 @@ class _SelectableGridScreenState extends State<SelectableGridScreen> {
                                     text: "chose".tr(context),
                                     isLoading: state is PackageAdsLoading,
                                     onPressed: () {
+                                      if (!validateInputs()) return;
                                       context
                                           .read<PackagesCubit>()
                                           .createPackageAds(

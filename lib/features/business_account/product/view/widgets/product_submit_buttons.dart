@@ -40,6 +40,22 @@ class ProductSubmitButtons extends StatelessWidget {
             AppButton(
               text: 'add_product_button'.tr(context),
               onPressed: () {
+             for (var variation in cubit.variations) {
+                  if (variation['attribute_value_id'] == null) {
+                    showToast(context,
+                        message: "please_select_size".tr(context),
+                        state: ToastStates.error);
+                    return;
+                  }
+                  if (variation['color_code'] == null) {
+                    showToast(context,
+                        message: "please_select_color".tr(context),
+                        state: ToastStates.error);
+                    return;
+                  }
+                }
+
+
                 if (formKey.currentState?.validate() ?? false) {
                   cubit.addProduct(accountId);
                   // Submit logic

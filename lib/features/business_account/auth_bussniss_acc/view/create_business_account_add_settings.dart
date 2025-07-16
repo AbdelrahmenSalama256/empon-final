@@ -56,6 +56,7 @@ class CreateBusinessAccountSettings extends StatelessWidget {
                           child: AppButton(
                             text: 'next'.tr(context),
                             onPressed: () {
+                              if(context.read<GlobalKey<FormState>>().currentState!.validate()){
                               if (cubit.descriptionController.text.isEmpty
                                   || cubit.phoneController.text.isEmpty
                                   || cubit.emailController.text.isEmpty) {
@@ -79,7 +80,8 @@ class CreateBusinessAccountSettings extends StatelessWidget {
                                   ),
                                 ),
                               );}
-                            },
+                            }
+                            }
                           ),
                         ),
                       ],

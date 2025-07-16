@@ -742,7 +742,6 @@ class SearchCubit extends Cubit<SearchState> {
       (failure) => emit(StatusError(failure)),
       (response) async {
         emit(StatusSuccess(response.message));
-        await goToProduct(id: productId);
       },
     );
   }
@@ -756,7 +755,6 @@ class SearchCubit extends Cubit<SearchState> {
       (failure) => emit(StatusError(failure)),
       (response) async {
         emit(StatusSuccess(response.message));
-        await goToService(id: serviceId);
       },
     );
   }

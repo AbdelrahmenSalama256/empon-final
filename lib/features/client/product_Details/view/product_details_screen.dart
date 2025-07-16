@@ -389,6 +389,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         onActive: () {
                                           cubit.updateProductStatus(
                                               product?.id ?? 0);
+                                        setState(() {
+                                          product?.active =
+                                                product.active == 1 ? 0 : 1;
+                                        });
+                                          
                                         },
                                       ),
                                       SizedBox(height: 15.h),

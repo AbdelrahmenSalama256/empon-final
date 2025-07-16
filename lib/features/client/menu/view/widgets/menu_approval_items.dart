@@ -23,33 +23,38 @@ class MenuApprovalItems extends StatelessWidget {
     return Wrap(
       children: [
         accountData!.type == 'business'
-            ? ApprovalItem(
-                title: 'identity_store_request'.tr(context),
-                status: ApprovalStatus.approved,
-                icon: Image.asset(
-                  "assets/images/cycle-circle.png",
-                  width: 24.w,
-                  height: 24.h,
+            ? Visibility(
+              visible: accountData.isStore == 0,
+              child: ApprovalItem(
+                  title: 'identity_store_request'.tr(context),
+                  status: ApprovalStatus.approved,
+                  icon: Image.asset(
+                    "assets/images/cycle-circle.png",
+                    width: 24.w,
+                    height: 24.h,
+                  ),
+                  approveButtonText: accountData.isStore == 0
+                      ? 'adopt'.tr(context)
+                      : 'congrates'.tr(context),
+                  approveButtonColor: accountData.isStore == 0 ? Colors.red
+                      : Colors.green, // Fixed: Use localized string
+                  onApprove: () {
+                    if (accountData.isStore == 0) {
+                      context
+                          .read<AccountCubit>()
+                          .sendStoreRequest(accountId: cubit.businessId!);
+                    }
+                    if (accountData.isStore != 1) {
+                      CustomPopup.show(
+                        context: context,
+                        type: PopupType.success,
+                        title: "request_sent_successfully".tr(context),
+                        message: "request_under_review".tr(context),
+                      );
+                    }
+                  },
                 ),
-                approveButtonText: accountData.isStore == 0
-                    ? 'adopt'.tr(context)
-                    : 'pending'.tr(context), // Fixed: Use localized string
-                onApprove: () {
-                  if (accountData.isStore == 0) {
-                    context
-                        .read<AccountCubit>()
-                        .sendStoreRequest(accountId: cubit.businessId!);
-                  }
-                  if (accountData.isStore != 1) {
-                    CustomPopup.show(
-                      context: context,
-                      type: PopupType.success,
-                      title: "request_sent_successfully".tr(context),
-                      message: "request_under_review".tr(context),
-                    );
-                  }
-                },
-              )
+            )
             : const SizedBox(),
         ApprovalItem(
           title: 'identity_verification_request'.tr(context),

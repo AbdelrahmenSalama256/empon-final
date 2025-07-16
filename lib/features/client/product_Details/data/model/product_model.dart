@@ -48,7 +48,7 @@ class ProductData {
   final String? shippingStartDate;
   final String? shippingEndDate;
   final String? shippingPrice;
-  final int? active;
+  int? active;
   final String? accountType;
   final String? whastappNum;
   final List<Detail>? details;
@@ -117,9 +117,11 @@ class ProductData {
       shippingStartDate: json['shipping_start_date'],
       shippingEndDate: json['shipping_end_date'],
       shippingPrice: json['shipping_price'],
-      details: (json['details'] as List?)
-            ?.map((item) => Detail.fromJson(item))
-            .toList(), // Assign parsed details as List<Detail>
+details: (json['details'] is List)
+            ? (json['details'] as List)
+                .map((item) => Detail.fromJson(item))
+                .toList()
+            : null, // Assign parsed details as List<Detail>
       active: json['active']
     );
   }

@@ -35,7 +35,7 @@ class ServiceData {
   final String? name;
   final String? details;
   final String? price;
-  final bool? active;
+  bool? active;
   final bool? approved;
   final bool? isLiked;
   final int? likes;
