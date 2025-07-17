@@ -10,6 +10,8 @@ import 'package:embone/features/base/view/welcome/intro_screen.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/update_account_business.dart';
+import 'package:embone/features/business_account/home/data/repo/account_repo.dart';
+import 'package:embone/features/business_account/home/view/cubit/account_cubit.dart';
 import 'package:embone/features/business_account/profile/update_profile_buisniss_account.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/chat/view/massages_screen.dart';
@@ -298,14 +300,25 @@ class SettingsScreen extends StatelessWidget {
                                         title: "total_sales".tr(context),
                                         onTap: () {
                                           navigateTo(
-                                            context,
-                                            BlocProvider(
-                                              create: (context) =>
-                                                  TotalSalesCubit(
-                                                      sl<TotalSalesRepo>()),
-                                              child: const SalesStatsPage(),
-                                            ),
-                                          );
+                                              context,
+                                              MultiBlocProvider(
+                                                providers: [
+                                                  BlocProvider(
+                                                    create: (context) =>
+                                                        BusinessAccountCubit(sl<
+                                                            BusinessAccountRepo>())
+                                                          ..fetchBusinessAccount(
+                                                              cubit.businessId ??
+                                                                  0),
+                                                  ),
+                                                  BlocProvider(
+                                                    create: (context) =>
+                                                        TotalSalesCubit(sl<
+                                                            TotalSalesRepo>()),
+                                                  )
+                                                ],
+                                                child: const SalesStatsPage(),
+                                              ));
                                         },
                                       ),
                                     ],

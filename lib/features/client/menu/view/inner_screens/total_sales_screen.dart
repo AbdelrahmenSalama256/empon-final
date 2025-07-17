@@ -1,5 +1,10 @@
 import 'package:embone/core/component/widgets/app_button.dart';
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
+import 'package:embone/features/business_account/home/view/cubit/account_cubit.dart';
+import 'package:embone/features/business_account/home/view/widgets/home_store_header.dart';
+import 'package:embone/features/business_account/home/view/widgets/home_store_hero.dart';
+import 'package:embone/features/business_account/home/view/widgets/home_store_name_section.dart';
 import 'package:embone/features/client/menu/view/cubit/total_sales_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/total_sales_state.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -31,7 +36,14 @@ class _SalesStatsPageState extends State<SalesStatsPage> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<TotalSalesCubit>();
-    return BlocBuilder<TotalSalesCubit, TotalSalesState>(
+    final accountCubit = context.read<BusinessAccountCubit>();
+    return BlocBuilder<BusinessAccountCubit, BusinessAccountState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: state is BusinessAccountLoading
+              ? const Center(child: CircularProgressIndicator())
+              :BlocBuilder<TotalSalesCubit, TotalSalesState>(
       builder: (context, state) {
         return Scaffold(
           backgroundColor: Colors.white,
@@ -41,6 +53,57 @@ class _SalesStatsPageState extends State<SalesStatsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  HomeStoreHeader(
+                    isVendor: true,
+                    name: accountCubit.accountData!.data.name,
+                    onBackPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  HomeStoreHero(
+                      storeLogo: accountCubit.accountData?.data.logo,
+                      storeCover: accountCubit.accountData?.data.cover),
+                  SizedBox(height: 20.h),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: HomeStoreNameSection(
+                      isVerified: accountCubit.accountData!.data.verified!,
+                      name: "${accountCubit.accountData?.data.name}",
+                      onTap: () {
+                        accountCubit.launchLocationUrl(
+                            latitude: double.parse(
+                                accountCubit.accountData!.data.lat!),
+                            longitude: double.parse(
+                                accountCubit.accountData!.data.lng!));
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text(
+                                  "sales_instruction_top".tr(context),
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 18.sp,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text(
+                                  "sales_instruction_date".tr(context),
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 18.sp,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
                   _buildStatCard(
                     color: const Color(0xffe0efff),
                     icon: Icons.attach_money_rounded,
@@ -131,7 +194,8 @@ class _SalesStatsPageState extends State<SalesStatsPage> {
               ),
             ),
           ),
-        );
+        );}
+        ));
       },
     );
   }
