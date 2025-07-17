@@ -215,20 +215,21 @@ class _AccountsBottomSheetContentState
                 ...List.generate(
                   accounts.length,
                   (index) => BusinessAccountOption(
+                      showLabel: state is AccountLoading ||
+                          accountsCubit.accountStatus?.data != null ||
+                          accounts[index].status != null,
                       name: accounts[index].name ?? 'Business Account',
                       imagePath: accounts[index].logo != null
                           ? accounts[index].logo!
                           : 'assets/images/logo.png',
-                      labelText:
-                          accountsCubit.accountStatus?.data?.isCompleted == true
-                              ? accounts[index].status == true
+                      labelText: state is AccountLoading
+                          ? 'loading'.tr(context)
+                          : accountsCubit.accountStatus?.data?.isCompleted ==
+                                  false
+                              ? 'pending'.tr(context)
+                              : accounts[index].status == true
                                   ? 'active'.tr(context)
-                                  : 'inactive'.tr(context)
-                              : state is AccountLoading
-                                  ? 'loading'.tr(context)
-                                  : state is AccountError
-                                      ? state.error
-                                      : 'pending'.tr(context),
+                                  : 'inactive'.tr(context),
                       labelColor: (accounts[index].status ?? false)
                           ? AppColors.secondary
                           : AppColors.red,

@@ -16,7 +16,6 @@ import 'package:embone/features/client/cart/view/cubit/cart_cubit.dart';
 import 'package:embone/features/client/home/data/repo/home_repo.dart';
 import 'package:embone/features/client/home/view/cubit/home_cubit.dart';
 import 'package:embone/features/client/home/view/home_screen.dart';
-import 'package:embone/features/client/menu/view/inner_screens/widgets/accounts_bottom_sheet.dart';
 import 'package:embone/features/client/menu/view/menu_screen.dart';
 import 'package:embone/features/client/notifications/data/repo/notifications_repo.dart';
 import 'package:embone/features/client/notifications/view/cubit/notifications_cubit.dart';
@@ -106,7 +105,6 @@ class _BaseScreenState extends State<BaseScreen> {
               ..fetchStatistics(context.read<GlobalCubit>().businessId),
             child: const DashboardScreen(),
           ),
-          const SizedBox(),
           BlocProvider(
             create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
             child: const NotificationsPage(),
@@ -126,7 +124,6 @@ class _BaseScreenState extends State<BaseScreen> {
               ..fetchStatistics(context.read<GlobalCubit>().businessId),
             child: const DashboardScreen(),
           ),
-          const SizedBox(),
           BlocProvider(
             create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
             child: const NotificationsPage(),
@@ -158,7 +155,7 @@ class _BaseScreenState extends State<BaseScreen> {
             iconPath: "assets/images/svg/nav/shop.svg",
             labelKey: '',
             isCenterItem: true,
-            iconSize: 50.0,
+            iconSize: 40.0, // Reduced size to prevent overflow
           ),
           buildNavBarItem(
             context: context,
@@ -185,13 +182,6 @@ class _BaseScreenState extends State<BaseScreen> {
           ),
           buildNavBarItem(
             context: context,
-            iconPath: "assets/images/svg/nav/shop.svg",
-            labelKey: '',
-            isCenterItem: true,
-            iconSize: 50.0,
-          ),
-          buildNavBarItem(
-            context: context,
             iconPath: "assets/images/svg/notification.svg",
             labelKey: 'nav_notification',
           ),
@@ -212,13 +202,6 @@ class _BaseScreenState extends State<BaseScreen> {
             context: context,
             iconPath: "assets/images/svg/nav/cart.svg",
             labelKey: 'nav_cart',
-          ),
-          buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/shop.svg",
-            labelKey: '',
-            isCenterItem: true,
-            iconSize: 50.0,
           ),
           buildNavBarItem(
             context: context,
@@ -280,7 +263,8 @@ class _BaseScreenState extends State<BaseScreen> {
           controller: context.read<GlobalCubit>().controller,
           screens: _getScreens(userType),
           items: _navBarsItems(context, userType),
-          padding: EdgeInsets.symmetric(vertical: 10.h),
+          padding: EdgeInsets.symmetric(
+              vertical: 10.h, horizontal: 8.w), // Added horizontal padding
           confineToSafeArea: true,
           backgroundColor: Colors.white,
           popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
@@ -315,25 +299,18 @@ class _BaseScreenState extends State<BaseScreen> {
             ),
             colorBehindNavBar: Colors.white,
           ),
-          navBarStyle: NavBarStyle.style15,
+          navBarStyle:
+              context.read<GlobalCubit>().userType == UserType.business ||
+                      context.read<GlobalCubit>().userType == UserType.business
+                  ? NavBarStyle.style12
+                  : NavBarStyle.style15,
           navBarHeight: 80.h,
           onItemSelected: (index) {
             if (widget.isGuest == true) {
               _handleGuestNavigation(index, context);
               return;
             }
-
             context.read<GlobalCubit>().changeBottomNavIndex(index);
-
-            if (userType == UserType.store && index == 2) {
-              showAccountsBottomSheet(context);
-              return;
-            }
-
-            if (userType == UserType.business && index == 2) {
-              showAccountsBottomSheet(context);
-              return;
-            }
           },
         );
       },

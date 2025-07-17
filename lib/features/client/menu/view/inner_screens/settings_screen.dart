@@ -316,12 +316,12 @@ class SettingsScreen extends StatelessWidget {
                                       icon: "assets/images/terms.png",
                                       title: "terms_conditions".tr(context),
                                       onTap: () {
-                                        showToast(
-                                          context,
-                                          message:
-                                              "terms_conditions".tr(context),
-                                          state: ToastStates.success,
-                                        );
+                                        // showToast(
+                                        //   context,
+                                        //   message:
+                                        //       "terms_conditions".tr(context),
+                                        //   state: ToastStates.success,
+                                        // );
                                         navigateTo(context,
                                             const PrivacyPolicyScreen());
                                       },

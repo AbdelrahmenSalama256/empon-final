@@ -124,8 +124,8 @@ class GlobalCubit extends Cubit<GlobalState> {
       if (type == UserType.business) {
         _initializeBusinessId();
       }
-
       emit(UserTypeChangedState());
+      changeBottomNavIndex(0);
     }
   }
 

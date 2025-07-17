@@ -1,7 +1,7 @@
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 PersistentBottomNavBarItem buildNavBarItem({
@@ -10,14 +10,15 @@ PersistentBottomNavBarItem buildNavBarItem({
   required String labelKey,
   bool isCenterItem = false,
   double iconSize = 24.0,
+  double widthFactor = 1.0,
   Color activeColor = const Color(0xFF1565C0),
   Color inactiveColor = const Color(0xFF9DB2CE),
 }) {
   if (isCenterItem) {
     return PersistentBottomNavBarItem(
       icon: Container(
-        width: 50.w,
-        height: 50.h,
+        width: 40.w,
+        height: 40.h,
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,

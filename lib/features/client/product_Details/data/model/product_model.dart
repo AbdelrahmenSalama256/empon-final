@@ -86,44 +86,42 @@ class ProductData {
       this.active});
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
-
-
     return ProductData(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      code: json['code'],
-      accountType: json['account_type'],
-      whastappNum: json['whatsapp_number'],
-      category: json['category'],
-      price: json['price'],
-      vendorId: json['vendor_id'],
-      vendorName: json['vendor_name'],
-      isLoved: json['is_favourited'] ?? false,
-      isLiked: json['is_liked'] ?? false,
-      isSale: json['is_sale'],
-      discountType: json['discount_type'],
-      discountValue: json['discount_value'],
-      variations: (json['variations'] as List?)
-          ?.map((item) => Variation.fromJson(item))
-          .toList(),
-      likes: json['likes'],
-      image: json['image'],
-      images: (json['images'] as List?)
-          ?.map((item) => ImageData.fromJson(item))
-          .toList(),
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      shippingStartDate: json['shipping_start_date'],
-      shippingEndDate: json['shipping_end_date'],
-      shippingPrice: json['shipping_price'],
-details: (json['details'] is List)
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        code: json['code'],
+        accountType: json['account_type'],
+        whastappNum: json['whatsapp_number'],
+        category: json['category'],
+        price: json['price'],
+        vendorId: json['vendor_id'],
+        vendorName: json['vendor_name'],
+        isLoved: json['is_favourited'] ?? false,
+        isLiked: json['is_liked'] ?? false,
+        isSale: json['is_sale'],
+        discountType: json['discount_type'],
+        discountValue: json['discount_value'],
+        variations: (json['variations'] as List?)
+            ?.map((item) => Variation.fromJson(item))
+            .toList(),
+        likes: json['likes'],
+        image: json['image'],
+        images: (json['images'] as List?)
+            ?.map((item) => ImageData.fromJson(item))
+            .toList(),
+        createdAt: json['created_at'],
+        updatedAt: json['updated_at'],
+        commentCount: json['comments_count'] as int?,
+        shippingStartDate: json['shipping_start_date'],
+        shippingEndDate: json['shipping_end_date'],
+        shippingPrice: json['shipping_price'],
+  details: (json['details'] is List)
             ? (json['details'] as List)
                 .map((item) => Detail.fromJson(item))
                 .toList()
             : null, // Assign parsed details as List<Detail>
-      active: json['active']
-    );
+        active: json['active']);
   }
 
   Map<String, dynamic> toJson() {
@@ -152,30 +150,29 @@ details: (json['details'] is List)
     };
   }
 
-  ProductData copyWith({
-    int? id,
-    String? name,
-    String? description,
-    String? code,
-    String? category,
-    String? price,
-    int? vendorId,
-    String? vendorName,
-    int? isSale,
-    bool? isLiked,
-    String? discountType,
-    String? discountValue,
-    List<Variation>? variations,
-    int? likes,
-    String? image,
-    List<ImageData>? images,
-    String? createdAt,
-    String? updatedAt,
-    String? whastappNum,
-    String? accountType,
-    List<Detail>? details, // Added details in copyWith
-    int? active
-  }) {
+  ProductData copyWith(
+      {int? id,
+      String? name,
+      String? description,
+      String? code,
+      String? category,
+      String? price,
+      int? vendorId,
+      String? vendorName,
+      int? isSale,
+      bool? isLiked,
+      String? discountType,
+      String? discountValue,
+      List<Variation>? variations,
+      int? likes,
+      String? image,
+      List<ImageData>? images,
+      String? createdAt,
+      String? updatedAt,
+      String? whastappNum,
+      String? accountType,
+      List<Detail>? details, // Added details in copyWith
+      int? active}) {
     return ProductData(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -319,14 +316,12 @@ class ImageData {
     };
   }
 }
+
 class Detail {
   final String? quality;
   final String? material;
 
-  Detail({
-    this.quality,
-    this.material
-  });
+  Detail({this.quality, this.material});
 
   factory Detail.fromJson(Map<String, dynamic> json) {
     return Detail(
@@ -336,9 +331,6 @@ class Detail {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'quality': quality,
-      'material':material
-    };
+    return {'quality': quality, 'material': material};
   }
 }
