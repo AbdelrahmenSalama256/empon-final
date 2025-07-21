@@ -17,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/constants/widgets/print_util.dart';
+import '../../../business_account/home/view/home_buisniss.dart';
 import 'widgets/categories_filter.dart';
 
 class ShopScreen extends StatefulWidget {
@@ -63,11 +65,12 @@ class _ShopScreenState extends State<ShopScreen> {
                           child: Center(
                           child: SingleChildScrollView(
                             child: RefreshIndicator(
-                                onRefresh: () async {
-                                  cubit.init();
-                                },
-                                child: const Center(
-                                    child: CustomLoadingIndicator())),
+                              onRefresh: () async {
+                                cubit.init();
+                              },
+                              child:
+                                  const Center(child: CustomLoadingIndicator()),
+                            ),
                           ),
                         ))
                       : Expanded(
@@ -111,10 +114,14 @@ class _ShopScreenState extends State<ShopScreen> {
                                                   EdgeInsets.only(bottom: 10.h),
                                               child: _buildSection(
                                                 context: context,
+                                                account:
+                                                    account, // تمرير account
                                                 title: account.name ?? '',
                                                 imageUrl: account.image ?? '',
                                                 products:
                                                     account.products ?? [],
+                                                isSponsored:
+                                                    false, // افتراضيًا مش إعلان
                                               ),
                                             );
                                           }).toList(),
@@ -135,9 +142,11 @@ class _ShopScreenState extends State<ShopScreen> {
 
   Widget _buildSection({
     required BuildContext context,
+    required AccountModel account, // إضافة account كمعلمة
     required String title,
     required String imageUrl,
     required List<ProductModel> products,
+    bool isSponsored = false, // إضافة معلمة لتحديد الإعلانات
   }) {
     return Container(
       decoration: const BoxDecoration(color: Color(0xffF6F6F6)),
@@ -148,8 +157,19 @@ class _ShopScreenState extends State<ShopScreen> {
             title: title,
             isNetworkImage: true,
             imageUrl: imageUrl,
-            subtitle: "sponsored".tr(context),
-            showCloseButton: true,
+            subtitle: isSponsored ? "sponsored".tr(context) : null,
+            showCloseButton: false,
+            onTap: () {
+              PrintUtil.debug("Brand tapped: $title");
+              navigateTo(
+                context,
+                HomeStoreScreen(
+                  businessAccountId: account.id ?? 0, // استخدام account.id
+                  isVendor: false,
+                  businessAccountname: title,
+                ),
+              );
+            },
           ),
           SizedBox(
             height: 350.h,
@@ -166,7 +186,6 @@ class _ShopScreenState extends State<ShopScreen> {
                   actionText: 'shop_now'.tr(context),
                   isFavorite: product.isFavourite ?? false,
                   onFavoriteToggle: () {
-                    // Add product to wishlist using GlobalCubit
                     context
                         .read<GlobalCubit>()
                         .addProductToWishlist(product.id ?? 0);
