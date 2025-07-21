@@ -172,7 +172,7 @@ class _PhoneNumberPageState extends State<PhoneNumberPage> {
                                       state: ToastStates.error);
                                   return;
                                 }
-                                if (fullPhone.length == 10) {
+                                if (fullPhone.length == 11) {
                                   cubit.verifyPhoneNumber(context);
                                 } else {
                                   showToast(context,

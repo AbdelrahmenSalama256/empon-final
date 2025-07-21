@@ -9,13 +9,14 @@ import 'package:embone/features/client/home/view/widgets/section_header_home.dar
 import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
+import 'package:embone/features/client/shop/data/model/shop_response_model.dart';
 import 'package:embone/features/client/shop/data/repo/shop_repo.dart';
 import 'package:embone/features/client/shop/view/cubit/shop_cubit.dart';
 import 'package:embone/features/client/shop/view/cubit/shop_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:embone/features/client/shop/data/model/shop_response_model.dart';
+
 import 'widgets/categories_filter.dart';
 
 class ShopScreen extends StatefulWidget {
@@ -58,8 +59,17 @@ class _ShopScreenState extends State<ShopScreen> {
                     },
                   ),
                   state is ShopLoading
-                      ? const Expanded(
-                          child: Center(child: CustomLoadingIndicator()))
+                      ? Expanded(
+                          child: Center(
+                          child: SingleChildScrollView(
+                            child: RefreshIndicator(
+                                onRefresh: () async {
+                                  cubit.init();
+                                },
+                                child: const Center(
+                                    child: CustomLoadingIndicator())),
+                          ),
+                        ))
                       : Expanded(
                           child: RefreshIndicator(
                             onRefresh: () async {
@@ -155,18 +165,34 @@ class _ShopScreenState extends State<ShopScreen> {
                   badge: '',
                   actionText: 'shop_now'.tr(context),
                   isFavorite: product.isFavourite ?? false,
-                  onFavoriteToggle: () {},
+                  onFavoriteToggle: () {
+                    // Add product to wishlist using GlobalCubit
+                    context
+                        .read<GlobalCubit>()
+                        .addProductToWishlist(product.id ?? 0);
+                  },
                   onActionTap: () {
                     navigateTo(
-                        context,
-                        BlocProvider(
-                          create: (context) => SearchCubit(sl<SearchRepo>()),
-                          child: ProductDetailPage(
-                            productId: product.id ?? 0,
-                          ),
-                        ));
+                      context,
+                      BlocProvider(
+                        create: (context) => SearchCubit(sl<SearchRepo>()),
+                        child: ProductDetailPage(
+                          productId: product.id ?? 0,
+                        ),
+                      ),
+                    );
                   },
-                  onCardTap: () {},
+                  onCardTap: () {
+                    navigateTo(
+                      context,
+                      BlocProvider(
+                        create: (context) => SearchCubit(sl<SearchRepo>()),
+                        child: ProductDetailPage(
+                          productId: product.id ?? 0,
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),

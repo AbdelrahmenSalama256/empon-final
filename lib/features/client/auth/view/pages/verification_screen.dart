@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:embone/core/component/custom_header.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
@@ -8,13 +10,13 @@ import 'package:embone/features/client/auth/view/pages/cubit/register_state.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'dart:async';
 import 'package:pinput/pinput.dart';
 
 class VerificationPage extends StatefulWidget {
   final VoidCallback onNextStep;
   final VoidCallback onPreviousStep;
-  const VerificationPage({super.key, required this.onNextStep, required this.onPreviousStep});
+  const VerificationPage(
+      {super.key, required this.onNextStep, required this.onPreviousStep});
 
   @override
   State<VerificationPage> createState() => _VerificationPageState();
@@ -26,7 +28,9 @@ class _VerificationPageState extends State<VerificationPage> {
   @override
   void initState() {
     super.initState();
-    if (context.read<RegisterCubit>().resendSeconds == 60) {
+    final cubit = context.read<RegisterCubit>();
+    if (cubit.resendSeconds == 60) {
+      cubit.resendOtp(phone: cubit.phoneController.text); // Call once on init
       startResendTimer();
     }
   }
@@ -40,12 +44,9 @@ class _VerificationPageState extends State<VerificationPage> {
   void startResendTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (context.read<RegisterCubit>().resendSeconds > 0 && mounted) {
-        context.read<RegisterCubit>().updateResendSeconds(
-            context.read<RegisterCubit>().resendSeconds - 1);
-        // context.read<RegisterCubit>().resendOtp(
-        //     phone: context.read<RegisterCubit>().phoneController.text);
-
+      final cubit = context.read<RegisterCubit>();
+      if (cubit.resendSeconds > 0 && mounted) {
+        cubit.updateResendSeconds(cubit.resendSeconds - 1);
         setState(() {});
       } else {
         timer.cancel();
@@ -71,22 +72,13 @@ class _VerificationPageState extends State<VerificationPage> {
                 showToast(context,
                     message: 'otp_resent'.tr(context),
                     state: ToastStates.success);
+                startResendTimer(); // Restart timer on successful resend
               }
               if (state is VerifyOtpSuccess) {
-                showToast(
-                  context,
-                  message: 'verification_successful'.tr(context),
-                  state: ToastStates.success,
-                );
+                showToast(context,
+                    message: 'verification_successful'.tr(context),
+                    state: ToastStates.success);
                 widget.onNextStep();
-                // navigateAndFinish()
-                    // Navigator.pushAndRemoveUntil(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const BaseScreen(),
-                    //   ),
-                    //   (route) => false,
-                    // );
               }
             },
             child: SafeArea(
@@ -95,8 +87,7 @@ class _VerificationPageState extends State<VerificationPage> {
                   CustomHeader(
                     showBackButton: true,
                     showLogo: true,
-                    onBackPressed: () =>
-                        widget.onPreviousStep(),
+                    onBackPressed: widget.onPreviousStep,
                     title: 'verification'.tr(context),
                   ),
                   Expanded(
@@ -153,8 +144,7 @@ class _VerificationPageState extends State<VerificationPage> {
                               text: 'verify_button'.tr(context),
                               isLoading: state is VerifyOtpLoading,
                               onPressed: () => cubit.verifyOtp(
-                                phone: cubit.phoneController.text,
-                              ),
+                                  phone: cubit.phoneController.text),
                               height: 50.h,
                               width: double.infinity,
                             ),
@@ -173,9 +163,11 @@ class _VerificationPageState extends State<VerificationPage> {
                                   onPressed: cubit.resendSeconds > 0
                                       ? null
                                       : () {
-                                          cubit.updateResendSeconds(0);
-                                          startResendTimer();
-                                          cubit.resendOtp(phone:cubit.phoneController.text);
+                                          cubit.updateResendSeconds(
+                                              60); // Reset to 60 seconds
+                                          cubit.resendOtp(
+                                              phone:
+                                                  cubit.phoneController.text);
                                         },
                                   child: Text(
                                     cubit.resendSeconds > 0

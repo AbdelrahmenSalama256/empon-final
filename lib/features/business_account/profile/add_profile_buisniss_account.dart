@@ -33,7 +33,6 @@ class _AddProfilePhotoForBuisnissAccountPageState
     extends State<AddProfilePhotoForBuisnissAccountPage> {
   File? _selectedLogo;
   File? _selectedCover;
-  bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source, {required bool isLogo}) async {
     try {
@@ -109,9 +108,7 @@ class _AddProfilePhotoForBuisnissAccountPageState
 
   void _continueWithPhotos() {
     if (_selectedLogo != null && _selectedCover != null) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() {});
 
       // Call createAccount
       widget.cubit.createAccountStepTwo();
@@ -129,13 +126,11 @@ class _AddProfilePhotoForBuisnissAccountPageState
       child: BlocConsumer<AccountCubit, AccountState>(
         listener: (context, state) {
           if (state is AccountSuccess) {
-            setState(() {
-              _isLoading = false;
-            });
-showToast(context,
-          message:'request_sent_successfully'.tr(context),
-          state: ToastStates.success);
-          
+            setState(() {});
+            showToast(context,
+                message: 'request_sent_successfully'.tr(context),
+                state: ToastStates.success);
+
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -143,13 +138,9 @@ showToast(context,
               ),
             );
           } else if (state is AccountError) {
-            setState(() {
-              _isLoading = false;
-            });
-             showToast(context,
-          message: state.massage,
-          state: ToastStates.error);
-
+            setState(() {});
+            showToast(context,
+                message: state.massage, state: ToastStates.error);
           }
         },
         builder: (context, state) {

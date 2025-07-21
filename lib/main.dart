@@ -12,7 +12,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:upgrader/upgrader.dart';
 
-import 'core/notification/local_notification_handler.dart';
+import 'features/client/notifications/data/repo/notifications_repo.dart';
+import 'features/client/notifications/view/cubit/notifications_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,6 @@ void main() async {
   Future.wait(
     [
       NotificationHandler.init(),
-      LocalNotificationService.init(),
     ],
   );
 
@@ -49,21 +49,14 @@ void main() async {
         BlocProvider(
           create: (context) => sl<GlobalCubit>()..init(),
         ),
+        BlocProvider<NotificationsCubit>(
+          create: (context) =>
+              NotificationsCubit(sl<NotificationsRepo>())..init(),
+        ),
       ],
       child: DevicePreview(
         enabled: !kReleaseMode,
-
-        // enabled: false,
-        builder: (context) => UpgradeAlert(
-            upgrader: Upgrader(
-              // minAppVersion: "1.0.1",
-              //  debugLogging: true,
-              debugDisplayAlways: true,
-            ),
-            // navigatorKey: AppRouter.router.routerDelegate
-            // .navigatorKey, // Provide a fallback for child
-            dialogStyle: UpgradeDialogStyle.cupertino,
-            child: const Embone()),
+        builder: (context) => const Embone(),
       ),
     ),
   );

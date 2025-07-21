@@ -672,7 +672,8 @@
   "address_details": "تفاصيل العنوان",
   "street_building_etc": "الشارع، المبنى، إلخ",
   "state": "المحافظة",
-  "required_fields_missing": "الحقول المطلوبة مفقودة", "no_address_selected": "لم يتم اختيار عنوان",
+  "required_fields_missing": "الحقول المطلوبة مفقودة",
+  "no_address_selected": "لم يتم اختيار عنوان",
   "select_shipping_address": "اختر عنوان الشحن",
   "please_select_shipping_address": "يرجى اختيار عنوان الشحن",
   "contacts_on_app": "جهات الاتصال على التطبيق",
@@ -923,9 +924,11 @@
   "start_before_end": "يجب أن يكون تاريخ البدء قبل أو مساوي لتاريخ الانتهاء",
   "select_one_product": "يرجى اختيار منتج واحد على الأقل",
   "select_city": "يرجى اختيار المدينة",
-    "please_select_size": "يرجى اختيار حجم لكل نوع",
-    "please_select_color": "يرجى اختيار لون لكل نوع",
-    "sales_instruction_top": "📊 يمكنك متابعة أداء المبيعات هنا.\nاستخدم الفلاتر أدناه لعرض المبيعات حسب اليوم أو الشهر أو السنة.",
-    "sales_instruction_date": "📅 اختر تاريخًا لتصفية بيانات المبيعات."
-  
+  "please_select_size": "يرجى اختيار حجم لكل نوع",
+  "please_select_color": "يرجى اختيار لون لكل نوع",
+  "sales_instruction_top": "📊 يمكنك متابعة أداء المبيعات هنا.\nاستخدم الفلاتر أدناه لعرض المبيعات حسب اليوم أو الشهر أو السنة.",
+  "sales_instruction_date": "📅 اختر تاريخًا لتصفية بيانات المبيعات.",
+  "networkError": "خطأ في الشبكة",
+  "retry": "إعادة المحاولة",
+  "account_verified": "تم تفعيل حسابك"
 }

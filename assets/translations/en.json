@@ -906,5 +906,8 @@
   "please_select_size": "Please select a size for each variation",
   "please_select_color": "Please select a color for each variation",
   "sales_instruction_top": "📊 You can track your sales performance here.\nUse the filters below to view sales data based on day, month, or year.",
-  "sales_instruction_date": "📅 Choose a date to filter your sales data."
+  "sales_instruction_date": "📅 Choose a date to filter your sales data.",
+  "networkError": "Network Error",
+  "retry": "Retry",
+  "account_verified": "Account Verified"
 }

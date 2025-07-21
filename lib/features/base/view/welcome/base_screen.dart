@@ -1,5 +1,4 @@
 import 'package:embone/core/cubit/global_cubit.dart';
-import 'package:embone/core/cubit/global_state.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/base/view/welcome/guest_registerd.dart';
@@ -26,7 +25,8 @@ import 'package:embone/features/client/shop/view/shop_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+
+import '../../../../core/cubit/global_state.dart';
 
 class BaseScreen extends StatefulWidget {
   final bool? isGuest;
@@ -37,189 +37,203 @@ class BaseScreen extends StatefulWidget {
 }
 
 class _BaseScreenState extends State<BaseScreen> {
-  List<Widget> _getScreens(UserType userType) {
+  @override
+  void initState() {
+    super.initState();
+    context.read<GlobalCubit>().init(); // Initialize GlobalCubit
+  }
+
+  Widget _buildScreen(int index, UserType userType) {
     if (widget.isGuest == true) {
-      return [
-        BlocProvider(
-          create: (context) => HomeCubit(sl<HomeRepo>())..init(),
-          child: const HomeScreen(),
-        ),
-        GuestRestrictedScreen(
-          isGuest: widget.isGuest ?? false,
-          message: "please_login_to_access_your_cart",
-          child: BlocProvider(
-            create: (context) => CartCubit(sl<CartRepo>()),
-            child: const CartScreen(),
-          ),
-        ),
-        BlocProvider(
-          create: (context) => ShopCubit(sl<ShopRepo>()),
-          child: const ShopScreen(),
-        ),
-        GuestRestrictedScreen(
-          isGuest: widget.isGuest ?? false,
-          message: "please_login_to_view_notifications",
-          child: BlocProvider(
-            create: (context) =>
-                NotificationsCubit(sl<NotificationsRepo>())..init(),
-            child: const NotificationsPage(),
-          ),
-        ),
-        GuestRestrictedScreen(
-          isGuest: widget.isGuest ?? false,
-          message: "please_login_to_access_menu",
-          child: const IntroPage(),
-        ),
-      ];
+      switch (index) {
+        case 0:
+          return BlocProvider(
+            create: (context) => HomeCubit(sl<HomeRepo>())..init(),
+            child: const HomeScreen(),
+          );
+        case 1:
+          return GuestRestrictedScreen(
+            isGuest: widget.isGuest ?? false,
+            message: "please_login_to_access_your_cart",
+            child: BlocProvider(
+              create: (context) => CartCubit(sl<CartRepo>()),
+              child: const CartScreen(),
+            ),
+          );
+        case 2:
+          return BlocProvider(
+            create: (context) => ShopCubit(sl<ShopRepo>()),
+            child: const ShopScreen(),
+          );
+        case 3:
+          return GuestRestrictedScreen(
+            isGuest: widget.isGuest ?? false,
+            message: "please_login_to_view_notifications",
+            child: BlocProvider(
+              create: (context) =>
+                  NotificationsCubit(sl<NotificationsRepo>())..init(),
+              child: const NotificationsPage(),
+            ),
+          );
+        case 4:
+          return GuestRestrictedScreen(
+            isGuest: widget.isGuest ?? false,
+            message: "please_login_to_access_menu",
+            child: const IntroPage(),
+          );
+        default:
+          return const SizedBox.shrink();
+      }
     }
     switch (userType) {
       case UserType.client:
-        return [
-          BlocProvider(
-            create: (context) => HomeCubit(sl<HomeRepo>())..init(),
-            child: const HomeScreen(),
-          ),
-          BlocProvider(
-            create: (context) => CartCubit(sl<CartRepo>()),
-            child: const CartScreen(),
-          ),
-          BlocProvider(
-            create: (context) => ShopCubit(sl<ShopRepo>()),
-            child: const ShopScreen(),
-          ),
-          BlocProvider(
-            create: (context) =>
-                NotificationsCubit(sl<NotificationsRepo>())..init(),
-            child: const NotificationsPage(),
-          ),
-          const MenuScreen(),
-        ];
+        switch (index) {
+          case 0:
+            return BlocProvider(
+              create: (context) => HomeCubit(sl<HomeRepo>())..init(),
+              child: const HomeScreen(),
+            );
+          case 1:
+            return BlocProvider(
+              create: (context) => CartCubit(sl<CartRepo>()),
+              child: const CartScreen(),
+            );
+          case 2:
+            return BlocProvider(
+              create: (context) => ShopCubit(sl<ShopRepo>()),
+              child: const ShopScreen(),
+            );
+          case 3:
+            return BlocProvider(
+              create: (context) =>
+                  NotificationsCubit(sl<NotificationsRepo>())..init(),
+              child: const NotificationsPage(),
+            );
+          case 4:
+            return const MenuScreen();
+          default:
+            return const SizedBox.shrink();
+        }
       case UserType.store:
-        return [
-          HomeStoreScreen(
-            businessAccountId: context.read<GlobalCubit>().businessId,
-            isVendor: true,
-          ),
-          BlocProvider(
-            create: (context) => StatisticsCubit(sl<StatisticsRepo>())
-              ..fetchStatistics(context.read<GlobalCubit>().businessId),
-            child: const DashboardScreen(),
-          ),
-          BlocProvider(
-            create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
-            child: const NotificationsPage(),
-          ),
-          const MenuScreen(
-            isVendor: true,
-          ),
-        ];
+        switch (index) {
+          case 0:
+            return HomeStoreScreen(
+              businessAccountId: context.read<GlobalCubit>().businessId,
+              isVendor: true,
+            );
+          case 1:
+            return BlocProvider(
+              create: (context) => StatisticsCubit(sl<StatisticsRepo>())
+                ..fetchStatistics(context.read<GlobalCubit>().businessId),
+              child: const DashboardScreen(),
+            );
+          case 2:
+            return BlocProvider(
+              create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
+              child: const NotificationsPage(),
+            );
+          case 3:
+            return const MenuScreen(isVendor: true);
+          default:
+            return const SizedBox.shrink();
+        }
       case UserType.business:
-        return [
-          HomeStoreScreen(
-            businessAccountId: context.read<GlobalCubit>().businessId,
-            isVendor: true,
-          ),
-          BlocProvider(
-            create: (context) => StatisticsCubit(sl<StatisticsRepo>())
-              ..fetchStatistics(context.read<GlobalCubit>().businessId),
-            child: const DashboardScreen(),
-          ),
-          BlocProvider(
-            create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
-            child: const NotificationsPage(),
-          ),
-          const MenuScreen(
-            isVendor: true,
-          ),
-        ];
+        switch (index) {
+          case 0:
+            return HomeStoreScreen(
+              businessAccountId: context.read<GlobalCubit>().businessId,
+              isVendor: true,
+            );
+          case 1:
+            return BlocProvider(
+              create: (context) => StatisticsCubit(sl<StatisticsRepo>())
+                ..fetchStatistics(context.read<GlobalCubit>().businessId),
+              child: const DashboardScreen(),
+            );
+          case 2:
+            return BlocProvider(
+              create: (context) => NotificationsCubit(sl<NotificationsRepo>()),
+              child: const NotificationsPage(),
+            );
+          case 3:
+            return const MenuScreen(isVendor: true);
+          default:
+            return const SizedBox.shrink();
+        }
     }
   }
 
-  List<PersistentBottomNavBarItem> _navBarsItems(
+  List<BottomNavigationBarItem> _navBarItems(
       BuildContext context, UserType userType) {
     switch (userType) {
       case UserType.client:
         return [
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/home.svg",
-            labelKey: 'nav_home',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/home.svg",
+              labelKey: 'nav_home'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/cart.svg",
-            labelKey: 'nav_cart',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/cart.svg",
+              labelKey: 'nav_cart'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/shop.svg",
-            labelKey: '',
-            isCenterItem: true,
-            iconSize: 40.0, // Reduced size to prevent overflow
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/shop.svg",
+              labelKey: '',
+              isCenterItem: true,
+              iconSize: 40.0),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/notification.svg",
-            labelKey: 'nav_notification',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/notification.svg",
+              labelKey: 'nav_notification'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/menu.svg",
-            labelKey: 'nav_menu',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/menu.svg",
+              labelKey: 'nav_menu'),
         ];
       case UserType.business:
         return [
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/home.svg",
-            labelKey: 'nav_home',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/home.svg",
+              labelKey: 'nav_home'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/data_info.svg",
-            labelKey: 'nav_info',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/data_info.svg",
+              labelKey: 'nav_info'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/notification.svg",
-            labelKey: 'nav_notification',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/notification.svg",
+              labelKey: 'nav_notification'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/menu.svg",
-            labelKey: 'nav_menu',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/menu.svg",
+              labelKey: 'nav_menu'),
         ];
       case UserType.store:
         return [
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/home.svg",
-            labelKey: 'nav_home',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/home.svg",
+              labelKey: 'nav_home'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/cart.svg",
-            labelKey: 'nav_cart',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/cart.svg",
+              labelKey: 'nav_cart'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/notification.svg",
-            labelKey: 'nav_notification',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/notification.svg",
+              labelKey: 'nav_notification'),
           buildNavBarItem(
-            context: context,
-            iconPath: "assets/images/svg/nav/menu.svg",
-            labelKey: 'nav_menu',
-          ),
+              context: context,
+              iconPath: "assets/images/svg/nav/menu.svg",
+              labelKey: 'nav_menu'),
         ];
     }
   }
 
   void _handleGuestNavigation(int index, BuildContext context) {
     if (index == 1 || index == 3 || index == 4) {
-      // Cart, Notifications, Menu
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -244,74 +258,47 @@ class _BaseScreenState extends State<BaseScreen> {
   }
 
   void navigateToLogin(BuildContext context) {
-    PersistentNavBarNavigator.pushNewScreen(
+    Navigator.push(
       context,
-      screen: const LoginPage(),
-      withNavBar: false,
-      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
+  }
+
+  void _onItemTapped(int index) {
+    final globalCubit = context.read<GlobalCubit>();
+    if (widget.isGuest == true) {
+      _handleGuestNavigation(index, context);
+      return;
+    }
+    globalCubit.changeBottomNavIndex(index); // Update via GlobalCubit
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GlobalCubit, GlobalState>(
       builder: (context, state) {
-        final userType =
-            context.read<GlobalCubit>().userType ?? UserType.client;
-        return PersistentTabView(
-          context,
-          controller: context.read<GlobalCubit>().controller,
-          screens: _getScreens(userType),
-          items: _navBarsItems(context, userType),
-          padding: EdgeInsets.symmetric(
-              vertical: 10.h, horizontal: 8.w), // Added horizontal padding
-          confineToSafeArea: true,
-          backgroundColor: Colors.white,
-          popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
-          handleAndroidBackButtonPress: true,
-          resizeToAvoidBottomInset: false,
-          stateManagement: true,
-          hideNavigationBarWhenKeyboardAppears: true,
-          hideOnScrollSettings: const HideOnScrollSettings(
-            hideNavBarOnScroll: true,
+        final globalCubit = context.read<GlobalCubit>();
+        final userType = globalCubit.userType ?? UserType.client;
+        final navBarItems = _navBarItems(context, userType);
+
+        return Scaffold(
+          body: _buildScreen(globalCubit.currentNavIndex,
+              userType), // Build only the selected screen
+          bottomNavigationBar: BottomNavigationBar(
+            items: navBarItems,
+            currentIndex:
+                globalCubit.currentNavIndex, // Use GlobalCubit's index
+            selectedItemColor: const Color(0xFF1565C0),
+            unselectedItemColor: const Color(0xFF9DB2CE),
+            onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.white,
+            elevation: 10,
+            selectedFontSize: 10.sp,
+            unselectedFontSize: 10.sp,
+            showSelectedLabels: true,
+            showUnselectedLabels: false,
           ),
-          animationSettings: const NavBarAnimationSettings(
-            navBarItemAnimation: ItemAnimationSettings(
-              duration: Duration(milliseconds: 200),
-              curve: Curves.ease,
-            ),
-            screenTransitionAnimation: ScreenTransitionAnimationSettings(
-              animateTabTransition: true,
-              screenTransitionAnimationType:
-                  ScreenTransitionAnimationType.fadeIn,
-              curve: Curves.ease,
-              duration: Duration(milliseconds: 200),
-            ),
-            onNavBarHideAnimation: OnHideAnimationSettings(
-              curve: Curves.ease,
-              duration: Duration(milliseconds: 200),
-            ),
-          ),
-          decoration: NavBarDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16.r),
-              topRight: Radius.circular(16.r),
-            ),
-            colorBehindNavBar: Colors.white,
-          ),
-          navBarStyle:
-              context.read<GlobalCubit>().userType == UserType.business ||
-                      context.read<GlobalCubit>().userType == UserType.business
-                  ? NavBarStyle.style12
-                  : NavBarStyle.style15,
-          navBarHeight: 80.h,
-          onItemSelected: (index) {
-            if (widget.isGuest == true) {
-              _handleGuestNavigation(index, context);
-              return;
-            }
-            context.read<GlobalCubit>().changeBottomNavIndex(index);
-          },
         );
       },
     );

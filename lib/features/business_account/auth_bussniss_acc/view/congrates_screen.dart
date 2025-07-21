@@ -65,12 +65,12 @@ class CongratesScreen extends StatelessWidget {
                                 text: 'home'.tr(context),
                                 type: AppButtonType.secondary,
                                 onPressed: () {
+                                  navigateAndFinish(context,
+                                      const MenuScreen(isVendor: false));
                                   context
                                       .read<GlobalCubit>()
                                       .setUserType(UserType.client);
                                   context.read<GlobalCubit>().getUserProfile();
-
-                                  navigateTo(context, const MenuScreen(isVendor: false));
                                   showToast(
                                     context,
                                     message: 'pending_account'.tr(context),
