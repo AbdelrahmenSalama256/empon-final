@@ -70,7 +70,7 @@ ${'confirm_request'.tr(context)}
           } else if (state is CartError) {
             showToast(
               context,
-              message: state.error.tr(context),
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           }

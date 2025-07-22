@@ -30,7 +30,7 @@ class ServiceSubmitButtons extends StatelessWidget {
         } else if (state is ServiceError) {
           showToast(
             context,
-            message: state.error,
+            message: 'unexpected_error'.tr(context),
             state: ToastStates.error,
           );
         }

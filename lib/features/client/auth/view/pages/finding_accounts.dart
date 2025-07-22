@@ -9,13 +9,14 @@ import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/forget_password_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/forget_password_state.dart';
-import 'package:embone/features/client/auth/view/pages/forget_password_verification.dart';
 import 'package:embone/features/client/auth/view/pages/login_screen.dart';
 import 'package:embone/features/client/auth/view/pages/searching_account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'forget_password_verification.dart';
 
 class FindingAccountsPage extends StatelessWidget {
   final String? phoneNumber;
@@ -201,7 +202,7 @@ class FindingAccountsPage extends StatelessWidget {
                                   if (state is ForgotPasswordFailure) {
                                     showToast(
                                       context,
-                                      message: state.message,
+                                      message: 'unexpected_error'.tr(context),
                                       state: ToastStates.error,
                                     );
                                   }
@@ -235,21 +236,28 @@ class FindingAccountsPage extends StatelessWidget {
                                           .forgotPassword();
                                       navigateTo(
                                         context,
-                                        ForgotPasswordVerificationPage(
-                                          email: email?.isNotEmpty == true
-                                              ? email!
-                                              : '',
-                                          firstName:
-                                              firstName?.isNotEmpty == true
-                                                  ? firstName!
-                                                  : '',
-                                          phoneNumber:
-                                              phoneNumber?.isNotEmpty == true
-                                                  ? phoneNumber!
-                                                  : '',
-                                          imageUrl: imageUrl?.isNotEmpty == true
-                                              ? imageUrl!
-                                              : '',
+                                        BlocProvider(
+                                          child: ForgotPasswordVerificationPage(
+                                            email: email?.isNotEmpty == true
+                                                ? email!
+                                                : '',
+                                            firstName:
+                                                firstName?.isNotEmpty == true
+                                                    ? firstName!
+                                                    : '',
+                                            phoneNumber:
+                                                phoneNumber?.isNotEmpty == true
+                                                    ? phoneNumber!
+                                                    : '',
+                                            imageUrl:
+                                                imageUrl?.isNotEmpty == true
+                                                    ? imageUrl!
+                                                    : '',
+                                          ),
+                                          create: (context) =>
+                                              ForgetPasswordCubit(
+                                            sl<ForgetPasswordRepo>(),
+                                          ),
                                         ),
                                       );
                                     },

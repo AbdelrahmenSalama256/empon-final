@@ -28,7 +28,7 @@ class OrderDetailsScreen extends StatelessWidget {
         if (state is OrderDetailsError) {
           showToast(
             context,
-            message: state.message.tr(context),
+            message: 'unexpected_error'.tr(context),
             state: ToastStates.error,
           );
         } else if (state is OrderCanceled) {

@@ -140,7 +140,8 @@ class _AddProfilePhotoForBuisnissAccountPageState
           } else if (state is AccountError) {
             setState(() {});
             showToast(context,
-                message: state.massage, state: ToastStates.error);
+                message: 'unexpected_error'.tr(context),
+                state: ToastStates.error);
           }
         },
         builder: (context, state) {

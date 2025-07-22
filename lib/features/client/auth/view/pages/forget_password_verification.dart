@@ -1,16 +1,12 @@
-import 'dart:async';
-
 import 'package:embone/core/component/custom_header.dart';
+import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
-import 'package:embone/core/services/service_locator.dart';
-import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/forget_password_cubit.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/forget_password_state.dart';
-import 'package:embone/features/client/auth/view/pages/register_steps/widget/queistions.dart';
 import 'package:embone/features/client/auth/view/pages/reset_password.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +14,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
 
-class ForgotPasswordVerificationPage extends StatefulWidget {
+import '../../../../../core/services/service_locator.dart';
+
+class ForgotPasswordVerificationPage extends StatelessWidget {
   final String? phoneNumber;
   final String? firstName;
   final String? imageUrl;
@@ -33,247 +31,283 @@ class ForgotPasswordVerificationPage extends StatefulWidget {
   });
 
   @override
-  State<ForgotPasswordVerificationPage> createState() =>
-      _ForgotPasswordVerificationPageState();
-}
-
-class _ForgotPasswordVerificationPageState
-    extends State<ForgotPasswordVerificationPage> {
-  Timer? _timer;
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isRTL = sl<CacheHelper>().getCachedLanguage() == "ar";
+    final cubit = context.read<ForgetPasswordCubit>();
 
-    return BlocProvider(
-      create: (context) => ForgetPasswordCubit(sl<ForgetPasswordRepo>()),
-      child: BlocConsumer<ForgetPasswordCubit, ForgetPasswordState>(
-        listener: (context, state) {
-          if (state is VerifyOtpFailure) {
-            showToast(
-              context,
-              message: state.message,
-              state: ToastStates.error,
-            );
-          }
-          if (state is VerifyOtpSuccess) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (context) =>
-                      ForgetPasswordCubit(sl<ForgetPasswordRepo>()),
-                  child: ResetPasswordPage(
-                    phoneNumber: widget.phoneNumber,
-                    firstName: widget.firstName,
-                    imageUrl: widget.imageUrl,
-                    email: widget.email,
+    // Trigger initial OTP send
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (phoneNumber != null || email != null) {
+        cubit.valueController.text = phoneNumber ?? email ?? '';
+        cubit.forgotPassword();
+      }
+    });
+
+    return BlocBuilder<ForgetPasswordCubit, ForgetPasswordState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: AppColors.white,
+          body: BlocListener<ForgetPasswordCubit, ForgetPasswordState>(
+            listener: (context, state) {
+              // Consolidated error handling for all failure states
+              if (state is ForgotPasswordFailure ||
+                  state is VerifyOtpFailure ||
+                  state is ResendOtpFailure) {
+                showToast(
+                  context,
+                  message: state is ForgotPasswordFailure
+                      ? 'unexpected_error'.tr(context)
+                      : state is VerifyOtpFailure
+                          ? 'unexpected_error'.tr(context)
+                          : (state as ResendOtpFailure).message.tr(context),
+                  state: ToastStates.error,
+                );
+              } else if (state is ForgotPasswordSuccess) {
+                showToast(
+                  context,
+                  message: 'otp_sent'.tr(context),
+                  state: ToastStates.success,
+                );
+              } else if (state is VerifyOtpSuccess) {
+                showToast(
+                  context,
+                  message: 'verification_successful'.tr(context),
+                  state: ToastStates.success,
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResetPasswordPage(
+                      phoneNumber: phoneNumber,
+                      firstName: firstName,
+                      imageUrl: imageUrl,
+                      email: email,
+                    ),
                   ),
-                ),
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          final cubit = context.read<ForgetPasswordCubit>();
-
-          void startResendTimer() {
-            _timer?.cancel();
-            _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-              if (cubit.resendSeconds > 0) {
-                cubit.updateResendSeconds(cubit.resendSeconds - 1);
-                setState(() {});
-              } else {
-                timer.cancel();
-                setState(() {});
+                );
+              } else if (state is ResendOtpSuccess) {
+                showToast(
+                  context,
+                  message: state.message.isNotEmpty
+                      ? 'unexpected_error'.tr(context)
+                      : 'otp_resent'.tr(context),
+                  state: ToastStates.success,
+                );
               }
-            });
-          }
-
-          if (cubit.resendSeconds == 60) {
-            startResendTimer();
-          }
-
-          return Scaffold(
-            backgroundColor: AppColors.white,
-            body: SafeArea(
+            },
+            child: SafeArea(
               child: Column(
                 children: [
-                  // Header Section
                   CustomHeader(
                     showBackButton: true,
                     showLogo: true,
-                    onBackPressed: () => Navigator.pop(context),
                     title: 'verification'.tr(context),
                   ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        child: Form(
-                          key: cubit.formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(height: 32.h),
-                              // Profile Image
-                              Container(
-                                width: 120.w,
-                                height: 120.w,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                    width: 2.w,
-                                  ),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(60.r),
-                                  child: Image.network(
-                                    "${widget.imageUrl}",
-                                    width: 120.w,
-                                    height: 120.w,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Image.asset(
-                                      "assets/images/logo.png",
+                  state is ResendOtpLoading || state is ForgotPasswordLoading
+                      ? const Expanded(
+                          child: Center(
+                            child: CustomLoadingIndicator(),
+                          ),
+                        )
+                      : Expanded(
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24.w),
+                              child: Form(
+                                key: cubit.formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(height: 32.h),
+                                    Container(
                                       width: 120.w,
                                       height: 120.w,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              Center(
-                                        child: Icon(
-                                          CupertinoIcons.person,
-                                          size: 50.w,
-                                          color: Colors.grey,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.grey.shade300,
+                                          width: 2.w,
+                                        ),
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(60.r),
+                                        child: Image.network(
+                                          "$imageUrl",
+                                          width: 120.w,
+                                          height: 120.w,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Image.asset(
+                                            "assets/images/logo.png",
+                                            width: 120.w,
+                                            height: 120.w,
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    Center(
+                                              child: Icon(
+                                                CupertinoIcons.person,
+                                                size: 50.w,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 16.h),
-
-                              Text(
-                                '${'welcome_back'.tr(context)} ${widget.firstName ?? ""}',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                              SizedBox(height: 16.h),
-                              Align(
-                                alignment: AlignmentDirectional.centerStart,
-                                child: QuestionWidget(
-                                  question:
-                                      'enter_verification_code'.tr(context),
-                                  subtitle:
-                                      'verification_code_hint'.tr(context),
-                                ),
-                              ),
-                              SizedBox(height: 32.h),
-                              // OTP Input
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                                child: Pinput(
-                                  controller: cubit.otpController,
-                                  length: 4,
-                                  obscureText: false,
-                                  pinAnimationType: PinAnimationType.fade,
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                              SizedBox(height: 32.h),
-                              // Verify Button
-                              AppButton(
-                                text: 'verify_button'.tr(context),
-                                isLoading: state is VerifyOtpLoading,
-                                onPressed: () {
-                                  if (cubit.otpController.text.isEmpty ||
-                                      widget.phoneNumber == null) {
-                                    showToast(
-                                      context,
-                                      message: 'otp_empty'.tr(context),
-                                      state: ToastStates.error,
-                                    );
-                                    return;
-                                  } else {
-                                    cubit.verifyOtp(
-                                      value: "${widget.phoneNumber}",
-                                    );
-                                  }
-                                },
-                                height: 50.h,
-                                width: double.infinity,
-                              ),
-                              SizedBox(height: 24.h),
-                              // Resend Code
-                              Directionality(
-                                textDirection: isRTL
-                                    ? TextDirection.rtl
-                                    : TextDirection.ltr,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
+                                    SizedBox(height: 16.h),
                                     Text(
-                                      'didnt_receive_code'.tr(context),
+                                      '${'welcome_back'.tr(context)} ${firstName ?? ""}',
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    Text(
+                                      'verification_code_title'.tr(context),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    Text(
+                                      phoneNumber != null
+                                          ? 'verification_code_subtitle_phone'
+                                              .tr(context)
+                                          : 'verification_code_subtitle'
+                                              .tr(context),
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 14.sp,
                                         color: AppColors.textSecondary,
                                       ),
                                     ),
-                                    TextButton(
-                                      onPressed: cubit.resendSeconds > 0
-                                          ? null
-                                          : () {
-                                              cubit.updateResendSeconds(60);
-                                              startResendTimer();
-                                              showToast(
-                                                context,
-                                                message:
-                                                    'otp_resent'.tr(context),
-                                                state: ToastStates.success,
-                                              );
-                                              cubit
-                                                  .forgotPassword(); // Re-trigger forgot password to resend OTP
-                                            },
-                                      child: Text(
-                                        cubit.resendSeconds > 0
-                                            ? '${'resend_code_in'.tr(context)} ${cubit.resendSeconds}'
-                                            : 'resend'.tr(context),
+                                    SizedBox(height: 32.h),
+                                    if (state is ForgotPasswordFailure ||
+                                        state is ResendOtpFailure) ...[
+                                      Text(
+                                        'failed_to_send_otp'.tr(context),
                                         style: TextStyle(
-                                          color: cubit.resendSeconds > 0
-                                              ? AppColors.textSecondary
-                                              : AppColors.primary,
-                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14.sp,
+                                          color: AppColors.error,
                                         ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      SizedBox(height: 16.h),
+                                      AppButton(
+                                        text: 'retry_button'.tr(context),
+                                        onPressed: () {
+                                          cubit.valueController.text =
+                                              phoneNumber ?? email ?? '';
+                                          cubit.forgotPassword();
+                                        },
+                                        height: 50.h,
+                                        width: 150.w,
+                                      ),
+                                      SizedBox(height: 16.h),
+                                    ],
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 24.w),
+                                      child: Pinput(
+                                        controller: cubit.otpController,
+                                        length: 4,
+                                        obscureText: false,
+                                        pinAnimationType: PinAnimationType.fade,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (value) {
+                                          if (value.length == 4 &&
+                                              (phoneNumber != null ||
+                                                  email != null)) {
+                                            cubit.verifyOtp(
+                                                value: phoneNumber ?? email!);
+                                          }
+                                        },
                                       ),
                                     ),
+                                    SizedBox(height: 32.h),
+                                    AppButton(
+                                      text: 'verify_button'.tr(context),
+                                      isLoading: state is VerifyOtpLoading,
+                                      onPressed: () {
+                                        if (cubit.otpController.text.isEmpty ||
+                                            (phoneNumber == null &&
+                                                email == null)) {
+                                          showToast(
+                                            context,
+                                            message: 'otp_empty'.tr(context),
+                                            state: ToastStates.error,
+                                          );
+                                          return;
+                                        }
+                                        cubit.verifyOtp(
+                                            value: phoneNumber ?? email!);
+                                      },
+                                      height: 50.h,
+                                      width: double.infinity,
+                                    ),
+                                    SizedBox(height: 24.h),
+                                    Directionality(
+                                      textDirection: isRTL
+                                          ? TextDirection.rtl
+                                          : TextDirection.ltr,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'didnt_receive_code'.tr(context),
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: cubit.resendSeconds >
+                                                        0 ||
+                                                    (phoneNumber == null &&
+                                                        email == null)
+                                                ? null
+                                                : () {
+                                                    cubit.resendOtp(
+                                                        value: phoneNumber ??
+                                                            email!);
+                                                  },
+                                            child: Text(
+                                              cubit.resendSeconds > 0
+                                                  ? '${'resend_code_in'.tr(context)} ${cubit.resendSeconds}'
+                                                  : 'resend'.tr(context),
+                                              style: TextStyle(
+                                                color: cubit.resendSeconds > 0
+                                                    ? AppColors.textSecondary
+                                                    : AppColors.primary,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 30.h),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 30.h),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

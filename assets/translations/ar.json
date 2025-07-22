@@ -932,5 +932,9 @@
   "networkError": "خطأ في الشبكة",
   "retry": "إعادة المحاولة",
   "account_verified": "تم تفعيل حسابك",
-  "new_massage_from": "رسالة جديدة من "
+  "new_massage_from": "رسالة جديدة من ",
+  "otp_sent": "تم إرسال رمز التحقق بنجاح",
+  "otp_empty": "يرجى إدخال رمز التحقق",
+  "server_timeout_error": "انتهت مهلة الخادم، حاول مرة أخرى لاحقًا",
+  "unexpected_error": "حدث خطأ غير متوقع"
 }

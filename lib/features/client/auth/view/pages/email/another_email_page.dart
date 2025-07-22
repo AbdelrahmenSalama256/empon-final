@@ -17,7 +17,6 @@ class AnotherEmailPage extends StatefulWidget {
     super.key,
     required this.onPreviousStep,
     required this.onNextStep,
-
   });
 
   @override
@@ -37,7 +36,7 @@ class _AnotherEmailPageState extends State<AnotherEmailPage> {
           if (state is RegisterError) {
             showToast(
               context,
-              message: state.message,
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           } else if (state is RegisterSuccess) {
@@ -46,8 +45,8 @@ class _AnotherEmailPageState extends State<AnotherEmailPage> {
               message: 'registration_successful'.tr(context),
               state: ToastStates.success,
             );
-              widget.onNextStep();
-            
+            widget.onNextStep();
+
             // navigateTo(
             //   context,
             //   BlocProvider(
@@ -63,7 +62,7 @@ class _AnotherEmailPageState extends State<AnotherEmailPage> {
               CustomHeader(
                 showBackButton: true,
                 showLogo: true,
-                onBackPressed: ()=> widget.onPreviousStep(),
+                onBackPressed: () => widget.onPreviousStep(),
                 title: 'register'.tr(context),
               ),
               Expanded(
@@ -141,7 +140,7 @@ class _AnotherEmailPageState extends State<AnotherEmailPage> {
                           ),
                           SizedBox(height: 16.h),
                           TextButton(
-                            onPressed:()=> widget.onPreviousStep(),
+                            onPressed: () => widget.onPreviousStep(),
                             child: Text(
                               'back'.tr(context),
                               style: TextStyle(

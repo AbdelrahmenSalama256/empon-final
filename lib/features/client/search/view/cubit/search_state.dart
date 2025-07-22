@@ -65,7 +65,9 @@ class ClearHistoryError extends SearchState {
   ClearHistoryError({required this.message});
 }
 
-class CommentLoading extends SearchState {}
+class CommentLoading extends SearchState {
+  CommentLoading({int? parentId}) : super();
+}
 
 class CommentSuccess extends SearchState {}
 
@@ -132,7 +134,6 @@ class VariationsError extends SearchState {
   VariationsError({required this.message});
 }
 
-
 class StatusLoading extends SearchState {}
 
 class StatusSuccess extends SearchState {
@@ -144,7 +145,9 @@ class StatusError extends SearchState {
   final String message;
   StatusError(this.message);
 }
+
 class Deleted extends SearchState {}
+
 class DeletedError extends SearchState {
   final String message;
   DeletedError(this.message);

@@ -38,7 +38,8 @@ class _PhoneNumberPageState extends State<PhoneNumberPage> {
           listener: (context, state) {
             if (state is VerifyPhoneNumberError) {
               showToast(context,
-                  message: state.error, state: ToastStates.error);
+                  message: 'unexpected_error'.tr(context),
+                  state: ToastStates.error);
             }
             if (state is VerifyPhoneNumberSuccess) {
               PrintUtil.success('Phone number verified successfully');

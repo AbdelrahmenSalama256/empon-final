@@ -28,12 +28,19 @@ class SearchCubit extends Cubit<SearchState> {
   int productsLimit = 10;
   bool productsHasMore = true;
   bool productsIsLoadingMore = false;
-
   RelatedProductsModel? homeModel;
+  int? currentParentId;
+  int? servicecurrentParentId;
+  int? replyParentId; // Tracks which comment/reply is being replied to
 
   SearchCubit(this.searchRepo) : super(SearchInitial());
 
   SearchModel? searchModel;
+
+  void setReplyParentId(int? parentId) {
+    replyParentId = parentId;
+    emit(CommentsLoaded(comments)); // Trigger rebuild
+  }
 
   void init() {
     fetchSearchHistory();
@@ -190,11 +197,9 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-  int? currentParentId;
-
   Future<void> fetchChildComments({required int parentId}) async {
     currentParentId = parentId;
-    if (!isClosed) emit(CommentLoading());
+    if (!isClosed) emit(CommentLoading(parentId: parentId));
     final response =
         await sl<CommentRepo>().fetchChildComments(parentId: parentId);
     response.fold(
@@ -218,7 +223,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   Future<void> addComment({required int productId, int? parentId}) async {
-    if (!isClosed) emit(CommentLoading());
+    if (!isClosed) emit(CommentLoading(parentId: parentId));
     final response = await sl<CommentRepo>().addComment(
       productId: productId,
       comment: commentController.text,
@@ -234,6 +239,7 @@ class SearchCubit extends Cubit<SearchState> {
         PrintUtil.success('Comment added successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
         commentController.clear();
+        replyParentId = null; // Clear reply state
       },
     );
   }
@@ -243,7 +249,7 @@ class SearchCubit extends Cubit<SearchState> {
     required int parentId,
     required String comment,
   }) async {
-    if (!isClosed) emit(CommentLoading());
+    if (!isClosed) emit(CommentLoading(parentId: parentId));
     final response = await sl<CommentRepo>().addComment(
       productId: productId,
       comment: comment,
@@ -267,6 +273,8 @@ class SearchCubit extends Cubit<SearchState> {
         }).toList();
         PrintUtil.success('Reply added successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
+        commentController.clear();
+        replyParentId = null; // Clear reply state
       },
     );
   }
@@ -402,45 +410,6 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-  Future<void> toggleProductLike({required int productId}) async {
-    if (!isClosed) emit(LikeProductLoading());
-
-    if (productModel?.data?.id != productId) {
-      if (!isClosed) emit(LikeProductError(message: 'Product not found'));
-      return;
-    }
-
-    final product = productModel!.data!;
-    productModel = ProductModel(
-      success: productModel!.success,
-      message: productModel!.message,
-      data: product.copyWith(
-        likes: (product.likes ?? 0) + (product.isLiked ? -1 : 1),
-        isLiked: !product.isLiked,
-      ),
-    );
-
-    if (!isClosed) emit(LikeProductLoaded(productModel!));
-
-    final response = await searchRepo.toggleProductLike(productId: productId);
-    response.fold(
-      (l) {
-        productModel = ProductModel(
-          success: productModel!.success,
-          message: productModel!.message,
-          data: product.copyWith(
-            likes: (product.likes ?? 0),
-            isLiked: product.isLiked,
-          ),
-        );
-        if (!isClosed) emit(LikeProductError(message: l));
-      },
-      (_) {
-        if (!isClosed) emit(LikeProductLoaded(productModel!));
-      },
-    );
-  }
-
   Future<void> servicefetchParentComments({required int ser}) async {
     if (!isClosed) emit(CommentLoading());
     final response =
@@ -461,11 +430,9 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-  int? servicecurrentParentId;
-
   Future<void> servicefetchChildComments({required int parentId}) async {
     servicecurrentParentId = parentId;
-    if (!isClosed) emit(CommentLoading());
+    if (!isClosed) emit(CommentLoading(parentId: parentId));
     final response =
         await sl<CommentRepo>().serviceFetchChildComments(parentId: parentId);
     response.fold(
@@ -490,7 +457,7 @@ class SearchCubit extends Cubit<SearchState> {
 
   Future<void> serviceAddComment(
       {required int serviceId, int? parentId}) async {
-    if (!isClosed) emit(CommentLoading());
+    if (!isClosed) emit(CommentLoading(parentId: parentId));
     final response = await sl<CommentRepo>().serviceAddComment(
       serviceId: serviceId,
       comment: commentController.text,
@@ -506,6 +473,7 @@ class SearchCubit extends Cubit<SearchState> {
         PrintUtil.success('Comment added successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
         commentController.clear();
+        replyParentId = null; // Clear reply state
       },
     );
   }
@@ -515,7 +483,7 @@ class SearchCubit extends Cubit<SearchState> {
     required int parentId,
     required String comment,
   }) async {
-    if (!isClosed) emit(CommentLoading());
+    if (!isClosed) emit(CommentLoading(parentId: parentId));
     final response = await sl<CommentRepo>().serviceAddComment(
       serviceId: serviceId,
       comment: comment,
@@ -539,6 +507,8 @@ class SearchCubit extends Cubit<SearchState> {
         }).toList();
         PrintUtil.success('Reply added successfully');
         if (!isClosed) emit(CommentsLoaded(comments));
+        commentController.clear();
+        replyParentId = null; // Clear reply state
       },
     );
   }
@@ -678,7 +648,6 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> toggleServiceLike({required int serviceId}) async {
     if (!isClosed) emit(LikeServiceLoading());
 
-    // Check if serviceModel and its data are not null
     if (serviceModel?.data?.id == null || serviceModel?.data?.id != serviceId) {
       if (!isClosed) emit(LikeServiceError(message: 'Service not found'));
       return;
@@ -718,11 +687,7 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> fetchReleatedProducts(
       {bool loadMore = false, required final int id}) async {
     emit(RelatedProductsLoading());
-
-    final response = await searchRepo.getReleatedProducts(
-      id: id,
-    );
-    PrintUtil.info("======================> $response");
+    final response = await searchRepo.getReleatedProducts(id: id);
     response.fold(
       (l) => emit(RelatedProductsError(message: l)),
       (r) {
@@ -735,9 +700,7 @@ class SearchCubit extends Cubit<SearchState> {
 
   Future<void> updateProductStatus(int productId) async {
     emit(StatusLoading());
-
     final result = await searchRepo.activeProduct(productId);
-
     result.fold(
       (failure) => emit(StatusError(failure)),
       (response) async {
@@ -748,9 +711,7 @@ class SearchCubit extends Cubit<SearchState> {
 
   Future<void> updateServiceStatus(int serviceId) async {
     emit(StatusLoading());
-
     final result = await searchRepo.activeServise(serviceId);
-
     result.fold(
       (failure) => emit(StatusError(failure)),
       (response) async {
@@ -761,19 +722,58 @@ class SearchCubit extends Cubit<SearchState> {
 
   Future<void> deleteService(int id) async {
     emit(DeletedLoading());
-    final result = await searchRepo.deleteServise(id);
-    result.fold(
+    final response = await searchRepo.deleteServise(id);
+    response.fold(
       (error) => emit(DeletedError(error)),
       (r) {
         emit(Deleted());
+      },
+    );
+  }
+
+  Future<void> toggleProductLike({required int productId}) async {
+    if (!isClosed) emit(LikeProductLoading());
+
+    if (productModel?.data?.id != productId) {
+      if (!isClosed) emit(LikeProductError(message: 'Product not found'));
+      return;
+    }
+
+    final product = productModel!.data!;
+    productModel = ProductModel(
+      success: productModel!.success,
+      message: productModel!.message,
+      data: product.copyWith(
+        likes: (product.likes ?? 0) + (product.isLiked ? -1 : 1),
+        isLiked: !product.isLiked,
+      ),
+    );
+
+    if (!isClosed) emit(LikeProductLoaded(productModel!));
+
+    final response = await searchRepo.toggleProductLike(productId: productId);
+    response.fold(
+      (l) {
+        productModel = ProductModel(
+          success: productModel!.success,
+          message: productModel!.message,
+          data: product.copyWith(
+            likes: (product.likes ?? 0),
+            isLiked: product.isLiked,
+          ),
+        );
+        if (!isClosed) emit(LikeProductError(message: l));
+      },
+      (_) {
+        if (!isClosed) emit(LikeProductLoaded(productModel!));
       },
     );
   }
 
   Future<void> deleteProduct(int id) async {
     emit(DeletedLoading());
-    final result = await searchRepo.deleteProduct(id);
-    result.fold(
+    final response = await searchRepo.deleteProduct(id);
+    response.fold(
       (error) => emit(DeletedError(error)),
       (r) {
         emit(Deleted());
@@ -781,15 +781,11 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-  Future<void> fetchVariations({
-    required int productId,
-    required int colorId,
-  }) async {
+  Future<void> fetchVariations(
+      {required int productId, required int colorId}) async {
     if (!isClosed) emit(VariationsLoading());
     final response = await searchRepo.fetchVariations(
-      productId: productId,
-      colorId: colorId,
-    );
+        productId: productId, colorId: colorId);
     response.fold(
       (l) {
         PrintUtil.error(l);

@@ -1,6 +1,5 @@
 import 'package:embone/core/component/widgets/comment_input.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/client/auth/view/widgets/auth_fields.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
 import 'package:embone/features/client/product_Details/view/widgets/comment_item.dart';
 import 'package:embone/features/client/product_Details/view/widgets/section_title.dart';
@@ -31,24 +30,26 @@ class ReviewsSection extends StatefulWidget {
 
 class _ReviewsSectionState extends State<ReviewsSection> {
   int? _expandedCommentIndex;
-  final Map<int, TextEditingController> _replyControllers = {};
+  final FocusNode _commentFocusNode = FocusNode();
 
   @override
   void dispose() {
-    _replyControllers.forEach((_, controller) => controller.dispose());
+    _commentFocusNode.dispose();
     super.dispose();
   }
 
-  TextEditingController _getReplyController(int commentId) {
-    if (!_replyControllers.containsKey(commentId)) {
-      _replyControllers[commentId] = TextEditingController();
-    }
-    return _replyControllers[commentId]!;
-  }
-
-  void _addComment() {
+  void _addCommentOrReply() {
     if (widget.commentController.text.isNotEmpty) {
-      widget.cubit.addComment(productId: widget.productId);
+      if (widget.cubit.replyParentId != null) {
+        widget.cubit.addReply(
+          productId: widget.productId,
+          parentId: widget.cubit.replyParentId!,
+          comment: widget.commentController.text,
+        );
+      } else {
+        widget.cubit.addComment(productId: widget.productId);
+      }
+      FocusScope.of(context).unfocus(); // Hide keyboard
     }
   }
 
@@ -57,7 +58,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
       _expandedCommentIndex = _expandedCommentIndex == index ? null : index;
     });
 
-    // Only fetch replies if we're expanding and replies aren't already loaded
     if (_expandedCommentIndex == index &&
         (comment.replies == null || comment.replies!.isEmpty)) {
       await widget.cubit.fetchChildComments(parentId: comment.commentId);
@@ -94,42 +94,13 @@ class _ReviewsSectionState extends State<ReviewsSection> {
             review: comment,
             isExpanded: _expandedCommentIndex == index,
             isLoadingReplies: widget.cubit.state is CommentLoading &&
-                comment.commentId == widget.cubit.currentParentId,
+                widget.cubit.currentParentId == comment.commentId,
             onTap: () => _handleCommentTap(index, comment),
-            onReply: (parentId) {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('reply'.tr(context)),
-                  content: AppTextField(
-                    controller: _getReplyController(parentId),
-                    hintText: 'write_reply_here'.tr(context),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('cancel'.tr(context)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        final replyText = _getReplyController(parentId).text;
-                        if (replyText.isNotEmpty) {
-                          widget.cubit.addReply(
-                            productId: widget.productId,
-                            parentId: parentId,
-                            comment: replyText,
-                          );
-                          _getReplyController(parentId).clear();
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Text('send'.tr(context)),
-                    ),
-                  ],
-                ),
-              );
+            onReply: () {
+              // No action needed here; handled in CommentContent
             },
             productId: widget.productId,
+            commentFocusNode: _commentFocusNode,
           );
         }),
         if (widget.isVendor != true)
@@ -137,42 +108,12 @@ class _ReviewsSectionState extends State<ReviewsSection> {
             padding: EdgeInsets.all(16.w),
             child: CommentInput(
               controller: widget.commentController,
-              onSubmit: _addComment,
+              onSubmit: _addCommentOrReply,
               isLoading: widget.cubit.state is CommentLoading,
+              focusNode: _commentFocusNode,
             ),
           ),
       ],
     );
   }
-}
-
-class DashedLineVerticalPainter extends CustomPainter {
-  final bool isRTL;
-
-  DashedLineVerticalPainter({required this.isRTL});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.grey.shade400
-      ..strokeWidth = 3.w
-      ..style = PaintingStyle.stroke;
-
-    const dashHeight = 10;
-    const dashSpace = 2;
-    double startY = 0;
-    final xPosition = isRTL ? 0.0 : size.width - 4.w;
-
-    while (startY < size.height) {
-      canvas.drawLine(
-        Offset(xPosition, startY),
-        Offset(xPosition, startY + dashHeight),
-        paint,
-      );
-      startY += dashHeight + dashSpace;
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

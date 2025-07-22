@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/auth/data/repo/forget_password_repo.dart';
+import 'package:embone/features/client/auth/data/repo/register_repo.dart';
 import 'package:embone/features/client/auth/view/pages/cubit/forget_password_state.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +16,7 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   int resendSeconds = 60;
+  Timer? _timer;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -21,13 +26,12 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
     emit(ForgotPasswordLoading());
     final value = valueController.text.trim();
 
-    // Skip validation if formKey.currentState is null (e.g., in FindingAccountsPage)
+    // Skip validation if formKey.currentState is null
     if (formKey.currentState != null && !formKey.currentState!.validate()) {
       emit(ForgotPasswordValidationFailed());
       return;
     }
 
-    // Additional validation for empty value
     if (value.isEmpty) {
       Print.error('Value is empty');
       emit(ForgotPasswordFailure(message: 'phone_or_email_required'));
@@ -43,6 +47,7 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
       (r) {
         Print.success('Password reset initiated');
         emit(ForgotPasswordSuccess(data: r));
+        startResendTimer();
       },
     );
   }
@@ -94,17 +99,57 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
     );
   }
 
+  Future<void> resendOtp({required String value}) async {
+    if (isClosed) return;
+
+    emit(ResendOtpLoading());
+    final response = await sl<RegisterRepo>().resendOtp(phone: value);
+    if (isClosed) return;
+
+    response.fold(
+      (error) {
+        Print.error('Resend OTP failed: $error');
+        emit(ResendOtpFailure(message: error));
+      },
+      (result) {
+        Print.success('OTP resent successfully: $result');
+        emit(ResendOtpSuccess(message: result.message ?? ''));
+        startResendTimer();
+      },
+    );
+  }
+
+  void startResendTimer() {
+    _timer?.cancel();
+    resendSeconds = 60;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (resendSeconds > 0 && !isClosed) {
+        resendSeconds--;
+        emit(ResendOtpTimerUpdated(resendSeconds));
+      } else {
+        timer.cancel();
+        emit(ResendOtpTimerUpdated(0));
+      }
+    });
+  }
+
+  void stopResendTimer() {
+    _timer?.cancel();
+    emit(ResendOtpTimerUpdated(resendSeconds));
+  }
+
+  void updateResendSeconds(int seconds) {
+    resendSeconds = seconds;
+    emit(ResendOtpTimerUpdated(seconds));
+  }
+
   @override
   Future<void> close() {
+    _timer?.cancel();
     valueController.dispose();
     otpController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     return super.close();
-  }
-
-  void updateResendSeconds(int seconds) {
-    resendSeconds = seconds;
-    emit(ForgetPasswordInitial());
   }
 }

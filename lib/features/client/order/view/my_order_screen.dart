@@ -51,7 +51,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
           } else if (state is OrderError) {
             showToast(
               context,
-              message: state.message.tr(context),
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           }

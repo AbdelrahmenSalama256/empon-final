@@ -1,5 +1,6 @@
 import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/constants/app_constant.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/network/local_network.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/view/cubit/product_cubit.dart';
@@ -16,8 +17,6 @@ class AddProductForm extends StatefulWidget {
   ProductModel? productData;
 
   AddProductForm({super.key, this.isUpdate, this.productData});
-  
-
 
   @override
   State<AddProductForm> createState() => _AddProductFormState();
@@ -31,7 +30,7 @@ class _AddProductFormState extends State<AddProductForm> {
     });
     super.initState();
   }
-  
+
   final _formKey = GlobalKey<FormState>();
 
   final accountId =
@@ -39,46 +38,46 @@ class _AddProductFormState extends State<AddProductForm> {
 
   @override
   Widget build(BuildContext context) {
-    return  BlocListener<ProductCubit, ProductState>(
+    return BlocListener<ProductCubit, ProductState>(
       listener: (context, state) {
         if (state is ProductSuccess) {
-        showToast(context,
-          message: state.product.message!, state: ToastStates.success);
-        Navigator.pop(context);
+          showToast(context,
+              message: state.product.message!, state: ToastStates.success);
+          Navigator.pop(context);
         }
-        
+
         if (state is ProductError) {
-        showToast(context,
-          message: state.error, state: ToastStates.error);
+          showToast(context,
+              message: 'unexpected_error'.tr(context),
+              state: ToastStates.error);
         }
       },
       child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Basic product information
-              const ProductBasicInfoSection(),
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Basic product information
+            const ProductBasicInfoSection(),
 
-              // Image upload sections
-              const ImageUploadSection(cubit: true),
+            // Image upload sections
+            const ImageUploadSection(cubit: true),
 
-              // Product details
-              const ProductDetailsSection(),
+            // Product details
+            const ProductDetailsSection(),
 
-              // Promotion section
-              // const ProductPromotionSection(),
+            // Promotion section
+            // const ProductPromotionSection(),
 
-              // Submit buttons
-              ProductSubmitButtons(
-                formKey: _formKey,
-                accountId: accountId,
-                isUpdate: widget.isUpdate!,
-              ),
-            ],
-          ),
+            // Submit buttons
+            ProductSubmitButtons(
+              formKey: _formKey,
+              accountId: accountId,
+              isUpdate: widget.isUpdate!,
+            ),
+          ],
         ),
-      
+      ),
     );
   }
 }

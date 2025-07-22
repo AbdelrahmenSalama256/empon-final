@@ -47,7 +47,8 @@ class CreateBusinessAccountDetailsPage extends StatelessWidget {
             if (state is AccountError) {
               log(state.massage);
               showToast(context,
-                  message: state.massage, state: ToastStates.error);
+                  message: 'unexpected_error'.tr(context),
+                  state: ToastStates.error);
             }
           },
           child: BlocBuilder<AccountCubit, AccountState>(

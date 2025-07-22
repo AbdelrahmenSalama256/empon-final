@@ -1,19 +1,22 @@
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
-import 'package:embone/features/client/product_Details/view/widgets/comment_content.dart';
 import 'package:embone/features/client/product_Details/view/widgets/comment_replay_item.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'comment_content.dart';
 
 class CommentItem extends StatelessWidget {
   final CommentModel review;
   final bool isExpanded;
   final bool isLoadingReplies;
   final VoidCallback onTap;
-  final Function(int) onReply;
-  final int productId;
+  final VoidCallback onReply;
+  final int productId; // Also used for serviceId
   final SearchCubit cubit;
   final int index;
+  final FocusNode commentFocusNode;
+
   const CommentItem({
     super.key,
     required this.index,
@@ -24,6 +27,7 @@ class CommentItem extends StatelessWidget {
     required this.onTap,
     required this.onReply,
     required this.productId,
+    required this.commentFocusNode,
   });
 
   @override
@@ -40,8 +44,9 @@ class CommentItem extends StatelessWidget {
           data: review,
           onTap: onTap,
           showTrash: false,
-          onReply: () => onReply(review.commentId),
+          onReply: onReply,
           productId: productId,
+          commentFocusNode: commentFocusNode,
         ),
         if (isLoadingReplies)
           const Padding(
@@ -61,8 +66,10 @@ class CommentItem extends StatelessWidget {
                                 cubit: cubit,
                                 reply: reply,
                                 isRTL: isRTL,
-                                replyController: cubit.commentController,
                                 productId: productId,
+                                parentId: review.commentId,
+                                onReply: onReply,
+                                commentFocusNode: commentFocusNode,
                               ))
                           .toList(),
                     ),
