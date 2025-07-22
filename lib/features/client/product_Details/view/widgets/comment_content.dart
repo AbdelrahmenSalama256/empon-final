@@ -8,22 +8,24 @@ import 'package:flutter_svg/svg.dart';
 
 class CommentContent extends StatelessWidget {
   final CommentModel data;
-  final int index; // Added index
+  final int index;
   final VoidCallback onTap;
   final bool showTrash;
-  final VoidCallback? onReply;
-  final int productId;
+  final VoidCallback? onReply; // Changed to trigger main input focus
+  final int productId; // Also used for serviceId
   final SearchCubit cubit;
+  final FocusNode commentFocusNode; // Added for focusing main input
 
   const CommentContent({
     super.key,
     required this.cubit,
     required this.data,
-    required this.index, // Added index
+    required this.index,
     required this.onTap,
     this.showTrash = false,
     this.onReply,
     required this.productId,
+    required this.commentFocusNode,
   });
 
   @override
@@ -123,11 +125,17 @@ class CommentContent extends StatelessWidget {
                 ),
                 SizedBox(width: 20.w),
                 GestureDetector(
-                  onTap: commentId != 0 && onReply != null ? onReply : null,
+                  onTap: commentId != 0 && onReply != null
+                      ? () {
+                          cubit.setReplyParentId(commentId);
+                          FocusScope.of(context).requestFocus(commentFocusNode);
+                          onReply!();
+                        }
+                      : null,
                   child: Row(
                     children: [
                       Text(
-                        'reply'.tr(context), // Fixed typo: replay -> reply
+                        'reply'.tr(context),
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400,
@@ -154,9 +162,7 @@ class CommentContent extends StatelessWidget {
                 const Spacer(),
                 GestureDetector(
                   onTap: commentId != 0
-                      ? () => cubit.toggleLike(
-                            commentId: commentId,
-                          )
+                      ? () => cubit.servicetoggleLike(commentId: commentId)
                       : null,
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.h),

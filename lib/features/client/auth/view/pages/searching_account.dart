@@ -46,7 +46,7 @@ class SearchingAccountPage extends StatelessWidget {
         if (state is ForgotPasswordFailure) {
           showToast(
             context,
-            message: state.message,
+            message: 'unexpected_error'.tr(context),
             state: ToastStates.error,
           );
         }

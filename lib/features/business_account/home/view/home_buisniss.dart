@@ -37,7 +37,7 @@ class HomeStoreScreen extends StatelessWidget {
             if (businessState is BusinessAccountError) {
               showToast(
                 context,
-                message: businessState.message,
+                message: 'unexpected_error'.tr(context),
                 state: ToastStates.error,
               );
             }

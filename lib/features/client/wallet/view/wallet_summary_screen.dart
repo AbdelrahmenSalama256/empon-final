@@ -22,23 +22,10 @@ class WalletSummaryScreen extends StatelessWidget {
       create: (context) => WalletCubit(sl<WalletRepo>())..init(),
       child: BlocListener<WalletCubit, WalletState>(
         listener: (context, state) {
-          if (state is WalletLoaded) {
+          if (state is WalletError || state is WalletHistoryError) {
             showToast(
               context,
-              message:
-                  'Wallet balance updated: ${state.walletResponse.data.balance}',
-              state: ToastStates.success,
-            );
-          } else if (state is WalletError) {
-            showToast(
-              context,
-              message: state.error,
-              state: ToastStates.error,
-            );
-          } else if (state is WalletHistoryError) {
-            showToast(
-              context,
-              message: state.error,
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           }
@@ -118,120 +105,6 @@ class WalletSummaryScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class WalletSummaryScreenWithStats extends StatelessWidget {
-  const WalletSummaryScreenWithStats({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => WalletCubit(sl<WalletRepo>())..init(),
-      child: BlocListener<WalletCubit, WalletState>(
-        listener: (context, state) {
-          if (state is WalletLoaded) {
-            showToast(
-              context,
-              message:
-                  'Wallet balance updated: ${state.walletResponse.data.balance}',
-              state: ToastStates.success,
-            );
-          } else if (state is WalletError) {
-            showToast(
-              context,
-              message: state.error,
-              state: ToastStates.error,
-            );
-          } else if (state is WalletHistoryError) {
-            showToast(
-              context,
-              message: state.error,
-              state: ToastStates.error,
-            );
-          }
-        },
-        child: BlocBuilder<WalletCubit, WalletState>(
-          builder: (context, state) {
-            final cubit = context.read<WalletCubit>();
-            return SafeArea(
-              child: Scaffold(
-                backgroundColor: Colors.white,
-                body: Column(
-                  children: [
-                    AppHeader(
-                      title: 'wallet'.tr(context),
-                      showBackButton: true,
-                      centerTitle: true,
-                      style: HeaderStyle.standard,
-                    ),
-                    SizedBox(height: 16.h),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.w),
-                        child: Column(
-                          children: [
-                            SizedBox(height: 16.h),
-                            state is WalletLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator())
-                                : BalanceCard(
-                                    balance: cubit.balance,
-                                    currency: 'egp'.tr(context),
-                                  ),
-                            SizedBox(height: 16.h),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'recent_transactions'.tr(context),
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: const Color(0xff1E2644),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 16.h),
-                            Expanded(
-                              child: state is WalletHistoryLoading
-                                  ? const Center(
-                                      child: CircularProgressIndicator())
-                                  : state is WalletHistoryLoaded
-                                      ? ListView.builder(
-                                          itemCount:
-                                              state.walletResponse.data.length,
-                                          itemBuilder: (context, index) {
-                                            final transaction = state
-                                                .walletResponse.data[index];
-                                            final isDeposit =
-                                                transaction.type == 'add';
-                                            return TransactionItem(
-                                              amount: transaction.amount,
-                                              isDeposit: isDeposit,
-                                              description:
-                                                  transaction.type.tr(context),
-                                              date: transaction.createdAt,
-                                            );
-                                          },
-                                        )
-                                      : state is WalletHistoryError
-                                          ? Center(child: Text(state.error))
-                                          : const SizedBox.shrink(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

@@ -59,7 +59,7 @@ class _EmponWalletScreenState extends State<EmponWalletScreen> {
           } else if (state is WalletError) {
             showToast(
               context,
-              message: state.error,
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           }
@@ -216,7 +216,9 @@ class _EmponWalletScreenState extends State<EmponWalletScreen> {
                                                 flex: 1,
                                                 child: AppButton(
                                                   onPressed: //(){
-                                                  () => showPaymentMethodDialog(context),
+                                                      () =>
+                                                          showPaymentMethodDialog(
+                                                              context),
                                                   //    CustomPopup.show(
                                                   //   context: context,
                                                   //   type: PopupType.custom,

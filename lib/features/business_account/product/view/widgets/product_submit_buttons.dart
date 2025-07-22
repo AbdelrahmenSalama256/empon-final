@@ -1,10 +1,10 @@
 import 'package:embone/core/component/custom_toast.dart';
+import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/product/view/cubit/product_cubit.dart';
 import 'package:embone/features/client/product_Details/data/model/product_model.dart';
 import 'package:flutter/material.dart';
-import 'package:embone/core/component/widgets/app_button.dart';
-import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -23,24 +23,23 @@ class ProductSubmitButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  BlocListener<ProductCubit, ProductState>(
+    return BlocListener<ProductCubit, ProductState>(
       listener: (context, state) {
         if (state is ProductLoading) {
           const Center(child: CircularProgressIndicator());
         }
-       
       },
       child: BlocBuilder<ProductCubit, ProductState>(builder: (context, state) {
         final cubit = context.read<ProductCubit>();
-      if (state is ProductLoading) {
-         return const Center(child: CircularProgressIndicator());
+        if (state is ProductLoading) {
+          return const Center(child: CircularProgressIndicator());
         }
         return Column(
           children: [
             AppButton(
               text: 'add_product_button'.tr(context),
               onPressed: () {
-             for (var variation in cubit.variations) {
+                for (var variation in cubit.variations) {
                   if (variation['attribute_value_id'] == null) {
                     showToast(context,
                         message: "please_select_size".tr(context),
@@ -55,7 +54,6 @@ class ProductSubmitButtons extends StatelessWidget {
                   }
                 }
 
-
                 if (formKey.currentState?.validate() ?? false) {
                   cubit.addProduct(accountId);
                   // Submit logic
@@ -68,17 +66,17 @@ class ProductSubmitButtons extends StatelessWidget {
               type: AppButtonType.secondary,
               onPressed: () {
                 context.read<GlobalCubit>().setUserType(UserType.business);
-                 if (state is ProductSuccess) {
+                if (state is ProductSuccess) {
                   showToast(context,
                       message: state.product.message!,
                       state: ToastStates.success);
-                      Navigator.pop(context);
+                  Navigator.pop(context);
                   Navigator.pop(context);
                 } else if (state is ProductError) {
                   showToast(context,
-                      message: state.error, state: ToastStates.error);
+                      message: 'unexpected_error'.tr(context),
+                      state: ToastStates.error);
                 }
-                
               },
             ),
             SizedBox(height: 16.h),

@@ -30,7 +30,8 @@ class FriendRequestsPage extends StatelessWidget {
                 context.read<FriendsCubit>().fetchFriendRequests();
               } else if (state is FriendsError) {
                 showToast(context,
-                    message: state.error, state: ToastStates.error);
+                    message: 'unexpected_error'.tr(context),
+                    state: ToastStates.error);
               }
             },
             builder: (context, state) {

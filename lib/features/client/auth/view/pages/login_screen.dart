@@ -204,8 +204,8 @@ class _LoginPageState extends State<LoginPage>
                             text: 'sign_in'.tr(context),
                             isLoading: state is LoginLoading,
                             onPressed: () {
-                              if (cubit.formKey.currentState?.validate() ??
-                                  false) {
+                              if (cubit.passwordController.text.isNotEmpty ||
+                                  cubit.valueController.text.isNotEmpty) {
                                 cubit.login();
                               }
                             },

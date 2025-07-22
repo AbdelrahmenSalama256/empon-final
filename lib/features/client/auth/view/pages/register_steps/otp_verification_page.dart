@@ -50,7 +50,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           if (state is VerifyOtpError) {
             showToast(
               context,
-              message: state.message,
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           }

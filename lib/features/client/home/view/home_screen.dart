@@ -292,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     } else if (cartState is CartError) {
                       showToast(
                         context,
-                        message: cartState.error.tr(context),
+                        message: 'unexpected_error'.tr(context),
                         state: ToastStates.error,
                       );
                     }

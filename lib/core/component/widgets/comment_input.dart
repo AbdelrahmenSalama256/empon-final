@@ -8,12 +8,14 @@ class CommentInput extends StatefulWidget {
   final TextEditingController controller;
   final VoidCallback? onSubmit;
   final bool isLoading;
+  final FocusNode? focusNode; // Added for keyboard management
 
   const CommentInput({
     super.key,
     required this.controller,
     this.onSubmit,
     this.isLoading = false,
+    this.focusNode,
   });
 
   @override
@@ -31,11 +33,11 @@ class _CommentInputState extends State<CommentInput> {
       ),
       child: Column(
         children: [
-          // Comment input field
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             child: TextField(
               controller: widget.controller,
+              focusNode: widget.focusNode,
               decoration: InputDecoration(
                 hintText: 'write_comment_here'.tr(context),
                 hintStyle: TextStyle(
@@ -55,7 +57,7 @@ class _CommentInputState extends State<CommentInput> {
               onSubmitted: (value) {
                 if (value.isNotEmpty && widget.onSubmit != null) {
                   widget.onSubmit!();
-                  widget.controller.clear();
+                  FocusScope.of(context).unfocus(); // Hide keyboard
                 }
               },
               onChanged: (value) {
@@ -63,30 +65,13 @@ class _CommentInputState extends State<CommentInput> {
               },
             ),
           ),
-          // Action buttons area with gray background
           Expanded(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Emoji button
-                  // IconButton(
-                  //   icon: Icon(
-                  //     Icons.emoji_emotions_outlined,
-                  //     color: Colors.grey.shade600,
-                  //     size: 24.w,
-                  //   ),
-                  //   padding: EdgeInsets.zero,
-                  //   constraints: BoxConstraints(
-                  //     minWidth: 24.w,
-                  //     minHeight: 24.h,
-                  //   ),
-                  //   onPressed: () {
-                  //   },
-                  // ),
                   SizedBox(width: 15.w),
-                  // Send button
                   SizedBox(
                     width: 100.w,
                     child: AppButton(
@@ -101,7 +86,7 @@ class _CommentInputState extends State<CommentInput> {
                         if (widget.controller.text.isNotEmpty &&
                             widget.onSubmit != null) {
                           widget.onSubmit!();
-                          widget.controller.clear();
+                          FocusScope.of(context).unfocus(); // Hide keyboard
                         }
                       },
                       text: 'send'.tr(context),

@@ -42,3 +42,23 @@ final class ResetPasswordFailure extends ForgetPasswordState {
 }
 
 final class ResetPasswordSuccess extends ForgetPasswordState {}
+
+class ResendOtpLoading extends ForgetPasswordState {}
+
+class ResendOtpSuccess extends ForgetPasswordState {
+  final String message;
+
+  ResendOtpSuccess({required this.message});
+}
+
+class ResendOtpFailure extends ForgetPasswordState {
+  final String message;
+
+  ResendOtpFailure({required this.message});
+}
+
+class ResendOtpTimerUpdated extends ForgetPasswordState {
+  final int seconds;
+
+  ResendOtpTimerUpdated(this.seconds);
+}

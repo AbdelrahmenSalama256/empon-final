@@ -38,7 +38,8 @@ class _FollowersPageState extends State<FollowersPage> {
             listener: (context, state) {
               if (state is FriendsError) {
                 showToast(context,
-                    message: state.error, state: ToastStates.error);
+                    message: 'unexpected_error'.tr(context),
+                    state: ToastStates.error);
               }
               if (state is FriendRequestUpdated) {
                 showToast(context,

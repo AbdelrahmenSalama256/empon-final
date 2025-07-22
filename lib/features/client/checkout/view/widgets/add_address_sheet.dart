@@ -129,7 +129,7 @@ class _AddAddressSheetState extends State<AddAddressSheet> {
               if (state is LocationsError) {
                 showToast(
                   context,
-                  message: state.message,
+                  message: 'unexpected_error'.tr(context),
                   state: ToastStates.error,
                 );
               }

@@ -53,7 +53,7 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
           if (state is AccountError) {
             showToast(
               context,
-              message: state.massage,
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           }

@@ -76,7 +76,7 @@ class _OffersScreenState extends State<OffersScreen> {
           if (globalState is WishlistError) {
             showToast(
               context,
-              message: globalState.message,
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           }
@@ -92,7 +92,7 @@ class _OffersScreenState extends State<OffersScreen> {
             } else if (cartState is CartError) {
               showToast(
                 context,
-                message: cartState.error.tr(context),
+                message: 'unexpected_error'.tr(context),
                 state: ToastStates.error,
               );
             }

@@ -38,7 +38,7 @@ class ResetPasswordPage extends StatelessWidget {
           if (state is ResetPasswordFailure) {
             showToast(
               context,
-              message: state.message,
+              message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
           }
@@ -172,7 +172,7 @@ class ResetPasswordPage extends StatelessWidget {
                                 } else {
                                   showToast(
                                     context,
-                                    message: 'Passwords do not match',
+                                    message: 'passwords_not_match'.tr(context),
                                     state: ToastStates.error,
                                   );
                                 }

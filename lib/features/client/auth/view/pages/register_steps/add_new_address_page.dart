@@ -72,7 +72,7 @@ class _AddNewAddressPageState extends State<AddNewAddressPage> {
               if (state is LocationsError) {
                 showToast(
                   context,
-                  message: state.message,
+                  message: 'unexpected_error'.tr(context),
                   state: ToastStates.error,
                 );
               }

@@ -111,7 +111,9 @@ class _AccountsBottomSheetContentState
       child: BlocConsumer<AccountsCubit, AccountsState>(
         listener: (context, state) {
           if (state is AccountError) {
-            showToast(context, message: state.error, state: ToastStates.error);
+            showToast(context,
+                message: 'unexpected_error'.tr(context),
+                state: ToastStates.error);
           }
         },
         builder: (context, state) {
@@ -276,7 +278,7 @@ class _AccountsBottomSheetContentState
                         } else if (state is AccountError) {
                           showToast(
                             context,
-                            message: state.error,
+                            message: 'unexpected_error'.tr(context),
                             state: ToastStates.error,
                           );
                         } else if (accounts[index].status == false) {
