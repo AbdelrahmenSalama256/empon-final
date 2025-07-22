@@ -311,7 +311,7 @@ class VideosTab extends StatelessWidget {
     if (videoId == null) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
-        child: const Center(child: Text('لا توجد فيديوهات')),
+        child:  Center(child: Text("no_videos_available".tr(context))),
       );
     }
 

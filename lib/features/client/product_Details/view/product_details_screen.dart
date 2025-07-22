@@ -356,6 +356,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                               try {
                                                 await cubit.deleteProduct(
                                                     productIdToDelete ?? 0);
+                                                
                                                 Navigator.of(context,
                                                         rootNavigator: true)
                                                     .pop();
@@ -366,6 +367,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                           .tr(context),
                                                   state: ToastStates.success,
                                                 );
+
                                                 Navigator.pushAndRemoveUntil(
                                                   context,
                                                   MaterialPageRoute(
@@ -375,9 +377,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                           )),
                                                   (route) => false,
                                                 );
-                                                Navigator.of(context,
-                                                        rootNavigator: true)
-                                                    .pop();
                                               } catch (e) {
                                                 Navigator.of(context,
                                                         rootNavigator: true)

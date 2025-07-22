@@ -97,14 +97,16 @@ class DashboardOverview extends StatelessWidget {
         children: [
           Icon(icon, color: textColor, size: 24.sp),
           SizedBox(height: 8.h),
-          Text(
-            "$amount ${'pound'.tr(context)}",
-            style: TextStyle(
-              color: textColor,
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              "$amount ${'pound'.tr(context)}",
+              style: TextStyle(
+                color: textColor,
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+              ),
+              overflow: TextOverflow.ellipsis, // Handle long amounts
             ),
-            overflow: TextOverflow.ellipsis, // Handle long amounts
           ),
           SizedBox(height: 6.h),
           Text(
