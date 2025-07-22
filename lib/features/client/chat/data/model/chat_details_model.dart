@@ -33,7 +33,25 @@ class Message {
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    PrintUtil.debug('Parsing message: from_me=${json['from_me']}');
+    PrintUtil.debug(
+        'Parsing message: from_me=${json['from_me']}, media_type=${json['media_type']}, media_path=${json['media_path']}');
+    String mediaType = json['media_type'] as String? ?? 'text';
+
+    // Infer mediaType from media_path if media_type is missing or incorrect
+    if (json['media_path'] != null && mediaType == 'text') {
+      final mediaPath = json['media_path'] as String;
+      if (mediaPath.endsWith('.jpg') ||
+          mediaPath.endsWith('.jpeg') ||
+          mediaPath.endsWith('.png') ||
+          mediaPath.endsWith('.gif')) {
+        mediaType = 'image';
+      } else if (mediaPath.endsWith('.aac') ||
+          mediaPath.endsWith('.mp3') ||
+          mediaPath.endsWith('.wav')) {
+        mediaType = 'voice';
+      }
+    }
+
     return Message(
       id: _parseToInt(json['id']),
       fromMe: json['from_me'] as bool? ?? false,
@@ -42,7 +60,7 @@ class Message {
       message: json['message'] as String? ?? '',
       mediaPath: json['media_path'] as String?,
       status: _parseStatus(json['status'], json['from_me'] as bool? ?? false),
-      mediaType: json['media_type'] as String? ?? 'text',
+      mediaType: mediaType,
       replay: json['replay'] != null
           ? Replay.fromJson(json['replay'] as Map<String, dynamic>)
           : null,
@@ -53,7 +71,6 @@ class Message {
       voiceProgress: json['voice_progress'] as int?,
     );
   }
-
   static MessageStatus _parseStatus(dynamic status, bool fromMe) {
     if (status == null) {
       return fromMe ? MessageStatus.sent : MessageStatus.delivered;

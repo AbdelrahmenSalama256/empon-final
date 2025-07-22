@@ -39,9 +39,9 @@ class ChatCubit extends Cubit<ChatState> {
       _channel!.stream.listen(
         (dynamic message) {
           final Map<String, dynamic> data = _parseWebSocketMessage(message);
+          print('WebSocket message: $data'); // Debug print
           if (data['type'] == 'new_message') {
             final newMessage = Message.fromJson(data['message']);
-            // Only add if not from current user to avoid echo
             if (newMessage.senderId != currentUserId) {
               newMessage.fromMe = newMessage.senderId == currentUserId;
               messages.add(newMessage);
@@ -57,11 +57,10 @@ class ChatCubit extends Cubit<ChatState> {
         onDone: () {
           emit(MassageSentError('WebSocket connection closed'));
           PrintUtil.error('WebSocket connection closed');
-          // initializeWebSocket();
-          // Future.delayed(
-          //   const Duration(seconds: 5),
-          //   () => initializeWebSocket(),
-          // );
+          Future.delayed(
+            const Duration(seconds: 5),
+            () => initializeWebSocket(),
+          );
         },
       );
     }
@@ -207,6 +206,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   Future<void> sendMediaMessage(
       int receiverId, String message, String mediaType, dynamic media) async {
+    print('Sending media message with mediaType: $mediaType, media: $media');
     final tempMessage = _createTempMessage(
       receiverId: receiverId,
       message: message,
@@ -231,6 +231,7 @@ class ChatCubit extends Cubit<ChatState> {
         emit(MassageSentError(error));
       },
       (sentMessage) {
+        print('Received message from backend: $sentMessage');
         sentMessage = sentMessage.copyWith(
           fromMe: sentMessage.senderId == currentUserId,
           status: MessageStatus.delivered,
