@@ -97,7 +97,7 @@ class _ProductTabContentState extends State<ProductTabContent> {
         final homeModel = widget.cubit.homeModel;
         final ads = homeModel?.ads ?? [];
         final accounts = homeModel?.accounts ?? [];
-        PrintUtil.info('Ads: $ads, Accounts: $accounts');
+        // PrintUtil.info('Ads: $ads, Accounts: $accounts');
 
         return NotificationListener<ScrollNotification>(
           onNotification: (scrollDetails) {
