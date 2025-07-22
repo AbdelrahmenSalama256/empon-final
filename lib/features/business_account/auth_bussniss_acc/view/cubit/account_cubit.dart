@@ -306,7 +306,7 @@ List<LocationModel> getFilteredStates() {
   }
   
   Future<void> sendVerficationRequest({required int accountId}) async {
-    emit(StoreRequestLoading());
+    emit(VerficationRequestLoading());
 
     try {
       final response = await accountRepo.requestBusinessVirfication(accountId);

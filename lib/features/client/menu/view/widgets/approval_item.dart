@@ -21,6 +21,7 @@ class ApprovalItem extends StatelessWidget {
   final Color? approvedColor;
   final Color? rejectedColor;
   final Color? processingColor;
+  final bool? isLoading;
 
   const ApprovalItem({
     super.key,
@@ -35,6 +36,7 @@ class ApprovalItem extends StatelessWidget {
     this.approvedColor,
     this.rejectedColor,
     this.processingColor,
+    this.isLoading = false,
   });
 
   @override
@@ -72,6 +74,7 @@ class ApprovalItem extends StatelessWidget {
                   fontSize: 11.sp,
                   fontWeight: FontWeight.w400,
                 ),
+                isLoading: isLoading ?? false,
               ),
             ),
         ],

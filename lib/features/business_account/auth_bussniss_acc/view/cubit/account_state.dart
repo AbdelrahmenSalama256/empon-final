@@ -44,6 +44,7 @@ class CitiesLoaded extends AccountState {
 }
 
 class StoreRequestLoading extends AccountState {}
+class VerficationRequestLoading extends AccountState {}
 
 class StoreRequestSuccess extends AccountState {
   final StoreRequestData data;
