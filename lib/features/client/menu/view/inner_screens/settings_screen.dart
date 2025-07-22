@@ -344,7 +344,7 @@ class SettingsScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 20.h),
                               isVendor == true
-                                  ? SizedBox()
+                                  ? const SizedBox()
                              : SignOutButton(
                                 text: "delete_account".tr(context),
                                 onPressed: () {

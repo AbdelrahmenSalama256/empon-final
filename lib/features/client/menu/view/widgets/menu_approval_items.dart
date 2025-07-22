@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/custom_popup.dart';
 import '../../../../business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
+
 class MenuApprovalItems extends StatelessWidget {
   final dynamic accountData;
   final GlobalCubit cubit;
@@ -63,12 +64,10 @@ class MenuApprovalItems extends StatelessWidget {
                             : Colors.green,
                         onApprove: () {
                           if (accountData.isStore == 0) {
-                            if (
-                                accountData.storeRequest != "approved") {
-                             context.read<AccountCubit>().sendStoreRequest(
+                            if (accountData.storeRequest != "approved") {
+                              context.read<AccountCubit>().sendStoreRequest(
                                   accountId: cubit.businessId!);
                             }
-                            
                           }
                         },
                         isLoading: state is StoreRequestLoading ? true : false,
@@ -96,8 +95,7 @@ class MenuApprovalItems extends StatelessWidget {
                     height: 24.h,
                   ),
                   onApprove: () {
-                    if (
-                        accountData.verificationRequest != "approved") {
+                    if (accountData.verificationRequest != "approved") {
                       context
                           .read<AccountCubit>()
                           .sendVerficationRequest(accountId: cubit.businessId!);

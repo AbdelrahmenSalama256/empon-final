@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/network/local_network.dart';
@@ -14,7 +15,7 @@ import '../../data/model/contact_model.dart';
 
 class ContactListItem extends StatelessWidget {
   final ContactModel contact;
-  final VoidCallback onTap; // Retain for selection if needed
+  final VoidCallback onTap;
   final bool isRegistered;
 
   const ContactListItem({
@@ -147,7 +148,7 @@ class ContactListItem extends StatelessWidget {
   }
 }
 
-class _ButtonContent extends StatelessWidget {
+class _ButtonContent extends StatefulWidget {
   final ContactModel contact;
   final bool isRegistered;
   final VoidCallback onTap;
@@ -159,22 +160,46 @@ class _ButtonContent extends StatelessWidget {
   });
 
   @override
+  State<_ButtonContent> createState() => _ButtonContentState();
+}
+
+class _ButtonContentState extends State<_ButtonContent> {
+  final _debounce = PublishSubject<void>();
+  @override
+  void initState() {
+    super.initState();
+    _debounce.stream
+        .debounceTime(const Duration(milliseconds: 500))
+        .listen((_) {
+      if (mounted) {
+        widget.onTap();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<FriendsCubit, FriendsState>(
       builder: (context, state) {
         final friendsCubit = context.read<FriendsCubit>();
-        final status = friendsCubit.getFriendRequestStatus(contact.id);
+        final status = friendsCubit.getFriendRequestStatus(widget.contact.id);
 
-        // Determine button state based on the current status
-        final isFriend = contact.isFriend == true;
-        final isPending = status == "pending" || contact.status == "pending";
+        final isFriend = widget.contact.isFriend == true;
+        final isPending =
+            status == "pending" || widget.contact.status == "pending";
         final isAccepted = status == "accepted";
 
         String buttonText;
         IconData icon;
         Color color;
 
-        if (isRegistered) {
+        if (widget.isRegistered) {
           if (isFriend) {
             buttonText = 'delete';
             icon = CupertinoIcons.trash;
@@ -199,10 +224,8 @@ class _ButtonContent extends StatelessWidget {
         }
 
         return GestureDetector(
-          onTap: () async {
-            onTap();
-            // Force a rebuild after the state changes
-            friendsCubit.refresh();
+          onTap: () {
+            _debounce.add(null); // Debounce the tap
           },
           child: Container(
             height: 36.h,
