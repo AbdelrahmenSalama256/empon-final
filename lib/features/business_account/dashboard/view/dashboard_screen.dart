@@ -149,18 +149,20 @@ class DashboardScreen extends StatelessWidget {
                                                   height: 14.h,
                                                 ),
                                                 SizedBox(width: 8.w),
-                                                Text(
-                                                  'number_of_views'.tr(context),
-                                                  style: TextStyle(
-                                                    fontSize: 12.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color:
-                                                        const Color(0xff8F95AB),
-                                                    overflow: TextOverflow.ellipsis,
+                                                Expanded(
+                                                  child: Text(
+                                                    'number_of_views'.tr(context),
+                                                    style: TextStyle(
+                                                      fontSize: 12.sp,
+                                                      fontWeight: FontWeight.w500,
+                                                      color:
+                                                          const Color(0xff8F95AB),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
                                                 ),
                                               ],
                                             ),
@@ -215,20 +217,22 @@ class DashboardScreen extends StatelessWidget {
                                                   height: 14.h,
                                                 ),
                                                 SizedBox(width: 8.w),
-                                                Text(
-                                                  'number_of_interactions'
-                                                      .tr(context),
-                                                  style: TextStyle(
-                                                    fontSize: 12.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color:
-                                                        const Color(0xff8F95AB),
-                                                        overflow:
+                                                Expanded(
+                                                  child: Text(
+                                                    'number_of_interactions'
+                                                        .tr(context),
+                                                    style: TextStyle(
+                                                      fontSize: 12.sp,
+                                                      fontWeight: FontWeight.w500,
+                                                      color:
+                                                          const Color(0xff8F95AB),
+                                                          overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow:
                                                         TextOverflow.ellipsis,
                                                   ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
                                                 ),
                                               ],
                                             ),
