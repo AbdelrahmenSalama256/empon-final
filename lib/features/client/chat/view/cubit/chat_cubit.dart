@@ -39,7 +39,9 @@ class ChatCubit extends Cubit<ChatState> {
       _channel!.stream.listen(
         (dynamic message) {
           final Map<String, dynamic> data = _parseWebSocketMessage(message);
-          print('WebSocket message: $data'); // Debug print
+          if (kDebugMode) {
+            print('WebSocket message: $data');
+          } // Debug print
           if (data['type'] == 'new_message') {
             final newMessage = Message.fromJson(data['message']);
             if (newMessage.senderId != currentUserId) {
@@ -206,7 +208,9 @@ class ChatCubit extends Cubit<ChatState> {
 
   Future<void> sendMediaMessage(
       int receiverId, String message, String mediaType, dynamic media) async {
-    print('Sending media message with mediaType: $mediaType, media: $media');
+    if (kDebugMode) {
+      print('Sending media message with mediaType: $mediaType, media: $media');
+    }
     final tempMessage = _createTempMessage(
       receiverId: receiverId,
       message: message,
@@ -231,7 +235,9 @@ class ChatCubit extends Cubit<ChatState> {
         emit(MassageSentError(error));
       },
       (sentMessage) {
-        print('Received message from backend: $sentMessage');
+        if (kDebugMode) {
+          print('Received message from backend: $sentMessage');
+        }
         sentMessage = sentMessage.copyWith(
           fromMe: sentMessage.senderId == currentUserId,
           status: MessageStatus.delivered,
