@@ -281,23 +281,30 @@ class _BaseScreenState extends State<BaseScreen> {
         final userType = globalCubit.userType ?? UserType.client;
         final navBarItems = _navBarItems(context, userType);
 
-        return Scaffold(
-          body: _buildScreen(globalCubit.currentNavIndex,
-              userType), // Build only the selected screen
-          bottomNavigationBar: BottomNavigationBar(
-            items: navBarItems,
-            currentIndex:
-                globalCubit.currentNavIndex, // Use GlobalCubit's index
-            selectedItemColor: const Color(0xFF1565C0),
-            unselectedItemColor: const Color(0xFF9DB2CE),
-            onTap: _onItemTapped,
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
-            elevation: 10,
-            selectedFontSize: 10.sp,
-            unselectedFontSize: 10.sp,
-            showSelectedLabels: true,
-            showUnselectedLabels: false,
+        return WillPopScope(
+          onWillPop: () async {
+            if (globalCubit.currentNavIndex != 0) {
+              globalCubit.changeBottomNavIndex(0);
+            }
+            return false;
+          },
+          child: Scaffold(
+            body: _buildScreen(globalCubit.currentNavIndex, userType),
+            bottomNavigationBar: BottomNavigationBar(
+              items: navBarItems,
+              currentIndex:
+                  globalCubit.currentNavIndex, // Use GlobalCubit's index
+              selectedItemColor: const Color(0xFF1565C0),
+              unselectedItemColor: const Color(0xFF9DB2CE),
+              onTap: _onItemTapped,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.white,
+              elevation: 10,
+              selectedFontSize: 10.sp,
+              unselectedFontSize: 10.sp,
+              showSelectedLabels: true,
+              showUnselectedLabels: false,
+            ),
           ),
         );
       },

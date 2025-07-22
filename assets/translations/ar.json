@@ -620,7 +620,7 @@
   "please_enter_valid_email": "يرجى إدخال بريد إلكتروني صالح",
   "verification_successful": "تم التحقق بنجاح",
   "welcome_back": "مرحباً بك",
-  "verification_code_hint": "يرجى تفقد بريدك الإلكتروني للعثور على الرسالة التي تحتوي على الرمز. يتكون الرمز من 8 من الأرقام.",
+  "verification_code_hint": "يرجى تفقد بريدك الإلكتروني للعثور على الرسالة التي تحتوي على الرمز. يتكون الرمز من 4 من الأرقام.",
   "enter_new_password": "أدخل كلمة مرور جديدة",
   "enter_confirm_password": "أدخل تأكيد كلمة المرور",
   "recently_viewed": "تمت مشاهدته مؤخرًا",
@@ -930,5 +930,6 @@
   "sales_instruction_date": "📅 اختر تاريخًا لتصفية بيانات المبيعات.",
   "networkError": "خطأ في الشبكة",
   "retry": "إعادة المحاولة",
-  "account_verified": "تم تفعيل حسابك"
+  "account_verified": "تم تفعيل حسابك",
+  "new_massage_from": "رسالة جديدة من "
 }

@@ -60,7 +60,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   String? _selectedSize; // Track selected size
   int _quantity = 1;
   bool _isLoadingMoreTriggered = false; // Prevents multiple load more calls
-
+  final tokenUser = sl<CacheHelper>().getData(key: AppConstants.token);
   void _onColorSelected(int index) {
     setState(() {
       _selectedColorIndex = index;
@@ -77,7 +77,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         if (kDebugMode) {
           debugPrint('Selected color index: $index, colorId: $colorId');
         }
-        cubit.fetchVariations(productId: widget.productId, colorId: colorId);
+        if (tokenUser != null) {
+          cubit.fetchVariations(productId: widget.productId, colorId: colorId);
+        } else {
+          showToast(context,
+              message: "you_must_login".tr(context), state: ToastStates.error);
+        }
       }
     }
   }
@@ -141,16 +146,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             color: pv.ColorDetail(id: 0, name: '', code: ''));
   }
 
-  Color? _getSelectedColor() {
+  String? _getSelectedColorName() {
+    // Changed to return color name as String
     final cubit = context.read<SearchCubit>();
     final product = cubit.productModel?.data;
     if (product?.variations != null &&
         _selectedColorIndex >= 0 &&
         _selectedColorIndex < product!.variations!.length) {
-      return Color(int.parse(product
-              .variations![_selectedColorIndex].color?.code
-              ?.replaceFirst('#', '0xff') ??
-          '0xff000000'));
+      return product
+          .variations![_selectedColorIndex].color?.name; // Return color name
     }
     return null;
   }
@@ -392,11 +396,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         onActive: () {
                                           cubit.updateProductStatus(
                                               product?.id ?? 0);
-                                        setState(() {
-                                          product?.active =
+                                          setState(() {
+                                            product?.active =
                                                 product.active == 1 ? 0 : 1;
-                                        });
-                                          
+                                          });
                                         },
                                       ),
                                       SizedBox(height: 15.h),
@@ -422,7 +425,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                               availableColors:
                                                   availableColors.isNotEmpty
                                                       ? availableColors
-                                                      : [Colors.grey],
+                                                      : [],
                                               selectedColorIndex:
                                                   _selectedColorIndex,
                                               onColorSelected: _onColorSelected,
@@ -542,8 +545,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                   type:
                                                       "${product?.accountType}",
                                                   selectedSize: _selectedSize,
-                                                  selectedColor:
-                                                      _getSelectedColor(),
+                                                  selectedColorName:
+                                                      _getSelectedColorName(),
                                                 ),
                                         ),
                                       SizedBox(height: 15.h),
@@ -580,40 +583,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                               CustomLoadingIndicator()),
                                                     );
                                                   }
-                                                  if (state
-                                                      is RelatedProductsError) {
-                                                    return SizedBox(
-                                                      height: 350.h,
-                                                      child: Center(
-                                                        child: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Text(
-                                                              state.message,
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      16.sp,
-                                                                  color: Colors
-                                                                      .red),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed: () => cubit
-                                                                  .fetchReleatedProducts(
-                                                                      id: widget
-                                                                          .productId),
-                                                              child: Text(
-                                                                  'retry'.tr(
-                                                                      context)),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
+
                                                   if (relatedProducts.isEmpty) {
-                                                    return SizedBox(
-                                                      height: 350.h,
+                                                    return Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 10.h),
                                                       child: Center(
                                                         child: Text(
                                                           'no_related_products'

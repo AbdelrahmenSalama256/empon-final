@@ -156,7 +156,7 @@ class DashboardOverview extends StatelessWidget {
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Image.asset(
-                      'assets/images/placeholder.png', // Add a placeholder
+                      'assets/images/placholder.jpg',
                       fit: BoxFit.cover,
                     ),
                   ),

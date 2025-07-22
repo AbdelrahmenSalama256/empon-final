@@ -152,7 +152,6 @@ class _EditProfilePageEnState extends State<EditProfilePage> {
                                         'assets/images/logo.png',
                                     subtitle: '',
                                     isVendor: false,
-                                    onTap: () {},
                                   ),
                                 ),
                           SizedBox(height: 16.h),

@@ -6,14 +6,45 @@ import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import 'local_notification_handler.dart';
 
 class NotificationHandler {
   static FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static String? fcmToken = '';
+  static bool _isInitialized = false;
 
-  static Future init() async {
+  static Future<void> handleBackgroundMessage(RemoteMessage message) async {
+    final cubit = sl<GlobalCubit>();
+    if (!cubit.isNotificationsDisabled && message.notification != null) {
+      LocalNotificationService.showBasicNotification(message);
+    }
+    if (!kReleaseMode) {
+      log('Background Notification: ${message.notification?.title}');
+    }
+  }
+
+  static Future<void> handleNavigation(Map<String, dynamic> data) async {
+    try {
+      if (navigatorKey.currentState != null && data.isNotEmpty) {
+        LocalNotificationService.navigateBasedOnPayload(data);
+      } else {
+        await Future.delayed(const Duration(milliseconds: 1000));
+        if (navigatorKey.currentState != null && data.isNotEmpty) {
+          LocalNotificationService.navigateBasedOnPayload(data);
+        }
+      }
+    } catch (e, stack) {
+      log('Error in handleNavigation: $e');
+      log('Stack trace: $stack');
+    }
+  }
+
+  static Future<void> init() async {
+    if (_isInitialized) return;
+    _isInitialized = true;
+
     await firebaseMessaging.requestPermission(
       alert: true,
       announcement: true,
@@ -44,49 +75,24 @@ class NotificationHandler {
       if (!cubit.isNotificationsDisabled) {
         LocalNotificationService.showBasicNotification(message);
         if (!kReleaseMode) {
-          log('Notification onMessage: ${message.notification?.title}');
+          log('Foreground Notification: ${message.notification?.title}');
           log('Notification Data: ${message.data}');
         }
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      final cubit = sl<GlobalCubit>();
-      if (!cubit.isNotificationsDisabled) {
-        _handleNavigation(message.data);
-      }
+      handleNavigation(message.data);
     });
 
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      final cubit = sl<GlobalCubit>();
-      if (!cubit.isNotificationsDisabled) {
-        _handleNavigation(initialMessage.data);
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        handleNavigation(initialMessage.data);
+      });
     }
-  }
 
-  static Future<void> handleBackgroundMessage(RemoteMessage message) async {
-    final cubit = sl<GlobalCubit>();
-    if (!cubit.isNotificationsDisabled && message.notification != null) {
-      LocalNotificationService.showBasicNotification(message);
-    }
-    if (!kReleaseMode) log('Notification: ${message.notification?.title}');
-  }
-
-  static void _handleNavigation(Map<String, dynamic> data) {
-    if (navigatorKey.currentState != null && data.isNotEmpty) {
-      LocalNotificationService.navigateBasedOnPayload(data);
-    } else {
-      Future.delayed(
-        const Duration(milliseconds: 1000),
-        () {
-          if (navigatorKey.currentState != null && data.isNotEmpty) {
-            LocalNotificationService.navigateBasedOnPayload(data);
-          }
-        },
-      );
-    }
+    await LocalNotificationService.init();
   }
 }
