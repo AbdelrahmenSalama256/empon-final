@@ -203,9 +203,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                                   ),
                                                   (route) => false,
                                                   );
-                                                  Navigator.of(context,
-                                                          rootNavigator: true)
-                                                      .pop();
                                                 } catch (e) {
                                                   Navigator.of(context, rootNavigator: true).pop(); // Close loading
                                                   showToast(
