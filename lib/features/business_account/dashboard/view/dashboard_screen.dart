@@ -156,6 +156,7 @@ class DashboardScreen extends StatelessWidget {
                                                     fontWeight: FontWeight.w500,
                                                     color:
                                                         const Color(0xff8F95AB),
+                                                    overflow: TextOverflow.ellipsis,
                                                   ),
                                                   maxLines: 1,
                                                   overflow:
@@ -222,6 +223,8 @@ class DashboardScreen extends StatelessWidget {
                                                     fontWeight: FontWeight.w500,
                                                     color:
                                                         const Color(0xff8F95AB),
+                                                        overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                   maxLines: 1,
                                                   overflow:
@@ -247,6 +250,7 @@ class DashboardScreen extends StatelessWidget {
                                               style: TextStyle(
                                                 fontSize: 11.sp,
                                                 color: const Color(0xff8F95AB),
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -300,6 +304,7 @@ class DashboardScreen extends StatelessWidget {
                                                 fontSize: 14.sp,
                                                 fontWeight: FontWeight.w400,
                                                 color: const Color(0xff8F8F8F),
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -429,6 +434,8 @@ class DashboardScreen extends StatelessWidget {
                                             fontSize: 12.sp,
                                             fontWeight: FontWeight.w400,
                                             color: AppColors.primary,
+                                            overflow: TextOverflow.ellipsis,
+
                                           ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -446,6 +453,7 @@ class DashboardScreen extends StatelessWidget {
                                       child: Text(
                                         'no_transactions_found'.tr(context),
                                         style: TextStyle(fontSize: 14.sp),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     )
                                   : ListView(

@@ -151,7 +151,7 @@ class _PlanSectionState extends State<PlanSection> {
                       ),
                     ),
                     onPressed: onPressed,
-                    child: const Text("اختيار الخطة"),
+                    child:  Text("Select_Plan".tr(context)),
                   ),
                 ),
                 const SizedBox(height: 8),

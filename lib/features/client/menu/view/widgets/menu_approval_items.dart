@@ -56,33 +56,40 @@ class MenuApprovalItems extends StatelessWidget {
                 ),
             )
             : const SizedBox(),
-        ApprovalItem(
-          title: 'identity_verification_request'.tr(context),
-          status: ApprovalStatus.approved,
-          approveButtonText: accountData.verified!
-              ? _getVerificationStatusText(
-                  context, accountData.verificationRequest)
-              : 'adopt'.tr(context),
-          approveButtonColor: accountData.verificationRequest == "pending"
-              ? Colors.red
-              : Colors.green,
-          icon: Image.asset(
-            "assets/images/verify.png",
-            width: 24.w,
-            height: 24.h,
-          ),
-          onApprove: () {
-            context
-                .read<AccountCubit>()
-                .sendVerficationRequest(accountId: cubit.businessId!);
+        Visibility(
+          visible: accountData.verificationRequest != "approved" ,
+          child: ApprovalItem(
+            title: 'identity_verification_request'.tr(context),
+            status: ApprovalStatus.approved,
+            approveButtonText: accountData.verified!
+                ? _getVerificationStatusText(
+                    context, accountData.verificationRequest)
+                : 'adopt'.tr(context),
+            approveButtonColor: accountData.verificationRequest != "approved"
+                ? Colors.red
+                : Colors.green,
+            icon: Image.asset(
+              "assets/images/verify.png",
+              width: 24.w,
+              height: 24.h,
+            ),
+            onApprove: () {
+              if(accountData.verificationRequest != "pending" &&
+                  accountData.verificationRequest != "approved") {
+                context
+                    .read<AccountCubit>()
+                    .sendVerficationRequest(accountId: cubit.businessId!);
 
-            CustomPopup.show(
-              context: context,
-              type: PopupType.success,
-              title: "request_sent_successfully".tr(context),
-              message: "request_under_review".tr(context),
-            );
-          },
+                CustomPopup.show(
+                  context: context,
+                  type: PopupType.success,
+                  title: "request_sent_successfully".tr(context),
+                  message: "request_under_review".tr(context),
+                );
+              }
+              
+            },
+          ),
         ),
       ],
     );
