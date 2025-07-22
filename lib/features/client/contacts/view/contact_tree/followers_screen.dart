@@ -85,6 +85,10 @@ class _FollowersPageState extends State<FollowersPage> {
                   child: const InviteContactsPage(),
                 ),
               ),
+            ).whenComplete(
+              () {
+                context.read<FriendsCubit>().fetchMyFriends();
+              },
             );
           },
         ),

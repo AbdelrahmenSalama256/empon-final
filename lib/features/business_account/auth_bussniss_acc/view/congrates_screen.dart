@@ -4,7 +4,7 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
-import 'package:embone/features/client/menu/view/menu_screen.dart';
+import 'package:embone/features/base/view/welcome/base_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,99 +15,111 @@ class CongratesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'congrates'.tr(context),
-                          style: TextStyle(
-                            fontSize: 34.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        SizedBox(height: 32.h),
-                        // Success icon
-                        SvgPicture.asset(
-                          'assets/images/svg/congrates.svg',
-                          width: double.infinity,
-                          height: 324.h,
-                          fit: BoxFit.contain,
-                        ),
-                        SizedBox(height: 16.h),
-                        Text(
-                          'store_note'.tr(context),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xffA0A0A0),
-                            height: 1.5.h,
-                          ),
-                        ),
-                        SizedBox(height: 16.h),
-                        // Bottom buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AppButton(
-                                text: 'home'.tr(context),
-                                type: AppButtonType.secondary,
-                                onPressed: () {
-                                  context
-                                      .read<GlobalCubit>()
-                                      .setUserType(UserType.client);
-                                  context.read<GlobalCubit>().getUserProfile();
-
-                                  navigateTo(context, const MenuScreen(isVendor: false));
-                                  showToast(
-                                    context,
-                                    message: 'pending_account'.tr(context),
-                                    state: ToastStates.warning,
-                                  );
-                                },
-                              ),
+    return WillPopScope(
+      onWillPop: () async {
+        context.read<GlobalCubit>().changeBottomNavIndex(4);
+        navigateAndFinish(context, const BaseScreen());
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'congrates'.tr(context),
+                            style: TextStyle(
+                              fontSize: 34.sp,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
                             ),
-                            // SizedBox(width: 12.w),
-                            // Expanded(
-                            //   child: AppButton(
-                            //     text: 'add_product'.tr(context),
-                            //     onPressed: () {
-                            //       navigateTo(
-                            //         context,
-                            //         AddProductPage(
-                            //           isService: false,
-                            //           isUpdate: false,
-                            //           businessAccountId: int.parse(
-                            //             sl<CacheHelper>().getData(
-                            //               key: AppConstants.businessAccountId,
-                            //             ),
-                            //           ),
-                            //         ),
-                            //       );
-                            //     },
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                        SizedBox(height: 32.h),
-                      ],
+                          ),
+                          SizedBox(height: 32.h),
+                          // Success icon
+                          SvgPicture.asset(
+                            'assets/images/svg/congrates.svg',
+                            width: double.infinity,
+                            height: 324.h,
+                            fit: BoxFit.contain,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            'store_note'.tr(context),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xffA0A0A0),
+                              height: 1.5.h,
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+                          // Bottom buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: AppButton(
+                                  text: 'home'.tr(context),
+                                  type: AppButtonType.secondary,
+                                  onPressed: () {
+                                    context
+                                        .read<GlobalCubit>()
+                                        .changeBottomNavIndex(4);
+                                    navigateAndFinish(
+                                        context, const BaseScreen());
+                                    context
+                                        .read<GlobalCubit>()
+                                        .setUserType(UserType.client);
+                                    context
+                                        .read<GlobalCubit>()
+                                        .getUserProfile();
+                                    showToast(
+                                      context,
+                                      message: 'pending_account'.tr(context),
+                                      state: ToastStates.warning,
+                                    );
+                                  },
+                                ),
+                              ),
+                              // SizedBox(width: 12.w),
+                              // Expanded(
+                              //   child: AppButton(
+                              //     text: 'add_product'.tr(context),
+                              //     onPressed: () {
+                              //       navigateTo(
+                              //         context,
+                              //         AddProductPage(
+                              //           isService: false,
+                              //           isUpdate: false,
+                              //           businessAccountId: int.parse(
+                              //             sl<CacheHelper>().getData(
+                              //               key: AppConstants.businessAccountId,
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       );
+                              //     },
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                          SizedBox(height: 32.h),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

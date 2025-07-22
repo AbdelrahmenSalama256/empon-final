@@ -103,7 +103,7 @@ class HelpSupportPage extends StatelessWidget {
                               icon: CupertinoIcons.phone,
                               iconColor: const Color(0xff1E2644),
                               onTap: () => _launchUrl(
-                                  'https://wa.me/${faqsCubit.contactInfo?.whatsappNumber ?? ''}'),
+                                  'https://wa.me/+2${faqsCubit.contactInfo?.whatsappNumber ?? ''}'),
                               isRTL: isRTL,
                             ),
                             const CustomDivider(),

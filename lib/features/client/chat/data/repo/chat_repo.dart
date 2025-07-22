@@ -78,8 +78,8 @@ class ChatRepo {
       formData.fields.addAll([
         MapEntry('receiver_id', receiverId.toString()),
         MapEntry('sender_id', sl<GlobalCubit>().userId.toString()),
-        MapEntry('message', message),
-        MapEntry('media_type', mediaType ?? 'text'),
+        if (message.isNotEmpty) MapEntry('message', message),
+        MapEntry('media_type', mediaType ?? 'text'), // Fallback to 'text'
         if (replayId != null) MapEntry('replay_id', replayId),
       ]);
 
@@ -162,7 +162,7 @@ class ChatRepo {
       );
 
       if (response.data['success'] == true) {
-        return Right(response.data['message'] as String); // "message_deleted"
+        return Right(response.data['message'] as String);
       } else {
         return Left(response.data['message'] ?? 'Failed to delete message');
       }

@@ -82,7 +82,7 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                       AppButton(
                         text: 'continue'.tr(context),
                         onPressed: () {
-                          navigateTo(
+                          navigateReplac(
                               context,
                               BlocProvider.value(
                                 value: context.read<AccountCubit>(),

@@ -27,12 +27,16 @@ class FollowerListItem extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         child: Row(
           children: [
-            _buildAvatar(),
-            SizedBox(width: 12.w),
             Expanded(
-              child: _buildUserInfo(context),
+              child: Row(
+                children: [
+                  _buildAvatar(),
+                  SizedBox(width: 12.w),
+                  Flexible(child: _buildUserInfo(context)),
+                ],
+              ),
             ),
-            Expanded(child: _buildDeleteButton(context)),
+            _buildDeleteButton(context),
           ],
         ),
       ),
@@ -92,13 +96,18 @@ class FollowerListItem extends StatelessWidget {
   }
 
   Widget _buildDeleteButton(BuildContext context) {
-    return AppButton(
-      onPressed: onDeletePressed,
-      text: 'delete'.tr(context),
-      height: 32.h,
-      // width: 100.w,
-      borderRadius: BorderRadius.circular(8.r),
-      type: AppButtonType.primary,
+    final double buttonWidth = 100.w;
+
+    return SizedBox(
+      width: buttonWidth,
+      child: AppButton(
+        onPressed: onDeletePressed,
+        text: 'delete'.tr(context),
+        height: 32.h,
+        // width: 100.w,
+        borderRadius: BorderRadius.circular(8.r),
+        type: AppButtonType.primary,
+      ),
     );
   }
 }

@@ -9,13 +9,16 @@ import 'package:embone/features/client/home/view/widgets/section_header_home.dar
 import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
+import 'package:embone/features/client/shop/data/model/shop_response_model.dart';
 import 'package:embone/features/client/shop/data/repo/shop_repo.dart';
 import 'package:embone/features/client/shop/view/cubit/shop_cubit.dart';
 import 'package:embone/features/client/shop/view/cubit/shop_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:embone/features/client/shop/data/model/shop_response_model.dart';
+
+import '../../../../core/constants/widgets/print_util.dart';
+import '../../../business_account/home/view/home_buisniss.dart';
 import 'widgets/categories_filter.dart';
 
 class ShopScreen extends StatefulWidget {
@@ -58,8 +61,18 @@ class _ShopScreenState extends State<ShopScreen> {
                     },
                   ),
                   state is ShopLoading
-                      ? const Expanded(
-                          child: Center(child: CustomLoadingIndicator()))
+                      ? Expanded(
+                          child: Center(
+                          child: SingleChildScrollView(
+                            child: RefreshIndicator(
+                              onRefresh: () async {
+                                cubit.init();
+                              },
+                              child:
+                                  const Center(child: CustomLoadingIndicator()),
+                            ),
+                          ),
+                        ))
                       : Expanded(
                           child: RefreshIndicator(
                             onRefresh: () async {
@@ -101,10 +114,14 @@ class _ShopScreenState extends State<ShopScreen> {
                                                   EdgeInsets.only(bottom: 10.h),
                                               child: _buildSection(
                                                 context: context,
+                                                account:
+                                                    account, // تمرير account
                                                 title: account.name ?? '',
                                                 imageUrl: account.image ?? '',
                                                 products:
                                                     account.products ?? [],
+                                                isSponsored:
+                                                    false, // افتراضيًا مش إعلان
                                               ),
                                             );
                                           }).toList(),
@@ -125,9 +142,11 @@ class _ShopScreenState extends State<ShopScreen> {
 
   Widget _buildSection({
     required BuildContext context,
+    required AccountModel account, // إضافة account كمعلمة
     required String title,
     required String imageUrl,
     required List<ProductModel> products,
+    bool isSponsored = false, // إضافة معلمة لتحديد الإعلانات
   }) {
     return Container(
       decoration: const BoxDecoration(color: Color(0xffF6F6F6)),
@@ -138,8 +157,19 @@ class _ShopScreenState extends State<ShopScreen> {
             title: title,
             isNetworkImage: true,
             imageUrl: imageUrl,
-            subtitle: "sponsored".tr(context),
-            showCloseButton: true,
+            subtitle: isSponsored ? "sponsored".tr(context) : null,
+            showCloseButton: false,
+            onTap: () {
+              PrintUtil.debug("Brand tapped: $title");
+              navigateTo(
+                context,
+                HomeStoreScreen(
+                  businessAccountId: account.id ?? 0, // استخدام account.id
+                  isVendor: false,
+                  businessAccountname: title,
+                ),
+              );
+            },
           ),
           SizedBox(
             height: 350.h,
@@ -155,18 +185,33 @@ class _ShopScreenState extends State<ShopScreen> {
                   badge: '',
                   actionText: 'shop_now'.tr(context),
                   isFavorite: product.isFavourite ?? false,
-                  onFavoriteToggle: () {},
+                  onFavoriteToggle: () {
+                    context
+                        .read<GlobalCubit>()
+                        .addProductToWishlist(product.id ?? 0);
+                  },
                   onActionTap: () {
                     navigateTo(
-                        context,
-                        BlocProvider(
-                          create: (context) => SearchCubit(sl<SearchRepo>()),
-                          child: ProductDetailPage(
-                            productId: product.id ?? 0,
-                          ),
-                        ));
+                      context,
+                      BlocProvider(
+                        create: (context) => SearchCubit(sl<SearchRepo>()),
+                        child: ProductDetailPage(
+                          productId: product.id ?? 0,
+                        ),
+                      ),
+                    );
                   },
-                  onCardTap: () {},
+                  onCardTap: () {
+                    navigateTo(
+                      context,
+                      BlocProvider(
+                        create: (context) => SearchCubit(sl<SearchRepo>()),
+                        child: ProductDetailPage(
+                          productId: product.id ?? 0,
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),

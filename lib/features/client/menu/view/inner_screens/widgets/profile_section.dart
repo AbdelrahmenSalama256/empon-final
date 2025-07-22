@@ -11,7 +11,7 @@ class ProfileSection extends StatelessWidget {
   final String userImageUrl;
   final String subtitle;
   final bool isVendor;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color? borderColor;
   final bool isAddNew;
 
@@ -21,7 +21,7 @@ class ProfileSection extends StatelessWidget {
     required this.userImageUrl,
     required this.subtitle,
     this.isVendor = false,
-    required this.onTap,
+    this.onTap,
     this.borderColor,
     this.isAddNew = false,
   });
@@ -38,11 +38,13 @@ class ProfileSection extends StatelessWidget {
             ProfileImagePicker(
               profileImage: cubit.profileImage,
               networkImageUrl: userImageUrl,
-              onImagePicked: (XFile? image) {
-                if (image != null) {
-                  cubit.setProfileImage(image);
-                }
-              },
+              onImagePicked: onTap == null
+                  ? (XFile? image) {
+                      if (image != null) {
+                        cubit.setProfileImage(image);
+                      }
+                    }
+                  : null, // تعطيل onImagePicked إذا كان onTap موجود
             ),
             SizedBox(height: 12.h),
             Text(

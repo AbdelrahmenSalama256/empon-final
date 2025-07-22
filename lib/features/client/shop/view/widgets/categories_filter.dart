@@ -50,7 +50,7 @@ class CategoriesFilter extends StatelessWidget {
                     height: 56.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white,
+                      color: !isSelected ? Colors.grey.shade200 : Colors.white,
                       border: isSelected
                           ? Border.all(
                               color: const Color(0xff64B95C),

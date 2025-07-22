@@ -3,6 +3,8 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'gallery_slider.dart';
+
 class ProductImageSection extends StatefulWidget {
   final List<String> images;
   final bool autoPlay;
@@ -59,25 +61,46 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                       });
                     },
                   ),
-                  items: widget.images.map((imageUrl) {
+                  items: widget.images.asMap().entries.map((entry) {
+                    final int index = entry.key;
+                    final String imageUrl = entry.value;
                     return Builder(
                       builder: (BuildContext context) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(10.r),
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            height: 250.h,
-                            errorBuilder: (context, error, stackTrace) {
-                              return ClipRRect(
-                                borderRadius: BorderRadius.circular(10.r),
-                                child: Image.asset(
-                                  "assets/images/placholder.jpg",
-                                  fit: BoxFit.cover,
-                                  height: 250.h,
-                                ),
-                              );
-                            },
+                        return GestureDetector(
+                          onTap: () {
+                            // Show full-screen GallerySlider dialog
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  insetPadding:
+                                      EdgeInsets.symmetric(horizontal: 10.w),
+                                  backgroundColor: Colors.transparent,
+                                  child: GallerySlider(
+                                    index: index,
+                                    photos: widget.images,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.r),
+                            child: Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              height: 250.h,
+                              errorBuilder: (context, error, stackTrace) {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  child: Image.asset(
+                                    "assets/images/placholder.jpg",
+                                    fit: BoxFit.cover,
+                                    height: 250.h,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         );
                       },

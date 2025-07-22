@@ -11,13 +11,13 @@ import 'package:image_picker/image_picker.dart';
 class ProfileImagePicker extends StatelessWidget {
   final XFile? profileImage;
   final String? networkImageUrl;
-  final Function(XFile?) onImagePicked;
+  final Function(XFile?)? onImagePicked;
 
   const ProfileImagePicker({
     super.key,
     this.profileImage,
     this.networkImageUrl,
-    required this.onImagePicked,
+    this.onImagePicked,
   });
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
@@ -30,7 +30,7 @@ class ProfileImagePicker extends StatelessWidget {
         maxHeight: 800,
       );
       if (image != null) {
-        onImagePicked(image); // Notify parent with the selected XFile
+        onImagePicked!(image); // Notify parent with the selected XFile
       }
     } catch (e) {
       if (!context.mounted) return;
@@ -93,7 +93,8 @@ class ProfileImagePicker extends StatelessWidget {
         networkImageUrl != null && networkImageUrl!.isNotEmpty;
 
     return GestureDetector(
-      onTap: () => _showImageSourceDialog(context),
+      onTap:
+          onImagePicked != null ? () => _showImageSourceDialog(context) : null,
       child: Stack(
         children: [
           Container(
@@ -125,20 +126,22 @@ class ProfileImagePicker extends StatelessWidget {
                       )
                     : _buildPlaceholder(),
           ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              width: 24.w,
-              height: 24.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                border: Border.all(color: Colors.grey.shade200, width: 1.w),
+          if (onImagePicked !=
+              null) // عرض زر التعديل فقط إذا كان onImagePicked موجود
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                width: 24.w,
+                height: 24.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  border: Border.all(color: Colors.grey.shade200, width: 1.w),
+                ),
+                child: Icon(Icons.edit, size: 14.w, color: AppColors.primary),
               ),
-              child: Icon(Icons.edit, size: 14.w, color: AppColors.primary),
             ),
-          ),
         ],
       ),
     );

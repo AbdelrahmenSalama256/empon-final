@@ -198,47 +198,6 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     );
   }
 
-  Widget _buildLastUpdatedCard(String lastUpdated) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(
-          color: AppColors.primary.withOpacity(0.2),
-          width: 1.w,
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.update,
-            color: AppColors.primary,
-            size: 20.w,
-          ),
-          SizedBox(width: 8.w),
-          Text(
-            'last_updated'.tr(context),
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w500,
-              color: AppColors.primary,
-            ),
-          ),
-          SizedBox(width: 8.w),
-          Text(
-            lastUpdated,
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: AppColors.primary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   List<Widget> _buildPrivacyPolicySections(String content) {
     return [
       _buildPolicySection(
