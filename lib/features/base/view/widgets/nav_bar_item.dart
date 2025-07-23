@@ -2,8 +2,9 @@ import 'package:embone/core/locale/app_loacl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
-BottomNavigationBarItem buildNavBarItem({
+PersistentBottomNavBarItem buildNavBarItem({
   required BuildContext context,
   required String iconPath,
   required String labelKey,
@@ -14,10 +15,37 @@ BottomNavigationBarItem buildNavBarItem({
   Color inactiveColor = const Color(0xFF9DB2CE),
 }) {
   if (isCenterItem) {
-    return BottomNavigationBarItem(
+    return PersistentBottomNavBarItem(
       icon: Container(
-        width: 60.w,
-        height: 60.h,
+        width: 40.w,
+        height: 40.h,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(51),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Center(
+          child: SvgPicture.asset(
+            iconPath,
+            width: 50.w,
+            height: 50.h,
+            colorFilter: ColorFilter.mode(
+              activeColor,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+      ),
+      inactiveIcon: Container(
+        width: 50.w,
+        height: 50.h,
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
@@ -38,36 +66,41 @@ BottomNavigationBarItem buildNavBarItem({
           ),
         ),
       ),
-      activeIcon: Container(
-        width: 60.w,
-        height: 60.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(51),
-              spreadRadius: 2,
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Center(
-          child: SvgPicture.asset(
-            iconPath,
-            width: 50.w,
-            height: 50.h,
-          ),
-        ),
-      ),
-      label: labelKey.isNotEmpty
-          ? labelKey.tr(context)
-          : ' ', // Ensure non-null label
+      title: '',
+      activeColorPrimary: Colors.transparent,
+      inactiveColorPrimary: Colors.white,
     );
   } else {
-    return BottomNavigationBarItem(
+    return PersistentBottomNavBarItem(
       icon: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding:
+                labelKey == 'nav_menu' ? EdgeInsets.all(4.w) : EdgeInsets.zero,
+            child: SvgPicture.asset(
+              iconPath,
+              colorFilter: ColorFilter.mode(
+                activeColor,
+                BlendMode.srcIn,
+              ),
+              height: iconSize.h,
+              width: iconSize.w,
+            ),
+          ),
+          if (labelKey.isNotEmpty) SizedBox(height: 2.h),
+          if (labelKey.isNotEmpty)
+            Text(
+              labelKey.tr(context),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: activeColor,
+                    fontSize: 10.sp,
+                  ),
+            ),
+        ],
+      ),
+      inactiveIcon: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -86,28 +119,8 @@ BottomNavigationBarItem buildNavBarItem({
           ),
         ],
       ),
-      activeIcon: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding:
-                labelKey == 'nav_menu' ? EdgeInsets.all(4.w) : EdgeInsets.zero,
-            child: SvgPicture.asset(
-              iconPath,
-              colorFilter: ColorFilter.mode(
-                activeColor,
-                BlendMode.srcIn,
-              ),
-              height: iconSize.h,
-              width: iconSize.w,
-            ),
-          ),
-        ],
-      ),
-      label: labelKey.isNotEmpty
-          ? labelKey.tr(context)
-          : ' ', // Ensure non-null label
+      activeColorPrimary: activeColor,
+      inactiveColorPrimary: inactiveColor,
     );
   }
 }

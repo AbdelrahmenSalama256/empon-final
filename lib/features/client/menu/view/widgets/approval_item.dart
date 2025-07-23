@@ -66,7 +66,7 @@ class ApprovalItem extends StatelessWidget {
               child: AppButton(
                 onPressed: onApprove,
                 text: approveButtonText,
-                backgroundColor: approveButtonColor ,
+                backgroundColor: approveButtonColor,
                 padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
                 height: 30.h,
                 borderRadius: BorderRadius.circular(8.r),

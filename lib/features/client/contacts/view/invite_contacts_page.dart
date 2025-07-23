@@ -144,16 +144,19 @@ class InviteContactsPage extends StatelessWidget {
                                                       isFriend: user.isFriend ??
                                                           false,
                                                     ),
-                                                    onTap: () async {
-                                                      if (!friendsCubit
-                                                              .isClosed &&
-                                                          context.mounted) {
-                                                        await friendsCubit
-                                                            .toggleFriendRequest(
-                                                          user.id.toString(),
-                                                        );
-                                                      }
-                                                    },
+                                                    onTap: user.isFriend == true
+                                                        ? () {
+                                                            friendsCubit
+                                                                .declineFriendRequest(user
+                                                                    .id
+                                                                    .toString());
+                                                          }
+                                                        : () async {
+                                                            friendsCubit
+                                                                .toggleFriendRequest(user
+                                                                    .id
+                                                                    .toString());
+                                                          },
                                                     isRegistered: true,
                                                   ),
                                                 );

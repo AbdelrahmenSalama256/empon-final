@@ -159,6 +159,7 @@ class FriendsCubit extends Cubit<FriendsState> {
     response.fold(
       (error) {
         emit(FriendsError(error));
+        PrintUtil.error(error);
       },
       (update) {
         friendRequests[userId] = update.friendRequest;
