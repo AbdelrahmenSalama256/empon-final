@@ -1,19 +1,21 @@
 class StoreRequestResponse {
-  final bool success;
-  final String message;
-  final StoreRequestData data;
+  final bool? success;
+  final String? message;
+  final StoreRequestData? data;
 
   StoreRequestResponse({
-    required this.success,
-    required this.message,
-    required this.data,
+    this.success,
+     this.message,
+     this.data,
   });
 
   factory StoreRequestResponse.fromJson(Map<String, dynamic> json) {
     return StoreRequestResponse(
-      success: json['success'],
-      message: json['message'],
-      data: StoreRequestData.fromJson(json['data']),
+      success: json['success'] as bool?,
+      message: json['message'] as String?,
+      data: json['data'] != null
+          ? StoreRequestData.fromJson(json['data'] as Map<String, dynamic>)
+          : null,
     );
   }
 }

@@ -16,7 +16,10 @@ class StoreNameWithVerification extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(width: 28.w),
+            Visibility(
+              visible: isVerified,
+              child: SizedBox(width: 28.w),
+            ),
             Visibility(
               visible: isVerified,
               child: Image.asset(
@@ -25,7 +28,10 @@ class StoreNameWithVerification extends StatelessWidget {
                 height: 24.h,
               ),
             ),
-            SizedBox(width: 8.w),
+            Visibility(
+              visible: isVerified,
+              child: SizedBox(width: 8.w),
+            ),
             Text(
               storeName,
               style: TextStyle(

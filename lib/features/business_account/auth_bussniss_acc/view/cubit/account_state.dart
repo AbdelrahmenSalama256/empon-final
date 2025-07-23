@@ -47,9 +47,9 @@ class StoreRequestLoading extends AccountState {}
 class VerficationRequestLoading extends AccountState {}
 
 class StoreRequestSuccess extends AccountState {
-  final StoreRequestData data;
-
-  StoreRequestSuccess(this.data);
+  
+}
+class VerficationRequestSuccess extends AccountState {
 }
 
 class StoreRequestError extends AccountState {

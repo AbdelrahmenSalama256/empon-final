@@ -302,14 +302,14 @@ class _AccountsBottomSheetContentState
                         }
                       }),
                 ),
-                SizedBox(height: 16.h),
-                // Add store option
-                AddStoreOption(
-                  onTap: () {
-                    Navigator.pop(context);
-                    navigateTo(context, const CreateBusinessAccountTypePage());
-                  },
-                ),
+                // SizedBox(height: 16.h),
+                // // Add store option
+                // AddStoreOption(
+                //   onTap: () {
+                //     Navigator.pop(context);
+                //     navigateTo(context, const CreateBusinessAccountTypePage());
+                //   },
+                // ),
                 SizedBox(height: 16.h),
               ],
             ),

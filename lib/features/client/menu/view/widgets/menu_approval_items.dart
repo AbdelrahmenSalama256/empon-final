@@ -1,3 +1,4 @@
+import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_state.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/custom_popup.dart';
 import '../../../../business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
+
 class MenuApprovalItems extends StatelessWidget {
   final dynamic accountData;
   final GlobalCubit cubit;
@@ -22,7 +24,26 @@ class MenuApprovalItems extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
-        if (state is StoreRequestSuccess || state is StoreRequestSuccess) {
+        if (state is StoreRequestSuccess) {
+          context
+              .read<GlobalCubit>()
+              .userAccount!
+              .where((element) => element.id == cubit.businessId)
+              .first
+              .storeRequest = "pending";
+          CustomPopup.show(
+            context: context,
+            type: PopupType.success,
+            title: "request_sent_successfully".tr(context),
+            message: "request_under_review".tr(context),
+          );
+        } else if (state is VerficationRequestSuccess) {
+          context
+              .read<GlobalCubit>()
+              .userAccount!
+              .where((element) => element.id == cubit.businessId)
+              .first
+              .verificationRequest = "pending";
           CustomPopup.show(
             context: context,
             type: PopupType.success,
@@ -54,21 +75,21 @@ class MenuApprovalItems extends StatelessWidget {
                           width: 24.w,
                           height: 24.h,
                         ),
-                        approveButtonText: accountData.isStore == 0
-                            ? _getVerificationStatusText(
-                                context, accountData.storeRequest)
-                            : 'congrates'.tr(context),
+                        approveButtonText:
+                            accountData.storeRequest != "no_request"
+                                ? _getVerificationStatusText(
+                                    context, accountData.storeRequest)
+                                : 'adopt'.tr(context),
                         approveButtonColor: accountData.isStore == 0
-                            ? Colors.red
+                            ? AppColors.warning
                             : Colors.green,
                         onApprove: () {
                           if (accountData.isStore == 0) {
-                            if (
+                            if (accountData.storeRequest != "pending" &&
                                 accountData.storeRequest != "approved") {
-                             context.read<AccountCubit>().sendStoreRequest(
+                              context.read<AccountCubit>().sendStoreRequest(
                                   accountId: cubit.businessId!);
                             }
-                            
                           }
                         },
                         isLoading: state is StoreRequestLoading ? true : false,
@@ -82,21 +103,24 @@ class MenuApprovalItems extends StatelessWidget {
                 child: ApprovalItem(
                   title: 'identity_verification_request'.tr(context),
                   status: ApprovalStatus.approved,
-                  approveButtonText: accountData.verified!
-                      ? _getVerificationStatusText(
-                          context, accountData.verificationRequest)
-                      : 'adopt'.tr(context),
+                  approveButtonText:
+                      accountData.verificationRequest != "no_request"
+                          ? _getVerificationStatusText(
+                              context, accountData.verificationRequest)
+                          : 'adopt'.tr(context),
                   approveButtonColor:
-                      accountData.verificationRequest != "approved"
-                          ? Colors.red
-                          : Colors.green,
+                      accountData.verificationRequest == "no_request"
+                          ? AppColors.green
+                          : accountData.verificationRequest == "pending"
+                              ? AppColors.warning
+                              : Colors.red,
                   icon: Image.asset(
                     "assets/images/verify.png",
                     width: 24.w,
                     height: 24.h,
                   ),
                   onApprove: () {
-                    if (
+                    if (accountData.verificationRequest != "pending" &&
                         accountData.verificationRequest != "approved") {
                       context
                           .read<AccountCubit>()

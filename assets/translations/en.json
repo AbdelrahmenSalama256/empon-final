@@ -328,6 +328,7 @@
   "number_of_sales": "Number of Sales",
   "Select_Plan": "Select Plan",
   "error": "Error",
+  "rejected": "Rejected",
   "business_account_name_error": "Business account name is required",
   "checkout_choose_payment_method_title": "Pay via Ambon Wallet",
   "checkout_payment_method_cash": "Cash on Delivery",
