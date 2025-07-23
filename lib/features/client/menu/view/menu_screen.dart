@@ -14,7 +14,6 @@ import '../../../../core/network/local_network.dart';
 import '../../../../core/services/service_locator.dart';
 import '../../../base/view/welcome/intro_screen.dart';
 import '../../../business_account/auth_bussniss_acc/data/repo/account_repo.dart';
-import '../../../business_account/auth_bussniss_acc/view/create_business_account.dart';
 import '../../../business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import '../../../business_account/auth_bussniss_acc/view/cubit/account_state.dart';
 import '../../../client/menu/data/repo/business_repo.dart';
@@ -177,21 +176,21 @@ class MenuScreen extends StatelessWidget {
                                                           ));
                                                     },
                                                   ),
-                                                  SizedBox(width: 15.w),
-                                                  ProfileSection(
-                                                    userName:
-                                                        'add_new_buisniss_account'
-                                                            .tr(context),
-                                                    userImageUrl: '',
-                                                    isVendor: isVendor!,
-                                                    onTap: () {
-                                                      navigateTo(
-                                                        context,
-                                                        const CreateBusinessAccountTypePage(),
-                                                      );
-                                                    },
-                                                    isAddNew: true,
-                                                  ),
+                                                  // SizedBox(width: 15.w),
+                                                  // ProfileSection(
+                                                  //   userName:
+                                                  //       'add_new_buisniss_account'
+                                                  //           .tr(context),
+                                                  //   userImageUrl: '',
+                                                  //   isVendor: isVendor!,
+                                                  //   onTap: () {
+                                                  //     navigateTo(
+                                                  //       context,
+                                                  //       const CreateBusinessAccountTypePage(),
+                                                  //     );
+                                                  //   },
+                                                  //   isAddNew: true,
+                                                  // ),
                                                 ],
                                               ),
                                         SizedBox(height: 32.h),

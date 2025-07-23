@@ -64,7 +64,7 @@ class HomeStoreContent extends StatelessWidget {
                     longitude: double.parse(accountData.accountData!.data.lng!),
                   );
                 },
-                isVerified: accountData.accountData?.data.verified ?? false,
+                isVerified: accountData.accountData?.data.verificationRequest == "approved",
               ),
               SizedBox(height: 16.h),
               HomeStoreFollowers(

@@ -48,7 +48,8 @@ class BusinessAccount {
   final int? totalServices;
   final List<Service>? services;
   final int? totalFollowers;
-  final List<Follower>? followers; // Added followers list
+  final List<Follower>? followers; 
+  final String? verificationRequest;
 
   BusinessAccount({
     required this.id,
@@ -81,6 +82,7 @@ class BusinessAccount {
     required this.services,
     required this.totalFollowers,
     this.followers, // Nullable list of followers
+    this.verificationRequest,
   });
 
   factory BusinessAccount.fromJson(Map<String, dynamic> json) {
@@ -119,6 +121,7 @@ class BusinessAccount {
       followers: (json['followers'] as List?)
           ?.map((e) => Follower.fromJson(e))
           .toList(), // Parse followers
+      verificationRequest: json['verification_request_response'],
     );
   }
 }

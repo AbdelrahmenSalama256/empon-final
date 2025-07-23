@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../data/model/account_model.dart';
+import '../../data/model/tostore_model.dart';
 import 'account_state.dart';
 
 class AccountCubit extends Cubit<AccountState> {
@@ -254,6 +255,7 @@ List<LocationModel> getFilteredStates() {
       },
     );
   }
+  StoreRequestData? storeRequestData;
   Future<void> sendStoreRequest({required int accountId}) async {
     emit(StoreRequestLoading());
 
@@ -266,7 +268,9 @@ List<LocationModel> getFilteredStates() {
           emit(StoreRequestError(l));
         },
         (r) {
-          emit(StoreRequestSuccess(r.data));
+          storeRequestData = r.data;
+          Print.success('Store request sent successfully: ${r.data}');
+          emit(StoreRequestSuccess());
         },
       );
     } on ServerException catch (e) {
@@ -308,25 +312,19 @@ List<LocationModel> getFilteredStates() {
   Future<void> sendVerficationRequest({required int accountId}) async {
     emit(VerficationRequestLoading());
 
-    try {
-      final response = await accountRepo.requestBusinessVirfication(accountId);
 
+      final response = await accountRepo.requestBusinessVirfication(accountId);
+PrintUtil.debug(response);
       response.fold(
         (l) {
           Print.error('API Error: $l');
           emit(StoreRequestError(l));
         },
         (r) {
-          emit(StoreRequestSuccess(r.data));
+          emit(VerficationRequestSuccess());
         },
       );
-    } on ServerException catch (e) {
-      emit(StoreRequestError(e.errorModel.detail));
-    } on NoInternetException catch (e) {
-      emit(StoreRequestError(e.errorModel.detail));
-    } catch (e) {
-      emit(StoreRequestError("Something went wrong"));
-    }
+    
   }
   void initControllers({Account? model}) {
     if (model != null) {

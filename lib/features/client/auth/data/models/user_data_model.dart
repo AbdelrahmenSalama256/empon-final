@@ -313,8 +313,8 @@ class Account {
   final List<dynamic>? followers;
   final int? isStore;
   final String? packageName;
-  final String? verificationRequest;
-  final String? storeRequest;
+  String? verificationRequest;
+  String? storeRequest;
 
   Account({
     this.id,

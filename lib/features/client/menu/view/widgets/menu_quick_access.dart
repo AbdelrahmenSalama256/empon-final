@@ -78,15 +78,16 @@ class MenuQuickAccess extends StatelessWidget {
                     child: QuickAccessButton(
                       needSubTitle: true,
                       onTap: () {
-                        navigateTo(
-                          context,
-                          BlocProvider(
-                            create: (context) =>
-                                StatisticsCubit(sl<StatisticsRepo>())
-                                  ..fetchStatistics(cubit.businessId),
-                            child: const DashboardScreen(),
-                          ),
-                        );
+                        context.read<GlobalCubit>().changeBottomNavIndex(1);
+                        // navigateTo(
+                        //   context,
+                        //   BlocProvider(
+                        //     create: (context) =>
+                        //         StatisticsCubit(sl<StatisticsRepo>())
+                        //           ..fetchStatistics(cubit.businessId),
+                        //     child: const DashboardScreen(),
+                        //   ),
+                        // );
                       },
                       title: "current_plan".tr(context),
                       icon: "assets/images/plan_brand.png",

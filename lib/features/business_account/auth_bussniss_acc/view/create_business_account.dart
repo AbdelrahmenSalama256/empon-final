@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
@@ -151,7 +152,12 @@ class CreateBusinessAccountTypePage extends StatelessWidget {
                                   text: 'next'.tr(context),
                                   onPressed: () {
                                     if (cubit.nameController.text.isEmpty) {
-                                      return;
+                                      showToast(
+                                        context,
+                                        message: 'business_account_name_error'
+                                            .tr(context),
+                                        state: ToastStates.error,
+                                      );
                                     } else {
                                       Navigator.push(
                                         context,
