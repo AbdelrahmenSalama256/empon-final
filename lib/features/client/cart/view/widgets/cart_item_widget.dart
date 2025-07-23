@@ -25,6 +25,14 @@ class CartItemWidget extends StatelessWidget {
     final textDirection = Directionality.of(context);
     final separator = textDirection == TextDirection.rtl ? '، ' : ', ';
 
+    // Build the description text conditionally
+    String description = item.name;
+    if (item.color != null && item.color is CartColor) {
+      description = '${(item.color as CartColor).name}$separator$description';
+    }
+    description =
+        '$description$separator${'cart_size_label'.tr(context)} ${item.attributes?.name ?? ''}';
+
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(12.w),
@@ -142,14 +150,16 @@ class CartItemWidget extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 4.h),
-                Text(
-                  '${item.color}$separator${item.name}$separator${'cart_size_label'.tr(context)} ${item.attributes?.name}',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                SizedBox(height: 12.h),
+                description == null
+                    ? const SizedBox.shrink()
+                    : Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                SizedBox(height: description == null ? 4.h : 12.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

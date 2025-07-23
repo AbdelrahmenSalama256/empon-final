@@ -81,6 +81,8 @@ class EndPoints {
   static const String deleteChat = '${baseUrl}chat/clear';
   static const String chatWith = '${baseUrl}chat-with';
   static const String sendMessage = '${baseUrl}send-message';
+  static const String supportChat = '${baseUrl}support/send';
+  static const String supportChatGet = '${baseUrl}support/chat';
   // ! accounts
   static const String accounts = '${baseUrl}account';
   static const String accountsFollow = '${baseUrl}accounts/follow';

@@ -50,14 +50,33 @@ class BusinessAccountOption extends StatelessWidget {
           children: [
             // Store logo
             imagePath.startsWith('http')
-                ? CircleAvatar(
-                    radius: 30.r,
-                    backgroundImage: NetworkImage(imagePath),
+                ? Container(
+                    width: 50.w,
+                    height: 50.w,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100.r),
+                    ),
+                    child: Image.network(
+                      imagePath,
+                      width: double.infinity,
+                      height: 70.w,
+                      fit: BoxFit.cover,
+                    ),
                   )
-                : CircleAvatar(
-                    radius: 30.r,
-                    backgroundImage: const AssetImage('assets/images/logo.png')
-                        as ImageProvider,
+                : Container(
+                    width: 50.w,
+                    height: 50.w,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100.r),
+                    ),
+                    child: Image.asset(
+                      "assets/images/placholder.jpg",
+                      width: double.infinity,
+                      height: 70.w,
+                      fit: BoxFit.cover,
+                    ),
                   ),
             SizedBox(width: 12.w),
             // Store name

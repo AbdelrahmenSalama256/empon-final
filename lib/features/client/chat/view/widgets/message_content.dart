@@ -94,6 +94,7 @@ class MessageContent extends StatelessWidget {
   }
 
   Widget _buildImageMessage(BuildContext context) {
+    final heroTag = 'image_${message.mediaPath.hashCode}_${message.createdAt}';
     return Container(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.65,
@@ -113,73 +114,92 @@ class MessageContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12.r),
-              topRight: Radius.circular(12.r),
-              bottomLeft: Radius.circular(message.message.isEmpty ? 12.r : 0),
-              bottomRight: Radius.circular(message.message.isEmpty ? 12.r : 0),
-            ),
-            child: Image.network(
-              message.mediaPath!,
-              width: MediaQuery.of(context).size.width * 0.65,
-              fit: BoxFit.cover,
-              height: 200.h,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  width: MediaQuery.of(context).size.width * 0.65,
-                  height: 100.h,
-                  color: isMe
-                      ? AppColors.primary.withOpacity(0.2)
-                      : Colors.grey.shade100,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                      color: isMe ? Colors.white : AppColors.primary,
-                      strokeWidth: 2.w,
-                    ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullScreenImage(
+                    imagePath: message.mediaPath!,
+                    heroTag: heroTag,
                   ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                // Attempt to load local file if mediaPath is a valid file path
-                final file = File(message.mediaPath!);
-                if (file.existsSync()) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12.r),
-                      topRight: Radius.circular(12.r),
-                      bottomLeft:
-                          Radius.circular(message.message.isEmpty ? 12.r : 0),
-                      bottomRight:
-                          Radius.circular(message.message.isEmpty ? 12.r : 0),
-                    ),
-                    child: Image.file(
-                      file,
+                ),
+              );
+            },
+            child: Hero(
+              tag: heroTag,
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12.r),
+                  topRight: Radius.circular(12.r),
+                  bottomLeft:
+                      Radius.circular(message.message.isEmpty ? 12.r : 0),
+                  bottomRight:
+                      Radius.circular(message.message.isEmpty ? 12.r : 0),
+                ),
+                child: Image.network(
+                  message.mediaPath!,
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  fit: BoxFit.cover,
+                  height: 200.h,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
                       width: MediaQuery.of(context).size.width * 0.65,
-                      height: 100.h,
-                      fit: BoxFit.fitWidth,
-                    ),
-                  );
-                }
-                // Fallback to asset if local file is not valid
-                return Container(
-                  width: MediaQuery.of(context).size.width * 0.65,
-                  height: 100.h,
-                  color: isMe
-                      ? AppColors.primary.withOpacity(0.2)
-                      : Colors.grey.shade100,
-                  child: Image.asset(
-                    "assets/images/placholder.jpg",
-                    width: MediaQuery.of(context).size.width * 0.65,
-                    fit: BoxFit.fitWidth,
-                  ),
-                );
-              },
+                      height: 200.h,
+                      color: isMe
+                          ? AppColors.primary.withOpacity(0.2)
+                          : Colors.grey.shade100,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                          color: isMe ? Colors.white : AppColors.primary,
+                          strokeWidth: 2.w,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    final file = File(message.mediaPath!);
+                    if (file.existsSync()) {
+                      return Hero(
+                        tag: heroTag,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12.r),
+                            topRight: Radius.circular(12.r),
+                            bottomLeft: Radius.circular(
+                                message.message.isEmpty ? 12.r : 0),
+                            bottomRight: Radius.circular(
+                                message.message.isEmpty ? 12.r : 0),
+                          ),
+                          child: Image.file(
+                            file,
+                            width: MediaQuery.of(context).size.width * 0.65,
+                            height: 200.h,
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      );
+                    }
+                    return Container(
+                      width: MediaQuery.of(context).size.width * 0.65,
+                      height: 200.h,
+                      color: isMe
+                          ? AppColors.primary.withOpacity(0.2)
+                          : Colors.grey.shade100,
+                      child: Image.asset(
+                        "assets/images/placholder.jpg",
+                        width: MediaQuery.of(context).size.width * 0.65,
+                        fit: BoxFit.fitWidth,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
           if (message.message.isNotEmpty)
@@ -356,5 +376,61 @@ class MessageContent extends StatelessWidget {
     } catch (e) {
       return 'now'.tr(context);
     }
+  }
+}
+
+class FullScreenImage extends StatelessWidget {
+  final String imagePath;
+  final String heroTag;
+
+  const FullScreenImage({
+    super.key,
+    required this.imagePath,
+    required this.heroTag,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Center(
+          child: Hero(
+            tag: heroTag,
+            child: Image.network(
+              imagePath,
+              fit: BoxFit.contain,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                    color: AppColors.primary,
+                    strokeWidth: 2.w,
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                final file = File(imagePath);
+                if (file.existsSync()) {
+                  return Image.file(
+                    file,
+                    fit: BoxFit.contain,
+                  );
+                }
+                return Image.asset(
+                  "assets/images/placholder.jpg",
+                  fit: BoxFit.contain,
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

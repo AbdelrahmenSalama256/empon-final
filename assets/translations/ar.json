@@ -784,7 +784,7 @@
   "exclusive": "حصري",
   "no_phone_numbers": "لا توجد أرقام هواتف صالحة للتحقق",
   "app_link_shared": "تم مشاركة رابط التطبيق!",
-  "no_brands_found": "لا توجد مراكات تجارية",
+  "no_brands_found": "لا توجد مركات تجارية",
   "follow": "متابعة",
   "services": "الخدمات",
   "no_products": "لا توجد منتجات متاحة",
@@ -939,5 +939,7 @@
   "otp_sent": "تم إرسال رمز التحقق بنجاح",
   "otp_empty": "يرجى إدخال رمز التحقق",
   "server_timeout_error": "انتهت مهلة الخادم، حاول مرة أخرى لاحقًا",
-  "unexpected_error": "حدث خطأ غير متوقع"
+  "unexpected_error": "حدث خطأ غير متوقع",
+  "customer_support": "دعم العملاء",
+  "type_your_message": "اكتب رسالتك هنا"
 }

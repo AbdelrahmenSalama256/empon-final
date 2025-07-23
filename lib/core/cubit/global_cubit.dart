@@ -74,6 +74,7 @@ class GlobalCubit extends Cubit<GlobalState> {
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final TextEditingController confrimNewPasswordController =
       TextEditingController();
+  int get unreadNotificationCount => state.unreadNotificationCount;
 
   Gender selectedGender = Gender.male;
   XFile? profileImage;
@@ -588,6 +589,23 @@ class GlobalCubit extends Cubit<GlobalState> {
     } finally {
       isLoading = false;
     }
+  }
+
+  void incrementUnreadMessageCount() {
+    emit(state.copyWith(unreadMessageCount: state.unreadMessageCount + 2));
+  }
+
+  void resetUnreadMessageCount() {
+    emit(state.copyWith(unreadMessageCount: 0));
+  }
+
+  void incrementUnreadNotificationCount() {
+    emit(state.copyWith(
+        unreadNotificationCount: state.unreadNotificationCount + 2));
+  }
+
+  void resetUnreadNotificationCount() {
+    emit(state.copyWith(unreadNotificationCount: 0));
   }
 }
 

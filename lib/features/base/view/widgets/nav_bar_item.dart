@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
+import '../../../../core/constants/app_colors.dart';
+
 PersistentBottomNavBarItem buildNavBarItem({
   required BuildContext context,
   required String iconPath,
@@ -13,6 +15,7 @@ PersistentBottomNavBarItem buildNavBarItem({
   double widthFactor = 1.0,
   Color activeColor = const Color(0xFF1565C0),
   Color inactiveColor = const Color(0xFF9DB2CE),
+  int unreadCount = 0,
 }) {
   if (isCenterItem) {
     return PersistentBottomNavBarItem(
@@ -72,51 +75,100 @@ PersistentBottomNavBarItem buildNavBarItem({
     );
   } else {
     return PersistentBottomNavBarItem(
-      icon: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+      icon: Stack(
         children: [
-          Padding(
-            padding:
-                labelKey == 'nav_menu' ? EdgeInsets.all(4.w) : EdgeInsets.zero,
-            child: SvgPicture.asset(
-              iconPath,
-              colorFilter: ColorFilter.mode(
-                activeColor,
-                BlendMode.srcIn,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: labelKey == 'nav_menu'
+                    ? EdgeInsets.all(4.w)
+                    : EdgeInsets.zero,
+                child: SvgPicture.asset(
+                  iconPath,
+                  colorFilter: ColorFilter.mode(
+                    activeColor,
+                    BlendMode.srcIn,
+                  ),
+                  height: iconSize.h,
+                  width: iconSize.w,
+                ),
               ),
-              height: iconSize.h,
-              width: iconSize.w,
-            ),
+              if (labelKey.isNotEmpty) SizedBox(height: 2.h),
+              if (labelKey.isNotEmpty)
+                Text(
+                  labelKey.tr(context),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: activeColor,
+                        fontSize: 10.sp,
+                      ),
+                ),
+            ],
           ),
-          if (labelKey.isNotEmpty) SizedBox(height: 2.h),
-          if (labelKey.isNotEmpty)
-            Text(
-              labelKey.tr(context),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: activeColor,
+          if (labelKey == 'nav_notification' && unreadCount > 0)
+            Positioned(
+              right: 0,
+              top: 0,
+              child: Container(
+                padding: EdgeInsets.all(4.w),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  '$unreadCount',
+                  style: TextStyle(
+                    color: Colors.white,
                     fontSize: 10.sp,
                   ),
+                ),
+              ),
             ),
         ],
       ),
-      inactiveIcon: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+      inactiveIcon: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Padding(
-            padding:
-                labelKey == 'nav_menu' ? EdgeInsets.all(4.w) : EdgeInsets.zero,
-            child: SvgPicture.asset(
-              iconPath,
-              colorFilter: ColorFilter.mode(
-                inactiveColor,
-                BlendMode.srcIn,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: labelKey == 'nav_menu'
+                    ? EdgeInsets.all(4.w)
+                    : EdgeInsets.zero,
+                child: SvgPicture.asset(
+                  iconPath,
+                  colorFilter: ColorFilter.mode(
+                    inactiveColor,
+                    BlendMode.srcIn,
+                  ),
+                  height: iconSize.h,
+                  width: iconSize.w,
+                ),
               ),
-              height: iconSize.h,
-              width: iconSize.w,
-            ),
+            ],
           ),
+          if (labelKey == 'nav_notification' && unreadCount > 0)
+            PositionedDirectional(
+              start: -5.w,
+              top: 10.h,
+              child: Container(
+                padding: EdgeInsets.all(4.w),
+                decoration: const BoxDecoration(
+                  color: AppColors.red,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  '$unreadCount',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10.sp,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
       activeColorPrimary: activeColor,

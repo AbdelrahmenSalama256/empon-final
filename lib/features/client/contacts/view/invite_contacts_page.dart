@@ -149,7 +149,16 @@ class InviteContactsPage extends StatelessWidget {
                                                             friendsCubit
                                                                 .declineFriendRequest(user
                                                                     .id
-                                                                    .toString());
+                                                                    .toString())
+                                                                .whenComplete(
+                                                              () {
+                                                                context
+                                                                    .read<
+                                                                        RegisterCubit>()
+                                                                    .data(
+                                                                        context);
+                                                              },
+                                                            );
                                                           }
                                                         : () async {
                                                             friendsCubit

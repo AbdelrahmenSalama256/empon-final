@@ -926,5 +926,7 @@
   "otp_sent": "OTP sent successfully",
   "otp_empty": "Please enter the OTP",
   "server_timeout_error": "Server timeout, please try again later",
-  "unexpected_error": "An unexpected error occurred"
+  "unexpected_error": "An unexpected error occurred",
+  "customer_support": "Customer Support",
+  "type_your_message": "Type your message here"
 }

@@ -35,6 +35,8 @@ import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/shop/data/repo/shop_repo.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../features/client/menu/data/repo/support_chat_repo.dart';
+
 final sl = GetIt.instance;
 void initServiceLocator() {
 //!external
@@ -73,6 +75,7 @@ void initServiceLocator() {
   sl.registerLazySingleton(() => StatisticsRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => PackagesRepo(sl<DioConsumer>()));
   sl.registerLazySingleton(() => TotalSalesRepo(sl<DioConsumer>()));
+  sl.registerLazySingleton(() => SupportChatRepo(sl<DioConsumer>()));
 
   // sl.registerLazySingleton(() => DataConnectionChecker());
   // sl.registerLazySingleton(() => NetworkInfoImpl(sl<DataConnectionChecker>()));

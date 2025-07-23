@@ -1,6 +1,52 @@
 import '../../features/client/auth/data/models/user_data_model.dart';
+import 'global_cubit.dart';
 
-class GlobalState {}
+class GlobalState {
+  final String? userId;
+  final int? businessId;
+  final UserType userType;
+  final bool isNotificationsDisabled;
+  final String language;
+  final int currentBottomNavIndex;
+  final int unreadMessageCount;
+  final int unreadNotificationCount;
+
+  const GlobalState({
+    this.userId,
+    this.businessId,
+    this.userType = UserType.client,
+    this.isNotificationsDisabled = false,
+    this.language = 'en',
+    this.currentBottomNavIndex = 0,
+    this.unreadMessageCount = 0,
+    this.unreadNotificationCount = 0,
+  });
+
+  GlobalState copyWith({
+    String? userId,
+    int? businessId,
+    UserType? userType,
+    bool? isNotificationsDisabled,
+    String? language,
+    int? currentBottomNavIndex,
+    int? unreadNotificationCount,
+    int? unreadMessageCount,
+  }) {
+    return GlobalState(
+      userId: userId ?? this.userId,
+      businessId: businessId ?? this.businessId,
+      userType: userType ?? this.userType,
+      isNotificationsDisabled:
+          isNotificationsDisabled ?? this.isNotificationsDisabled,
+      language: language ?? this.language,
+      currentBottomNavIndex:
+          currentBottomNavIndex ?? this.currentBottomNavIndex,
+      unreadMessageCount: unreadMessageCount ?? this.unreadMessageCount,
+      unreadNotificationCount:
+          unreadNotificationCount ?? this.unreadNotificationCount,
+    );
+  }
+}
 
 final class GlobalInitial extends GlobalState {}
 
