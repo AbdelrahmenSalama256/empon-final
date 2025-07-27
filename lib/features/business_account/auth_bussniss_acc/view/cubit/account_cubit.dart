@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
@@ -35,6 +34,8 @@ class AccountCubit extends Cubit<AccountState> {
   String? selectedCityId;
   List<String> categoryIds = [];
   List<XFile> files = [];
+  XFile? logo;
+  XFile? coverImage;
 
 
     List<LocationModel> allCountries = [];
@@ -118,7 +119,6 @@ class AccountCubit extends Cubit<AccountState> {
 
   // Location-related methods
   Future<void> fetchAllLocations() async {
-    PrintUtil.info("Fetching all locations...");
    emit(LocationsLoading());
 
     final countriesResponse = await sl<LocationRepo>().getCountries();
@@ -128,7 +128,6 @@ class AccountCubit extends Cubit<AccountState> {
         emit(LocationsError(error));
       },
       (countries) {
-        PrintUtil.info("Fetched $countries ");
         allCountries = countries;
         Print.info("Fetched ${allCountries.length} countries");
       },
@@ -314,7 +313,6 @@ List<LocationModel> getFilteredStates() {
 
 
       final response = await accountRepo.requestBusinessVirfication(accountId);
-PrintUtil.debug(response);
       response.fold(
         (l) {
           Print.error('API Error: $l');
@@ -368,8 +366,8 @@ PrintUtil.debug(response);
 
     final response = await accountRepo.updateImageAccountData(
         accountId,
-        logo: files.isNotEmpty ? files[0] : XFile(''),
-        coverImage: files.length > 1 ? files[1] : XFile('')
+        logo: logo ?? XFile(''),
+        coverImage: coverImage?? XFile('')
         );
 
     response.fold(

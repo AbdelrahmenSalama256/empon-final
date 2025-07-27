@@ -52,6 +52,18 @@ class ProductSubmitButtons extends StatelessWidget {
                         state: ToastStates.error);
                     return;
                   }
+                  if (variation['price'].text.isEmpty) {
+                    showToast(context,
+                        message: "please_enter_price".tr(context),
+                        state: ToastStates.error);
+                    return;
+                  }
+                  if (variation['stock'].text.isEmpty == null) {
+                    showToast(context,
+                        message: "please_enter_quantity".tr(context),
+                        state: ToastStates.error);
+                    return;
+                  }
                 }
 
                 if (formKey.currentState?.validate() ?? false) {
@@ -70,7 +82,6 @@ class ProductSubmitButtons extends StatelessWidget {
                   showToast(context,
                       message: state.product.message!,
                       state: ToastStates.success);
-                  Navigator.pop(context);
                   Navigator.pop(context);
                 } else if (state is ProductError) {
                   showToast(context,

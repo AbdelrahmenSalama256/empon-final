@@ -2,6 +2,7 @@ import 'package:embone/core/constants/app_colors.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_state.dart';
+import 'package:embone/features/client/auth/data/models/user_data_model.dart';
 import 'package:embone/features/client/menu/view/widgets/approval_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +13,7 @@ import '../../../../business_account/auth_bussniss_acc/view/cubit/account_cubit.
 
 
 class MenuApprovalItems extends StatelessWidget {
-  final dynamic accountData;
+  final Account accountData;
   final GlobalCubit cubit;
 
   const MenuApprovalItems({
@@ -64,39 +65,36 @@ class MenuApprovalItems extends StatelessWidget {
         builder: (context, state) {
           return Wrap(
             children: [
-              // ✅ Business Store Request
-              accountData!.type == 'business'
-                  ? Visibility(
-                      visible: accountData.isStore == 0,
-                      child: ApprovalItem(
-                        title: 'identity_store_request'.tr(context),
-                        status: ApprovalStatus.approved,
-                        icon: Image.asset(
-                          "assets/images/cycle-circle.png",
-                          width: 24.w,
-                          height: 24.h,
-                        ),
-                        approveButtonText:
-                            accountData.storeRequest != "no_request"
-                                ? _getVerificationStatusText(
-                                    context, accountData.storeRequest)
-                                : 'adopt'.tr(context),
-                        approveButtonColor: accountData.isStore == 0
-                            ? AppColors.warning
-                            : Colors.green,
-                        onApprove: () {
-                          if (accountData.isStore == 0) {
-                            if (accountData.storeRequest != "pending" &&
-                                accountData.storeRequest != "approved") {
-                              context.read<AccountCubit>().sendStoreRequest(
-                                  accountId: cubit.businessId!);
-                            }
-                          }
-                        },
-                        isLoading: state is StoreRequestLoading ? true : false,
+               Visibility(
+                visible: accountData.isStore == 0,
+                child: ApprovalItem(
+                      title: 'identity_store_request'.tr(context),
+                      status: ApprovalStatus.approved,
+                      icon: Image.asset(
+                        "assets/images/cycle-circle.png",
+                        width: 24.w,
+                        height: 24.h,
                       ),
-                    )
-                  : const SizedBox(),
+                      approveButtonText:
+                          accountData.storeRequest != "no_request"
+                              ? _getVerificationStatusText(
+                                  context, accountData.storeRequest)
+                              : 'adopt'.tr(context),
+                      approveButtonColor: accountData.isStore == 0
+                          ? AppColors.warning
+                          : Colors.green,
+                      onApprove: () {
+                        if (accountData.isStore == 0) {
+                          if (accountData.storeRequest != "pending" &&
+                              accountData.storeRequest != "approved") {
+                            context.read<AccountCubit>().sendStoreRequest(
+                                accountId: cubit.businessId!);
+                          }
+                        }
+                      },
+                      isLoading: state is StoreRequestLoading ? true : false,
+                    ),
+               ),
 
               // ✅ Identity Verification
               Visibility(

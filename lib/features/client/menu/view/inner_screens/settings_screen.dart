@@ -292,34 +292,54 @@ class SettingsScreen extends StatelessWidget {
                                           : "chat_with_friends".tr(context),
                                     ),
                                     if (isVendor == true) ...[
-                                      Divider(
-                                          height: 1.h,
-                                          color: const Color(0xffE3E3E3)),
-                                      MenuItem(
-                                        icon: "assets/images/mony_bag.png",
-                                        title: "total_sales".tr(context),
-                                        onTap: () {
-                                          navigateTo(
-                                              context,
-                                              MultiBlocProvider(
-                                                providers: [
-                                                  BlocProvider(
-                                                    create: (context) =>
-                                                        BusinessAccountCubit(sl<
-                                                            BusinessAccountRepo>())
-                                                          ..fetchBusinessAccount(
-                                                              cubit.businessId ??
-                                                                  0),
-                                                  ),
-                                                  BlocProvider(
-                                                    create: (context) =>
-                                                        TotalSalesCubit(sl<
-                                                            TotalSalesRepo>()),
-                                                  )
-                                                ],
-                                                child: const SalesStatsPage(),
-                                              ));
-                                        },
+                                      Visibility(
+                                        visible: cubit.userAccount != null &&
+                                            cubit.userAccount!
+                                                .where((element) =>
+                                                    element.id ==
+                                                    cubit.businessId)
+                                                .first
+                                                .isStore ==
+                                            1,
+                                        child: Divider(
+                                            height: 1.h,
+                                            color: const Color(0xffE3E3E3)),
+                                      ),
+                                      Visibility(
+                                        visible: cubit.userAccount != null &&
+                                            cubit.userAccount!
+                                                .where((element) =>
+                                                    element.id ==
+                                                    cubit.businessId)
+                                                .first
+                                                .isStore ==
+                                            1,
+                                        child: MenuItem(
+                                          icon: "assets/images/mony_bag.png",
+                                          title: "total_sales".tr(context),
+                                          onTap: () {
+                                            navigateTo(
+                                                context,
+                                                MultiBlocProvider(
+                                                  providers: [
+                                                    BlocProvider(
+                                                      create: (context) =>
+                                                          BusinessAccountCubit(sl<
+                                                              BusinessAccountRepo>())
+                                                            ..fetchBusinessAccount(
+                                                                cubit.businessId ??
+                                                                    0),
+                                                    ),
+                                                    BlocProvider(
+                                                      create: (context) =>
+                                                          TotalSalesCubit(sl<
+                                                              TotalSalesRepo>()),
+                                                    )
+                                                  ],
+                                                  child: const SalesStatsPage(),
+                                                ));
+                                          },
+                                        ),
                                       ),
                                     ],
                                     Divider(

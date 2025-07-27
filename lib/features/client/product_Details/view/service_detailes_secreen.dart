@@ -289,11 +289,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                                         serviceId: widget.serviceId,
                                       ),
                                       SizedBox(height: 15.h),
-                                      ProductDescriptionSection(
-                                        description: service?.details ??
-                                            'No description available.',
-                                      ),
-                                      SizedBox(height: 15.h),
+                                      // ProductDescriptionSection(
+                                      //   description: service?.details ??
+                                      //       'No description available.',
+                                      // ),
+                                      // SizedBox(height: 15.h),
                                     ],
                                   ),
                                 ),

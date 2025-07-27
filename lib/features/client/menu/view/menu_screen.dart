@@ -1,3 +1,4 @@
+import 'package:embone/features/business_account/auth_bussniss_acc/view/create_business_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -176,21 +177,21 @@ class MenuScreen extends StatelessWidget {
                                                           ));
                                                     },
                                                   ),
-                                                  // SizedBox(width: 15.w),
-                                                  // ProfileSection(
-                                                  //   userName:
-                                                  //       'add_new_buisniss_account'
-                                                  //           .tr(context),
-                                                  //   userImageUrl: '',
-                                                  //   isVendor: isVendor!,
-                                                  //   onTap: () {
-                                                  //     navigateTo(
-                                                  //       context,
-                                                  //       const CreateBusinessAccountTypePage(),
-                                                  //     );
-                                                  //   },
-                                                  //   isAddNew: true,
-                                                  // ),
+                                                  SizedBox(width: 15.w),
+                                                  ProfileSection(
+                                                    userName:
+                                                        'add_new_buisniss_account'
+                                                            .tr(context),
+                                                    userImageUrl: '',
+                                                    isVendor: isVendor!,
+                                                    onTap: () {
+                                                      navigateTo(
+                                                        context,
+                                                        const CreateBusinessAccountTypePage(),
+                                                      );
+                                                    },
+                                                    isAddNew: true,
+                                                  ),
                                                 ],
                                               ),
                                         SizedBox(height: 32.h),
@@ -208,41 +209,44 @@ class MenuScreen extends StatelessWidget {
                                         SizedBox(height: 32.h),
                                         isVendor == true
                                             ? MenuApprovalItems(
-                                                accountData: accountData,
+                                                accountData: accountData!,
                                                 cubit: cubit,
                                               )
                                             : SizedBox(height: 0.h),
                                         isVendor == true
-                                            ? ExpansionTile(
-                                                title: Text(
-                                                  'store_plans'.tr(context),
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14.sp),
-                                                ),
-                                                children: [
-                                                  BlocProvider(
-                                                    create: (context) =>
-                                                        PackagesCubit(
-                                                            sl<PackagesRepo>())
-                                                          ..fetchPackages(),
-                                                    child: BlocBuilder<
-                                                        PackagesCubit,
-                                                        PackagesState>(
-                                                      builder: (context,
-                                                          packageState) {
-                                                        return packageState
-                                                                is PackagesLoading
-                                                            ? const Center(
-                                                                child:
-                                                                    CustomLoadingIndicator())
-                                                            : const PlanSection();
-                                                      },
-                                                    ),
+                                            ? Visibility(
+                                              visible: accountData?.isStore == 1 ,
+                                              child: ExpansionTile(
+                                                  title: Text(
+                                                    'store_plans'.tr(context),
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 14.sp),
                                                   ),
-                                                  SizedBox(height: 16.h),
-                                                ],
-                                              )
+                                                  children: [
+                                                    BlocProvider(
+                                                      create: (context) =>
+                                                          PackagesCubit(
+                                                              sl<PackagesRepo>())
+                                                            ..fetchPackages(),
+                                                      child: BlocBuilder<
+                                                          PackagesCubit,
+                                                          PackagesState>(
+                                                        builder: (context,
+                                                            packageState) {
+                                                          return packageState
+                                                                  is PackagesLoading
+                                                              ? const Center(
+                                                                  child:
+                                                                      CustomLoadingIndicator())
+                                                              : const PlanSection();
+                                                        },
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 16.h),
+                                                  ],
+                                                ),
+                                            )
                                             : const SizedBox(),
                                         SizedBox(height: 15.h),
                                         MenuItem(

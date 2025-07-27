@@ -51,11 +51,12 @@ class _UpdateProfilePhotoForBuisnissAccountPageState
         setState(() {
           if (isLogo) {
             _selectedLogo = File(image.path);
+            widget.cubit.logo = image;
           } else {
             _selectedCover = File(image.path);
+            widget.cubit.coverImage = image;
           }
         });
-        widget.cubit.files.add(image); // Add to cubit for API submission
       }
     } catch (e) {
       if (!mounted) return;

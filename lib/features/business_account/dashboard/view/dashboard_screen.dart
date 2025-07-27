@@ -475,7 +475,7 @@ class DashboardScreen extends StatelessWidget {
                                       ],
                                     ),
                             ),
-                            SizedBox(height: 20.h), // Extra padding at bottom
+                            SizedBox(height: 20.h),
                           ],
                         ),
                       ),

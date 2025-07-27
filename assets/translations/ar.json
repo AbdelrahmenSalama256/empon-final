@@ -524,6 +524,7 @@
   "next_category": "الفئة التالية",
   "auto_publish_label": "نشر المنتج بشكل تلقائي",
   "ad_duration_hint": "مدة الإعلان",
+  "please_enter_valid_another_email": "يرجى إدخال بريد إلكتروني آخر صالح",
   "ad_duration_items": ["يوم", "أسبوع", "شهر", "3 أشهر"],
   "target_age_hint": "العمر المستهدف",
   "target_age_items": ["18-24", "25-34", "35-44", "45+"],

@@ -1,4 +1,3 @@
-import 'package:embone/core/component/custom_toast.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/product/data/repo/service_repo.dart';
 import 'package:embone/features/business_account/product/view/cubit/service_cubit.dart';
@@ -30,8 +29,6 @@ class _AddServiceFormState extends State<AddServiceForm> {
       child: BlocListener<ServiceCubit, ServiceState>(
         listener: (context, state) {
           if (state is ServiceSuccess){
-             showToast(context,
-                message: state.model.message!, state: ToastStates.success);
             Navigator.pop(context);
           }
           if (state is ServiceLoading){

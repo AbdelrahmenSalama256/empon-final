@@ -44,8 +44,8 @@ class _ProductDescriptionSectionState extends State<ProductDescriptionSection> {
           for (final detail in details) ...[
             _buildInfoRow(
               context,
-              label: detail.material ?? '',
-              value: detail.quality ?? '',
+              label: detail.quality ?? '',
+              value: detail.material ?? '',
             ),
             SizedBox(height: 16.h),
           ],

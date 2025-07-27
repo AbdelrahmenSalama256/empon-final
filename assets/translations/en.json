@@ -338,6 +338,7 @@
   "checkout_delivery_fees_label": "Delivery Fees",
   "checkout_total_amount_label": "Total Amount",
   "checkout_submit_order_button": "Submit Order",
+  "please_enter_valid_another_email": "Please enter a valid another email",
   "success_order_title": "Sending...",
   "success_order_subtitle": "We will contact you soon to confirm the order details",
   "success_order_number_label": "Order Number",

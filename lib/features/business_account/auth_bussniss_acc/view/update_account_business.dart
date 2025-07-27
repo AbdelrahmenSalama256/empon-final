@@ -9,7 +9,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
-import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_cubit.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/view/cubit/account_state.dart';
@@ -33,14 +32,19 @@ class UpdateBusinessAccount extends StatefulWidget {
 class _UpdateBusinessAccountState extends State<UpdateBusinessAccount> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountCubit, AccountState>(
+    return BlocConsumer<AccountCubit, AccountState>(
+     
+      listener: (context, state) {
+        if (state is AccountSuccess) {
+          context.read<GlobalCubit>().userType = UserType.client;
+          context.read<GlobalCubit>().changeBottomNavIndex(0);
+        }
+      },
       builder: (context, state) {
         context.read<AccountCubit>().initControllers(
           model: widget.accountData
         );
         final cubit = context.read<AccountCubit>();
-        PrintUtil.debug(cubit.selectedCityId);
-        PrintUtil.debug(cubit.nameController.text);
         return Scaffold(
           backgroundColor: AppColors.white,
           body: SafeArea(
@@ -69,13 +73,13 @@ class _UpdateBusinessAccountState extends State<UpdateBusinessAccount> {
                           padding: EdgeInsets.symmetric(horizontal: 24.w),
                           child: AppButton(
                             text: 'update'.tr(context),
+                            isLoading: state is AccountLoading,
                             onPressed: () {
                               cubit.updateDescription(
                                   cubit.descriptionController.text);
                               cubit.updateVideoUrl(
                                   cubit.videoUrlController.text);
                               cubit.updateAccount(accountId:context.read<GlobalCubit>().businessId!);
-                              Navigator.pop(context);
                             },
                           ),
                         ),

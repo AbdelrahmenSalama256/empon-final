@@ -76,6 +76,7 @@ class CategoriesFilter extends StatelessWidget {
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
                       color: const Color(0xff202727),
+                      overflow: TextOverflow.ellipsis
                     ),
                     textAlign: TextAlign.center,
                   ),

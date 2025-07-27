@@ -6,10 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/navigation.dart';
 import '../../../../../core/cubit/global_cubit.dart';
-import '../../../../../core/services/service_locator.dart';
-import '../../../../business_account/dashboard/data/repo/statistics_repo.dart';
-import '../../../../business_account/dashboard/view/cubit/statistics_cubit.dart';
-import '../../../../business_account/dashboard/view/dashboard_screen.dart';
 import '../../../contacts/view/contact_tree/followers_screen.dart';
 import '../inner_screens/offers_screen.dart';
 import '../inner_screens/settings_screen.dart';
@@ -73,28 +69,34 @@ class MenuQuickAccess extends StatelessWidget {
                         icon: "assets/images/settings.png",
                         color: Colors.red.shade100),
                   ),
-                  SizedBox(width: 16.w),
-                  Expanded(
-                    child: QuickAccessButton(
-                      needSubTitle: true,
-                      onTap: () {
-                        context.read<GlobalCubit>().changeBottomNavIndex(1);
-                        // navigateTo(
-                        //   context,
-                        //   BlocProvider(
-                        //     create: (context) =>
-                        //         StatisticsCubit(sl<StatisticsRepo>())
-                        //           ..fetchStatistics(cubit.businessId),
-                        //     child: const DashboardScreen(),
-                        //   ),
-                        // );
-                      },
-                      title: "current_plan".tr(context),
-                      icon: "assets/images/plan_brand.png",
-                      color: Colors.red.shade100,
-                      subTitle:
-                          accountData?.packageName ?? 'nopack'.tr(context),
-                      subTitleColor: Colors.lightGreenAccent,
+                  Visibility(
+                    visible: accountData?.isStore == 1,
+                    child: SizedBox(width: 16.w),
+                  ),
+                  Visibility(
+                    visible: accountData?.isStore == 1,
+                    child: Expanded(
+                      child: QuickAccessButton(
+                        needSubTitle: true,
+                        onTap: () {
+                          context.read<GlobalCubit>().changeBottomNavIndex(1);
+                          // navigateTo(
+                          //   context,
+                          //   BlocProvider(
+                          //     create: (context) =>
+                          //         StatisticsCubit(sl<StatisticsRepo>())
+                          //           ..fetchStatistics(cubit.businessId),
+                          //     child: const DashboardScreen(),
+                          //   ),
+                          // );
+                        },
+                        title: "current_plan".tr(context),
+                        icon: "assets/images/plan_brand.png",
+                        color: Colors.red.shade100,
+                        subTitle:
+                            accountData?.packageName ?? 'nopack'.tr(context),
+                        subTitleColor: Colors.lightGreenAccent,
+                      ),
                     ),
                   ),
                 ],

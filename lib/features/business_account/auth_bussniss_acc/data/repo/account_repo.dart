@@ -65,6 +65,7 @@ class AccountRepo {
         "cover": await uploadImageToAPI(coverImage),
         "lat": lat,
         "lng": lng,
+        "is_done": true, //! TODO: Add it from backend
       };
 
       final response = await api.post(
