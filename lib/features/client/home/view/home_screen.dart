@@ -317,16 +317,49 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 style: HeaderStyle.standard,
                                 leading: Row(
                                   children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        CupertinoIcons.chat_bubble_text,
-                                        size: 28.h,
-                                        color: const Color(0xff000000),
-                                      ),
-                                      onPressed: () {
-                                        navigateTo(
-                                            context, const MassagesScreen());
-                                      },
+                                    Stack(
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(
+                                            CupertinoIcons.chat_bubble_text,
+                                            size: 28.h,
+                                            color: const Color(0xff000000),
+                                          ),
+                                          onPressed: () {
+                                            context
+                                                .read<GlobalCubit>()
+                                                .resetUnreadMessageCount();
+                                            navigateTo(context,
+                                                const MassagesScreen());
+                                          },
+                                        ),
+                                        BlocBuilder<GlobalCubit, GlobalState>(
+                                          builder: (context, state) {
+                                            if (state.unreadMessageCount > 0) {
+                                              return PositionedDirectional(
+                                                start: 5.w,
+                                                top: 5.h,
+                                                child: Container(
+                                                  padding: EdgeInsets.all(4.w),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Colors.red,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Text(
+                                                    '${state.unreadMessageCount}',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 10.sp,
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                            return const SizedBox.shrink();
+                                          },
+                                        ),
+                                      ],
                                     ),
                                     IconButton(
                                       icon: Icon(
@@ -377,7 +410,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                             ],
                           ),
-                          // Auth overlay positioned at the top
                           if (_showAuthOverlay)
                             Positioned(
                               top: 0,

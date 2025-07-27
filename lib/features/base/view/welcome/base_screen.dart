@@ -155,12 +155,13 @@ class _BaseScreenState extends State<BaseScreen> {
             iconPath: "assets/images/svg/nav/shop.svg",
             labelKey: '',
             isCenterItem: true,
-            iconSize: 40.0, // Reduced size to prevent overflow
+            iconSize: 40.0,
           ),
           buildNavBarItem(
             context: context,
             iconPath: "assets/images/svg/notification.svg",
             labelKey: 'nav_notification',
+            unreadCount: context.watch<GlobalCubit>().unreadNotificationCount,
           ),
           buildNavBarItem(
             context: context,
@@ -184,6 +185,7 @@ class _BaseScreenState extends State<BaseScreen> {
             context: context,
             iconPath: "assets/images/svg/notification.svg",
             labelKey: 'nav_notification',
+            unreadCount: context.watch<GlobalCubit>().unreadNotificationCount,
           ),
           buildNavBarItem(
             context: context,
@@ -207,6 +209,7 @@ class _BaseScreenState extends State<BaseScreen> {
             context: context,
             iconPath: "assets/images/svg/notification.svg",
             labelKey: 'nav_notification',
+            unreadCount: context.watch<GlobalCubit>().unreadNotificationCount,
           ),
           buildNavBarItem(
             context: context,
@@ -263,8 +266,7 @@ class _BaseScreenState extends State<BaseScreen> {
           controller: context.read<GlobalCubit>().controller,
           screens: _getScreens(userType),
           items: _navBarsItems(context, userType),
-          padding: EdgeInsets.symmetric(
-              vertical: 10.h, horizontal: 8.w), // Added horizontal padding
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 8.w),
           confineToSafeArea: true,
           backgroundColor: Colors.white,
           popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
@@ -301,7 +303,7 @@ class _BaseScreenState extends State<BaseScreen> {
           ),
           navBarStyle:
               context.read<GlobalCubit>().userType == UserType.business ||
-                      context.read<GlobalCubit>().userType == UserType.business
+                      context.read<GlobalCubit>().userType == UserType.store
                   ? NavBarStyle.style12
                   : NavBarStyle.style15,
           navBarHeight: 80.h,
@@ -309,6 +311,9 @@ class _BaseScreenState extends State<BaseScreen> {
             if (widget.isGuest == true) {
               _handleGuestNavigation(index, context);
               return;
+            }
+            if (index == 3) {
+              context.read<GlobalCubit>().resetUnreadNotificationCount();
             }
             context.read<GlobalCubit>().changeBottomNavIndex(index);
           },

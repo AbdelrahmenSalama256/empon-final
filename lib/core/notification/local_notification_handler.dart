@@ -6,9 +6,15 @@ import 'package:embone/core/app/embone.dart';
 import 'package:embone/core/constants/app_constant.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
+import 'package:embone/features/client/chat/data/repo/chat_repo.dart';
+import 'package:embone/features/client/chat/view/chat_conversation_screen.dart';
+import 'package:embone/features/client/chat/view/cubit/chat_cubit.dart';
 import 'package:embone/features/client/notifications/view/notification_screen.dart';
 import 'package:embone/features/client/order/data/repo/orders_repo.dart';
 import 'package:embone/features/client/order/view/cubit/orders_cubit.dart';
+import 'package:embone/features/client/order/view/order_details_screen.dart';
+import 'package:embone/features/client/product_Details/view/product_details_screen.dart';
+import 'package:embone/features/client/product_Details/view/service_detailes_secreen.dart';
 import 'package:embone/features/client/search/data/repo/search_repo.dart';
 import 'package:embone/features/client/search/view/cubit/search_cubit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,12 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import '../../features/client/chat/data/repo/chat_repo.dart';
-import '../../features/client/chat/view/chat_conversation_screen.dart';
-import '../../features/client/chat/view/cubit/chat_cubit.dart';
-import '../../features/client/order/view/order_details_screen.dart';
-import '../../features/client/product_Details/view/product_details_screen.dart';
-import '../../features/client/product_Details/view/service_detailes_secreen.dart';
+import '../../features/client/menu/view/inner_screens/customer_support_chat_screen.dart';
 import '../common/logs.dart';
 import '../component/custom_toast.dart';
 import '../constants/custom_popup.dart';
@@ -90,12 +91,23 @@ class LocalNotificationService {
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
-      message.hashCode, // Unique ID for each notification
+      message.hashCode,
       message.notification?.title ?? 'New Notification',
       message.notification?.body ?? 'You have a new notification',
       platformChannelSpecifics,
       payload: jsonEncode(message.data),
     );
+
+    // Increment counts by 2 based on notification type
+    if (message.data['type'] == 'chat') {
+      navigatorKey.currentContext
+          ?.read<GlobalCubit>()
+          .incrementUnreadMessageCount();
+    } else {
+      navigatorKey.currentContext
+          ?.read<GlobalCubit>()
+          .incrementUnreadNotificationCount();
+    }
   }
 
   static void navigateBasedOnPayload(Map<String, dynamic> map) async {
@@ -112,22 +124,14 @@ class LocalNotificationService {
           ? int.tryParse(fromUserDynamic)
           : fromUserDynamic as int?;
 
-      if (type == null || (notifiableId == null && fromUser == null)) {
-        log('Invalid notification payload: $map');
-        return;
-      }
-
       if (navigatorKey.currentContext == null) {
         await Future.delayed(const Duration(milliseconds: 500));
         if (navigatorKey.currentContext == null) return;
       }
 
-      navigatorKey.currentContext!.read<GlobalCubit>();
       if (AppConstants.token == null) return;
 
-      // Rest of your existing navigation logic...
-      // Make sure all navigations are awaited
-      await _handleNavigation(type, notifiableId, fromUser, map);
+      await _handleNavigation(type!, notifiableId, fromUser, map);
     } catch (e, stack) {
       log('Error in navigateBasedOnPayload: $e');
       log('Stack trace: $stack');
@@ -137,6 +141,27 @@ class LocalNotificationService {
   static Future<void> _handleNavigation(String type, int? notifiableId,
       int? fromUser, Map<String, dynamic> map) async {
     switch (type) {
+      case 'support_chat':
+        final conversationId = map['conversation_id'] ?? notifiableId;
+        // final message = map['message'] ?? map['body'];
+
+        if (conversationId != null) {
+          navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => const CustomerSupportChatScreen(),
+            ),
+          );
+          debugPrint(
+              'Navigating to support chat with conversation ID: $conversationId');
+        } else {
+          navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => const CustomerSupportChatScreen(),
+            ),
+          );
+          debugPrint('Navigating to generic support chat');
+        }
+        break;
       case 'App\\\\Models\\\\Account\\\\True':
         if (navigatorKey.currentContext!.read<GlobalCubit>().businessId !=
             notifiableId) {
@@ -268,7 +293,6 @@ class LocalNotificationService {
             message: "new_massage_from".tr(navigatorKey.currentContext!) + name,
             state: ToastStates.success);
         break;
-
       default:
         navigatorKey.currentState!.push(
           MaterialPageRoute(

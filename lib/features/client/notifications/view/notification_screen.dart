@@ -12,6 +12,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/custom_popup.dart';
+import '../../../../core/constants/navigation.dart';
+import '../../menu/view/inner_screens/customer_support_chat_screen.dart';
 import '../../order/view/order_details_screen.dart';
 import '../../product_Details/view/product_details_screen.dart';
 import '../../product_Details/view/service_detailes_secreen.dart';
@@ -145,6 +147,13 @@ class _NotificationsPageState extends State<NotificationsPage>
               orderId: notification.notifiableId,
             ),
           ),
+        );
+        break;
+      case 'AppModelsSupportConversation':
+        debugPrint('Navigating to customer support chat');
+        navigateWithoutNav(
+          context,
+          const CustomerSupportChatScreen(),
         );
         break;
 

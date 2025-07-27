@@ -1,10 +1,12 @@
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/menu/data/repo/faq_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/faqs_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/faqs_state.dart';
+import 'package:embone/features/client/menu/view/inner_screens/customer_support_chat_screen.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/contact_option.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/custom_divider.dart';
 import 'package:embone/features/client/menu/view/inner_screens/widgets/faq_item.dart';
@@ -120,10 +122,13 @@ class HelpSupportPage extends StatelessWidget {
                             const CustomDivider(),
                             ContactOption(
                               title: "via_in_app_chat".tr(context),
-                              subtitle: "",
+                              subtitle: "customer_support".tr(context),
                               icon: CupertinoIcons.chat_bubble,
                               iconColor: const Color(0xff1E2644),
-                              onTap: () {},
+                              onTap: () {
+                                navigateWithoutNav(
+                                    context, const CustomerSupportChatScreen());
+                              },
                               isRTL: isRTL,
                             ),
                             SizedBox(height: 16.h),
@@ -131,7 +136,12 @@ class HelpSupportPage extends StatelessWidget {
                               child: Column(
                                 children: [
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      navigateWithoutNav(context,
+                                          const CustomerSupportChatScreen());
+                                      // navigateTo(context,
+                                      //     const CustomerSupportChatScreen());
+                                    },
                                     child: Text(
                                       "login_to_chat".tr(context),
                                       style: TextStyle(
