@@ -16,7 +16,6 @@ import 'package:embone/features/business_account/product/view/cubit/service_cubi
 import 'package:embone/features/business_account/product/view/update_product_buisniss_account.dart';
 import 'package:embone/features/client/product_Details/data/model/comment_model.dart';
 import 'package:embone/features/client/product_Details/view/widgets/price_display.dart';
-import 'package:embone/features/client/product_Details/view/widgets/product_details_description.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_image.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_info.dart';
 import 'package:embone/features/client/product_Details/view/widgets/product_details_share_bar.dart';

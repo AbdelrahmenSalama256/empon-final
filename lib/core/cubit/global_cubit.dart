@@ -134,7 +134,16 @@ class GlobalCubit extends Cubit<GlobalState> {
   changeLanguage() async {
     sl<CacheHelper>().getCachedLanguage() == "en"
         ? await sl<CacheHelper>().cacheLanguage("ar")
+          
         : await sl<CacheHelper>().cacheLanguage("en");
+    // After caching the language, send it to backend with endpoint lang code
+    final langCode = sl<CacheHelper>().getCachedLanguage();
+    try {
+      await sl<ProfileRepo>().updateLang(langCode: langCode);
+      PrintUtil.success("Language updated on backend: $langCode");
+    } catch (e) {
+      PrintUtil.error("Failed to update language on backend: $e");
+    }
     language = sl<CacheHelper>().getCachedLanguage();
     log("language is $language");
     emit(LanguageChangeState());

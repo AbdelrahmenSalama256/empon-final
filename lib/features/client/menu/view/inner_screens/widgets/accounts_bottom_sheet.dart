@@ -255,7 +255,7 @@ class _AccountsBottomSheetContentState
                               context,
                               BlocProvider(
                                 create: (context) =>
-                                    AccountCubit(sl<AccountRepo>()),
+                                    AccountCubit(sl<AccountRepo>())..fetchAllLocations(),
                                 child: const CreateBusinessAccountSettings(),
                               ));
                           return;

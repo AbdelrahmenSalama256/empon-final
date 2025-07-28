@@ -8,6 +8,7 @@ class EndPoints {
   static const String userProfile = "${baseUrl}profile";
   static const String updateProfile = "${baseUrl}profile-update";
   static const String updatePassword = "${baseUrl}update-password";
+  static const String updateLang = "${baseUrl}send-lan-code";
   //! Register
   static const String userRegister = "${baseUrl}register";
   //! Verification

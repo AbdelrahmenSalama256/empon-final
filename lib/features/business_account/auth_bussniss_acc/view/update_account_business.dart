@@ -61,12 +61,11 @@ class _UpdateBusinessAccountState extends State<UpdateBusinessAccount> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        BusinessAccountSettings(
-                          cubit: cubit,
+                        const BusinessAccountSettings(
+                          // cubit: cubit,
                           isUpdate: true,
                         ),
-                        ContactInfoStep(
-                          cubit: cubit,
+                        ContactInfoStep( cubit: cubit,
                         ),
                         SizedBox(height: 30.h),
                         Padding(

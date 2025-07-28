@@ -43,8 +43,8 @@ class CreateBusinessAccountSettings extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        BusinessAccountSettings(
-                          cubit: cubit,
+                        const BusinessAccountSettings(
+                          // cubit: cubit,
                           isUpdate: false,
                         ),
                         ContactInfoStep(

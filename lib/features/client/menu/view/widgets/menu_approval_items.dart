@@ -80,9 +80,12 @@ class MenuApprovalItems extends StatelessWidget {
                               ? _getVerificationStatusText(
                                   context, accountData.storeRequest)
                               : 'adopt'.tr(context),
-                      approveButtonColor: accountData.isStore == 0
-                          ? AppColors.warning
-                          : Colors.green,
+                      approveButtonColor: 
+                      accountData.storeRequest == "no_request"
+                          ? AppColors.green
+                          : accountData.storeRequest == "pending"
+                              ? AppColors.warning
+                              : Colors.red,
                       onApprove: () {
                         if (accountData.isStore == 0) {
                           if (accountData.storeRequest != "pending" &&

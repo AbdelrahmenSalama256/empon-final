@@ -79,4 +79,27 @@ class ProfileRepo {
       return Left('Failed to update profile: $e');
     }
   }
+  Future<Either<String, String>> updateLang({
+    required String langCode,
+  }) async {
+    try {
+      Map<String, dynamic> data = {
+        "lang_code": langCode,
+      };
+
+      final response = await api.post(
+        EndPoints.updateLang,
+        data: data,
+        isFormData: true,
+      );
+
+      return Right(response.data['message']);
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left('Failed to update profile: $e');
+    }
+  }
 }

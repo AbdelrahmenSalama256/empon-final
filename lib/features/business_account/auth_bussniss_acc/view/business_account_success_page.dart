@@ -84,8 +84,8 @@ class BusinessAccountSuccessPage extends StatelessWidget {
                         onPressed: () {
                           navigateReplac(
                               context,
-                              BlocProvider.value(
-                                value: context.read<AccountCubit>(),
+                              BlocProvider(
+                                create: (context) => AccountCubit(sl<AccountRepo>())..fetchAllLocations(),
                                 child: const CreateBusinessAccountSettings(),
                               ));
                         },

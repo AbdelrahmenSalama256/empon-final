@@ -196,7 +196,7 @@ class SettingsScreen extends StatelessWidget {
                                           context,
                                           BlocProvider(
                                             create: (context) =>
-                                                AccountCubit(sl<AccountRepo>()),
+                                                AccountCubit(sl<AccountRepo>())..fetchAllLocations(),
                                             child: cubit.userAccount != null
                                                 ? UpdateBusinessAccount(
                                                     accountData: cubit

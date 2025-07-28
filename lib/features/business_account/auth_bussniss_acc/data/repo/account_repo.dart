@@ -55,7 +55,6 @@ class AccountRepo {
       Map<String, dynamic> data = {
         "description": description,
         "video_url": videoUrl,
-        //"website": website,
         "email": email,
         "phone": phone,
         "city_id": cityId,
@@ -64,8 +63,7 @@ class AccountRepo {
         "logo": await uploadImageToAPI(logo),
         "cover": await uploadImageToAPI(coverImage),
         "lat": lat,
-        "lng": lng,
-        "is_done": true, //! TODO: Add it from backend
+        "lng": lng, 
       };
 
       final response = await api.post(
