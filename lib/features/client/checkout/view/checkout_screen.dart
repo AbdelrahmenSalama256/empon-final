@@ -1,5 +1,7 @@
+
 import 'package:embone/core/component/custom_loading_indicator.dart';
 import 'package:embone/core/component/custom_toast.dart';
+import 'package:embone/core/component/widgets/app_button.dart';
 import 'package:embone/core/component/widgets/app_header.dart';
 import 'package:embone/core/cubit/global_cubit.dart';
 import 'package:embone/core/cubit/global_state.dart';
@@ -35,6 +37,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => CheckoutCubit(sl<CheckoutRepo>())),
@@ -96,12 +99,47 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       },
                                     ),
                                     SizedBox(height: 16.h),
-                                    const PaymentMethodSection(),
+                                     PaymentMethodSection(
+                                     isCash: context.read<CheckoutCubit>().isCash,
+                                    ),
                                     SizedBox(height: 16.h),
                                     OrderSummarySection(
                                       cartCubit: context.read<CartCubit>(),
                                       checkoutCubit:
                                           context.read<CheckoutCubit>(),
+                                      
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    Visibility(
+                                      visible: context.read<CheckoutCubit>().isCash ,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: AppButton(text: 'checkout_place_order'.tr(context),
+                                          onPressed: () async {
+                                            if (_selectedAddress == null) {
+                                              showToast(
+                                                context,
+                                                message: 'select_address_first'.tr(context),
+                                                state: ToastStates.error,
+                                              );
+                                              return;
+                                            }
+                                            await context
+                                                .read<CheckoutCubit>()
+                                                .createOrderInfo(_selectedAddress!.id ?? 0);
+                                            Navigator.pop(context);
+                                            sl<GlobalCubit>()
+                                                .changeBottomNavIndex(0);
+                                            //navigateTo(context,const HomeScreen());
+
+                                            showToast(
+                                              context,
+                                              message: 'order_placed_successfully'.tr(context),
+                                              state: ToastStates.success,
+                                            );
+                                          },
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),

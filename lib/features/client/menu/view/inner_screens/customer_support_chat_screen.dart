@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:flutter/material.dart';
@@ -86,9 +85,8 @@ class _CustomerSupportChatScreenState extends State<CustomerSupportChatScreen> {
     return BlocProvider(
       create: (context) => SupportchatCubit(
         supportChatRepo: sl<SupportChatRepo>(),
-        supportConversationId: 3,
         currentUserId: int.parse(sl<GlobalCubit>().userId.toString()),
-      )..init(),
+      ),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: BlocConsumer<SupportchatCubit, SupportchatState>(
@@ -185,11 +183,12 @@ class _CustomerSupportChatScreenState extends State<CustomerSupportChatScreen> {
       itemCount: cubit.messages.length,
       itemBuilder: (context, index) {
         final message = cubit.messages[index];
-        final isMe = message.senderType == 'App\\Models\\User';
+        final isMe = message.senderType == 'user';
+     
 
         return MessageBubble(
           message: message,
-          isMe: isMe,
+          isMe: !isMe,
         );
       },
     );

@@ -59,10 +59,16 @@ class HomeStoreContent extends StatelessWidget {
               HomeStoreNameSection(
                 name: "${accountData.accountData?.data.name}",
                 onTap: () {
-                  businessAccountCubit.launchLocationUrl(
-                    latitude: double.parse(accountData.accountData!.data.lat!),
-                    longitude: double.parse(accountData.accountData!.data.lng!),
-                  );
+                  if (accountData.accountData?.data.lat != null &&
+                      accountData.accountData?.data.lng != null) {
+                        businessAccountCubit.launchLocationUrl(
+                      latitude:
+                          double.parse(accountData.accountData!.data.lat!),
+                      longitude:
+                          double.parse(accountData.accountData!.data.lng!),
+                    );
+                  }
+                  
                 },
                 isVerified: accountData.accountData?.data.verificationRequest == "approved",
               ),

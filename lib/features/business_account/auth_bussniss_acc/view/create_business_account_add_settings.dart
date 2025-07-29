@@ -22,7 +22,7 @@ class CreateBusinessAccountSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AccountCubit, AccountState>(
       builder: (context, state) {
-        final cubit = context.read<AccountCubit>();
+        AccountCubit cubit = context.read<AccountCubit>();
         PrintUtil.debug(cubit.selectedCityId);
         PrintUtil.debug(cubit.nameController.text);
         return Scaffold(
@@ -55,7 +55,7 @@ class CreateBusinessAccountSettings extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: 24.w),
                           child: AppButton(
                               text: 'next'.tr(context),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (cubit.descriptionController.text.isEmpty ||
                                     cubit.phoneController.text.isEmpty ||
                                     cubit.emailController.text.isEmpty) {
@@ -66,12 +66,12 @@ class CreateBusinessAccountSettings extends StatelessWidget {
                                     state: ToastStates.error,
                                   );
                                   return;
-                                } else {
+                                } else  {
                                   cubit.updateDescription(
                                       cubit.descriptionController.text);
                                   cubit.updateVideoUrl(
                                       cubit.videoUrlController.text);
-                                  Navigator.push(
+                                 final res = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
@@ -80,6 +80,7 @@ class CreateBusinessAccountSettings extends StatelessWidget {
                                       ),
                                     ),
                                   );
+                                  cubit = res;
                                 }
                               }),
                         ),

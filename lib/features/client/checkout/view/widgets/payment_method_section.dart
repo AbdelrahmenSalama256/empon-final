@@ -1,4 +1,5 @@
 import 'package:embone/core/constants/app_colors.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/features/client/checkout/view/cubit/checkout_cubit.dart';
 import 'package:embone/features/client/checkout/view/cubit/checkout_state.dart';
@@ -10,8 +11,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
 class PaymentMethodSection extends StatelessWidget {
-  const PaymentMethodSection({
+   bool isCash;
+   PaymentMethodSection({
     super.key,
+    this.isCash = false,
   });
 
   @override
@@ -78,6 +81,56 @@ class PaymentMethodSection extends StatelessWidget {
                   ),
                 ),
               ),
+            SizedBox(height: 12.h),
+            GestureDetector(
+                onTap: () {
+                  isCash = true;
+                  checkoutCubit.toggleIsCash(isCash);
+                  PrintUtil.success('Payment method selected: $isCash');
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 80.h,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 70.w,
+                        height: 50.h,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 0.w,
+                          vertical: 0.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/images/svg/cash-on-delivery.svg',
+                          width: 40.w,
+                          height: 40.h,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Text(
+                        'cash-on-delivery'.tr(context),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            
             ],
           ),
         );

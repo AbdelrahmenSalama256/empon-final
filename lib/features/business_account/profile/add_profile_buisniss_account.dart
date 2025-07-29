@@ -87,7 +87,7 @@ class _AddProfilePhotoForBuisnissAccountPageState
                   color: AppColors.primary),
               title: Text('camera'.tr(context)),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context, widget.cubit);
                 _pickImage(ImageSource.camera, isLogo: isLogo);
               },
             ),
@@ -124,6 +124,7 @@ class _AddProfilePhotoForBuisnissAccountPageState
     return BlocProvider(
       create: (context) => widget.cubit,
       child: BlocConsumer<AccountCubit, AccountState>(
+        bloc: widget.cubit,
         listener: (context, state) {
           if (state is AccountSuccess) {
             setState(() {});

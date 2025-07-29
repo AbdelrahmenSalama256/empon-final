@@ -9,6 +9,12 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   CheckoutCubit(this.checkoutRepo) : super(CheckoutInitial());
   OrderResponseModel? orderResponse;
+  bool isCash = false;
+
+  void toggleIsCash(value) {
+    isCash = value;
+    emit(CheckoutInitial());
+  }
   Future<void> createOrderInfo(int addressId) async {
     emit(CheckoutLoading());
     final result = await checkoutRepo.createOrderInfo(addressId);

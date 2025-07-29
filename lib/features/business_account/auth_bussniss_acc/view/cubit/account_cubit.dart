@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/common/logs.dart';
 import 'package:embone/core/constants/widgets/errors/exceptions.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/business_account/auth_bussniss_acc/data/repo/account_repo.dart';
 import 'package:embone/features/client/auth/data/models/user_data_model.dart';
@@ -36,6 +37,7 @@ class AccountCubit extends Cubit<AccountState> {
   List<XFile> files = [];
   XFile? logo;
   XFile? coverImage;
+  bool isVendorLocationEnabled = false;
 
 
     List<LocationModel> allCountries = [];
@@ -94,7 +96,10 @@ class AccountCubit extends Cubit<AccountState> {
     emit(AccountUpdated());
     log(categoryIds.toString());
   }
-
+  void toggleVendorLocation(bool value) {
+    isVendorLocationEnabled = value;
+    emit(AccountUpdated());
+  }
   // Remove category ID
   void removeCategoryId(String value) {
     categoryIds.remove(value);
@@ -291,11 +296,11 @@ List<LocationModel> getFilteredStates() {
         videoUrlController.text,
         emailController.text,
         phoneController.text,
-        addressController.text,
-        postalCodeController.text,
-        latController.text,
-        lngController.text,
-        selectedCity?.id.toString() ?? "");
+        !isVendorLocationEnabled? addressController.text: null,
+        !isVendorLocationEnabled? postalCodeController.text: null,
+        !isVendorLocationEnabled? latController.text: null,
+        !isVendorLocationEnabled? lngController.text: null,
+        !isVendorLocationEnabled? selectedCity?.id.toString() ?? "": null);
 
     response.fold(
       (l) {
@@ -339,6 +344,23 @@ List<LocationModel> getFilteredStates() {
       city = model.city!;
       stat = model.state!;
       country = model.country!;
+      // Wait until allCities is populated before setting selectedCity
+      Future.doWhile(() async {
+        if (allCities.isEmpty) {
+          await Future.delayed(const Duration(milliseconds: 100));
+          PrintUtil.warning("Waiting for allCities to be populated...");
+          return true;
+        }
+        return false;
+      }).then((_) {
+        selectedCity = allCities.firstWhere(
+          (city) => city.name == model.city,
+          orElse: () => const LocationModel(id: 0, name: '', countryId: 0, stateId: 0),
+        );
+        PrintUtil.success("Selected city: ${selectedCity!.name}");
+        
+        emit(AccountUpdated());
+      });
 
       emit(AccountUpdated());
     } else {

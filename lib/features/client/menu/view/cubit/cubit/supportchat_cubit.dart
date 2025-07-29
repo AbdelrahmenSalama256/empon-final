@@ -2,6 +2,9 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/network/local_network.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/menu/data/model/support_chat_conversation_model.dart';
 import 'package:embone/features/client/menu/data/model/support_message_model.dart';
 import 'package:embone/features/client/menu/data/repo/support_chat_repo.dart';
@@ -9,15 +12,14 @@ import 'package:embone/features/client/menu/view/cubit/cubit/supportchat_state.d
 
 class SupportchatCubit extends Cubit<SupportchatState> {
   final SupportChatRepo supportChatRepo;
-  final int? supportConversationId;
   final int? currentUserId;
+  int? supportConversationId;
 
   List<SupportMessageModel> messages = [];
   List<SupportConversationModel> conversations = [];
 
   SupportchatCubit({
     required this.supportChatRepo,
-    this.supportConversationId,
     this.currentUserId,
   }) : super(SupportchatInitial()) {
     init();
@@ -72,24 +74,43 @@ class SupportchatCubit extends Cubit<SupportchatState> {
         (error) => emit(SupportchatError(error)),
         (fetchedConversations) {
           conversations = fetchedConversations;
-          if (supportConversationId != null) {
-            // Load messages for the current conversation
-            final conversation = conversations.firstWhere(
-              (c) => c.id == supportConversationId,
-              orElse: () => SupportConversationModel(
+          
+          if (conversations.isNotEmpty) {
+            messages = conversations.first.messages;
+            supportConversationId = conversations.first.id;
+            }else{
+              messages.add(SupportMessageModel(
                 id: 0,
-                userId: 0,
-                subject: '',
-                isClosed: 0,
-                lastMessageAt: '',
-                createdAt: '',
-                updatedAt: '',
-                messages: [],
-              ),
-            );
-            messages = conversation.messages;
-          }
+                supportConversationId: 0,
+                senderId: currentUserId ?? 0,
+                senderType: 'admin',
+                content: _getWelcomeMessage(),
+                mediaPath: null,
+                mediaType: 'text',
+                updatedAt: DateTime.now().toIso8601String(),
+                createdAt: DateTime.now().toIso8601String(),
+                status: 'delivered',
+              ));
+
+            }
+            // // Load messages for the current conversation
+            // final conversation = conversations.firstWhere(
+            //   (c) => c.id == supportConversationId,
+            //   orElse: () => SupportConversationModel(
+            //     id: 0,
+            //     userId: 0,
+            //     subject: '',
+            //     isClosed: 0,
+            //     lastMessageAt: '',
+            //     createdAt: '',
+            //     updatedAt: '',
+            //     messages: [],
+            //   ),
+            // );
+            // messages = conversation.messages;
+          PrintUtil.success(messages.first.content);
           emit(SupportchatLoaded(messages));
+          
         },
       );
     } catch (e) {
@@ -129,5 +150,14 @@ class SupportchatCubit extends Cubit<SupportchatState> {
       messages[index] = newMessage;
       emit(SupportchatLoaded(List.from(messages)));
     }
+  }
+  String _getWelcomeMessage() {
+  
+    String lang = sl<CacheHelper>().getCachedLanguage();
+
+    if (lang == 'en') {
+      return "Welcome to our support chat! How can we assist you today?";
+    }
+    return "مرحبًا بكم في دردشة الدعم الخاصة بإنبون ! كيف يمكننا مساعدتك اليوم؟";
   }
 }
