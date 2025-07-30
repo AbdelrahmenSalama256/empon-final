@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDrrfcmGXdSdZVoBn4nn0JHR4qoirEPuBc',
-    appId: '1:921753454148:android:310669662ede25c76ade11',
-    messagingSenderId: '921753454148',
-    projectId: 'empon-2d23c',
-    storageBucket: 'empon-2d23c.firebasestorage.app',
+    apiKey: 'AIzaSyDF23aIQcKz4ZwyM-xUJkPFoLzpHlTYnxE',
+    appId: '1:569877575939:android:23803ef088dcd46fded136',
+    messagingSenderId: '569877575939',
+    projectId: 'empon-app',
+    storageBucket: 'empon-app.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAWl3LF48ovd58bPiKrL08t2FjXgFFnaAo',
-    appId: '1:921753454148:ios:4d0357c14f6bf9ee6ade11',
-    messagingSenderId: '921753454148',
-    projectId: 'empon-2d23c',
-    storageBucket: 'empon-2d23c.firebasestorage.app',
+    apiKey: 'AIzaSyBv71WLq9BlptuT2t0jVVpggJwM6H3Cb4Y',
+    appId: '1:569877575939:ios:e6d60dc0d85cf4e7ded136',
+    messagingSenderId: '569877575939',
+    projectId: 'empon-app',
+    storageBucket: 'empon-app.firebasestorage.app',
     iosBundleId: 'com.example.embone',
   );
+
 }

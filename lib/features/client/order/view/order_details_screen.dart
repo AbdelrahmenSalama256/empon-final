@@ -49,7 +49,7 @@ class OrderDetailsScreen extends StatelessWidget {
         String? orderStatus;
         final allOrders = [
           ...cubit.deliveredOrders,
-          ...cubit.inDeliveryOrders,
+          ...cubit.pendingOrders,
           ...cubit.canceledOrders,
           ...cubit.pendingOrders,
         ];

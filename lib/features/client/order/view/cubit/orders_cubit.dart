@@ -11,7 +11,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   final OrderRepo orderRepo;
   OrdersCubit(this.orderRepo) : super(OrdersInitial());
   List<OrderModel> deliveredOrders = [];
-  List<OrderModel> inDeliveryOrders = [];
+  // List<OrderModel> pendingOrders = [];
   List<OrderModel> canceledOrders = [];
   List<OrderModel> pendingOrders = [];
   List<OrderModel> all = [];
@@ -26,15 +26,16 @@ class OrdersCubit extends Cubit<OrdersState> {
         deliveredOrders = orderResponse.data
             .where((order) => order.status == 'delivered')
             .toList();
-        inDeliveryOrders = orderResponse.data
+        pendingOrders = orderResponse.data
             .where((order) =>
                 order.status == 'in_delivery' || order.status == 'pending')
             .toList(); // Include pending orders
         canceledOrders = orderResponse.data
             .where((order) => order.status == 'cancelled')
             .toList();
+            all = orderResponse.data;
         PrintUtil.debug('Delivered orders: $deliveredOrders');
-        PrintUtil.debug('In delivery orders: $inDeliveryOrders');
+        PrintUtil.debug('In delivery orders: $pendingOrders');
         PrintUtil.debug('Canceled orders: $canceledOrders');
         emit(OrderLoaded(orderResponse));
       },
@@ -50,7 +51,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         deliveredOrders = orderResponse.data
             .where((order) => order.status == 'delivered')
             .toList();
-        inDeliveryOrders = orderResponse.data
+        pendingOrders = orderResponse.data
             .where((order) =>
                 order.status == 'in_delivery' || order.status == 'pending')
             .toList(); // Include pending orders
@@ -59,7 +60,7 @@ class OrdersCubit extends Cubit<OrdersState> {
             .toList();
         all =orderResponse.data;
         PrintUtil.debug('Delivered orders: $deliveredOrders');
-        PrintUtil.debug('In delivery orders: $inDeliveryOrders');
+        PrintUtil.debug('In delivery orders: $pendingOrders');
         PrintUtil.debug('Canceled orders: $canceledOrders');
         emit(OrderLoaded(orderResponse));
       },
@@ -87,19 +88,19 @@ class OrdersCubit extends Cubit<OrdersState> {
           );
           pendingOrders.removeAt(pendingIndex);
         } else {
-          // Check inDeliveryOrders
+          // Check pendingOrders
           final inDeliveryIndex =
-              inDeliveryOrders.indexWhere((order) => order.id == orderId);
+              pendingOrders.indexWhere((order) => order.id == orderId);
           if (inDeliveryIndex != -1) {
             canceledOrder = OrderModel(
-              id: inDeliveryOrders[inDeliveryIndex].id,
-              orderNumber: inDeliveryOrders[inDeliveryIndex].orderNumber,
-              date: inDeliveryOrders[inDeliveryIndex].date,
-              quantity: inDeliveryOrders[inDeliveryIndex].quantity,
-              totalPrice: inDeliveryOrders[inDeliveryIndex].totalPrice,
+              id: pendingOrders[inDeliveryIndex].id,
+              orderNumber: pendingOrders[inDeliveryIndex].orderNumber,
+              date: pendingOrders[inDeliveryIndex].date,
+              quantity: pendingOrders[inDeliveryIndex].quantity,
+              totalPrice: pendingOrders[inDeliveryIndex].totalPrice,
               status: 'cancelled',
             );
-            inDeliveryOrders.removeAt(inDeliveryIndex);
+            pendingOrders.removeAt(inDeliveryIndex);
           } else {
             // Check deliveredOrders
             final deliveredIndex =
@@ -125,7 +126,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         }
 
         PrintUtil.debug('Delivered orders: $deliveredOrders');
-        PrintUtil.debug('In delivery orders: $inDeliveryOrders');
+        PrintUtil.debug('In delivery orders: $pendingOrders');
         PrintUtil.debug('Canceled orders: $canceledOrders');
         PrintUtil.debug('Pending orders: $pendingOrders');
         emit(OrderCanceled(message));
@@ -138,7 +139,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       case 'delivered':
         return deliveredOrders;
       case 'in_delivery':
-        return inDeliveryOrders;
+        return pendingOrders;
       case 'cancelled':
         return canceledOrders;
       case 'pending':

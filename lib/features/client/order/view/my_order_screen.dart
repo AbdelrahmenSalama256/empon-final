@@ -137,7 +137,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                         ),
                         Tab(
                           child: Text(
-                            "in_delivery".tr(context),
+                            "pending".tr(context),
                             style: TextStyle(
                               fontFamily:
                                   context.read<GlobalCubit>().language == "ar"
@@ -189,7 +189,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                                 showCancelButton: false,
                               ),
                               OrdersList(
-                                key: ValueKey('in_delivery'),
+                                key: ValueKey('pending'),
                                 status: "pending",
                                 statusColor: AppColors.primary,
                                 showCancelButton: true,

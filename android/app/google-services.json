@@ -1,13 +1,32 @@
 {
   "project_info": {
-    "project_number": "921753454148",
-    "project_id": "empon-2d23c",
-    "storage_bucket": "empon-2d23c.firebasestorage.app"
+    "project_number": "569877575939",
+    "project_id": "empon-app",
+    "storage_bucket": "empon-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:921753454148:android:310669662ede25c76ade11",
+        "mobilesdk_app_id": "1:569877575939:android:23803ef088dcd46fded136",
+        "android_client_info": {
+          "package_name": "com.evyx.empon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDF23aIQcKz4ZwyM-xUJkPFoLzpHlTYnxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569877575939:android:8e5fe81ead11ed2cded136",
         "android_client_info": {
           "package_name": "com.example.embone"
         }
@@ -15,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDrrfcmGXdSdZVoBn4nn0JHR4qoirEPuBc"
+          "current_key": "AIzaSyDF23aIQcKz4ZwyM-xUJkPFoLzpHlTYnxE"
         }
       ],
       "services": {
