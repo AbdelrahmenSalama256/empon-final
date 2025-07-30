@@ -31,6 +31,7 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
   LocationModel? _selectedCountry;
   LocationModel? _selectedState;
   LocationModel? _selectedCity;
+  int? _selectedCityId;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +50,7 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
         _selectedCountry = cubit.selectedCountry;
         _selectedState = cubit.selectedState;
         _selectedCity = cubit.selectedCity;
+        _selectedCityId = cubit.cityId;
         // Ensure cubit is initialized
         List<LocationModel> countries = cubit.allCountries;
         List<LocationModel> states = cubit.getFilteredStates();
@@ -244,7 +246,7 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                                           .isNotEmpty
                                       ? cities
                                           .firstWhere(
-                                              (city) => city.name == cubit.city)
+                                              (city) => city.id == cubit.cityId)
                                           .name
                                       : null)
                                   : null),
@@ -253,8 +255,6 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
                             if (value == null) return;
                             final selected = cities.firstWhere(
                               (city) => city.name == value,
-                              orElse: () => const LocationModel(
-                                  id: 0, name: '', countryId: 0, stateId: 0),
                             );
                             if (selected.id != 0) {
                               setState(() {

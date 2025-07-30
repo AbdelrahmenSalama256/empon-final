@@ -45,7 +45,7 @@ class OrdersList extends StatelessWidget {
                 'quantity': order.quantity,
                 'totalPrice': order.totalPrice,
               },
-              status: status,
+              status: order.status,
               statusColor: statusColor,
               showCancelButton: showCancelButton,
             );

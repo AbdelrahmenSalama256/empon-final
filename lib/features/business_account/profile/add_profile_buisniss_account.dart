@@ -48,17 +48,19 @@ class _AddProfilePhotoForBuisnissAccountPageState
         setState(() {
           if (isLogo) {
             _selectedLogo = File(image.path);
-            widget.cubit.files.add(image); // Add to cubit for API submission
+            widget.cubit.logo = image; 
           } else {
             _selectedCover = File(image.path);
-            widget.cubit.files.add(image); // Add to cubit for API submission
+            widget.cubit.coverImage = image; 
           }
         });
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('error_picking_image'.tr(context))),
+      showToast(
+        context,
+        message: 'error_picking_image'.tr(context),
+        state: ToastStates.error,
       );
     }
   }

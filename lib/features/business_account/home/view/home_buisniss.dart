@@ -35,9 +35,20 @@ class HomeStoreScreen extends StatelessWidget {
         child: BlocListener<BusinessAccountCubit, BusinessAccountState>(
           listener: (context, businessState) {
             if (businessState is BusinessAccountError) {
+              if (sl<GlobalCubit>().userType == UserType.business) {
+                sl<GlobalCubit>().setUserType(UserType.client);
+              sl<GlobalCubit>().changeBottomNavIndex(0);
+              }
+
               showToast(
                 context,
                 message: 'unexpected_error'.tr(context),
+                state: ToastStates.error,
+              );
+              Future.delayed(const Duration(milliseconds: 1000));
+              showToast(
+                context,
+                message: businessState.message,
                 state: ToastStates.error,
               );
             }
@@ -102,7 +113,8 @@ class HomeStoreScreen extends StatelessWidget {
                                                 "no_data_found".tr(context),
                                           ),
                                         )
-                                      : HomeStoreContent(
+
+                                       :HomeStoreContent(
                                           // Remove the Expanded from HomeStoreContent
                                           globalCubit: globalCubit,
                                           businessAccountCubit: accountCubit,

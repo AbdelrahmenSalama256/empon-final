@@ -65,15 +65,18 @@ class _CustomerSupportChatScreenState extends State<CustomerSupportChatScreen> {
     setState(() {
       _selectedFile = null;
       _messageController.clear();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
     });
 
-    _scrollToBottom();
+    
   }
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
+        _scrollController.position.minScrollExtent,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -183,7 +186,7 @@ class _CustomerSupportChatScreenState extends State<CustomerSupportChatScreen> {
       itemCount: cubit.messages.length,
       itemBuilder: (context, index) {
         final message = cubit.messages[index];
-        final isMe = message.senderType == 'user';
+        final isMe = message.senderType != "App\\Models\\Admin";
      
 
         return MessageBubble(

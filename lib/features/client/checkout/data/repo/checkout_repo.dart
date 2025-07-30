@@ -30,6 +30,26 @@ class CheckoutRepo {
       return Left('Failed to fetch order info: $e');
     }
   }
+    Future<Either<String, OrderResponseModel>> createCachOrder(
+      int orderId) async {
+    try {
+      final response = await api.post(
+        EndPoints.cachOrders,
+        data: {
+          'combined_order_id': orderId,
+          'payment_method': 'cash',
+        },
+      );
+      final orderData = OrderResponseModel.fromJson(response.data);
+      return Right(orderData);
+    } on ServerException catch (e) {
+      return Left(e.errorModel.detail);
+    } on NoInternetException catch (e) {
+      return Left(e.errorModel.detail);
+    } catch (e) {
+      return Left('Failed to fetch order info: $e');
+    }
+  }
 
   Future<Either<String, PaymentUrlResponseModel>> generatePaymentUrl(
       double amount) async {

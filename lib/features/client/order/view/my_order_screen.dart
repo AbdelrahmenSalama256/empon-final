@@ -39,7 +39,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => OrdersCubit(sl<OrderRepo>())..fetchOrders(),
+      create: (context) =>context.read<GlobalCubit>().userType == UserType.client? (OrdersCubit(sl<OrderRepo>())..fetchOrders()): (OrdersCubit(sl<OrderRepo>())..fetchAccountOrders()),
       child: BlocConsumer<OrdersCubit, OrdersState>(
         listener: (context, state) {
           if (state is OrderCanceled) {
@@ -54,6 +54,16 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
               message: 'unexpected_error'.tr(context),
               state: ToastStates.error,
             );
+          }
+          else if (state is OrderUpdateError) {
+            showToast(
+              context,
+              message: state.message,
+              state: ToastStates.error,
+            );
+          }
+          if (state is OrderUpdateLoaded) {
+            context.read<OrdersCubit>()..fetchAccountOrders();
           }
         },
         builder: (context, state) {
@@ -101,7 +111,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                       tabs: [
                         Tab(
                           child: Text(
-                            "pending".tr(context),
+                            "all".tr(context),
                             style: TextStyle(
                               fontFamily:
                                   context.read<GlobalCubit>().language == "ar"
@@ -167,8 +177,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                             controller: _tabController,
                             children: const [
                               OrdersList(
-                                key: ValueKey('pending'),
-                                status: "pending",
+                                key: ValueKey('all'),
+                                status: "all",
                                 statusColor: Color(0xffFFA500),
                                 showCancelButton: false,
                               ),
@@ -180,7 +190,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen>
                               ),
                               OrdersList(
                                 key: ValueKey('in_delivery'),
-                                status: "in_delivery",
+                                status: "pending",
                                 statusColor: AppColors.primary,
                                 showCancelButton: true,
                               ),

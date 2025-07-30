@@ -26,6 +26,16 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       },
     );
   }
+    Future<void> createCachOrder(int orderId) async {
+    emit(CachLoading());
+    final result = await checkoutRepo.createCachOrder(orderId);
+    result.fold(
+      (error) => emit(CachError(error)),
+      (response) {
+        emit(CachLoaded());
+      },
+    );
+  }
 
   Future<void> generatePaymentUrl(double amount) async {
     emit(CheckoutLoading());

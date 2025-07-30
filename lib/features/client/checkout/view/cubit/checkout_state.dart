@@ -18,7 +18,16 @@ class CheckoutError extends CheckoutState {
 
   CheckoutError(this.message);
 }
+class CachLoading extends CheckoutState {}
 
+class CachLoaded extends CheckoutState {
+}
+
+class CachError extends CheckoutState {
+  final String message;
+
+  CachError(this.message);
+}
 class PaymentUrlGenerated extends CheckoutState {
   final PaymentUrlResponseModel paymentUrlResponse;
 

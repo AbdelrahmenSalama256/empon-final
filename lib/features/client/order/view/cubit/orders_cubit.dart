@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:embone/core/constants/widgets/print_util.dart';
+import 'package:embone/core/cubit/global_cubit.dart';
+import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/order/data/model/order_details_model.dart';
 import 'package:embone/features/client/order/data/model/order_model.dart';
 import 'package:embone/features/client/order/data/repo/orders_repo.dart';
@@ -12,6 +14,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   List<OrderModel> inDeliveryOrders = [];
   List<OrderModel> canceledOrders = [];
   List<OrderModel> pendingOrders = [];
+  List<OrderModel> all = [];
   OrderDetailsModel? currentOrderDetails;
 
   Future<void> fetchOrders() async {
@@ -30,6 +33,31 @@ class OrdersCubit extends Cubit<OrdersState> {
         canceledOrders = orderResponse.data
             .where((order) => order.status == 'cancelled')
             .toList();
+        PrintUtil.debug('Delivered orders: $deliveredOrders');
+        PrintUtil.debug('In delivery orders: $inDeliveryOrders');
+        PrintUtil.debug('Canceled orders: $canceledOrders');
+        emit(OrderLoaded(orderResponse));
+      },
+    );
+  }
+    Future<void> fetchAccountOrders() async {
+    emit(OrderLoading());
+
+    final result = await orderRepo.fetchAccountOrders(sl<GlobalCubit>().businessId!);
+    result.fold(
+      (error) => emit(OrderError(error)),
+      (orderResponse) {
+        deliveredOrders = orderResponse.data
+            .where((order) => order.status == 'delivered')
+            .toList();
+        inDeliveryOrders = orderResponse.data
+            .where((order) =>
+                order.status == 'in_delivery' || order.status == 'pending')
+            .toList(); // Include pending orders
+        canceledOrders = orderResponse.data
+            .where((order) => order.status == 'cancelled')
+            .toList();
+        all =orderResponse.data;
         PrintUtil.debug('Delivered orders: $deliveredOrders');
         PrintUtil.debug('In delivery orders: $inDeliveryOrders');
         PrintUtil.debug('Canceled orders: $canceledOrders');
@@ -114,7 +142,9 @@ class OrdersCubit extends Cubit<OrdersState> {
       case 'cancelled':
         return canceledOrders;
       case 'pending':
-        return pendingOrders; // Handle pending status
+        return pendingOrders;
+      case 'all':
+        return all;
       default:
         return [];
     }
@@ -129,6 +159,16 @@ class OrdersCubit extends Cubit<OrdersState> {
         currentOrderDetails = response.data;
         PrintUtil.debug('Order details fetched: $currentOrderDetails');
         emit(OrderDetailsLoaded(currentOrderDetails!));
+      },
+    );
+  }
+    Future<void> updateOrederStatus(int orderId,String status ) async {
+    emit(OrderUpdateLoading());
+    final result = await orderRepo.updateOrderStatus(orderId, status);
+    result.fold(
+      (error) => emit(OrderUpdateError(error)),
+      (response) {
+        emit(OrderUpdateLoaded());
       },
     );
   }

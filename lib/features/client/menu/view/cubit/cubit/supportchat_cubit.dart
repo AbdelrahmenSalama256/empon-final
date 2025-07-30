@@ -36,7 +36,7 @@ class SupportchatCubit extends Cubit<SupportchatState> {
       message: message,
       file: file,
     );
-    messages.add(tempMessage);
+    messages.insert(0, tempMessage);
     emit(SupportchatLoading());
 
     try {
@@ -83,7 +83,7 @@ class SupportchatCubit extends Cubit<SupportchatState> {
                 id: 0,
                 supportConversationId: 0,
                 senderId: currentUserId ?? 0,
-                senderType: 'admin',
+                senderType: "App\\Models\\Admin",
                 content: _getWelcomeMessage(),
                 mediaPath: null,
                 mediaType: 'text',
@@ -125,7 +125,7 @@ class SupportchatCubit extends Cubit<SupportchatState> {
     return SupportMessageModel(
       supportConversationId: supportConversationId ?? 0,
       senderId: currentUserId ?? 0,
-      senderType: 'user',
+      senderType: "App\\Models\\User",
       content: message,
       mediaPath: file?.path,
       mediaType: file != null ? 'image' : 'text',

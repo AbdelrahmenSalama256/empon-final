@@ -111,7 +111,10 @@ class EndPoints {
   static const String walletHistory = '${baseUrl}wallet-history';
   // ! Orders
   static const String orders = '${baseUrl}orders';
+  static const String cachOrders = '${baseUrl}payment_method';
   static const String userOrders = '${baseUrl}user-orders';
+  static const String accountOreder = '${baseUrl}accounts/orders/';
+  static const String accountStatusOreder = '${baseUrl}accounts/orders/status';
   static const String cancelOrder = '${baseUrl}user-order';
   static const String orderDetails = '${baseUrl}user-order';
   // ! related-products

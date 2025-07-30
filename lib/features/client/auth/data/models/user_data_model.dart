@@ -315,6 +315,7 @@ class Account {
   final String? packageName;
   String? verificationRequest;
   String? storeRequest;
+  int? cityId;
 
   Account({
     this.id,
@@ -344,6 +345,7 @@ class Account {
     this.packageName,
     this.verificationRequest,
     this.storeRequest,
+    this.cityId,
   });
 
   factory Account.fromJson(Map<String, dynamic> json) {
@@ -377,6 +379,7 @@ class Account {
       packageName: json['package_name'],
       verificationRequest: json['verification_request_response'], 
       storeRequest: json['store_request_response'],
+      cityId: json['city_id'] as int?,
     );
   }
 

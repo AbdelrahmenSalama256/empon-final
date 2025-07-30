@@ -73,9 +73,8 @@ class CongratesScreen extends StatelessWidget {
                                   onPressed: () {
                                     context
                                         .read<GlobalCubit>()
-                                        .changeBottomNavIndex(4);
-                                    navigateAndFinish(
-                                        context, const BaseScreen());
+                                        .changeBottomNavIndex(0);
+                                    
                                     context
                                         .read<GlobalCubit>()
                                         .setUserType(UserType.client);

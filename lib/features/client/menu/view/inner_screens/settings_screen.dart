@@ -263,20 +263,46 @@ class SettingsScreen extends StatelessWidget {
                                       ),
                                 child: Column(
                                   children: [
-                                    MenuItem(
-                                      icon: "assets/images/orders.png",
-                                      title: "orders".tr(context),
-                                      onTap: () {
-                                        navigateTo(
-                                          context,
-                                          BlocProvider(
-                                            create: (context) =>
-                                                OrdersCubit(sl<OrderRepo>())
-                                                  ..fetchOrders(),
-                                            child: const MyOrdersScreen(),
-                                          ),
-                                        );
-                                      },
+                                    Visibility(
+                                      visible: isVendor == true && cubit.userAccount != null &&
+                                            cubit.userAccount!
+                                                .where((element) =>
+                                                    element.id ==
+                                                    cubit.businessId)
+                                                .first
+                                                .isStore ==
+                                            1,
+                                      child: MenuItem(
+                                        icon: "assets/images/orders.png",
+                                        title: "orders".tr(context),
+                                        onTap: () {
+                                          navigateTo(
+                                            context,
+                                            BlocProvider(
+                                              create: (context) =>
+                                                  OrdersCubit(sl<OrderRepo>()),
+                                              child: const MyOrdersScreen(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible: isVendor == false,
+                                      child: MenuItem(
+                                        icon: "assets/images/orders.png",
+                                        title: "orders".tr(context),
+                                        onTap: () {
+                                          navigateTo(
+                                            context,
+                                            BlocProvider(
+                                              create: (context) =>
+                                                  OrdersCubit(sl<OrderRepo>()),
+                                              child: const MyOrdersScreen(),
+                                            ),
+                                          );
+                                        },
+                                      ),
                                     ),
                                     Divider(
                                         height: 1.h,

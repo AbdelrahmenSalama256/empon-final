@@ -40,3 +40,15 @@ class OrderDetailsError extends OrdersState {
 
   OrderDetailsError(this.message);
 }
+class OrderUpdateLoading extends OrdersState {}
+
+class OrderUpdateLoaded extends OrdersState {
+  
+
+}
+
+class OrderUpdateError extends OrdersState {
+  final String message;
+
+  OrderUpdateError(this.message);
+}

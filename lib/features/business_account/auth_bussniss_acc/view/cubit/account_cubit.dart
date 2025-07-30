@@ -61,6 +61,7 @@ class AccountCubit extends Cubit<AccountState> {
   String? city;
   String? stat;
   String? country;
+  int? cityId;
 
 
   AccountCubit(this.accountRepo, {this.name}) : super(AccountInitial());
@@ -242,8 +243,8 @@ List<LocationModel> getFilteredStates() {
       lat: latController.text,
       lng: lngController.text,
       cityId:selectedCity?.id.toString()  ?? "",
-      logo: files.isNotEmpty ? files[0] : XFile(''),
-      coverImage: files.length > 1 ? files[1] : XFile(''),
+      logo: logo ?? XFile(''),
+      coverImage: coverImage?? XFile('')
     );
 
     response.fold(
@@ -300,7 +301,7 @@ List<LocationModel> getFilteredStates() {
         !isVendorLocationEnabled? postalCodeController.text: null,
         !isVendorLocationEnabled? latController.text: null,
         !isVendorLocationEnabled? lngController.text: null,
-        !isVendorLocationEnabled? selectedCity?.id.toString() ?? "": null);
+        !isVendorLocationEnabled? selectedCity?.id.toString() ?? cityId.toString(): null);
 
     response.fold(
       (l) {
@@ -353,12 +354,14 @@ List<LocationModel> getFilteredStates() {
         }
         return false;
       }).then((_) {
+        PrintUtil.success("======================");
+        PrintUtil.success("City ID: ${model.cityId}");
         selectedCity = allCities.firstWhere(
-          (city) => city.name == model.city,
-          orElse: () => const LocationModel(id: 0, name: '', countryId: 0, stateId: 0),
+          (city) => city.id == model.cityId,
+          
         );
-        PrintUtil.success("Selected city: ${selectedCity!.name}");
-        
+        cityId = selectedCity?.id;
+        PrintUtil.success("Selected city: ${selectedCity?.name}");
         emit(AccountUpdated());
       });
 

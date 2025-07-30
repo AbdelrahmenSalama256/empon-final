@@ -126,7 +126,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                             }
                                             await context
                                                 .read<CheckoutCubit>()
-                                                .createOrderInfo(_selectedAddress!.id ?? 0);
+                                                .createCachOrder(context.read<CheckoutCubit>().orderResponse?.data?.id ?? 0);
                                             Navigator.pop(context);
                                             sl<GlobalCubit>()
                                                 .changeBottomNavIndex(0);
