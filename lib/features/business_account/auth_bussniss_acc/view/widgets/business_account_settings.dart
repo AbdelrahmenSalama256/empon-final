@@ -31,7 +31,6 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
   LocationModel? _selectedCountry;
   LocationModel? _selectedState;
   LocationModel? _selectedCity;
-  int? _selectedCityId;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +49,6 @@ class _BusinessAccountSettingsState extends State<BusinessAccountSettings> {
         _selectedCountry = cubit.selectedCountry;
         _selectedState = cubit.selectedState;
         _selectedCity = cubit.selectedCity;
-        _selectedCityId = cubit.cityId;
         // Ensure cubit is initialized
         List<LocationModel> countries = cubit.allCountries;
         List<LocationModel> states = cubit.getFilteredStates();

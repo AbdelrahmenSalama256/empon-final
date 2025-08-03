@@ -1,4 +1,3 @@
-// supportchat_cubit.dart
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -37,7 +36,7 @@ class SupportchatCubit extends Cubit<SupportchatState> {
       file: file,
     );
     messages.insert(0, tempMessage);
-    emit(SupportchatLoading());
+    emit(SupportchatLoaded(messages));
 
     try {
       final result = await supportChatRepo.sendMessage(
@@ -66,20 +65,47 @@ class SupportchatCubit extends Cubit<SupportchatState> {
     }
   }
 
+  void loadMessages({required String rideId}) {
+    PrintUtil.debug('Loading messages for rideId: $rideId');
+    emit(LoadMessagesLoadingState());
+    supportChatRepo.getMessages(rideId).listen(
+      (newMessages) {
+        PrintUtil.debug('Received messages: ${newMessages.length}');
+        messages = newMessages;
+        emit(SupportchatLoaded(messages));
+      },
+      onError: (error) {
+        PrintUtil.debug('Error loading messages: $error');
+        emit(SupportchatError(error.toString()));
+      },
+      onDone: () {
+        PrintUtil.debug('Firebase stream closed for rideId: $rideId');
+      },
+    );
+  }
+
   Future<void> fetchConversations() async {
     emit(SupportchatLoading());
     try {
       final result = await supportChatRepo.fetchMessages();
       result.fold(
-        (error) => emit(SupportchatError(error)),
+        (error) {
+          PrintUtil.debug('Error fetching conversations: $error');
+          emit(SupportchatError(error));
+        },
         (fetchedConversations) {
           conversations = fetchedConversations;
-          
+
           if (conversations.isNotEmpty) {
-            messages = conversations.first.messages;
             supportConversationId = conversations.first.id;
-            }else{
-              messages.add(SupportMessageModel(
+            messages = conversations.first.messages;
+            PrintUtil.debug(
+                'Fetched ${conversations.length} conversations, messages: ${messages.length}');
+
+            loadMessages(rideId: supportConversationId.toString());
+          } else {
+            messages = [
+              SupportMessageModel(
                 id: 0,
                 supportConversationId: 0,
                 senderId: currentUserId ?? 0,
@@ -90,30 +116,16 @@ class SupportchatCubit extends Cubit<SupportchatState> {
                 updatedAt: DateTime.now().toIso8601String(),
                 createdAt: DateTime.now().toIso8601String(),
                 status: 'delivered',
-              ));
-
-            }
-            // // Load messages for the current conversation
-            // final conversation = conversations.firstWhere(
-            //   (c) => c.id == supportConversationId,
-            //   orElse: () => SupportConversationModel(
-            //     id: 0,
-            //     userId: 0,
-            //     subject: '',
-            //     isClosed: 0,
-            //     lastMessageAt: '',
-            //     createdAt: '',
-            //     updatedAt: '',
-            //     messages: [],
-            //   ),
-            // );
-            // messages = conversation.messages;
-          PrintUtil.success(messages.first.content);
-          emit(SupportchatLoaded(messages));
-          
+                timestamp: DateTime.now().millisecondsSinceEpoch,
+              ),
+            ];
+            PrintUtil.debug('No conversations, added welcome message');
+            emit(SupportchatLoaded(messages));
+          }
         },
       );
     } catch (e) {
+      PrintUtil.debug('Exception fetching conversations: $e');
       emit(SupportchatError(e.toString()));
     }
   }
@@ -133,6 +145,7 @@ class SupportchatCubit extends Cubit<SupportchatState> {
       createdAt: DateTime.now().toIso8601String(),
       id: DateTime.now().millisecondsSinceEpoch,
       status: 'sending',
+      timestamp: DateTime.now().millisecondsSinceEpoch,
     );
   }
 
@@ -151,13 +164,11 @@ class SupportchatCubit extends Cubit<SupportchatState> {
       emit(SupportchatLoaded(List.from(messages)));
     }
   }
-  String _getWelcomeMessage() {
-  
-    String lang = sl<CacheHelper>().getCachedLanguage();
 
-    if (lang == 'en') {
-      return "Welcome to our support chat! How can we assist you today?";
-    }
-    return "مرحبًا بكم في دردشة الدعم الخاصة بإنبون ! كيف يمكننا مساعدتك اليوم؟";
+  String _getWelcomeMessage() {
+    String lang = sl<CacheHelper>().getCachedLanguage();
+    return lang == 'en'
+        ? "Welcome to our support chat! How can we assist you today?"
+        : "مرحبًا بكم في دردشة الدعم الخاصة بإنبون ! كيف يمكننا مساعدتك اليوم؟";
   }
 }

@@ -4,6 +4,7 @@ import 'package:embone/core/constants/navigation.dart';
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:embone/features/client/menu/data/repo/faq_repo.dart';
+import 'package:embone/features/client/menu/data/repo/support_chat_repo.dart';
 import 'package:embone/features/client/menu/view/cubit/faqs_cubit.dart';
 import 'package:embone/features/client/menu/view/cubit/faqs_state.dart';
 import 'package:embone/features/client/menu/view/inner_screens/customer_support_chat_screen.dart';
@@ -16,6 +17,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../../core/cubit/global_cubit.dart';
+import '../cubit/cubit/supportchat_cubit.dart';
 
 class HelpSupportPage extends StatelessWidget {
   const HelpSupportPage({super.key});
@@ -127,7 +131,15 @@ class HelpSupportPage extends StatelessWidget {
                               iconColor: const Color(0xff1E2644),
                               onTap: () {
                                 navigateWithoutNav(
-                                    context, const CustomerSupportChatScreen());
+                                    context,
+                                    BlocProvider(
+                                      create: (context) => SupportchatCubit(
+                                        supportChatRepo: sl<SupportChatRepo>(),
+                                        currentUserId: int.parse(
+                                            sl<GlobalCubit>().userId ?? ''),
+                                      ),
+                                      child: const CustomerSupportChatScreen(),
+                                    ));
                               },
                               isRTL: isRTL,
                             ),

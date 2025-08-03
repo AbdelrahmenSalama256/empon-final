@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class SupportMessageResponseModel {
   final bool success;
   final String message;
@@ -28,12 +30,14 @@ class SupportMessageModel {
   final String updatedAt;
   final String createdAt;
   final int id;
-  String? status; // Added for status tracking
+  final int timestamp;
+  String? status;
 
   SupportMessageModel({
     required this.supportConversationId,
     required this.senderId,
     required this.senderType,
+    required this.timestamp,
     required this.content,
     this.mediaPath,
     this.mediaType,
@@ -54,10 +58,30 @@ class SupportMessageModel {
       updatedAt: json['updated_at'] ?? '',
       createdAt: json['created_at'] ?? '',
       id: json['id'] ?? 0,
-      status: json['status'], // Added status from JSON
+      status: json['status'],
+      timestamp: json['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
     );
   }
 
+  factory SupportMessageModel.fromFirebase(Map<String, dynamic> json,
+      {String? key}) {
+    if (kDebugMode) {
+      print('Parsing message: $json');
+    }
+    return SupportMessageModel(
+      id: key != null ? int.tryParse(key) ?? 0 : 0,
+      supportConversationId: 0,
+      senderId: json['sender_id'] ?? 0,
+      senderType: json['sender_type'] ?? '',
+      content: json['content'] ?? '',
+      mediaPath: json['media_path'],
+      mediaType: json['media_type'] ?? 'text',
+      updatedAt: json['updated_at'] ?? DateTime.now().toIso8601String(),
+      createdAt: json['created_at'] ?? DateTime.now().toIso8601String(),
+      status: json['status'] ?? 'delivered',
+      timestamp: json['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
+    );
+  }
   SupportMessageModel copyWith({
     int? supportConversationId,
     int? senderId,
@@ -69,9 +93,11 @@ class SupportMessageModel {
     String? createdAt,
     int? id,
     String? status,
+    int? timestamp,
   }) {
     return SupportMessageModel(
-      supportConversationId: supportConversationId ?? this.supportConversationId,
+      supportConversationId:
+          supportConversationId ?? this.supportConversationId,
       senderId: senderId ?? this.senderId,
       senderType: senderType ?? this.senderType,
       content: content ?? this.content,
@@ -81,6 +107,7 @@ class SupportMessageModel {
       createdAt: createdAt ?? this.createdAt,
       id: id ?? this.id,
       status: status ?? this.status,
+      timestamp: timestamp ?? this.timestamp,
     );
   }
 }

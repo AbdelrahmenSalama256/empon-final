@@ -23,7 +23,8 @@ class ServiceSubmitButtons extends StatelessWidget {
         if (state is ServiceSuccess) {
           showToast(
             context,
-            message: state.model.message ?? 'service_added_successfully'.tr(context),
+            message:
+                state.model.message ?? 'service_added_successfully'.tr(context),
             state: ToastStates.success,
           );
         } else if (state is ServiceError) {

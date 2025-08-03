@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:embone/core/locale/app_loacl.dart';
 import 'package:embone/core/services/service_locator.dart';
 import 'package:flutter/material.dart';
@@ -69,8 +70,6 @@ class _CustomerSupportChatScreenState extends State<CustomerSupportChatScreen> {
         _scrollToBottom();
       });
     });
-
-    
   }
 
   void _scrollToBottom() {
@@ -86,10 +85,17 @@ class _CustomerSupportChatScreenState extends State<CustomerSupportChatScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SupportchatCubit(
-        supportChatRepo: sl<SupportChatRepo>(),
-        currentUserId: int.parse(sl<GlobalCubit>().userId.toString()),
-      ),
+      create: (context) {
+        final globalCubit = sl<GlobalCubit>();
+        final userId = globalCubit.userId;
+        if (userId == null || userId.toString().isEmpty) {
+          throw Exception('User ID is null or invalid');
+        }
+        return SupportchatCubit(
+          supportChatRepo: sl<SupportChatRepo>(),
+          currentUserId: int.parse(userId.toString()),
+        )..loadMessages(rideId: userId);
+      },
       child: Scaffold(
         backgroundColor: Colors.white,
         body: BlocConsumer<SupportchatCubit, SupportchatState>(
@@ -121,11 +127,11 @@ class _CustomerSupportChatScreenState extends State<CustomerSupportChatScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 5.w),
                           clipBehavior: Clip.none,
                           decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(100.r)),
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(100.r),
+                          ),
                           child: Image.asset(
                             "assets/images/logo_text.png",
-                            // color: AppColors.primary,
                             width: 50.w,
                             height: 50.h,
                           ),
@@ -187,7 +193,6 @@ class _CustomerSupportChatScreenState extends State<CustomerSupportChatScreen> {
       itemBuilder: (context, index) {
         final message = cubit.messages[index];
         final isMe = message.senderType != "App\\Models\\Admin";
-     
 
         return MessageBubble(
           message: message,

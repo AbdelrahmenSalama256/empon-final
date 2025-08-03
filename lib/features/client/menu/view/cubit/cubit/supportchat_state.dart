@@ -15,3 +15,9 @@ final class SupportchatError extends SupportchatState {
   final String error;
   SupportchatError(this.error);
 }
+
+final class LoadMessagesLoadingState extends SupportchatState {}
+
+final class LoadMessagesErrorState extends SupportchatState {}
+
+final class LoadMessagesSuccessState extends SupportchatState {}

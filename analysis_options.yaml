@@ -16,6 +16,7 @@ analyzer:
     use_full_hex_values_for_flutter_colors: ignore
     must_be_immutable: ignore
     unnecessary_null_comparison: ignore
+    file_names: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

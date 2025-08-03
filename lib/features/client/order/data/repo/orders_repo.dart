@@ -38,7 +38,7 @@ class OrderRepo {
         },
         isFormData: true
       );
-      return Right("ghg");
+      return const Right("ghg");
     } on ServerException catch (e) {
       log(e.toString());
       return Left(e.errorModel.detail);
